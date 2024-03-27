@@ -1,0 +1,6 @@
+.idea
+.docusaurus
+build
+LICENSE
+package.json
+package-lock.json
