@@ -43,25 +43,24 @@ const config: StorybookConfig = {
                 rules: [
                     ...(config.module?.rules as Record<string, any>[]),
                     {
-                        test: /\.(sa|sc|c)ss$/, // Test for .sass, .scss and .css files
+                        test: /\.(sa|sc|c)ss$/,
                         use: [
-                            // MiniCssExtractPlugin.loader, // Extract css into separate files
                             "style-loader",
-                            "css-loader", // Translates CSS into CommonJS
+                            "css-loader",
                             {
-                                loader: "postcss-loader", // Loader for webpack to process CSS with PostCSS
+                                loader: "postcss-loader",
                                 options: {
                                     postcssOptions: {
                                         ident: "postcss",
                                         plugins: [
                                             require("postcss-import"),
-                                            require("tailwindcss"), // use tailwindcss
-                                            require("autoprefixer"), // add vendor prefixes
+                                            require("tailwindcss"),
+                                            require("autoprefixer"),
                                         ],
                                     },
                                 },
                             },
-                            "sass-loader", // Compiles Sass to CSS
+                            "sass-loader",
                         ],
                     },
                 ],

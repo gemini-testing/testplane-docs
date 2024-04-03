@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build": "docusaurus build",
     "start": "docusaurus start",
     "lint": "eslint --cache src && prettier --check .",
     "reformat": "eslint --cache --fix src && prettier --write .",

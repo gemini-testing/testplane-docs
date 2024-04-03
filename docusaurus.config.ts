@@ -9,10 +9,10 @@ const config: Config = {
     favicon: "img/favicon.ico",
 
     // Set the production url of your site here
-    url: "https://testplane.example.com",
+    url: process.env.DOCUSAURUS_URL ?? "https://testplane.example.com",
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
-    baseUrl: "/",
+    baseUrl: process.env.DOCUSAURUS_BASE_URL ?? "/",
 
     // GitHub pages deployment config.
     organizationName: "gemini-testing",
@@ -60,7 +60,7 @@ const config: Config = {
                     position: "left",
                     label: "Tutorial",
                 },
-                { to: "/blog", label: "Blog", position: "left" },
+                { to: "#", label: "Blog", position: "left" },
                 {
                     href: "https://github.com/facebook/docusaurus",
                     label: "GitHub",
@@ -76,15 +76,15 @@ const config: Config = {
                     items: [
                         {
                             label: "Configuration",
-                            to: "/docs/config",
+                            to: "#",
                         },
                         {
                             label: "Events",
-                            to: "/docs/events",
+                            to: "#",
                         },
                         {
                             label: "API reference",
-                            to: "/docs/api",
+                            to: "#",
                         },
                     ],
                 },
@@ -110,11 +110,11 @@ const config: Config = {
                         },
                         {
                             label: "Installation",
-                            href: "/docs/installation",
+                            href: "#",
                         },
                         {
                             label: "First tests with testplane",
-                            href: "/docs/first-tests",
+                            href: "#",
                         },
                     ],
                 },

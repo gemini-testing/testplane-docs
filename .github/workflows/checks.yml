@@ -28,8 +28,9 @@ jobs:
             - run: npm ci
             - run: npm test
 
-    build-storybook:
+    deploy-static:
         runs-on: ubuntu-latest
+        environment: CI
 
         strategy:
             matrix:
@@ -45,9 +46,50 @@ jobs:
                   cache: "npm"
             - run: npm ci
             - run: npm run build-storybook
-            - name: Save storybook static
-              uses: actions/upload-artifact@v4
+            - run: npm run build
+              env:
+                  DOCUSAURUS_URL: https://storage.yandexcloud.net
+                  DOCUSAURUS_BASE_URL: ${{ secrets.AWS_S3_BUCKET }}/testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/
+            - name: Upload storybook static
+              uses: jakejarvis/s3-sync-action@v0.5.1
               with:
-                  name: storybook static
-                  path: |
-                      storybook-static
+                  args: --acl public-read --follow-symlinks
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_S3_ENDPOINT: https://s3.yandexcloud.net/
+                  SOURCE_DIR: "storybook-static"
+                  DEST_DIR: "testplane-docs/storybook-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/"
+            - name: Upload website static
+              uses: jakejarvis/s3-sync-action@v0.5.1
+              with:
+                  args: --acl public-read --follow-symlinks
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_S3_ENDPOINT: https://s3.yandexcloud.net/
+                  SOURCE_DIR: "build"
+                  DEST_DIR: "testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/"
+
+            - name: Comment PR with links to deployed static on success
+              if: ${{ success() }}
+              uses: thollander/actions-comment-pull-request@v2
+              with:
+                  message: |
+                      ### :white_check_mark: Successfully deployed static
+
+                      - [Docs website](https://storage.yandexcloud.net/testplane-ci/testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/index.html)
+                      - [Storybook](https://storage.yandexcloud.net/testplane-ci/testplane-docs/storybook-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/index.html)
+                  comment_tag: deployment_status
+
+            - name: Comment PR that static wasn't deployed on failure
+              if: ${{ failure() }}
+              uses: thollander/actions-comment-pull-request@v2
+              with:
+                  message: |
+                      ### :x: Failed to deploy static
+
+                      Please check the workflow logs for details.
+                  comment_tag: deployment_status
