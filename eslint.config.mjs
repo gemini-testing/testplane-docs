@@ -7,8 +7,19 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     {
-        ignores: ["node_modules/**", ".docusaurus/**", "babel.config.js", "eslint.config.mjs"],
+        ignores: [
+            "node_modules/**",
+            ".docusaurus/**",
+            "babel.config.js",
+            "eslint.config.mjs",
+            "storybook-static/**",
+            "build/**",
+            "tmp/**",
+        ],
     },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommendedTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
     {
         files: ["plugins/tailwind.ts"],
         languageOptions: {
@@ -17,9 +28,6 @@ export default tseslint.config(
             },
         },
     },
-    eslint.configs.recommended,
-    ...tseslint.configs.recommendedTypeChecked,
-    ...tseslint.configs.stylisticTypeChecked,
     {
         languageOptions: {
             parserOptions: {

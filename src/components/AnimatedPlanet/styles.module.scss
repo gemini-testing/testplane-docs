@@ -1,0 +1,76 @@
+.outer-orbit-glow {
+    filter: drop-shadow(0 0 10px #ff00d7bf);
+}
+
+.outer-orbit-trail {
+    stroke: url(#linear-gradient-7);
+    stroke-width: 5px;
+}
+
+.large-plane {
+    position: absolute;
+    offset-path: url(#large-plane-trail);
+    transform: translate(-13%, 0);
+    offset-rotate: 62deg auto;
+}
+
+.md-top-plane {
+    position: absolute;
+    offset-path: url(#md-top-plane-trail);
+    transform: translate(0%, 9%);
+    offset-rotate: 33deg auto;
+}
+
+.bg-top-plane {
+    position: absolute;
+    offset-path: url(#bg-top-plane-trail);
+    transform: translate(0%, 15%);
+    offset-rotate: 27deg auto;
+}
+
+.bottom-plane {
+    position: absolute;
+    offset-path: url(#bottom-plane-trail);
+    transform: translate(-7%, 10%);
+    offset-rotate: 37deg auto;
+    offset-distance: 0;
+}
+
+.trail {
+    opacity: 0;
+    stroke-width: 1.5px;
+    fill: none;
+}
+
+.bg-top-plane-trail {
+    stroke: url(#bg-top-plane-trail-gradient);
+}
+
+.md-top-plane-trail {
+    stroke: url(#md-top-plane-trail-gradient);
+    stroke-linecap: round;
+}
+
+.main-trail {
+    stroke: url(#main-trail-gradient);
+}
+
+.star-trail {
+    stroke: url(#star-trail-gradient);
+}
+
+.large-plane-trail {
+    clip-path: url(#large-plane-trail-clip-path);
+    stroke: url(#large-plane-trail-gradient);
+}
+
+.bottom-plane-trail {
+    clip-path: url(#bottom-plane-trail-clip-path);
+    stroke: url(#bottom-plane-trail-gradient);
+}
+
+.star {
+    fill: url(#linear-gradient-8);
+    transform-box: fill-box;
+    transform-origin: center;
+}

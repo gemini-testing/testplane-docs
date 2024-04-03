@@ -8,6 +8,7 @@
 .docusaurus
 .cache-loader
 .idea
+.eslintcache
 
 # Misc
 .DS_Store
@@ -17,3 +18,7 @@
 .env.production.local
 
 npm-debug.log*
+
+*storybook.log
+storybook-static
+tmp
