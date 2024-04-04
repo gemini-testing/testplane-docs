@@ -4,3 +4,6 @@ build
 LICENSE
 package.json
 package-lock.json
+storybook-static
+build
+tmp
