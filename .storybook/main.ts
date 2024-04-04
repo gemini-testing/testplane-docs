@@ -1,4 +1,4 @@
-import * as path from "path";
+import path from "path";
 import { fileURLToPath } from "url";
 import type { StorybookConfig } from "@storybook/react-webpack5";
 

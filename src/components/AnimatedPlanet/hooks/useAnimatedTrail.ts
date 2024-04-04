@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { easings, SpringRef, SpringValue, useSpring } from "react-spring";
 
-interface AnimatedPlaneTrailReturnType {
+interface AnimatedTrailReturnType {
     props: { strokeDashoffset: SpringValue<number> };
     api: SpringRef<{ strokeDashoffset: number }>;
     isAnimationReady: boolean;
@@ -19,8 +19,8 @@ export const useAnimatedTrail = (
     pathRef: React.RefObject<SVGPathElement>,
     delay: number,
     duration: number,
-): AnimatedPlaneTrailReturnType => {
-    const [trailTotalLength, setTrailTotalLength] = useState<number>(0);
+): AnimatedTrailReturnType => {
+    const [trailTotalLength, setTrailTotalLength] = useState(0);
     const [isAnimationReady, setIsAnimationReady] = useState(false);
 
     useEffect(() => {

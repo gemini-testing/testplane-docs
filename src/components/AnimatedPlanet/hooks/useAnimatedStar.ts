@@ -1,11 +1,11 @@
 import { easings, SpringRef, SpringValue, useSpring } from "react-spring";
 
-interface AnimatedPlaneTrailReturnType {
+interface AnimatedStarReturnType {
     props: { scale: SpringValue<number>; rotateZ: SpringValue<number> };
     api: SpringRef<{ scale: number; rotateZ: number }>;
 }
 
-export const useAnimatedStar = (delay: number, duration: number): AnimatedPlaneTrailReturnType => {
+export const useAnimatedStar = (delay: number, duration: number): AnimatedStarReturnType => {
     const [props, api] = useSpring(() => ({
         from: { scale: 0, rotateZ: -360 },
         to: { scale: 1, rotateZ: 0 },
