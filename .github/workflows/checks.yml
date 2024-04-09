@@ -48,8 +48,8 @@ jobs:
             - run: npm run build-storybook
             - run: npm run build
               env:
-                  DOCUSAURUS_URL: https://storage.yandexcloud.net
-                  DOCUSAURUS_BASE_URL: ${{ secrets.AWS_S3_BUCKET }}/testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/
+                  DOCUSAURUS_URL: https://${{ secrets.AWS_S3_BUCKET }}.website.yandexcloud.net
+                  DOCUSAURUS_BASE_URL: testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/
             - name: Upload storybook static
               uses: jakejarvis/s3-sync-action@v0.5.1
               with:
@@ -80,8 +80,8 @@ jobs:
                   message: |
                       ### :white_check_mark: Successfully deployed static
 
-                      - [Docs website](https://storage.yandexcloud.net/testplane-ci/testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/index.html)
-                      - [Storybook](https://storage.yandexcloud.net/testplane-ci/testplane-docs/storybook-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/index.html)
+                      - [Docs website](https://${{ secrets.AWS_S3_BUCKET }}.website.yandexcloud.net/testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/)
+                      - [Storybook](https://${{ secrets.AWS_S3_BUCKET }}.website.yandexcloud.net/testplane-docs/storybook-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/)
                   comment_tag: deployment_status
 
             - name: Comment PR that static wasn't deployed on failure
