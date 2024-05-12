@@ -2,6 +2,7 @@
     "extends": "@docusaurus/tsconfig",
     "compilerOptions": {
         "baseUrl": ".",
+        "lib": ["DOM", "ES2023"],
         "types": [
             "node",
             "@docusaurus/module-type-aliases",

@@ -1,0 +1,26 @@
+@keyframes diff-bubble-appear {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    75% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+:global {
+    .diff-bubble.animated {
+        & :local {
+            animation-name: diff-bubble-appear;
+        }
+        /*animation-delay: 2s;*/
+        animation-duration: 1.5s;
+        animation-fill-mode: forwards;
+    }
+}

@@ -1,0 +1,7 @@
+.product-card {
+    .purchase-button {
+        &:global(.active) {
+            @apply bg-gray-100 outline outline-2 outline-blue-300;
+        }
+    }
+}

@@ -1,0 +1,17 @@
+.browser {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+
+    display: inline-grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 40px auto;
+    grid-template-areas:
+        "topbar"
+        "content";
+
+    .topbar {
+        grid-area: topbar;
+    }
+}

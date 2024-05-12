@@ -6,7 +6,6 @@ const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
     addons: [
         "@storybook/addon-webpack5-compiler-swc",
-        "@storybook/addon-onboarding",
         "@storybook/addon-links",
         "@storybook/addon-essentials",
         "@chromatic-com/storybook",
@@ -29,6 +28,34 @@ const config: StorybookConfig = {
         },
     }),
     webpackFinal: config => {
+        if (config.module && config.module.rules) {
+            const { rules } = config.module;
+
+            const fileLoaderRule = rules.find(rule => rule?.test && rule.test.test(".svg")) as
+                | { exclude: RegExp }
+                | undefined;
+            if (fileLoaderRule) {
+                fileLoaderRule.exclude = /\.svg$/;
+            }
+
+            const cssLoaderIndex = rules.findIndex(rule => rule?.test && rule.test.test(".css"));
+            rules.splice(cssLoaderIndex, 1);
+        }
+
+        const postCssLoader = {
+            loader: "postcss-loader",
+            options: {
+                postcssOptions: {
+                    ident: "postcss",
+                    plugins: [
+                        require("postcss-import"),
+                        require("tailwindcss"),
+                        require("autoprefixer"),
+                    ],
+                },
+            },
+        };
+
         return {
             ...config,
             resolve: {
@@ -43,25 +70,16 @@ const config: StorybookConfig = {
                 rules: [
                     ...(config.module?.rules as Record<string, any>[]),
                     {
-                        test: /\.(sa|sc|c)ss$/,
-                        use: [
-                            "style-loader",
-                            "css-loader",
-                            {
-                                loader: "postcss-loader",
-                                options: {
-                                    postcssOptions: {
-                                        ident: "postcss",
-                                        plugins: [
-                                            require("postcss-import"),
-                                            require("tailwindcss"),
-                                            require("autoprefixer"),
-                                        ],
-                                    },
-                                },
-                            },
-                            "sass-loader",
-                        ],
+                        test: /\.(sa|sc)ss$/,
+                        use: ["style-loader", "css-loader", postCssLoader, "sass-loader"],
+                    },
+                    {
+                        test: /\.css$/,
+                        use: ["style-loader", "css-loader", postCssLoader],
+                    },
+                    {
+                        test: /\.svg$/,
+                        use: ["@svgr/webpack"],
                     },
                 ],
             },
