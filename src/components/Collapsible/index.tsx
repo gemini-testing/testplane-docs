@@ -8,8 +8,8 @@ interface CollapsibleProps {
 
 export function Collapsible(props: CollapsibleProps) {
     return (
-        <div>
-            <div>{props.title}</div>
+        <div className="collapsible">
+            {props.title && <div className="collapsible__title">{props.title}</div>}
             {!props.isCollapsed && <div className="pl-3">{props.children}</div>}
         </div>
     );

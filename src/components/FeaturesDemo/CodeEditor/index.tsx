@@ -21,7 +21,12 @@ export interface TabProps {
 
 function Tab(props: TabProps) {
     return (
-        <div className={clsx(styles["tab-item"], "relative ml-5 flex items-center text-nowrap")}>
+        <div
+            className={clsx(
+                styles["tab-item"],
+                "code-editor__tab relative ml-5 flex items-center text-nowrap",
+            )}
+        >
             <div className={clsx({ "text-indigo-200": props.isActive })}>{props.title}</div>
             <div className={clsx("ml-5 size-3", { "fill-indigo-200": props.isActive })}>
                 {props.icon ?? <CloseIcon />}
@@ -50,22 +55,23 @@ export interface FsTreeItem {
 
 function CollapsibleFsTreeItem(props: FsTreeItem) {
     const getItemIcon = (type?: FsTreeItemType) => {
-        if (type === FsTreeItemType.Dir) {
-            return <FolderIcon className="size-3" />;
-        } else if (type === FsTreeItemType.Ts) {
-            return <TypescriptIcon className="size-3" />;
-        } else if (type === FsTreeItemType.Sass) {
-            return <SassIcon className="size-3" />;
-        } else if (type === FsTreeItemType.Testplane) {
-            return <TestplaneIcon className="size-3" />;
-        } else {
-            return <TextIcon className="size-3" />;
+        switch (type) {
+            case FsTreeItemType.Dir:
+                return <FolderIcon className="size-3" />;
+            case FsTreeItemType.Ts:
+                return <TypescriptIcon className="size-3" />;
+            case FsTreeItemType.Sass:
+                return <SassIcon className="size-3" />;
+            case FsTreeItemType.Testplane:
+                return <TestplaneIcon className="size-3" />;
+            default:
+                return <TextIcon className="size-3" />;
         }
     };
 
     const ItemTitle = (
         <div
-            className={clsx("ml-5 flex items-center", {
+            className={clsx("code-editor__fs-tree-item ml-5 flex items-center", {
                 "fill-indigo-400 text-indigo-400": props.isModified,
             })}
         >
@@ -110,7 +116,7 @@ export interface CodeEditorProps {
 
 export function CodeEditor(props: CodeEditorProps): JSX.Element {
     return (
-        <div className={clsx(styles.wrapper, props.className)} style={props.style}>
+        <div className={clsx(styles.wrapper, props.className, "code-editor")} style={props.style}>
             <div
                 className={clsx(
                     styles.editor,

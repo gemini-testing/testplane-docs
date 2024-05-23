@@ -1,7 +1,12 @@
+import browserStyles from "./WebBrowser/styles.module.scss";
+
 export const PAUSE_XS = 500;
 export const PAUSE_SM = 1000;
 export const PAUSE_MD = 2500;
 export const PAUSE_LG = 5000;
+
+export const BROWSER_TOPBAR_HEIGHT = Number(browserStyles["browser-topbar-height"]);
+export const APP_PAGE_HEADER_HEIGHT = 36;
 
 export const getById = <T extends { id: number | string }>(items: T[], id: number | string): T => {
     const result = items.find(item => item.id === id);
@@ -86,7 +91,7 @@ export const CODE_MESSAGES = [
             `<br>  it("should render product card", async ({browser}) => {
     await browser.url("localhost:8000");
 
-    await browser.assertView("div[data-data-id='product']", "default-state");
+    await browser.$("div[data-test-id='product']").assertView("default-state");
   });
 });`,
         ],
@@ -128,7 +133,7 @@ export const CONSOLE_MESSAGES = [
     },
     {
         id: ConsoleId.SendInputSearch,
-        messages: ["`<br>> browser.$(\"input[data-data-id='search']\");`"],
+        messages: ["`<br>> browser.$(\"input[data-testid='search']\");`"],
     },
     {
         id: ConsoleId.InputSearchSuccess,

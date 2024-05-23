@@ -11,7 +11,7 @@ interface AttemptPickerProps {
 
 export function AttemptPicker(props: AttemptPickerProps) {
     return (
-        <div className="flex">
+        <div className="attempt-picker flex">
             {props.attempts.map((attempt, index) => (
                 <div
                     key={index}

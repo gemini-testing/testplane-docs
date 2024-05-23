@@ -28,7 +28,7 @@ export const AnimatedCursor = forwardRef(function AnimatedCursorInternal(
         async click(): Promise<void> {
             await Promise.all(
                 api.start({
-                    config: { duration: 300 /*easing: easings.easeInOutQuint*/ },
+                    config: { duration: 300 },
                     to: [
                         { scaleX: 1.2, scaleY: 1.2 },
                         { scaleX: 1, scaleY: 1 },
@@ -39,10 +39,7 @@ export const AnimatedCursor = forwardRef(function AnimatedCursorInternal(
         async setPosition(x, y): Promise<void> {
             await Promise.all(
                 api.start({
-                    config: {
-                        /*duration: 500,*/
-                        /*easing: easings.easeInOutQuint*/
-                    },
+                    config: {},
                     to: [{ top: y, left: x }],
                 }),
             );
@@ -66,7 +63,7 @@ export const AnimatedCursor = forwardRef(function AnimatedCursorInternal(
     }));
 
     return (
-        <div>
+        <div className="animated-cursor">
             {props.children}
             <animated.div
                 className={clsx(

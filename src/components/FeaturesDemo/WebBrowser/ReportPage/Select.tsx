@@ -11,7 +11,7 @@ export function Select(props: SelectProps) {
     return (
         <div
             className={clsx(
-                "flex text-nowrap rounded-sm border border-gray-200 bg-gray-200 text-xs",
+                "select flex text-nowrap rounded-sm border border-gray-200 bg-gray-200 text-xs",
                 props.className,
             )}
         >

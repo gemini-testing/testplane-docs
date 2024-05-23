@@ -72,26 +72,7 @@ export const TESTS_SAMPLE_DATA = [
                     },
                 ],
             },
-            /*{
-        title: "should render product card",
-        isLeaf: false,
-        isOpened: false,
-        status: Status.NotLaunched,
-        children: [{
-            title: "chrome-desktop",
-            isLeaf: true,
-            isOpened: true,
-            status: Status.Failure,
-            selectedAttempt: 0,
-            attempts: [
-                {
-                    status: Status.NotLaunched,
-                    meta: {isOpened: false},
-                    history: {isOpened: false, steps: []},
-                }
-            ]
-        }],
-    },*/ {
+            {
                 title: "should add item to cart",
                 isCollapsed: false,
                 isDisabled: false as boolean,

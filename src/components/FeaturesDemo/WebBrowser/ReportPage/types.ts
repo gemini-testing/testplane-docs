@@ -28,17 +28,6 @@ export interface AssertViewDiff {
 
 export type AssertViewResult = AssertViewSuccess | AssertViewDiff;
 
-// export interface TestBranchItem {
-//     title: string;
-//     isLeaf: false;
-//     isOpened: boolean;
-//     status: Status;
-//     children: (TestLeafItem | TestBranchItem)[];
-//     state?: TestState;
-//     isDisabled?: boolean;
-//     titleClassName?: string;
-// }
-
 export interface TestAttempt {
     status: Status;
     meta: { data: Record<string, unknown> };
@@ -52,7 +41,8 @@ export interface TestResult {
     attempts: TestAttempt[];
 }
 
-// state ===
+export type AssertViewSuccessWithState = AssertViewSuccess & { isCollapsed: boolean };
+export type AssertViewDiffWithState = AssertViewDiff & { isCollapsed: boolean };
 
 export type AssertViewResultWithState = AssertViewResult & { isCollapsed: boolean };
 

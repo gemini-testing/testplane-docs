@@ -10,10 +10,13 @@ interface LabelProps {
 export function Label(props: LabelProps) {
     return (
         <div
-            className={clsx("flex flex-nowrap text-nowrap text-xs text-gray-500", props.className)}
+            className={clsx(
+                "label flex flex-nowrap text-nowrap text-xs text-gray-500",
+                props.className,
+            )}
         >
-            <div className="inline px-1 py-0.5 font-semibold">{props.title}</div>
-            <div className="inline px-1 py-0.5 font-medium">{props.value}</div>
+            <span className="px-1 py-0.5 font-semibold">{props.title}</span>
+            <span className="px-1 py-0.5 font-medium">{props.value}</span>
         </div>
     );
 }

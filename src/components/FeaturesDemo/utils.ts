@@ -87,7 +87,9 @@ export const scrollToLineIfNeeded = (
     containerRef: RefObject<HTMLDivElement>,
 ) => {
     const offsetTop =
-        lineRef.current!.offsetTop - containerRef.current!.parentElement!.clientHeight + 80;
+        lineRef.current!.offsetTop -
+        containerRef.current!.parentElement!.clientHeight +
+        80; /* adding some room underneath the line */
 
     containerRef.current!.scrollTop = offsetTop;
 };

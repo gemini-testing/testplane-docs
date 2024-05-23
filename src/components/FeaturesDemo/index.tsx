@@ -10,6 +10,8 @@ import {
     SAMPLE_TABS,
 } from "@site/src/components/FeaturesDemo/CodeEditor/constants";
 import {
+    APP_PAGE_HEADER_HEIGHT,
+    BROWSER_TOPBAR_HEIGHT,
     CODE_MESSAGES,
     CodeId,
     CONSOLE_MESSAGES,
@@ -269,7 +271,7 @@ export function FeaturesDemo(props: { className?: string }) {
                 ?.current?.querySelector('input[data-role-id="search-input"]') as HTMLInputElement;
             const offset = searchInput.offsetTop;
             appBrowserPageRef.current?.setScrollTop(
-                offset - 36 - 40 /* height of search bar, height of header */,
+                offset - APP_PAGE_HEADER_HEIGHT - BROWSER_TOPBAR_HEIGHT,
             );
 
             await pause(PAUSE_MD, signal);
@@ -411,8 +413,8 @@ export function FeaturesDemo(props: { className?: string }) {
                 ?.current?.querySelector('button[data-role-id="run-tests"]') as HTMLButtonElement;
 
             await reportCursorRef.current?.setPosition(
-                runButton.offsetLeft + 25 - 6,
-                runButton.offsetTop + 1 + 40,
+                runButton.offsetLeft + 25 /* a tiny offset to the right */,
+                runButton.offsetTop + BROWSER_TOPBAR_HEIGHT,
             );
 
             void reportCursorRef.current?.click();
@@ -544,6 +546,7 @@ export function FeaturesDemo(props: { className?: string }) {
             const pageHeight =
                 reportBrowserPageRef.current?.getUnsafePageRef().current?.clientHeight ?? 0;
             if (diffImgSize.bottom > pageHeight) {
+                // Scroll to diff image on small screens, leaving some space (60px) before it
                 reportBrowserPageRef.current?.setScrollTop(diffImg.offsetTop - 60);
             }
             await pause(PAUSE_MD, signal);
@@ -552,7 +555,7 @@ export function FeaturesDemo(props: { className?: string }) {
             await cursor.show();
             const scrollOffset = reportBrowserPageRef.current!.getScrollTop();
             await cursor.setPosition(
-                diffImg.offsetLeft + diffImgSize.width / 2 - 6,
+                diffImg.offsetLeft + diffImgSize.width / 2,
                 diffImg.offsetTop + diffImgSize.height / 2 - scrollOffset,
             );
             void cursor.click();
@@ -718,7 +721,7 @@ export function FeaturesDemo(props: { className?: string }) {
     );
 
     return (
-        <div className={clsx("flex h-[90vh] w-full flex-col", props.className)}>
+        <div className={clsx("features-demo flex h-[90vh] w-full flex-col", props.className)}>
             {headingMemo}
             {windows}
         </div>

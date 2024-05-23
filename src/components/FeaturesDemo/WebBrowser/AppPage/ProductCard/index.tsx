@@ -12,7 +12,7 @@ interface ProductCardProps {
 
 export function ProductCard(props: ProductCardProps) {
     return (
-        <div className={clsx(props.className, "break-inside-avoid")}>
+        <div className={clsx(props.className, "product-card break-inside-avoid")}>
             <div className="relative w-full overflow-hidden rounded-xl after:block after:pb-[80%] after:content-['']">
                 <div
                     className={clsx(

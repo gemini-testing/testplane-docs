@@ -28,7 +28,7 @@ export const ReportPage = forwardRef(function ReportPageInternal(props: ReportPa
     }));
 
     return (
-        <div className="relative w-full min-w-0 bg-white">
+        <div className="report-page relative w-full min-w-0 bg-white">
             <div className="p-2.5 shadow-sm">
                 <div className="mb-2.5 hidden overflow-x-scroll sm:flex">
                     <Select title="Show tests" value="All" />

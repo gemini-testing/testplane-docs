@@ -56,7 +56,10 @@ export function AnimatedPlanet(props: AnimatedPlanetProps) {
 
     return (
         <div
-            className={clsx("flex aspect-square w-full items-center", props.className)}
+            className={clsx(
+                "animated-planet flex aspect-square w-full items-center",
+                props.className,
+            )}
             ref={boundingBoxRef}
         >
             <div className="relative origin-left" style={{ transform: `scale(${scale})` }}>

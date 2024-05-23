@@ -57,7 +57,10 @@ interface AnimatedHeadingProps {
 
 export function AnimatedHeading({ heading, ghostText, className }: AnimatedHeadingProps) {
     return (
-        <TextTransition className={className} ghostElement={<Heading>{ghostText}</Heading>}>
+        <TextTransition
+            className={clsx("animated-heading", className)}
+            ghostElement={<Heading>{ghostText}</Heading>}
+        >
             <Heading>{heading}</Heading>
         </TextTransition>
     );

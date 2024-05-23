@@ -34,7 +34,6 @@ export function CollapsibleTest({ data, entryType, children }: CollapsibleTestPr
                 <div
                     className={clsx("flex items-center", {
                         "text-green-600": data.status === Status.Success,
-                        // "text-black": data.status === Status.NotLaunched,
                         "text-red-600":
                             data.status === Status.Diff || data.status === Status.Failure,
                     })}
