@@ -25,7 +25,15 @@ const config: Config = {
         defaultLocale: "en",
         locales: ["en"],
     },
-
+    headTags: [
+        {
+            tagName: "link",
+            attributes: {
+                href: "https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap",
+                rel: "stylesheet",
+            },
+        },
+    ],
     presets: [
         [
             "classic",
@@ -39,7 +47,7 @@ const config: Config = {
                     editUrl: "https://github.com/gemini-testing/testplane-docs/tree/main/blog/",
                 },
                 theme: {
-                    customCss: "./src/scss/custom.scss",
+                    customCss: "./src/scss/custom.css",
                 },
             } satisfies Preset.Options,
         ],

@@ -1,0 +1,23 @@
+$browser-topbar-height: 40;
+
+:export {
+    browser-topbar-height: $browser-topbar-height;
+}
+
+.browser {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+
+    display: inline-grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: $browser-topbar-height + px auto;
+    grid-template-areas:
+        "topbar"
+        "content";
+
+    .topbar {
+        grid-area: topbar;
+    }
+}

@@ -1,3 +1,4 @@
+/* This file should be .css, not .scss until https://github.com/facebook/docusaurus/issues/10106 is fixed */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

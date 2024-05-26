@@ -1,0 +1,90 @@
+.wrapper {
+    container-type: size;
+    width: 100%;
+
+    @container (max-width: 550px) {
+        & .editor {
+            grid-template-columns: 1fr;
+            grid-template-rows: 40px auto 50px 30px;
+            grid-template-areas:
+                "tabs"
+                "code"
+                "console"
+                "status-bar";
+
+            .work-tree {
+                display: none;
+            }
+            .search {
+                display: none;
+            }
+
+            .editor-status {
+                display: none;
+            }
+        }
+    }
+
+    @container (max-height: 250px) {
+        & .editor {
+            grid-template-columns: 1fr;
+            grid-template-rows: 40px auto;
+            grid-template-areas:
+                "tabs"
+                "code";
+
+            .work-tree {
+                display: none;
+            }
+            .search {
+                display: none;
+            }
+            .console {
+                display: none;
+            }
+            .status-bar {
+                display: none;
+            }
+        }
+    }
+}
+
+.editor {
+    display: inline-grid;
+    grid-template-columns: 2.5fr 6fr;
+    grid-template-rows: 40px auto 50px 30px;
+    grid-template-areas:
+        "search tabs"
+        "work-tree code"
+        "console console"
+        "status-bar status-bar";
+
+    .search {
+        grid-area: search;
+    }
+
+    .tabs {
+        grid-area: tabs;
+    }
+
+    .code {
+        grid-area: code;
+    }
+
+    .work-tree {
+        grid-area: work-tree;
+    }
+
+    .console {
+        grid-area: console;
+
+        // To prevent Typed.js' cursor blinking in console
+        :global(.typed-cursor.typed-cursor--blink) {
+            animation: none;
+        }
+    }
+
+    .status-bar {
+        grid-area: status-bar;
+    }
+}
