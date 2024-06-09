@@ -5,7 +5,7 @@ import { GradientUnderline } from "@site/src/components/GradientUnderline";
 import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
 import React from "react";
 
-export function CoreFeaturesSection() {
+export const CoreFeaturesSection = () => {
     return (
         <section className="bg-gray-100">
             <div className="container max-w-screen-lg py-6">
@@ -94,4 +94,4 @@ export function CoreFeaturesSection() {
             </div>
         </section>
     );
-}
+};

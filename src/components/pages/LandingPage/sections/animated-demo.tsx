@@ -7,8 +7,9 @@ import { FeaturesDemo } from "@site/src/components/FeaturesDemo";
 import { DemoStats } from "@site/src/components/DemoStats";
 import React from "react";
 import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
+import BrowserOnly from "@docusaurus/core/lib/client/exports/BrowserOnly";
 
-export function AnimatedDemoSection() {
+export const AnimatedDemoSection = () => {
     const grainyBg = `linear-gradient(41deg, rgb(227 119 252) 0%, rgb(142 78 253) 100%), url(${useBaseUrl("/img/landing/noise.png")})`;
 
     return (
@@ -19,7 +20,9 @@ export function AnimatedDemoSection() {
                 <Star4Sharp className="absolute right-2 top-[60%] size-16 rotate-[-20deg]" />
             </div>
             <div className="container mx-auto py-6">
-                <FeaturesDemo className="h-[75vh] 2xl:h-[800px]" />
+                <BrowserOnly>
+                    {() => <FeaturesDemo className="h-[75vh] 2xl:h-[800px]" />}
+                </BrowserOnly>
                 <div className="flex justify-around pt-6">
                     <DemoStats value="5.6B" description="Tests launched" />
                     <DemoStats value="600+" description="Stars on GitHub" />
@@ -28,4 +31,4 @@ export function AnimatedDemoSection() {
             </div>
         </section>
     );
-}
+};

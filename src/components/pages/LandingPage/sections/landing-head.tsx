@@ -10,7 +10,7 @@ import { AnimatedPlanet } from "@site/src/components/AnimatedPlanet";
 import React from "react";
 import { LinkBadge } from "@site/src/components/LinkBadge";
 
-export function LandingHeadSection() {
+export const LandingHeadSection = () => {
     return (
         <section className="overflow-hidden bg-gray-100">
             <MobileBg className="absolute top-0 w-full sm:hidden" />
@@ -62,4 +62,4 @@ export function LandingHeadSection() {
             </div>
         </section>
     );
-}
+};

@@ -1,6 +1,6 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
-import { LandingPage } from "@site/src/pages/LandingPage";
+import { LandingPage } from "@site/src/components/pages/LandingPage";
 
 export default function Home() {
     const { siteConfig } = useDocusaurusContext();

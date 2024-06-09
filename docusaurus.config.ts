@@ -19,7 +19,8 @@ const config: Config = {
     organizationName: "gemini-testing",
     projectName: "testplane-docs",
 
-    onBrokenLinks: "throw",
+    // TODO: set to throw once we start adding actual docs pages
+    onBrokenLinks: "warn",
     onBrokenMarkdownLinks: "warn",
 
     i18n: {

@@ -1,8 +1,8 @@
-import React, {ReactNode} from "react";
+import React, { ReactNode } from "react";
 
 import { isMultiColumnFooterLinks } from "@docusaurus/theme-common";
 import type { Props } from "@theme/Footer/Links";
-import {FooterLinkItem} from "@site/src/theme/Footer/LinkItem";
+import { FooterLinkItem } from "@site/src/theme/Footer/LinkItem";
 
 export default function FooterLinks({ links }: Props): ReactNode {
     if (!isMultiColumnFooterLinks(links)) {
