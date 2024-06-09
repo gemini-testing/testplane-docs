@@ -1,0 +1,12 @@
+.link-badge {
+    align-items: center;
+    border-width: 1px;
+    display: inline-flex;
+    max-width: 80vw;
+    text-wrap: nowrap;
+    border-radius: 100px;
+
+    &:hover {
+        text-decoration: none;
+    }
+}

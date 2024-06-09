@@ -2,6 +2,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import { tailwindPlugin } from "./plugins/tailwind";
+import { svgFixPlugin } from "./plugins/svg-fix";
 
 const config: Config = {
     title: "Testplane Docs",
@@ -54,23 +55,32 @@ const config: Config = {
     ],
 
     themeConfig: {
+        colorMode: {
+            disableSwitch: true,
+        },
         image: "img/docusaurus-social-card.jpg",
         navbar: {
             title: "testplane",
-            logo: {
-                alt: "Testplane Logo",
-                src: "img/logo.svg",
-            },
             items: [
                 {
                     type: "docSidebar",
                     sidebarId: "mainSidebar",
                     position: "left",
-                    label: "Tutorial",
+                    label: "Docs",
                 },
-                { to: "#", label: "Blog", position: "left" },
+                { to: "/blog", label: "Blog", position: "left" },
                 {
-                    href: "https://github.com/facebook/docusaurus",
+                    type: "docsVersionDropdown",
+                    position: "right",
+                    dropdownItemsAfter: [{ to: "/versions", label: "All versions" }],
+                    dropdownActiveClassDisabled: true,
+                },
+                {
+                    type: "localeDropdown",
+                    position: "right",
+                },
+                {
+                    href: "https://github.com/gemini-testing/testplane",
                     label: "GitHub",
                     position: "right",
                 },
@@ -80,49 +90,70 @@ const config: Config = {
             style: "dark",
             links: [
                 {
-                    title: "Docs",
+                    title: "Quickstart",
                     items: [
-                        {
-                            label: "Configuration",
-                            to: "#",
-                        },
-                        {
-                            label: "Events",
-                            to: "#",
-                        },
-                        {
-                            label: "API reference",
-                            to: "#",
-                        },
-                    ],
-                },
-                {
-                    title: "Community",
-                    items: [
-                        {
-                            label: "GitHub",
-                            href: "https://github.com/gemini-testing/testplane",
-                        },
-                        {
-                            label: "Stack Overflow",
-                            href: "https://stackoverflow.com/questions/tagged/testplane",
-                        },
-                    ],
-                },
-                {
-                    title: "More",
-                    items: [
-                        {
-                            label: "Releases",
-                            to: "https://github.com/gemini-testing/testplane/releases",
-                        },
                         {
                             label: "Installation",
+                            to: "#",
+                        },
+                        {
+                            label: "Writing your first tests",
+                            to: "#",
+                        },
+                        {
+                            label: "Why testplane?",
+                            to: "#",
+                        },
+                    ],
+                },
+                {
+                    title: "Core concepts",
+                    items: [
+                        {
+                            label: "Browser commands",
                             href: "#",
                         },
                         {
-                            label: "First tests with testplane",
+                            label: "Testplane config",
                             href: "#",
+                        },
+                        {
+                            label: "Testplane UI",
+                            href: "#",
+                        },
+                    ],
+                },
+                {
+                    title: "Customization",
+                    items: [
+                        {
+                            label: "Custom commands",
+                            href: "#",
+                        },
+                        {
+                            label: "Plugins and reporters",
+                            href: "#",
+                        },
+                        {
+                            label: "Usage in CI",
+                            href: "#",
+                        },
+                    ],
+                },
+                {
+                    title: "Resources",
+                    items: [
+                        {
+                            label: "Docs",
+                            href: "#",
+                        },
+                        {
+                            label: "Blog",
+                            href: "#",
+                        },
+                        {
+                            label: "Changelog",
+                            to: "#",
                         },
                     ],
                 },
@@ -135,7 +166,7 @@ const config: Config = {
         },
     } satisfies Preset.ThemeConfig,
 
-    plugins: ["docusaurus-plugin-sass", tailwindPlugin],
+    plugins: ["docusaurus-plugin-sass", tailwindPlugin, svgFixPlugin],
 };
 
 export default config;

@@ -57,7 +57,7 @@ export function AnimatedPlanet(props: AnimatedPlanetProps) {
     return (
         <div
             className={clsx(
-                "animated-planet flex aspect-square w-full items-center",
+                "animated-planet flex aspect-square w-full items-center overflow-hidden",
                 props.className,
             )}
             ref={boundingBoxRef}

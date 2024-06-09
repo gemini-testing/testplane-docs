@@ -721,7 +721,12 @@ export function FeaturesDemo(props: { className?: string }) {
     );
 
     return (
-        <div className={clsx("features-demo flex h-[90vh] w-full flex-col", props.className)}>
+        <div
+            className={clsx(
+                "features-demo pointer-events-none flex w-full flex-col",
+                props.className,
+            )}
+        >
             {headingMemo}
             {windows}
         </div>

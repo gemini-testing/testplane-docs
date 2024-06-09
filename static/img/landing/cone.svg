@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 120 104.71" height="100" width="100">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#cone-linear-gradient);
+      }
+
+      .cls-2 {
+        fill: url(#cone-linear-gradient-3);
+      }
+
+      .cls-3 {
+        fill: url(#cone-linear-gradient-2);
+      }
+    </style>
+    <linearGradient id="cone-linear-gradient" x1="55.3" y1="-19.26" x2="72.2" y2="95.61" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fffad4"/>
+      <stop offset="1" stop-color="#faa8ff"/>
+    </linearGradient>
+    <linearGradient id="cone-linear-gradient-2" x1="0" y1="34" x2="120" y2="34" xlink:href="#cone-linear-gradient"/>
+    <linearGradient id="cone-linear-gradient-3" x1="42.87" y1="49.63" x2="122.51" y2="11.27" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#949de8"/>
+      <stop offset="1" stop-color="#e56fff"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <polygon class="cls-1" points="0 0 117 5 120 68 0 0"/>
+    <path class="cls-3" d="m4.1,1.18l111.94,4.78,2.87,60.28L4.1,1.18M0,0l120,68-3-63L0,0h0Z"/>
+  </g>
+  <polyline class="cls-2" points="74.43 104.71 120 68 0 0"/>
+</svg>

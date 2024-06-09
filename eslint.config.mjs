@@ -54,5 +54,10 @@ export default tseslint.config(
             "no-unused-vars",
         ]),
     },
+    {
+        rules: {
+            "react/prop-types": 0,
+        },
+    },
     prettier,
 );

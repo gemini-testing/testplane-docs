@@ -40,7 +40,7 @@ interface HeadingProps {
     children: ReactNode;
 }
 
-function Heading(props: HeadingProps) {
+export function Heading(props: HeadingProps) {
     return (
         <div className="text-center text-xl font-bold text-white xs:text-2xl sm:text-3xl 2xl:text-4xl">
             {props.children}
