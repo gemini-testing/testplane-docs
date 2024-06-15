@@ -5,3 +5,25 @@
 
 .main {
 }
+
+.text-glow {
+    text-shadow:
+        0 0 10px #f3f4f6,
+        0 0 10px #f3f4f6,
+        0 0 10px #f3f4f6,
+        0 0 10px #f3f4f6,
+        0 0 10px #f3f4f6;
+}
+
+.no-text-glow {
+    text-shadow: none;
+}
+
+.box-glow {
+    box-shadow: 0 0 10px 10px #f3f4f6;
+}
+
+.demo {
+    background-blend-mode: multiply;
+    background-size: cover, 150px;
+}
