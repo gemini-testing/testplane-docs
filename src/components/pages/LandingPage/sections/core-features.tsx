@@ -1,6 +1,6 @@
 import { AnimatedAppear } from "@site/src/components/AnimatedAppear";
 import { Heading } from "@site/src/components/FeaturesDemo/AnimatedHeading";
-import { FeatureBlock, FeatureBlockOrder } from "@site/src/components/FeatureBlock";
+import { FeatureBlock, FeatureBlockLayout } from "@site/src/components/FeatureBlock";
 import { GradientUnderline } from "@site/src/components/GradientUnderline";
 import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
 import React from "react";
@@ -13,7 +13,7 @@ export const CoreFeaturesSection = () => {
                     <Heading>
                         <div className="mb-3 text-gray-700">
                             Accelerate{" "}
-                            <span className="mt-3 bg-gradient-to-r from-sky-600 to-fuchsia-500 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-sky-600 to-fuchsia-500 bg-clip-text text-transparent">
                                 everything
                             </span>{" "}
                             with testplane
@@ -39,7 +39,7 @@ export const CoreFeaturesSection = () => {
                             "Independent of browser versions",
                             "Ancient browsers, like Internet Explorer",
                         ]}
-                        order={FeatureBlockOrder.PictureOnTheRight}
+                        layout={FeatureBlockLayout.PictureOnTheRight}
                         imgSrc={useBaseUrl("/img/landing/browsers.svg")}
                         className="py-8"
                     />
@@ -62,7 +62,7 @@ export const CoreFeaturesSection = () => {
                             "Parallel execution",
                             "Test isolation",
                         ]}
-                        order={FeatureBlockOrder.PictureOnTheLeft}
+                        layout={FeatureBlockLayout.PictureOnTheLeft}
                         imgSrc={useBaseUrl("/img/landing/scale.svg")}
                         className="py-8"
                     />
@@ -86,7 +86,7 @@ export const CoreFeaturesSection = () => {
                             "Custom execution logic",
                             "Custom commands",
                         ]}
-                        order={FeatureBlockOrder.PictureOnTheRight}
+                        layout={FeatureBlockLayout.PictureOnTheRight}
                         imgSrc={useBaseUrl("/img/landing/extensibility.svg")}
                         className="py-8"
                     />

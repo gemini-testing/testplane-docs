@@ -25,15 +25,21 @@ export const LandingHeadSection = () => {
                 <div className="mt-16 flex items-center py-8 sm:mt-0 2xl:py-16">
                     <div className="flex flex-grow basis-full flex-col items-start">
                         <LinkBadge />
-                        <h1 className="z-50 mt-3 inline-block bg-gradient-to-r from-sky-600 to-fuchsia-500 bg-clip-text text-5xl font-bold text-transparent 2xl:text-7xl">
-                            testplane
-                        </h1>
                         <h1
                             className={clsx(
                                 styles["text-glow"],
                                 "z-50 text-5xl font-bold leading-[1.1] text-gray-700 md:leading-none 2xl:text-7xl",
                             )}
                         >
+                            <span
+                                className={clsx(
+                                    "bg-gradient-to-r from-sky-600 to-fuchsia-500 bg-clip-text text-transparent",
+                                    styles["no-text-glow"],
+                                )}
+                            >
+                                testplane
+                                <br />
+                            </span>
                             is an{" "}
                             <span className="relative inline-block">
                                 <HighlightRoundSvg className="absolute left-0 top-0 -translate-y-0.5 scale-[1.15]" />

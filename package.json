@@ -13,8 +13,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@docusaurus/core": "3.3.2",
-    "@docusaurus/preset-classic": "3.3.2",
+    "@docusaurus/core": "3.4.0",
+    "@docusaurus/preset-classic": "3.4.0",
     "@mdx-js/react": "3.0.1",
     "clsx": "2.1.0",
     "prism-react-renderer": "2.3.1",
@@ -23,9 +23,9 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.2.25",
-    "@docusaurus/module-type-aliases": "3.3.2",
-    "@docusaurus/tsconfig": "3.3.2",
-    "@docusaurus/types": "3.3.2",
+    "@docusaurus/module-type-aliases": "3.4.0",
+    "@docusaurus/tsconfig": "3.4.0",
+    "@docusaurus/types": "3.4.0",
     "@eslint/js": "8.57.0",
     "@storybook/addon-essentials": "8.0.5",
     "@storybook/addon-interactions": "8.0.5",
@@ -63,7 +63,7 @@
       "not op_mini all"
     ],
     "development": [
-      "last 10 chrome version",
+      "last 3 chrome version",
       "last 3 firefox version",
       "last 5 safari version"
     ]

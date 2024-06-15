@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import clsx from "clsx";
 import TickIcon from "@site/static/icons/tick-bold.svg";
 
-export enum FeatureBlockOrder {
+export enum FeatureBlockLayout {
     PictureOnTheLeft,
     PictureOnTheRight,
 }
@@ -11,18 +11,17 @@ interface FeatureBlockProps {
     heading: ReactNode;
     description: string;
     items: string[];
-    order: FeatureBlockOrder;
+    layout: FeatureBlockLayout;
     imgSrc: string;
     className?: string;
 }
 
 export function FeatureBlock(props: FeatureBlockProps) {
-    console.log(props.imgSrc);
     return (
         <div
             className={clsx(
                 "flex justify-between",
-                { "flex-row-reverse": props.order === FeatureBlockOrder.PictureOnTheLeft },
+                { "flex-row-reverse": props.layout === FeatureBlockLayout.PictureOnTheLeft },
                 props.className,
             )}
         >
@@ -31,9 +30,9 @@ export function FeatureBlock(props: FeatureBlockProps) {
                 <img className="sm:hidden" src={props.imgSrc} alt="Feature Image" />
                 <div className="mt-4 text-lg font-medium text-gray-500">{props.description}</div>
                 <div className="mt-4 columns-2">
-                    {props.items.map(item => (
+                    {props.items.map((item, index) => (
                         <div
-                            key={item}
+                            key={index}
                             className="mb-3 flex max-w-48 items-center text-lg font-medium text-gray-500"
                         >
                             <TickIcon className="mr-1 size-5 flex-shrink-0 fill-gray-500" />

@@ -5,9 +5,9 @@ import { Config as SvgrConfig } from "@svgr/core";
 
 // This plugin is used to fix duplicate IDs in svg styles.
 // For more details, see: https://github.com/facebook/docusaurus/issues/8297
-export function svgFixPlugin(): Plugin {
+export function svgFixDuplicateIdsPlugin(): Plugin {
     return {
-        name: "svg-fix",
+        name: "svg-fix-duplicate-ids",
         configureWebpack(config) {
             const svgRule = config.module?.rules?.find(r =>
                 (r as { test: RegExp }).test.test("file.svg"),

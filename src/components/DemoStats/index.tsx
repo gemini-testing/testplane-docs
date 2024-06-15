@@ -5,9 +5,9 @@ interface DemoStatsProps {
 
 export function DemoStats(props: DemoStatsProps) {
     return (
-        <div className="flex flex-col text-white">
-            <div className="text-center text-2xl font-bold">{props.value}</div>
-            <div className="text-center text-lg leading-tight">{props.description}</div>
+        <div className="flex flex-col text-center text-white">
+            <div className="text-2xl font-bold">{props.value}</div>
+            <div className="text-lg leading-tight">{props.description}</div>
         </div>
     );
 }

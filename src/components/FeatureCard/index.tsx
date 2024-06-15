@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { ReactNode } from "react";
 
 export interface FeatureCardProps {
@@ -10,11 +9,7 @@ export interface FeatureCardProps {
 
 export function FeatureCard(props: FeatureCardProps) {
     return (
-        <div
-            className={clsx(
-                "grid break-inside-avoid grid-flow-row grid-cols-[48px_auto] grid-rows-[auto_1fr]",
-            )}
-        >
+        <div className="grid break-inside-avoid grid-flow-row grid-cols-[48px_auto] grid-rows-[auto_1fr]">
             <div className="flex items-center justify-center">
                 <div className="flex size-12 items-center justify-center rounded-full bg-indigo-200">
                     <div className="flex size-6 h-min flex-shrink-0 items-center justify-center fill-indigo-600">

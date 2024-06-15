@@ -2,7 +2,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import { tailwindPlugin } from "./plugins/tailwind";
-import { svgFixPlugin } from "./plugins/svg-fix";
+import { svgFixDuplicateIdsPlugin } from "./plugins/svg-fix";
 
 const config: Config = {
     title: "Testplane Docs",
@@ -49,7 +49,7 @@ const config: Config = {
                     editUrl: "https://github.com/gemini-testing/testplane-docs/tree/main/blog/",
                 },
                 theme: {
-                    customCss: "./src/scss/custom.css",
+                    customCss: "./src/scss/custom.scss",
                 },
             } satisfies Preset.Options,
         ],
@@ -167,7 +167,7 @@ const config: Config = {
         },
     } satisfies Preset.ThemeConfig,
 
-    plugins: ["docusaurus-plugin-sass", tailwindPlugin, svgFixPlugin],
+    plugins: ["docusaurus-plugin-sass", tailwindPlugin, svgFixDuplicateIdsPlugin],
 };
 
 export default config;

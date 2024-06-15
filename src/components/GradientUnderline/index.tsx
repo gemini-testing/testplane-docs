@@ -8,7 +8,7 @@ interface GradientUnderlineProps {
 
 export function GradientUnderline(props: GradientUnderlineProps) {
     return (
-        <span className={clsx("relative")}>
+        <span className="relative">
             {props.children}
             <GradientUnderlineSvg
                 className={clsx(

@@ -17,7 +17,7 @@ export function LinkBadge() {
             rel="noreferrer"
         >
             <div className="mr-2 rounded-full bg-gradient-to-br from-violet-500 to-rose-400 px-3 py-0.5 text-white">
-                testplane is open source!
+                Testplane is open source!
             </div>
             <span className="flex-shrink overflow-hidden text-ellipsis">Star on github</span>
             <AngleIcon className="ml-1 size-3 flex-shrink-0" />
