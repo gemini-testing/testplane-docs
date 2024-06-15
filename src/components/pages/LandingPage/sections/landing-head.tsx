@@ -28,7 +28,7 @@ export const LandingHeadSection = () => {
                         <h1
                             className={clsx(
                                 styles["text-glow"],
-                                "z-50 text-5xl font-bold leading-[1.1] text-gray-700 md:leading-none 2xl:text-7xl",
+                                "z-40 mt-2 text-5xl font-bold leading-[1.1] text-gray-700 md:leading-none 2xl:text-7xl",
                             )}
                         >
                             <span
@@ -50,7 +50,7 @@ export const LandingHeadSection = () => {
                         <div
                             className={clsx(
                                 styles["text-glow"],
-                                "z-50 mt-5 text-lg text-gray-500 xl:text-xl",
+                                "z-40 mt-5 text-lg text-gray-500 xl:text-xl",
                             )}
                         >
                             Testplane is a battle-hardened framework for creating tests at{" "}
