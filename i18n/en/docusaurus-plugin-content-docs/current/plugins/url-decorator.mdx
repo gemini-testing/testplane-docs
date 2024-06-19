@@ -1,0 +1,329 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# url-decorator
+
+## Overview {#overview}
+
+Use the [url-decorator][url-decorator] plugin to automatically add the necessary query parameters to the urls in testplane tests.
+
+## Install {#install}
+
+```bash
+npm install -D url-decorator
+```
+
+## Setup {#setup}
+
+Add the plugin to the `plugins` section of the `testplane` config:
+
+```javascript
+module.exports = {
+    plugins: {
+        "url-decorator": {
+            enabled: true,
+            url: {
+                query: [
+                    {
+                        name: "text",
+                        value: "foo",
+                    },
+
+                    // other query parameters...
+                ],
+            },
+        },
+
+        // other testplane plugins...
+    },
+
+    // other testplane settings...
+};
+```
+
+### Description of configuration parameters {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[enabled](#setup_enabled)</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>[url](#setup_url)</td><td>Object</td><td>_N/A_</td><td>An object with a description of query parameters that should be added to each url in the test.</td></tr>
+
+</tbody>
+</table>
+
+### enabled {#setup_enabled}
+
+Enable or disable the plugin. By default: `true`.
+
+### url {#setup_url}
+
+The `url` parameter is an object with a `query` field, the value of which can be either an array or an object.
+
+<Tabs>
+<TabItem value="query as an array" label="query as an array">
+```javascript
+    module.exports = {
+        plugins: {
+            'url-decorator': {
+                enabled: true,
+                url: {
+                    query: [
+                        {
+                            name: '<param-1>', // specify the name of the query parameter
+                            value: '<param-1-value>', // specify the value of the query parameter
+                            mode: 'concat', // or 'override'
+                            browsers: /.*/ // by default: for all browsers
+                        },
+                        {
+                            name: '<param-2>', // specify the name of the query parameter
+                            value: '<param-2-value>', // specify the value of the query parameter
+                            mode: 'concat', // or 'override'
+                            browsers: /.*/ // by default: for all browsers
+                        },
+
+                        // other query parameters...
+                    ]
+                }
+            },
+
+            // other testplane plugins...
+        },
+
+        // other testplane settings...
+    };
+    ```
+
+</TabItem>
+
+<TabItem value="query as an object" label="query as an object">
+```javascript
+    module.exports = {
+        plugins: {
+            'url-decorator': {
+                enabled: true,
+                url: {
+                    query: {
+                        '<param-1>': { // specify the name of the query parameter
+                            value: '<param-1-value>', // specify the value of the query parameter
+                            mode: 'concat', // or 'override'
+                            browsers: /.*/ // by default: for all browsers
+                        },
+                        '<param-2>': { // specify the name of the query parameter
+                            value: '<param-2-value>', // specify the value of the query parameter
+                            mode: 'concat', // or 'override'
+                            browsers: /.*/ // by default: for all browsers
+                        },
+
+                        // other query parameters...
+                    }
+                },
+            },
+
+            // other testplane plugins...
+        },
+
+        // other testplane settings...
+    };
+    ```
+
+</TabItem>
+
+</Tabs>
+
+Here the query parameter is an object with the following fields:
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[name](#setup_query_param_name)</td><td>String</td><td>_N/A_</td><td>Name of the query parameter. If _query_ is set as an object, then this field is not specified, since the key itself is the name of the query parameter.</td></tr>
+<tr><td>[value](#setup_query_param_value)</td><td>String or Number or Array</td><td>_N/A_</td><td>The value of the query parameter.</td></tr>
+<tr><td>[mode](#setup_query_param_mode)</td><td>String</td><td>"concat"</td><td>The mode of combining parameters: _concat_ or _override_.</td></tr>
+<tr><td>[browsers](#setup_query_param_browsers)</td><td>String or RegExp or Array</td><td>_N/A_</td><td>The list of browsers to which the query parameter will be applied.</td></tr>
+
+</tbody>
+</table>
+
+#### name {#setup_query_param_name}
+
+Name of the query parameter. If `query` is set as an object, then this field is not specified, since the key itself is the name of the query parameter.
+
+#### value {#setup_query_param_value}
+
+The value of the query parameter. It can be specified as a string, a number, or an array of strings and/or numbers.
+
+#### mode {#setup_query_param_mode}
+
+The mode of combining parameters. There are 2 possible values: `concat` _(concat parameters)_ and `override` _(override parameters)_. By default: `concat`.
+
+**Concat mode**
+
+For example:
+
+-   you want to add the query parameter `nick`, which is already in the test url: `http://localhost/test/?nick=bilbo`;
+-   at the same time, you do not want the additional value of the `nick` parameter to erase the value that is already in the url.
+
+In this case, you need to specify `mode: 'concat'` for the parameter or not specify `mode` at all (using the default mode):
+
+```javascript
+url: {
+    query: [
+        {
+            name: "nick",
+            value: "torin",
+            mode: "concat", // or skip it as the default mode is 'concat'
+        },
+    ];
+}
+```
+
+Then the resulting url in the test will be: `http://localhost/test/?nick=bilbo&nick=torin`.
+
+You can also specify an array of values for the `nick` parameter in the `value` value:
+
+```javascript
+url: {
+    query: [
+        {
+            name: "nick",
+            value: ["torin", "gloin"],
+            mode: "concat", // or skip it as the default mode is 'concat'
+        },
+    ];
+}
+```
+
+Then the resulting url in the test will be: `http://localhost/test/?nick=bilbo&nick=torin&nick=gloin`.
+
+**Override mode**
+
+If you want to erase the `nick` parameter, then you need to set the `override` mode:
+
+```javascript
+url: {
+    query: [
+        {
+            name: "nick",
+            value: "torin",
+            mode: "override",
+        },
+    ];
+}
+```
+
+Then the resulting url in the test will be: `http://localhost/test/?nick=torin`.
+
+#### browsers {#setup_query_param_browsers}
+
+A browser or a list of browsers, or a regular expression pattern for browsers to which the specified query parameters should be applied. If the parameter `browsers` is not specified, the query parameters will be applied for all browsers.
+
+Below are examples of setting the `browsers` parameter in all ways:
+
+<Tabs>
+<TabItem value="string" label="string">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: 'firefox'
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+<TabItem value="array of strings" label="array of strings">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: ['firefox', 'chrome']
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+<TabItem value="regexp" label="regexp">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: /ie-\d+/  //ie-8, ie-9, ie-10, ...
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+<TabItem value="array of regexp / strings" label="array of regexp / strings">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: [/ie-\d+/, 'firefox']
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+</Tabs>
+
+### Passing parameters via the CLI {#setup_by_cli}
+
+#### HERMIONE*URL_QUERY*\*
+
+To pass additional query parameters, you can use environment variables of the following type:
+
+```bash
+HERMIONE_URL_QUERY_<query parameter name>
+```
+
+For example, your test opens the url `http://localhost/test/?tool=testplane`, and you want to add the query parameter `text` with the value `ololo` to the url using the environment variable:
+
+```bash
+HERMIONE_URL_QUERY_TEXT=ololo testplane ...
+```
+
+After that, your test will open the url of the following form: `http://localhost/test/?tool=testplane&text=ololo`.
+
+#### HERMIONE_URL_CUSTOM_QUERIES
+
+If there are parameters among your query parameters that cannot be expressed as an environment variable (for example, `foo-bar`), then you can add these parameters via the environment variable `HERMIONE_URL_CUSTOM_QUERIES`.
+
+As a value, use a string of the form `<query-param-1>=<value-1>;<query-param-2>=<value-2>;`.
+
+For example:
+
+```bash
+HERMIONE_URL_CUSTOM_QUERIES='foo-bar=baz;qux=1' testplane ...
+```
+
+Then your test will open the url of the following form: `http://localhost/test/?foo-bar=baz&qux=1`.
+
+<Admonition type="warning">
+    Environment variables have a higher priority than the values of the corresponding variables in
+    the plugin config.
+</Admonition>
+
+## Useful links {#useful_links}
+
+-   [url-decorator plugin sources][url-decorator]
+
+[url-decorator]: https://github.com/gemini-testing/url-decorator
+[internal-url-decorator]: ../plugins/internal-url-decorator

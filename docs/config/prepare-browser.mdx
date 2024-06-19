@@ -1,0 +1,159 @@
+import Admonition from "@theme/Admonition";
+
+# prepareBrowser
+
+## Обзор {#overview}
+
+Данный параметр является хуком. Функция, заданная для данного параметра, будет автоматически вызвана перед тем, как запустить в браузере тесты. В качестве аргумента функция получает ссылку на сессию браузера.
+
+Обычно внутри данной функции к браузеру добавляют новые команды, или расширяют поведение уже существующих команд.
+
+## Примеры использования {#example}
+
+### Пример 1: добавляем новую команду для браузера {#example_add_new_command_to_browser}
+
+Для добавления новой команды воспользуемся функцией [browser.addCommand()][add-command] WebDriverIO.
+
+```javascript
+const querystring = require("querystring");
+
+function toStoryKind(value) {
+    /* here goes some code */
+}
+function toStoryId(value) {
+    /* here goes some code */
+}
+
+module.exports = {
+    prepareBrowser: function (browser) {
+        browser.addCommand("openScenario", function openScenario(rawComponent, rawStory, params) {
+            const component = toStoryKind(rawComponent);
+            const story = toStoryId(rawStory);
+            const queryParams = querystring.stringify(params);
+            const url = `/storybook/iframe.html?id=components-${component}-testplane--${story}&${queryParams}`;
+
+            return this.url(url);
+        });
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Пример 2: добавляем новую команду для элемента {#example_2_add_new_command_to_element}
+
+Можно добавить команду не для браузера, а для элемента. Тогда третьим аргументом функции [browser.addCommand()][add-command] надо указать `true`.
+
+<Admonition type="warning">
+    Если добавляется команда для элемента, а не для браузера, то функция выполняется в контексте
+    элемента!
+</Admonition>
+
+```javascript
+module.exports = {
+    prepareBrowser: function(browser) {
+        await browser.addCommand(
+            'getCoords',
+            async function () {
+                // внутри функции контекстом является element, не browser!
+                const { x, y } = await this.getLocation();
+                const { width, height } = await this.getSize();
+
+                return {
+                    left: x,
+                    top: y,
+                    right: x + width,
+                    bottom: y + height
+                };
+            },
+            true // true означает, что мы задаем функцию для элемента, (по умолчанию) false – для браузера
+        );
+    },
+
+    // другие настройки testplane...
+};
+```
+
+Внутри функции применяются команды [getLocation()][get-location] и [getSize()][get-size], которые доступны для элемента в WebDriverIO.
+
+После добавления команды `getCoords()`, её можно использовать в тестах следующим образом:
+
+```javascript
+const { left, top, right, bottom } = await browser.$(‘.selector’).getCoords();
+```
+
+### Пример 3: меняем уже существующую команду {#example_3_overwrite_command}
+
+Чтобы изменить уже существующую команду, воспользуемся командой [browser.overwriteCommand()][overwrite-command] WebDriverIO.
+
+Например, мы можем захотеть передавать в команду [browser.url()][url] отдельным аргументом объект с query-параметрами:
+
+```javascript
+const { URL } = require("url");
+
+module.exports = {
+    prepareBrowser: function (browser) {
+        browser.overwriteCommand("url", function (origUrlFunction, uri, query) {
+            if (!query) {
+                return origUrlFunction(uri);
+            }
+
+            const parsedUrl = new URL(uri);
+
+            for (const [key, value] of Object.entries(query)) {
+                parsedUrl.searchParams.set(key, value);
+            }
+
+            return origUrlFunction(parsedUrl.href);
+        });
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Пример 4: добавляем набор команд из папки {#example_4_add_commands_from_folder}
+
+Если в проекте много своих специфических команд, то их удобно хранить в отдельной папке, а в `prepareBrowser` добавлять все команды сразу унифицированным образом. Например:
+
+```javascript
+const path = require("path");
+const glob = require("fast-glob");
+
+module.exports = {
+    prepareBrowser: function (browser) {
+        const files = glob.sync(["tests/testplane/commands/*.(js|ts)", "!**/*.d.ts"]);
+
+        files.forEach(file => {
+            const module = require(path.resolve(process.cwd(), file));
+            const name = path.basename(file, path.extname(file));
+
+            browser.addCommand(name, typeof module === "object" ? module[name] : module);
+        });
+    },
+
+    // другие настройки testplane...
+};
+```
+
+При этом файл с одной из команд может выглядеть так:
+
+```javascript
+// tests/testplane/commands/yaCheckCookie.js
+
+module.exports = async function (cookieName) {
+    // контекстом в функции является browser
+    const cookies = await this.getCookies(cookieName);
+
+    assert.isTrue(cookies[0], `cookie с именем ${cookieName} не установлено`);
+};
+```
+
+Здесь используется команда [browser.getCookies()][get-cookies] WebDriverIO.
+
+[url]: ../commands/browser/url
+[add-command]: ../commands/browser/addCommand
+[overwrite-command]: ../commands/browser/overwriteCommand
+[get-cookies]: ../commands/browser/getCookies
+[get-location]: ../commands/element/getLocation
+[get-size]: ../commands/element/getSize

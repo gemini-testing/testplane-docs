@@ -1,0 +1,48 @@
+# abort
+
+## Обзор {#overview}
+
+Используйте команду `abort`, чтобы прервать запрос с заданной ошибкой.
+
+Запрос можно прервать с одной из следующих ошибок:
+
+-   Failed
+-   Aborted
+-   TimedOut
+-   AccessDenied
+-   ConnectionClosed | ConnectionReset | ConnectionRefused | ConnectionAborted | ConnectionFailed
+-   NameNotResolved
+-   InternetDisconnected
+-   AddressUnreachable
+-   BlockedByClient | BlockedByResponse
+
+## Использование {#usage}
+
+```javascript
+mock.abort(errorCode);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>errorCode</td><td>ErrorCode</td><td>Код ошибки ответа. Возможные значения см. [выше](#overview).</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should block Google Analytics from page", async ({ browser }) => {
+    const mock = await browser.mock("https://www.google-analytics.com/**");
+    mock.abort("Failed");
+});
+```
+
+## Связанные команды {#related}
+
+-   [abortOnce](./abortOnce)

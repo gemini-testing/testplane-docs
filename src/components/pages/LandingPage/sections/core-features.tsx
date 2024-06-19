@@ -4,19 +4,29 @@ import { FeatureBlock, FeatureBlockLayout } from "@site/src/components/FeatureBl
 import { GradientUnderline } from "@site/src/components/GradientUnderline";
 import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
 import React from "react";
+import Translate, { translate } from "@docusaurus/Translate";
 
 export const CoreFeaturesSection = () => {
     return (
         <section className="bg-gray-100">
-            <div className="container max-w-screen-lg py-6">
+            <div className="container !max-w-screen-lg py-6">
                 <AnimatedAppear>
                     <Heading>
                         <div className="mb-3 text-gray-700">
-                            Accelerate{" "}
-                            <span className="bg-gradient-to-r from-sky-600 to-fuchsia-500 bg-clip-text text-transparent">
-                                everything
-                            </span>{" "}
-                            with testplane
+                            <Translate
+                                id="landing.core-features.heading"
+                                values={{
+                                    highlight: (
+                                        <span className="bg-gradient-to-r from-sky-600 to-fuchsia-500 bg-clip-text text-transparent">
+                                            <Translate id="landing.core-features.heading.highlight">
+                                                everything
+                                            </Translate>
+                                        </span>
+                                    ),
+                                }}
+                            >
+                                {"Accelerate {highlight} with testplane"}
+                            </Translate>
                         </div>
                     </Heading>
                 </AnimatedAppear>
@@ -24,20 +34,52 @@ export const CoreFeaturesSection = () => {
                     <FeatureBlock
                         heading={
                             <span>
-                                Run your tests in any{" "}
-                                <GradientUnderline className=" rotate-[2deg]">
-                                    browser
-                                </GradientUnderline>
+                                <Translate
+                                    id="landing.core-features.browsers.heading"
+                                    values={{
+                                        underline: (
+                                            <GradientUnderline className=" rotate-[2deg]">
+                                                <Translate id="landing.core-features.browsers.heading.underline">
+                                                    browser
+                                                </Translate>
+                                            </GradientUnderline>
+                                        ),
+                                    }}
+                                >
+                                    {"Run your tests in any {underline}"}
+                                </Translate>
                             </span>
                         }
-                        description="Test in environment your users have, not just in the latest Chrome builds."
+                        description={translate({
+                            id: "landing.core-features.browsers.descr",
+                            message:
+                                "Test in environment your users have, not just in the latest Chrome builds.",
+                        })}
                         items={[
-                            "All modern browsers",
-                            "Real Android/iOS devices",
-                            "Smart TVs or IoT devices via Appium",
-                            "All modern protocols",
-                            "Independent of browser versions",
-                            "Ancient browsers, like Internet Explorer",
+                            translate({
+                                id: "landing.core-features.browsers.modern",
+                                message: "All modern browsers",
+                            }),
+                            translate({
+                                id: "landing.core-features.browsers.devices",
+                                message: "Real Android/iOS devices",
+                            }),
+                            translate({
+                                id: "landing.core-features.browsers.appium",
+                                message: "Smart TVs or IoT devices via Appium",
+                            }),
+                            translate({
+                                id: "landing.core-features.browsers.protocols",
+                                message: "All modern protocols",
+                            }),
+                            translate({
+                                id: "landing.core-features.browsers.versions",
+                                message: "Independent of browser versions",
+                            }),
+                            translate({
+                                id: "landing.core-features.browsers.ancient",
+                                message: "Ancient browsers, like Internet Explorer",
+                            }),
                         ]}
                         layout={FeatureBlockLayout.PictureOnTheRight}
                         imgSrc={useBaseUrl("/img/landing/browsers.svg")}
@@ -48,19 +90,48 @@ export const CoreFeaturesSection = () => {
                     <FeatureBlock
                         heading={
                             <span>
-                                Run your tests reliably at any{" "}
-                                <GradientUnderline className=" rotate-[-2deg]">
-                                    scale
-                                </GradientUnderline>
+                                <Translate
+                                    id="landing.core-features.scale.heading"
+                                    values={{
+                                        underline: (
+                                            <GradientUnderline className=" rotate-[2deg]">
+                                                <Translate id="landing.core-features.browsers.scale.underline">
+                                                    scale
+                                                </Translate>
+                                            </GradientUnderline>
+                                        ),
+                                    }}
+                                >
+                                    {"Run your tests reliably at any {underline}"}
+                                </Translate>
                             </span>
                         }
-                        description="Regardless of how many tests you have, testplane is a perfect fit."
+                        description={translate({
+                            id: "landing.core-features.scale.descr",
+                            message:
+                                "Regardless of how many tests you have, testplane is a perfect fit.",
+                        })}
                         items={[
-                            "Remote browser grid (e.g. BrowserStack)",
-                            "Blazing-fast local execution",
-                            "Sharding",
-                            "Parallel execution",
-                            "Test isolation",
+                            translate({
+                                id: "landing.core-features.scale.grid",
+                                message: "Remote browser grid (e.g. BrowserStack)",
+                            }),
+                            translate({
+                                id: "landing.core-features.scale.local",
+                                message: "Blazing-fast local execution",
+                            }),
+                            translate({
+                                id: "landing.core-features.scale.sharding",
+                                message: "Sharding",
+                            }),
+                            translate({
+                                id: "landing.core-features.scale.parallel",
+                                message: "Parallel execution",
+                            }),
+                            translate({
+                                id: "landing.core-features.scale.isolation",
+                                message: "Test isolation",
+                            }),
                         ]}
                         layout={FeatureBlockLayout.PictureOnTheLeft}
                         imgSrc={useBaseUrl("/img/landing/scale.svg")}
@@ -71,20 +142,48 @@ export const CoreFeaturesSection = () => {
                     <FeatureBlock
                         heading={
                             <span>
-                                Customise and{" "}
-                                <GradientUnderline className="rotate-[3deg]">
-                                    extend
-                                </GradientUnderline>{" "}
-                                the way you want
+                                <Translate
+                                    id="landing.core-features.extend.heading"
+                                    values={{
+                                        underline: (
+                                            <GradientUnderline className=" rotate-[2deg]">
+                                                <Translate id="landing.core-features.browsers.extend.underline">
+                                                    extend
+                                                </Translate>
+                                            </GradientUnderline>
+                                        ),
+                                    }}
+                                >
+                                    {"Customise and {underline} the way you want"}
+                                </Translate>
                             </span>
                         }
-                        description="Thanks to testplane’s multiple extenstion points, you may adapt the framework even to the most exotic needs."
+                        description={translate({
+                            id: "landing.core-features.extend.descr",
+                            message:
+                                "Thanks to testplane’s multiple extenstion points, you may adapt the framework even to the most exotic needs.",
+                        })}
                         items={[
-                            "Rich plugin system",
-                            "Dozens of open source plugins",
-                            "Custom reporters",
-                            "Custom execution logic",
-                            "Custom commands",
+                            translate({
+                                id: "landing.core-features.extend.plugin-system",
+                                message: "Rich plugin system",
+                            }),
+                            translate({
+                                id: "landing.core-features.extend.plugin-opensource",
+                                message: "Dozens of open source plugins",
+                            }),
+                            translate({
+                                id: "landing.core-features.extend.reporters",
+                                message: "Custom reporters",
+                            }),
+                            translate({
+                                id: "landing.core-features.extend.execution",
+                                message: "Custom execution logic",
+                            }),
+                            translate({
+                                id: "landing.core-features.extend.commands",
+                                message: "Custom commands",
+                            }),
                         ]}
                         layout={FeatureBlockLayout.PictureOnTheRight}
                         imgSrc={useBaseUrl("/img/landing/extensibility.svg")}

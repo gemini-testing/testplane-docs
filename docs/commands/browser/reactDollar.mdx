@@ -1,0 +1,76 @@
+import Admonition from "@theme/Admonition";
+
+# react$
+
+## Обзор {#overview}
+
+Используйте команду `react$`, чтобы найти на странице React-компоненты по их настоящему имени, одновременно фильтруя их по props'ам и состоянию.
+
+<Admonition type="warning">
+Команда _react$_ работает только в приложениях, которые используют _React v16.x._
+
+Читайте больше о React-селекторах в рецепте «[Как использовать селекторы][how-to-use-selectors]».
+
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.react$(reactComponentSelector, { props, state });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>reactComponentSelector</td><td>String</td><td>Селектор React-компонента.</td></tr>
+<tr><td>props</td><td>Object</td><td>React-свойства, которые должен иметь компонент.</td></tr>
+<tr><td>state</td><td>Any или Any[]</td><td>React-состояние, в котором должен находиться компонент.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should calculate 7 * 6", async ({ browser }) => {
+    await browser.url("https://ahfarmer.github.io/calculator/");
+
+    await browser
+        .react$("t", {
+            props: { name: "7" },
+        })
+        .click();
+
+    await browser
+        .react$("t", {
+            props: { name: "x" },
+        })
+        .click();
+
+    await browser
+        .react$("t", {
+            props: { name: "6" },
+        })
+        .click();
+
+    await browser
+        .react$("t", {
+            props: { name: "=" },
+        })
+        .click();
+
+    console.log(await browser.$(".component-display").getText()); // выведет: "42"
+});
+```
+
+## Связанные команды {#related}
+
+-   [browser.react$$](./reactDollarDollar)
+-   [element.react$](../element/reactDollar)
+-   [element.react$$](../element/reactDollarDollar)
+
+[how-to-use-selectors]: https://v7.webdriver.io/docs/selectors

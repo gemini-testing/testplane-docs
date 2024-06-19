@@ -1,0 +1,51 @@
+import Admonition from "@theme/Admonition";
+
+# Как обновить hermione до версии 6.x
+
+<Admonition type="warning">
+Если в вашем проекте hermione младше 4-й версии, то прочтите сначала «[Как обновить hermione до версии 4.x][how-to-upgrade-hermione-to-4]» и «[Как обновить hermione до версии 5.x][how-to-upgrade-hermione-to-5]».
+
+Мы рекомендуем вам обновлять hermione поэтапно, убеждаясь на каждом этапе, что все тесты проекта корректно выполняются.
+
+</Admonition>
+
+## Что изменилось? {#what_is_new}
+
+### Отказ от поддержки Node.JS < 14.x {#dropped_nodejs_less_than_14x}
+
+В этом мажоре hermione перестала поддерживать версии _Node.JS < 14.x_.
+
+Если у вас в проекте версия _Node.JS_ уже _14.x_ или выше и этот пункт для вас не актуален, то [для получения свежих фич][hermione-new-features] мы всё же рекомендуем вам обновить hermione до 6-й версии.
+
+### browserWSEndpoint {#added_browser_ws_endpoint_setting}
+
+Теперь в настройках браузера появилась опция [browserWSEndpoint][browser-ws-endpoint], с помощью которой можно переопределить ссылку для доступа к браузерам через [Chrome DevTools Protocol (CDP)][how-to-use-cdp].
+
+Пример настройки:
+
+```javascript
+//.hermione.conf.js
+const gridHost = "localhost";
+
+module.exports = {
+    gridUrl: `https://${gridHost}/:4444/wd/hub`,
+    browserWSEndpoint: `ws:${gridHost}/wd/hub`,
+
+    // другие настройки hermione...
+};
+```
+
+<Admonition type="warning">
+    Данная настройка не будет работать, если у вас в проекте слишком старая версия браузера.
+    Гарантированно будет работать в Хроме, начиная с версии 101.
+</Admonition>
+
+## Поддержка {#support}
+
+Если при переезде на новую версию вы столкнетесь с проблемами, или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] &mdash; и мы обязательно вам поможем!
+
+[how-to-upgrade-hermione-to-4]: ../migrations/how-to-upgrade-hermione-to-4
+[how-to-upgrade-hermione-to-5]: ../migrations/how-to-upgrade-hermione-to-5
+[browser-ws-endpoint]: ../config/browsers#browser_ws_endpoint
+[how-to-use-cdp]: ../guides/how-to-use-cdp.md
+[gh-issues]: https://github.com/gemini-testing/testplane/issues

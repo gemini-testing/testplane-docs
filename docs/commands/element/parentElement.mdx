@@ -1,0 +1,39 @@
+# parentElement
+
+## Обзор {#overview}
+
+Используйте команду `parentElement`, чтобы получить родительский элемент выбранного DOM-элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).parentElement();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<div class="parent">
+    <p>Sibling One</p>
+    <p>Sibling Two</p>
+    <p>Sibling Three</p>
+</div>
+```
+
+**parentElement.js**
+
+```javascript
+it("should get class from parent element", async ({ browser }) => {
+    const elem = await browser.$$("p");
+    const parent = await elem[2].parentElement();
+
+    console.log(await parent.getAttribute("class")); // выведет: "parent"
+});
+```
+
+## Связанные команды {#related}
+
+-   [previousElement](./previousElement)
+-   [nextElement](./nextElement)

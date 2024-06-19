@@ -1,0 +1,82 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# plugins
+
+## Обзор {#overview}
+
+С помощью раздела `plugins` вы можете подключить к testplane внешние плагины, которые расширят доступную функциональность.
+
+Например, плагины [html-reporter][html-reporter] или [testplane-test-repeater][testplane-test-repeater].
+
+Плагин &mdash; это модуль, который экспортирует одну функцию со следующими аргументами:
+
+-   инстанс testplane
+-   опции плагина из конфига testplane
+
+Все плагины будут загружены до того, как testplane запустит тесты.
+
+<Admonition type="tip">
+    Выбирая название для плагина, добавьте к нему префикс _testplane-_. Тогда такой плагин будет
+    проще искать.
+</Admonition>
+
+Если имя плагина начинается с префикса `testplane-`, то этот префикс можно опустить при добавлении плагина в раздел `plugins`. Если на файловой системе будут находиться модули с обоими именами: _testplane-some-module_ и _some-module_, то предпочтение будет отдано модулю с префиксом `testplane-`.
+
+## Схематичный пример {#example}
+
+<Tabs>
+<TabItem value=".testplane.conf.js" label=".testplane.conf.js">
+```javascript
+  module.exports = {
+      plugins: {
+          'my-cool-plugin': {
+              param: 'some-value'
+          },
+
+          // другие плагины testplane...
+      },
+
+      // другие настройки testplane...
+
+};
+
+````
+</TabItem>
+
+
+<TabItem value="testplane-my-cool-plugin/index.js" label="testplane-my-cool-plugin/index.js">
+```javascript
+module.exports = function(testplane, opts) {
+    testplane.on(testplane.events.RUNNER_START, function(runner) {
+        console.info(opts.param); // выведет значение some-value, см. конфиг плагина в testplane
+
+        return setUp(testplane.config, opts.param); // параметры конфига можно менять
+    });
+
+    testplane.on(testplane.events.RUNNER_END, function() {
+        return tearDown();
+    });
+};
+````
+
+</TabItem>
+
+</Tabs>
+
+## Свойства инстанса testplane {#testplane_instance}
+
+<table>
+<thead>
+<tr><td>config</td><td>Конфиг, который используется в test runner'е. Может быть изменен.</td></tr>
+</thead>
+<tbody>
+<tr><td>events</td><td>Список событий, на которые можно подписаться.</td></tr>
+
+</tbody>
+</table>
+
+[html-reporter]: ../html-reporter/html-reporter-setup
+[testplane-test-repeater]: ../plugins/testplane-test-repeater

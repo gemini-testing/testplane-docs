@@ -1,0 +1,73 @@
+import Admonition from "@theme/Admonition";
+
+# touchAction
+
+## Обзор {#overview}
+
+Используйте команду `touchAction`, чтобы выполнить жесты в тестах на мобильной платформе.
+
+Команда позволяет связывать воедино отдельные действия _[ad hoc][ad-hoc]_, которые затем будут применены к элементу приложения на устройстве.
+
+Основные действия, которые можно использовать:
+
+-   **press** &mdash; нужно указать element или координаты (x, y), или и то, и другое
+-   **longPress** &mdash; нужно указать element или координаты (x, y), или и то, и другое
+-   **tap** &mdash; нужно указать element или координаты (x, y), или и то, и другое
+-   **moveTo** &mdash; нужно указать абсолютные координаты (x, y)
+-   **wait** &mdash; нужно указать время в миллисекундах
+-   **release** &mdash; ничего указывать не нужно
+
+<Admonition type="warning">
+    В настоящее время команда _touchAction_ доступна только для нативных приложений и не может
+    использоваться для взаимодействия с веб-приложениями.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).touchAction(action);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>action</td><td>Object</td><td>Действие, которое надо выполнить.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should do a touch gesture", async ({ browser }) => {
+    const screen = await browser.$("//UITextbox");
+
+    // простой touch action на элементе
+    await screen.touchAction("tap");
+
+    // простой touch action с координатами x и y
+    // координаты касания – 30px направо и 20px вниз относительно центра элемента
+    await screen.touchAction({
+        action: "tap",
+        x: 30,
+        y: 20,
+    });
+
+    // multi action на элементе (drag&drop)
+    await screen.touchAction(["press", { action: "moveTo", x: 200, y: 300 }, "release"]);
+
+    // drag&drop на элемент
+    const otherElement = await browser.$("//UIAApplication[1]/UIAElement[2]");
+    await screen.touchAction(["press", { action: "moveTo", element: otherElement }, "release"]);
+});
+```
+
+## Связанные команды {#related}
+
+-   [browser.touchAction](../browser/touchAction)
+
+[ad-hoc]: https://ru.wikipedia.org/wiki/Ad_hoc

@@ -1,0 +1,103 @@
+# hermione-browser-version-changer
+
+## Обзор {#overview}
+
+Используйте плагин [hermione-browser-version-changer][hermione-browser-version-changer], чтобы управлять определением версии браузера для тестов.
+
+## Установка {#install}
+
+```bash
+npm install -D hermione-browser-version-changer
+```
+
+## Настройка {#setup}
+
+Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+
+```javascript
+module.exports = {
+    plugins: {
+        "hermione-browser-version-changer": {
+            enabled: true,
+            initStore: async () => {
+                return {
+                    70.1: ["title1", "title2"],
+                    70.2: ["title3", "title4"],
+                };
+            },
+            browsers: {
+                chrome: {
+                    70.1: (test, ver, store) => store[ver].includes(test.title),
+                    70.2: (test, ver, store) => store[ver].includes(test.title),
+                },
+            },
+        },
+
+        // другие плагины testplane...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[enabled](#setup_enabled)</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
+<tr><td>[initStore](#setup_init_store)</td><td>Function</td><td>_[noop][noop]_</td><td>Функция для инициализации хранилища _(store)_, которое будет доступно в [predicate](#setup_predicate).</td></tr>
+<tr><td>[browsers](#setup_browsers)</td><td>Object</td><td>_N/A_</td><td>Список браузеров и их настроек. См. [ниже](#setup_browsers) подробности.</td></tr>
+
+</tbody>
+</table>
+
+### enabled {#setup_enabled}
+
+Включить или отключить плагин. По умолчанию: `true`.
+
+### initStore {#setup_init_store}
+
+Необязательный параметр. Функция для инициализации хранилища _(store)_, которое будет доступно в [predicate](#setup_predicate). Хранилище может использоваться для того, чтобы потом в [predicate](#setup_predicate) для любого теста определить, какая версия браузера к нему относится. По умолчанию: [\_.noop][noop] из библиотеки `lodash`.
+
+Функция может быть асинхронной.
+
+### browsers {#setup_browsers}
+
+Список браузеров и их настроек. Имеет следующий формат:
+
+```javascript
+browsers: {
+    <browser-id>: {
+        <browser-version-1>: <predicate>,
+        <browser-version-2>: <predicate>,
+        // другие версии браузеров...
+    },
+    // другие браузеры...
+}
+```
+
+### predicate(test, version, store) {#setup_predicate}
+
+Функция-предикат, которая получает инстанс теста _(test),_ версию браузера _(version)_ и ссылку на хранилище _(store)_. Должна вернуть `true`, если тест подходит под указанную версию браузера, иначе должна вернуть `false`.
+
+### Передача параметров через CLI {#setup_by_cli}
+
+Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--browser-version-changer-` для опций командной строки и `testplane_browser_version_changer_` &mdash; для переменных окружения. Например:
+
+```bash
+npx testplane --browser-version-changer-enabled false ...
+```
+
+```bash
+testplane_browser_version_changer_enabled=false npx testplane ...
+```
+
+## Полезные ссылки {#useful_links}
+
+-   [Исходники плагина hermione-browser-version-changer][hermione-browser-version-changer]
+
+[hermione-browser-version-changer]: https://github.com/gemini-testing/hermione-browser-version-changer
+[noop]: https://lodash.com/docs/4.17.15#noop

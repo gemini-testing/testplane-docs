@@ -1,0 +1,37 @@
+# mockRestoreAll
+
+## Обзор {#overview}
+
+Используйте команду `mockRestoreAll`, чтобы восстановить информацию и поведение в зарегистрированных имитациях до их создания. Имитации регистрируются с помощью команды [mock][mock].
+
+## Использование {#usage}
+
+```typescript
+await browser.mockRestoreAll();
+```
+
+## Примеры использования {#examples}
+
+```typescript
+it("should restore all mocks", async ({ browser }) => {
+    const googleMock = await browser.mock("https://google.com/");
+    googleMock.respond("https://webdriver.io");
+    const wdioMock = await browser.mock("https://webdriver.io");
+    wdioMock.respond("http://json.org");
+
+    await browser.url("https://google.com/");
+    console.log(await browser.getTitle()); // JSON
+
+    await browser.mockRestoreAll();
+
+    await browser.url("https://google.com/");
+    console.log(await browser.getTitle()); // Google
+});
+```
+
+## Связанные команды {#related}
+
+-   [mock][mock]
+-   [mockClearAll](./mockClearAll)
+
+[mock]: ./mock

@@ -1,0 +1,64 @@
+import Admonition from "@theme/Admonition";
+
+# scrollIntoView
+
+## Обзор {#overview}
+
+Используйте команду `scrollIntoView`, чтобы выполнить подскролл к заданному элементу.
+
+<Admonition type="info">
+    Читайте также [Element.scrollIntoView()][scroll-into-view] на MDN.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).scrollIntoView();
+```
+
+или
+
+```javascript
+await browser.$(selector).scrollIntoView(alignToTop);
+```
+
+или
+
+```javascript
+await browser.$(selector).scrollIntoView({ behavior, block, inline });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>alignToTop</td><td>Boolean</td><td>true</td><td>Если значение _true_, то верхняя граница элемента будет выровнена по верху видимой области скроллируемого предка. Соответствует _\{block: 'start', inline: 'nearest'}_. Если значение _false_, нижняя граница элемента будет выровнена по низу видимой области скроллируемого предка. Соответствует _\{block: 'end', inline: 'nearest'}_.</td></tr>
+<tr><td>behavior</td><td>String</td><td>"auto"</td><td>Задает анимацию прокрутки: "auto" или "smooth".</td></tr>
+<tr><td>block</td><td>String</td><td>"start"</td><td>Задает вертикальное выравнивание: "start", "center", "end" или "nearest".</td></tr>
+<tr><td>inline</td><td>String</td><td>"nearest"</td><td>Задает горизонтальное выравнивание: "start", "center", "end" или "nearest".</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the scrollIntoView command", async ({ browser }) => {
+    const elem = await browser.$("#myElement");
+
+    // выполнить подскролл к элементу
+    await elem.scrollIntoView();
+
+    // подскроллировать так, чтобы элемент был по центру вьюпорта
+    await elem.scrollIntoView({ block: "center", inline: "center" });
+});
+```
+
+## Связанные команды {#related}
+
+-   [browser.scroll](../browser/scroll)
+
+[scroll-into-view]: https://developer.mozilla.org/ru/docs/Web/API/Element/scrollIntoView

@@ -1,0 +1,32 @@
+# saveScreenshot
+
+## Обзор {#overview}
+
+Используйте команду `saveScreenshot`, чтобы сохранить скриншот элемента в png-файл.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).saveScreenshot(filepath);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>filepath</td><td>String</td><td>Путь к скриншоту относительно каталога выполнения (расширение .png &mdash; обязательно).</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should save a screenshot of the browser view", async ({ browser }) => {
+    const elem = await browser.$("#someElem");
+    await elem.saveScreenshot("./some/path/elemScreenshot.png");
+});
+```

@@ -1,0 +1,28 @@
+# actions
+
+## Обзор {#overview}
+
+Используйте команду `actions`, чтобы выполнить несколько действий ввода в одном из виртуализируемых устройств в веб-браузере. Например для имитации масштабирования страницы. Больше подробной информации представлено в описании команды [action][action].
+
+## Использование {#usage}
+
+```typescript
+await browser.actions([action1, action2, ...]);
+```
+
+## Примеры использования {#examples}
+
+```typescript
+it("run multiple actions at once for a pinch zoom", async ({ browser }) => {
+    await browser.actions([
+        browser.action("pointer").move(500, 500).down().move(250, 250).up(),
+        browser.action("pointer").move(500, 500).down().move(750, 750).up(),
+    ]);
+});
+```
+
+## Связанные команды {#related}
+
+-   [action](./action)
+
+[action]: ./action

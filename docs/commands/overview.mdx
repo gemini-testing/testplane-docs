@@ -1,0 +1,50 @@
+---
+sidebar_class_name: hidden
+---
+
+import Admonition from "@theme/Admonition";
+
+# Команды testplane
+
+## Обзор
+
+<Admonition type="warning">
+    Описаны только команды для последней версии Testplane v8 и WebDriverIO v8. Команды для более
+    старых версий стоит смотреть в документации WebDriverIO (пример для [WebDriverIO
+    v7][webdriverio@7-api]).
+</Admonition>
+
+Так как в основе testplane лежит [WebDriverIO v8][webdriverio-api], то в ней доступны все команды, которые предоставляет WebDriverIO.
+
+Однако, описания команд на сайте [WebDriverIO][webdriverio-api] для 8-й версии не совсем подходят _as is_ для пользователей testplane из-за целого ряда причин:
+
+-   в WebDriverIO объект `browser` существует в глобальном пространстве, тогда как в testplane нужно либо писать `this.browser`:
+
+    ```javascript
+    it("should test something", async () => {
+        const browser = this.browser;
+        // код теста...
+    });
+    ```
+
+    либо получать объект `browser` из аргумента функции (обратите внимание, что объект `browser` передается внутри объекта!):
+
+    ```javascript
+    it("should test something", async ({ browser }) => {
+        // код теста...
+    });
+    ```
+
+-   аналогично функции `browser.$` и `browser.$$` в WebDriverIO доступны в тестах под именами `$` и `$$`, а в testplane к ним нужно обращаться по полному пути: `browser.$` и `browser.$$`;
+
+-   не проставлены связи между похожими командами: нет кластеризации команд;
+
+-   все команды описаны только на английском языке.
+
+Тем не менее в наше описание пока ещё не вошли протоколо-специфичные команды. Соответствующие команды вы можете посмотреть на сайте WebDriverIO в разделе "[Protocols][webdriverio-protocols]".
+
+Также в описаниях некоторых команд ссылки на отдельные рецепты все еще не локализованы и ведут на сайт WebDriverIO.
+
+[webdriverio@7-api]: https://v7.webdriver.io/docs/api
+[webdriverio-api]: https://webdriver.io/docs/api
+[webdriverio-protocols]: https://webdriver.io/docs/api/webdriver

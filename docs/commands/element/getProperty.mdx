@@ -1,0 +1,33 @@
+# getProperty
+
+## Обзор {#overview}
+
+Используйте команду `getProperty`, чтобы получить свойство элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getProperty(property);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>property</td><td>String</td><td>Имя свойства элемента.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the getProperty command", async ({ browser }) => {
+    var elem = await browser.$("body");
+    var tag = await elem.getProperty("tagName");
+    console.log(tag); // выведет: "BODY"
+});
+```

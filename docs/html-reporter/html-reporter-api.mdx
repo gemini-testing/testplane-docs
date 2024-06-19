@@ -1,0 +1,216 @@
+# API плагина
+
+## Обзор {#overview}
+
+Html-reporter добавляет к объекту `testplane` объект `htmlReporter` со своим API.
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[events](#events)</td><td>Object</td><td>Список событий, на которые можно подписаться.</td></tr>
+<tr><td>[extraItems](#extraitems)</td><td>Object</td><td>Дополнительные элементы, которые будут добавлены в бургер-меню отчета.</td></tr>
+<tr><td>[imagesSaver](#imagessaver)</td><td>Object</td><td>Интерфейс для сохранения изображений в хранилище пользователя.</td></tr>
+<tr><td>[reportsSaver](#reportssaver)</td><td>Object</td><td>Интерфейс для сохранения sqlite баз данных в хранилище пользователя.</td></tr>
+<tr><td>[addExtraItem](#addextraitem)</td><td>Method</td><td>Добавляет дополнительный пункт в бургер-меню отчета.</td></tr>
+<tr><td>[downloadDatabases](#downloaddatabases)</td><td>Method</td><td>Скачивает все базы данных из переданных файлов типа _databaseUrls.json_.</td></tr>
+<tr><td>[mergeDatabases](#mergedatabases)</td><td>Method</td><td>Объединяет все переданные базы данных и сохраняет итоговый отчет по заданному пути.</td></tr>
+<tr><td>[getTestsTreeFromDatabase](#getteststreefromdatabase)</td><td>Method</td><td>Возвращает дерево тестов из переданной базы данных.</td></tr>
+
+</tbody>
+</table>
+
+## events
+
+Список событий, на которые можно подписаться.
+
+Смотрите подробнее в разделе «[События отчета](./html-reporter-events)».
+
+## extraItems
+
+Дополнительные элементы, которые будут добавлены в бургер-меню отчета.
+
+Для добавления элементов используйте метод [addExtraItem](#addextraitem).
+
+## imagesSaver
+
+Интерфейс для сохранения изображений в хранилище пользователя.
+
+### Пример использования {#images_saver_usage_example}
+
+```javascript
+const MyStorage = require("my-storage");
+const myStorage = new MyStorage();
+
+module.exports = (testplane, opts) => {
+    testplane.on(testplane.events.INIT, async () => {
+        testplane.htmlReporter.imagesSaver = {
+            /**
+             * Сохранить изображение в пользовательское хранилище.
+             * Функция может быть как асинхронной, так и синхронной.
+             * Функция должна возвращать путь или URL к сохраненному изображению.
+             * @property {String} localFilePath – путь к изображению на файловой системе
+             * @param {Object} options
+             * @param {String} options.destPath – путь к изображению в html-отчете
+             * @param {String} options.reportDir - путь к папке html-отчета
+             * @returns {String} путь или URL к изображению
+             */
+            saveImg: async (localFilePath, options) => {
+                const { destPath, reportDir } = options;
+                const imageUrl = await myStorage.save(localFilePath, destPath, reportDir);
+
+                // ...
+
+                return imageUrl;
+            },
+        };
+    });
+};
+```
+
+## reportsSaver
+
+Интерфейс для сохранения sqlite баз данных в хранилище пользователя.
+
+### Пример использования {#reports_saver_usage_example}
+
+```javascript
+const MyStorage = require("my-storage");
+const myStorage = new MyStorage();
+
+module.exports = (testplane, opts) => {
+    testplane.on(testplane.events.INIT, async () => {
+        testplane.htmlReporter.reportsSaver = {
+            /**
+             * Сохранить sqlite базу данных в пользовательское хранилище.
+             * Функция может быть как асинхронной, так и синхронной.
+             * Функция должна возвращать путь или URL к сохраненной sqlite базе данных.
+             * @property {String} localFilePath – путь к sqlite базе данных на файловой системе
+             * @param {Object} options
+             * @param {String} options.destPath – путь к sqlite базе данных в html-отчете
+             * @param {String} options.reportDir - путь к папке html-отчета
+             * @returns {String} путь или URL к сохраненной sqlite базе данных
+             */
+            saveReportData: async (localFilePath, options) => {
+                const { destPath, reportDir } = options;
+                const dbUrl = await myStorage.save(localFilePath, destPath, reportDir);
+
+                // ...
+
+                return dbUrl;
+            },
+        };
+    });
+};
+```
+
+## addExtraItem
+
+Добавляет дополнительный пункт в виде ссылки в бургер-меню html-отчета.
+
+### Пример вызова {#add_extra_item_call_example}
+
+```javascript
+testplane.htmlReporter.addExtraItem(caption, url);
+```
+
+### Параметры вызова {#add_extra_item_call_params}
+
+Все параметры являются обязательными.
+
+<table>
+<thead>
+<tr><td>**Имя&nbsp;параметра**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>caption</td><td>String</td><td>Название пункта, который надо добавить в бургер-меню.</td></tr>
+<tr><td>url</td><td>String</td><td>URL, на который будет ссылаться добавляемый пункт меню.</td></tr>
+
+</tbody>
+</table>
+
+## downloadDatabases
+
+Скачивает все базы данных из переданных файлов `databaseUrls.json`.
+
+### Пример вызова {#download_databases_call_example}
+
+```javascript
+const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.json"], {
+    pluginConfig,
+});
+```
+
+### Параметры вызова {#download_databases_call_params}
+
+Функция принимает 2 аргумента &mdash; список путей до файлов `databaseUrls.json` в виде массива строк и объект с ключом `pluginConfig`, в значении которого хранится конфиг плагина.
+
+Функция возвращает список путей к сохраненным базам данных.
+
+## mergeDatabases
+
+Объединяет все переданные базы данных и сохраняет итоговый отчет по заданному пути.
+
+### Пример вызова {#merge_databases_call_example}
+
+```javascript
+await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
+```
+
+### Параметры вызова {#merge_databases_call_params}
+
+<table>
+<thead>
+<tr><td>**Имя&nbsp;параметра**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>srcDbPaths</td><td>String[]</td><td>Пути к базам данных.</td></tr>
+<tr><td>path</td><td>String</td><td>Путь, по которому будет сохранена итоговая база данных.</td></tr>
+
+</tbody>
+</table>
+
+## getTestsTreeFromDatabase
+
+Возвращает дерево тестов из переданной базы данных.
+
+### Пример вызова {#get_tests_tree_from_database_call_example}
+
+```javascript
+const dbTree = testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+```
+
+### Параметры вызова {#get_tests_tree_from_database_call_params}
+
+Функция принимает один аргумент &mdash; путь к базе данных с результатом прогона тестов.
+
+### Пример использования {#get_tests_tree_from_database_usage_example}
+
+```javascript
+function getSuccessTestRunIds({ testplane, mergedDbPath }) {
+    const dbTree = testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+
+    const successTestRunIds = [];
+
+    for (const browserId of dbTree.browsers.allIds) {
+        const browser = dbTree.browsers.byId[browserId];
+        const lastResultId = _.last(browser.resultIds);
+        const lastResult = lastResultId && dbTree.results.byId[lastResultId];
+
+        if (!lastResult || lastResult.status !== SUCCESS) {
+            continue;
+        }
+
+        const testRunId = new URL(lastResult.suiteUrl).searchParams.get("testRunId");
+
+        if (!testRunId) {
+            continue;
+        }
+
+        successTestRunIds.push(testRunId);
+    }
+
+    return successTestRunIds;
+}
+```

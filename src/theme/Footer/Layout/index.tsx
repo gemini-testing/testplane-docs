@@ -6,6 +6,7 @@ import GithubIcon from "@site/static/icons/github.svg";
 import StackoverflowIcon from "@site/static/icons/stackoverflow.svg";
 import TelegramIcon from "@site/static/icons/telegram.svg";
 import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
+import Translate from "@docusaurus/Translate";
 
 export default function FooterLayout({ links, copyright }: Props): JSX.Element {
     const SOCIAL_LINKS = [
@@ -26,15 +27,17 @@ export default function FooterLayout({ links, copyright }: Props): JSX.Element {
 
     return (
         <footer className={styles.footer} style={{ backgroundImage: grainyBg }}>
-            <div className="container max-w-screen-lg py-10">
+            <div className="container !max-w-screen-lg py-10">
                 <div className="flex flex-wrap justify-between border-b-2 border-white/50 pb-10">
                     <div className="basis-full p-1">
                         <div className="flex items-center font-mono text-lg font-bold text-violet-50">
                             testplane
                         </div>
                         <div className={"mt-3 max-w-[75vw] text-lg font-medium text-white/60"}>
-                            Fast, scalable and robust end-to-end testing framework for the
-                            ever-evolving web landscape.
+                            <Translate id="footer.slogan">
+                                Fast, scalable and robust end-to-end testing framework for the
+                                ever-evolving web landscape.
+                            </Translate>
                         </div>
                         <a
                             className={
@@ -44,7 +47,7 @@ export default function FooterLayout({ links, copyright }: Props): JSX.Element {
                             target="_blank"
                             rel="noreferrer"
                         >
-                            Contact us
+                            <Translate id="footer.contact-us">Contact us</Translate>
                             <ArrowLinkIcon className={"ml-1 size-4"} />
                         </a>
                     </div>

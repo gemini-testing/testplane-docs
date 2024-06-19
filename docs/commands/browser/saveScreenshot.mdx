@@ -1,0 +1,42 @@
+# saveScreenshot
+
+## Обзор {#overview}
+
+Используйте команду `saveScreenshot`, чтобы сохранить скриншот текущего контекста в браузере в png-файл.
+
+Имейте в виду, что некоторые драйверы браузеров делают скриншоты всего документа (например, драйвер [Gecko][gecko] для Firefox), тогда как другие &mdash; только текущего окна просмотра (например, [Chromedriver][chromedriver] для Chrome).
+
+## Использование {#usage}
+
+```javascript
+await browser.saveScreenshot(filepath);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>filepath</td><td>String</td><td>Путь к скриншоту относительно каталога выполнения (расширение _.png_ &mdash; обязательно).</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should save a screenshot of the browser view", async ({ browser }) => {
+    await browser.saveScreenshot("./some/path/screenshot.png");
+});
+```
+
+## Связанные команды {#related}
+
+-   [browser.savePDF](./savePDF)
+-   [browser.saveRecordingScreen](./saveRecordingScreen)
+-   [element.saveScreenshot](../element/saveScreenshot)
+
+[gecko]: https://github.com/mozilla/geckodriver
+[chromedriver]: https://chromedriver.chromium.org/

@@ -1,0 +1,59 @@
+# savePDF
+
+## Обзор {#overview}
+
+Используйте команду `savePDF`, чтобы сохранить в pdf-файл текущий контекст в браузере.
+
+## Использование {#usage}
+
+```javascript
+await browser.savePDF(filepath, {
+    orientation,
+    scale,
+    background,
+    width,
+    height,
+    top,
+    bottom,
+    left,
+    right,
+    shrinkToFit,
+    pageRanges,
+});
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>filepath</td><td>String</td><td>Путь к pdf-файлу относительно каталога выполнения (расширение _.pdf_ &mdash; обязательно).</td></tr>
+<tr><td>orientation</td><td>String</td><td>Ориентация pdf-страницы.</td></tr>
+<tr><td>scale</td><td>Number</td><td>Масштаб pdf-страницы.</td></tr>
+<tr><td>background</td><td>Boolean</td><td>Включить фон pdf-страницы.</td></tr>
+<tr><td>width</td><td>Number</td><td>Ширина pdf-страницы.</td></tr>
+<tr><td>height</td><td>Number</td><td>Высота pdf-страницы.</td></tr>
+<tr><td>top</td><td>Number</td><td>Верхний отступ pdf-страницы.</td></tr>
+<tr><td>bottom</td><td>Number</td><td>Нижний отступ pdf-страницы.</td></tr>
+<tr><td>left</td><td>Number</td><td>Левый отступ pdf-страницы.</td></tr>
+<tr><td>right</td><td>Number</td><td>Правый отступ pdf-страницы.</td></tr>
+<tr><td>shrinkToFit</td><td>Number</td><td>Уменьшить страницу, чтобы она соответствовала размеру pdf-страницы.</td></tr>
+<tr><td>pageRanges</td><td>Object[]</td><td>Диапазон страниц для включения в PDF.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should save a PDF screenshot of the browser view", async ({ browser }) => {
+    await browser.savePDF("./some/path/screenshot.pdf");
+});
+```
+
+## Связанные команды {#related}
+
+-   [saveRecordingScreen](./saveRecordingScreen)
+-   [saveScreenshot](./saveScreenshot)

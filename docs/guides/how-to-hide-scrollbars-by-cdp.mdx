@@ -1,0 +1,48 @@
+import Admonition from "@theme/Admonition";
+
+# Как скрывать скроллбары с помощью Chrome DevTools Protocol
+
+## Обзор {#overview}
+
+<Admonition type="warning">
+Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
+
+Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]»
+
+</Admonition>
+
+Одна из причин падений тестов при тестировании верстки с помощью скриншотов &mdash; это появление скроллбара в браузере в момент снятия скриншота. Подробнее об этой проблеме и некоторых способах её решения, вы можете прочитать [здесь](./how-to-hide-scrollbars). Особенно часто эта проблема возникает в тестах с мобильной эмуляцией.
+
+В CDP есть специальный метод [Emulation.setScrollbarsHidden][set-scrollbars-hidden], который позволяет скрыть скроллбар. Однако в _puppeteer_ отсутствует обертка над этим методом. Поэтому мы воспользуемся методом [CDPSession.send][cdp-session-send], чтобы выполнить команду [Emulation.setScrollbarsHidden][set-scrollbars-hidden].
+
+## Пример: как отключить скроллбар с помощью CDP {#example}
+
+Вот как это будет выглядеть:
+
+```javascript
+it("should hide scrollbar", async function () {
+    // Получаем инстанс puppeteer'а
+    const puppeteer = await this.browser.getPuppeteer();
+
+    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
+    const [page] = await puppeteer.pages();
+
+    // Создаем CDP-сессию
+    const client = await page.target().createCDPSession();
+
+    // Скрываем скроллбар
+    await client.send("Emulation.setScrollbarsHidden", { hidden: true });
+
+    await this.browser.url("https://yandex.ru");
+});
+```
+
+## Полезные ссылки {#useful_links}
+
+Читайте также наш рецепт «[Как убрать скроллбары из скриншотов](./how-to-hide-scrollbars)».
+
+Там же вы узнаете про плагин [hermione-hide-scrollbars](../plugins/hermione-hide-scrollbars), который реализован на основе метода [Emulation.setScrollbarsHidden][set-scrollbars-hidden] и который вы можете использовать, чтобы отключить скроллбары в CI для всех тестов в конкретных браузерах.
+
+[how-to-use-cdp]: ./how-to-use-cdp
+[set-scrollbars-hidden]: https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setScrollbarsHidden
+[cdp-session-send]: https://pptr.dev/next/api/puppeteer.cdpsession.send

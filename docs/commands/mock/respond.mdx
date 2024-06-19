@@ -1,0 +1,85 @@
+import Admonition from "@theme/Admonition";
+
+# respond
+
+## Обзор {#overview}
+
+Используйте команду `respond`, чтобы всегда отвечать одной и той же перезаписью.
+
+<Admonition type="info">
+    Читайте также рецепт «[Как отслеживать и перехватывать сетевые запросы и
+    ответы][how-to-intercept-requests-and-responses]».
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+mock.respond(overwrites, { header, statusCode, fetchResponse });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ для перезаписи ответа.</td></tr>
+<tr><td>header</td><td>Object</td><td>Перезаписать определенные заголовки.</td></tr>
+<tr><td>statusCode</td><td>Number</td><td>Перезаписать код состояния ответа.</td></tr>
+<tr><td>fetchResponse</td><td>Boolean</td><td>Получить реальный ответ, прежде чем отвечать с помощью поддельных данных.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it('should demonstrate response overwrite with static data', async ({ browser }) => {
+    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/', {
+        method: 'get'
+    });
+
+    mock.respond([{
+        title: 'Injected (non) completed Todo',
+        order: null,
+        completed: false
+    }, {
+        title: 'Injected completed Todo',
+        order: null,
+        completed: true
+    }], {
+        statusCode: 200,
+        fetchResponse: true // по умолчанию
+    });
+
+    await browser.url('https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/');
+
+    await browser.$('#todo-list li').waitForExist();
+
+    const todoElements = await browser.$$('#todo-list li');
+    console.log(await Promise.all(todoElements.map(el => el.getText())));
+    // выведет: "[ 'Injected (non) completed Todo', 'Injected completed Todo' ]"
+});
+
+it('should demonstrate response overwrite with dynamic data', async ({ browser }) => {
+    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/');
+
+    mock.respond((request) => {
+        if (request.body.username === 'test') {
+            return { ...request.body, foo: 'bar' };
+        }
+        return request.body;
+    }, {
+        statusCode: () => 200,
+        headers: () => ({ foo: 'bar }),
+        fetchResponse: false // не получать настоящий ответ
+    });
+});
+```
+
+## Связанные команды {#related}
+
+-   [respondOnce](./respondOnce)
+
+[how-to-intercept-requests-and-responses]: ../../guides/how-to-intercept-requests-and-responses

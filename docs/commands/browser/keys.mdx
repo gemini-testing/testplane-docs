@@ -1,0 +1,42 @@
+# keys
+
+## Обзор {#overview}
+
+Используйте команду `keys`, чтобы отправить последовательность нажатий клавиш в активный элемент.
+
+Вы можете также использовать символы «Левая стрелка» или «Правая стрелка». Они будут автоматически преобразованы в соответствующие unicode-символы. Все поддерживаемые символы вы можете посмотреть [здесь][keyboard-actions].
+
+Модификаторы типа `Ctrl`, `Shift`, `Alt` и `Meta` остаются нажатыми, пока вы сами не освободите их повторным вызовом. Однако модификация клика требует использования метода [performActions][perform-actions] из _WebDriver Actions API_.
+
+## Использование {#usage}
+
+```javascript
+await browser.keys(value);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>value</td><td>String или String[]</td><td>Последовательность клавиш, которые нужно напечатать.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("copies text out of active element", async ({ browser }) => {
+    // копируем текст из элемента ввода
+    await browser.$("#username").setValue("anonymous");
+
+    await browser.keys(["Meta", "a"]);
+    await browser.keys(["Meta", "c"]);
+});
+```
+
+[keyboard-actions]: https://w3c.github.io/webdriver/#keyboard-actions
+[perform-actions]: https://v7.webdriver.io/docs/api/webdriver#performactions

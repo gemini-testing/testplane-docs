@@ -1,0 +1,57 @@
+# abortOnce
+
+## Обзор {#overview}
+
+Используйте команду `abortOnce`, чтобы прервать запрос один раз с заданной ошибкой.
+
+Запрос можно прервать с одной из следующих ошибок:
+
+-   Failed
+-   Aborted
+-   TimedOut
+-   AccessDenied
+-   ConnectionClosed | ConnectionReset | ConnectionRefused | ConnectionAborted | ConnectionFailed
+-   NameNotResolved
+-   InternetDisconnected
+-   AddressUnreachable
+-   BlockedByClient | BlockedByResponse
+
+## Использование {#usage}
+
+```javascript
+mock.abortOnce(errorCode);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>errorCode</td><td>ErrorCode</td><td>Код ошибки ответа. Возможные значения см. [выше](#overview).</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should block mock only once", async ({ browser }) => {
+    const mock = await browser.mock("https://webdriver.io");
+    mock.abortOnce("Failed");
+
+    await browser
+        .url("https://webdriver.io")
+        // ловим исключение, так как запрос к странице упадет
+        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
+
+    await browser.url("https://webdriver.io");
+    console.log(await browser.getTitle());
+    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+});
+```
+
+## Связанные команды {#related}
+
+-   [abort](./abort)

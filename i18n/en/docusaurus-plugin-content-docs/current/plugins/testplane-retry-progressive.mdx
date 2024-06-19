@@ -1,0 +1,104 @@
+# testplane-retry-progressive
+
+## Overview {#overview}
+
+Use the `testplane-retry-progressive` plugin to additionally retry tests if the errors with which they fail correspond to a given set of patterns.
+
+What might it be needed for?
+
+Tests can fail not only because of developer errors, races between scripts executed on a web page, but also for infrastructural reasons. For example, when the network blinks, the browser is not given in time, temporary problems with DNS, etc.
+
+<details>
+    <summary>See examples of patterns for such errors</summary>* Browser request was cancelled * A
+    window size operation failed because the window is not currently available * chrome not
+    reachable * Tried to run command without establishing a connection * No such driver * no such
+    window * Session timed out or not found * Reached error page * getaddrinfo ENOTFOUND * Browsing
+    context has been discarded * Cannot launch browser * Failed to decode response from marionette *
+    session deleted because of page crash * Couldn't connect to selenium server
+</details>
+
+## Install {#install}
+
+```bash
+npm install -D testplane-retry-progressive
+```
+
+## Setup {#setup}
+
+Add the plugin to the `plugins` section of the `testplane` config:
+
+```javascript
+module.exports = {
+    plugins: {
+        "testplane-retry-progressive": {
+            enabled: true,
+            extraRetry: 7,
+            errorPatterns: [
+                "Parameter .* must be a string",
+                {
+                    name: "Cannot read property of undefined",
+                    pattern: "Cannot read property .* of undefined",
+                },
+            ],
+        },
+
+        // other testplane plugins...
+    },
+
+    // other testplane settings...
+};
+```
+
+### Description of configuration parameters {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>extraRetry</td><td>Number</td><td>5</td><td>The number of times you need to retry the test if it crashes with an error that matches one of the _errorPatterns_.</td></tr>
+<tr><td>errorPatterns</td><td>Array</td><td>`[ ]`</td><td>A list of patterns, one of which an error should match in order for the plugin to retry the test. For more information, see below.</td></tr>
+
+</tbody>
+</table>
+
+### errorPatterns {#setup_error_patterns}
+
+Each pattern in the `errorPatterns` array is either an object of the form:
+
+```javascript
+{
+    name: 'A clear message for the user that will be output to the console',
+    pattern: 'An error pattern that can be set, among other things, as a string for a regular expression'
+}
+```
+
+or a string that will be interpreted by the plugin as an object of the form:
+
+```javascript
+{
+    name: 'your string',
+    pattern: 'your string'
+}
+```
+
+The latter option is convenient if the readable format for the console and the error pattern completely match.
+
+### Passing parameters via the CLI {#setup_by_cli}
+
+All plugin parameters that can be defined in the config can also be passed as command-line options or through environment variables during the launch of Testplane. Use the prefix `--retry-progressive-` for command line options and `testplane_retry_progressive_` for environment variables. For example:
+
+```bash
+npx testplane --retry-progressive-extra-retry 3
+```
+
+```bash
+testplane_retry_progressive_extra_retry=3 npx testplane
+```
+
+## Useful links {#useful_links}
+
+-   [Исходники плагина testplane-retry-progressive][testplane-retry-progressive]
+
+[testplane-retry-progressive]: https://github.com/gemini-testing/testplane-retry-progressive

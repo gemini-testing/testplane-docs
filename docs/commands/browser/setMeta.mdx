@@ -1,0 +1,56 @@
+import Admonition from "@theme/Admonition";
+
+# setMeta
+
+## Обзор
+
+Используйте команду `setMeta`, чтобы записать значение под заданным ключом в мета-информацию теста.
+
+Для чтения мета-информации используйте команду [getMeta](./getMeta).
+
+<Admonition type="info">
+    Эта команда реализована внутри testplane, в [API WebDriverIO][webdriverio-api] её нет.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.setMeta(key, value);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>key</td><td>String</td><td>Ключ, значение для которого нужно записать в мета-информацию теста.</td></tr>
+<tr><td>value</td><td>String</td><td>Значение, которое нужно сохранить в мета-информации теста.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should get meta info of test", async ({ browser }) => {
+    await browser.setMeta("foo", "bar");
+    await browser.url("/foo/bar?baz=qux");
+
+    const val = await browser.getMeta("foo");
+    console.log(val); // выведет: bar
+
+    const url = await browser.getMeta("url");
+    console.log(url); // выведет: /foo/bar?baz=qux
+
+    const meta = await browser.getMeta();
+    console.log(meta); // выведет: {foo: 'bar', url: '/foo/bar?baz=qux'}
+});
+```
+
+## Связанные команды {#related}
+
+-   [getMeta](./getMeta)
+
+[webdriverio-api]: https://v7.webdriver.io/docs/api

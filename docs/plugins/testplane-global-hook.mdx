@@ -1,0 +1,73 @@
+# testplane-global-hook
+
+## Обзор {#overview}
+
+Используйте плагин [testplane-global-hook][testplane-global-hook], чтобы вынести общую логику из своих тестов в специальные обработчки для `beforeEach` и `afterEach` хуков.
+
+Часто, перед тем как запустить очередной testplane-тест, нужно выполнить определенную подготовительную работу, например:
+
+-   очистить все cookies;
+-   почистить localStorage;
+-   инициализировать какую-либо переменную теста.
+
+Чтобы не прописывать эти действия в каждом тесте, вы можете описать их в настройках плагина в виде функции для хука `beforeEach`.
+
+Аналогично, после завершения основных проверок в testplane-тесте, вы можете захотеть всегда проверять наличие ошибок в клиентском коде, срабатывание нужных метрик и т. п.
+
+Чтобы не прописывать эти действия в каждом тесте, вы можете описать их в настройках плагина в виде функции для хука `afterEach`.
+
+## Установка {#install}
+
+```bash
+npm install -D testplane-global-hook
+```
+
+## Настройка {#setup}
+
+Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+
+```javascript
+module.exports = {
+    plugins: {
+        "testplane-global-hook": {
+            beforeEach: async function () {
+                await this.browser.deleteCookie(); // Например, мы хотим всегда очищать cookies перед запуском теста
+            },
+            afterEach: async function () {
+                await this.browser.execute(function () {
+                    try {
+                        localStorage.clear(); // И всегда очищать за собой localStorage после завершения теста
+                    } catch (e) {}
+                });
+            },
+        },
+
+        // другие плагины testplane...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
+<tr><td>beforeEach</td><td>Function</td><td>null</td><td>Асинхронная функция-обработчик, которая будет выполняться перед запуском каждого теста.</td></tr>
+<tr><td>afterEach</td><td>Function</td><td>null</td><td>Асинхронная функция-обработчик, которая будет выполняться после завершения каждого теста.</td></tr>
+
+</tbody>
+</table>
+
+## Полезные ссылки {#useful_links}
+
+-   [Исходники плагина testplane-global-hook][testplane-global-hook]
+-   [Команда browser.deleteCookie](../commands/browser/deleteCookies)
+-   [Команда browser.execute](../commands/browser/execute)
+-   [Команда browser.executeAsync](../commands/browser/executeAsync)
+
+[testplane-global-hook]: https://github.com/gemini-testing/testplane-global-hook

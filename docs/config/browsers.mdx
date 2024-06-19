@@ -1,0 +1,654 @@
+import Admonition from "@theme/Admonition";
+
+# browsers
+
+## Обзор {#overview}
+
+Раздел `browsers` является обязательным в настройках testplane. В нем задаются все браузеры, в которых будут запускаться тесты.
+
+## Настройка {#setup}
+
+Данный раздел имеет следующий формат:
+
+```javascript
+module.exports = {
+    browsers: {
+        <browser-id>: {
+            <option>: <value>,
+            <option>: <value>,
+
+            // остальные настройки браузера...
+        },
+
+        // другие браузеры...
+    },
+
+    // остальные настройки testplane...
+}
+```
+
+Где `<browser-id>` &mdash; это имя браузера, которое используется для его идентификации.
+
+Чтобы не повторять одни и те же настройки для разных браузеров, вы можете задать все нужные вам значения по умолчанию в корне конфига testplane. Например:
+
+```javascript
+module.exports = {
+    sessionsPerBrowser: 10,
+    browsers: {
+        chrome: {
+            // параметр sessionsPerBrowser не указан,
+            // поэтому будет использовано значение 10 из корня конфига
+        },
+
+        firefox: {
+            sessionsPerBrowser: 5, // а firefox будет использовать значение 5
+        },
+    },
+
+    // остальные настройки testplane...
+};
+```
+
+Далее все настройки браузера разбиты логически по разделам, чтобы среди них было проще ориентироваться.
+
+## Браузер и его свойства {#browser_main_settings}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[desiredCapabilities](#desired_caps)</td><td>Object</td><td>_N/A_</td><td>Обязательный параметр. Определяет свойства, которыми должен обладать браузер. Используется _WebDriver'ом_, см. [DesiredCapabilities][desired-caps].</td></tr>
+<tr><td>[gridUrl](#grid_url)</td><td>String</td><td>"http://localhost:4444/wd/hub"</td><td>URL грида Selenium.</td></tr>
+<tr><td>[baseUrl](#base_url)</td><td>String</td><td>"http://localhost"</td><td>Базовый URL тестируемого сервиса.</td></tr>
+<tr><td>[browserWSEndpoint](#browser_ws_endpoint)</td><td>String</td><td>null</td><td>Эндпойнт websocket-соединения для подключения к браузеру через [Chrome DevTools Protocol (CDP)][how-to-use-cdp].</td></tr>
+<tr><td>[automationProtocol](#automation_protocol)</td><td>String</td><td>"webdriver"</td><td>Протокол общения с браузером. См. [WebDriver vs CDP](../reference/webdriver-vs-cdp).</td></tr>
+<tr><td>[sessionEnvFlags](#session_env_flags)</td><td>Object</td><td>`{ }`</td><td>Флаги окружения, задающие протокол, который будет использоваться в созданной сессии браузера.</td></tr>
+<tr><td>[windowSize](#window_size)</td><td>String или Object</td><td>null</td><td>Размеры окна браузера.</td></tr>
+
+</tbody>
+</table>
+
+### desiredCapabilities {#desired_caps}
+
+Обязательный параметр. Определяет свойства, которыми должен обладать браузер. Используется _WebDriver'ом_, см. [DesiredCapabilities][desired-caps]. Например:
+
+```javascript
+module.exports = {
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+                version: "75.0", // или "browserVersion", если браузер поддерживает W3C
+                chromeOptions: {
+                    // ...
+                },
+            },
+        },
+
+        // настройки других браузеров...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### gridUrl {#grid_url}
+
+URL грида Selenium. По умолчанию: `http://localhost:4444/wd/hub`.
+
+### baseUrl {#base_url}
+
+Базовый URL тестируемого сервиса. По умолчанию: `http://localhost`.
+
+### browserWSEndpoint {#browser_ws_endpoint}
+
+Эндпойнт websocket-соединения для подключения к браузеру через [Chrome DevTools Protocol (CDP)][how-to-use-cdp]. Например, вы указываете `browserWSEndpoint: "ws://YOUR_HOST/devtools"`, к которому в конце будет добавлен идентификатор сеанса браузера: `ws://YOUR_HOST/devtools/12345`, где `12345` &mdash; это идентификатор сеанса.
+
+Значение по умолчанию: `null`. Означает, что WebDriverIO попытается самостоятельно определить эндпойнт для веб-сокета.
+
+### automationProtocol {#automation_protocol}
+
+Протокол общения с браузером. Доступные значения: `webdriver` и `devtools`. См. также [WebDriver vs CDP](../reference/webdriver-vs-cdp). По умолчанию: `webdriver`.
+
+### sessionEnvFlags {#session_env_flags}
+
+Флаги окружения задают протоколы, которые будут использоваться в созданной сессии браузера. По умолчанию флаги окружения автоматически устанавливаются в соответствии с заданными `desiredCapabilities`. Однако в редких случаях они могут принимать некорректные значения и тогда с помощью этой опции их можно будет задать явно.
+
+Доступные флаги:
+
+<table>
+<thead>
+<tr><td>**Флаг**</td><td>**Протоколы**</td></tr>
+</thead>
+<tbody>
+<tr><td>isW3C</td><td>[WebDriverProtocol](https://webdriver.io/docs/api/webdriver) или по умолчанию [JsonWProtocol](https://webdriver.io/docs/api/jsonwp)</td></tr>
+<tr><td>isChrome</td><td>[ChromiumProtocol](https://webdriver.io/docs/api/chromium)</td></tr>
+<tr><td>isMobile</td><td>[MJsonWProtocol](https://webdriver.io/docs/api/mjsonwp) и [AppiumProtocol](https://webdriver.io/docs/api/appium)</td></tr>
+<tr><td>isSauce</td><td>[Команды конкретного поставщика Sauce Labs](https://webdriver.io/docs/api/saucelabs)</td></tr>
+<tr><td>isSeleniumStandalone</td><td>[Специальные команды для Selenium](https://webdriver.io/docs/api/selenium) при запуске тестов в _Selenium Grid_ или с помощью _Selenium Standalone Server_.</td></tr>
+
+</tbody>
+</table>
+
+Например:
+
+```javascript
+module.exports = {
+    browsers: {
+        chrome: {
+            sessionEnvFlags: {
+                isW3C: true,
+                isChrome: true,
+            },
+        },
+
+        // настройки других браузеров...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### windowSize {#window_size}
+
+Размеры окна браузера. Если не указывать, то размер окна будет зависеть от WebDriver'а. Можно указывать как строку, например, `800x1000` или как объект с ключами `width` и `height`, значениями которых нужно указать целые числа.
+
+Например:
+
+```javascript
+windowSize: "800x1000";
+```
+
+и
+
+```javascript
+windowSize: {
+  width: 800,
+  height: 1000
+}
+```
+
+эквивалентны между собой.
+
+<Admonition type="warning">
+    Настройка разрешения для браузера Opera или для мобильных браузеров не работает. Так как эти
+    браузеры используют только полноэкранный режим.
+</Admonition>
+
+## Таймауты {#timeouts}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[waitTimeout](#wait_timeout)</td><td>Number</td><td>3000</td><td>Таймаут для событий на веб-странице, в мс.</td></tr>
+<tr><td>[waitInterval](#wait_interval)</td><td>Number</td><td>500</td><td>Интервал для событий на веб-странице, в мс.</td></tr>
+<tr><td>[httpTimeout](#http_timeout)</td><td>Number</td><td>30000</td><td>Таймаут для любых запросов к Selenium-серверу, в мс.</td></tr>
+<tr><td>[urlHttpTimeout](#url_http_timeout)</td><td>Number</td><td>= _httpTimeout_</td><td>Таймаут для запроса _/url_ к Selenium-серверу, в мс.</td></tr>
+<tr><td>[pageLoadTimeout](#page_load_timeout)</td><td>Number</td><td>20000</td><td>Таймаут для полной загрузки страницы, в мс.</td></tr>
+<tr><td>[sessionRequestTimeout](#session_request_timeout)</td><td>Number</td><td>= _httpTimeout_</td><td>Таймаут запроса сессии браузера, в мс.</td></tr>
+<tr><td>[sessionQuitTimeout](#session_quit_timeout)</td><td>Number</td><td>5000</td><td>Таймаут для завершения сессии, в мс.</td></tr>
+<tr><td>[testTimeout](#test_timeout)</td><td>Number</td><td>null</td><td>Таймаут для прогона теста, в мс. Если значение не задано, то будет использован общий таймаут для всех браузеров, который задается настройкой [system.mochaOpts.timeout][system-mocha-opts].</td></tr>
+
+</tbody>
+</table>
+
+### waitTimeout {#wait_timeout}
+
+Таймаут для событий на веб-странице, в миллисекундах. По умолчанию: `3000` мс (3 секунды).
+
+Применяется в команде [waitUntil][element-wait-until], которая используется во всех `waitFor*`-командах при поиске заданного элемента на странице.
+
+Например, при выполнении команды `browser.$('.element').click()` подкоманда `$('element')` будет по умолчанию ждать существования элемента до 3000 мс, прежде чем кликнуть по нему.
+
+### waitInterval {#wait_interval}
+
+Интервал для событий на веб-странице, в миллисекундах. По умолчанию: `500` мс.
+
+Применяется в команде [waitUntil][element-wait-until], которая используется во всех `waitFor*`-командах при поиске заданного элемента на странице.
+
+Например, при выполнении команды `browser.$('.element').click()` подкоманда `$('element')` будет по умолчанию проверять существование элемента каждые 500 мс.
+
+### httpTimeout {#http_timeout}
+
+Таймаут для любых запросов к Selenium-серверу, в миллисекундах. По умолчанию: `30000` мс.
+
+### urlHttpTimeout {#url_http_timeout}
+
+Таймаут для запроса `/url` к Selenium-серверу, в миллисекундах. Иногда при открытии ссылки на стороне сервера выполняется масса логики в мидлварах, из-за чего ссылка долго открывается. Чтобы не поднимать из-за этого таймаут для всех команд, testplane позволяет настроить отдельный таймаут для запроса `/url`.
+
+### pageLoadTimeout {#page_load_timeout}
+
+Таймаут для полной загрузки страницы, в миллисекундах. По умолчанию: `20000` мс.
+
+### sessionRequestTimeout {#session_request_timeout}
+
+Таймаут запроса сессии браузера, в миллисекундах. По умолчанию берет значение настройки `httpTimeout`.
+
+### sessionQuitTimeout {#session_quit_timeout}
+
+Таймаут для завершения сессии, в миллисекундах. По умолчанию: `5000` мс.
+
+### testTimeout {#test_timeout}
+
+Таймаут для прогона теста, в миллисекундах. При использовании для набора тестов _(suite),_ будет применяться для всех тестов и хуков внутри этого набора тестов.
+
+Если значение не задано, то будет использован общий таймаут для всех браузеров, который задается настройкой [system.mochaOpts.timeout][system-mocha-opts].
+
+## Запуск тестов {#test_run_settings}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[sessionsPerBrowser](#sessions_per_browser)</td><td>Number</td><td>1</td><td>Число сессий, которые будут запущены одновременно для конкретного браузера.</td></tr>
+<tr><td>[testsPerSession](#tests_per_session)</td><td>Number</td><td>_N/A_</td><td>Сколько тестов можно запускать последовательно в одной сессии браузера. Параметр ограничивает переиспользование сессии, чтобы не допустить падения тестов из-за деградации браузера, и не имеет отношения к параллельному запуску тестов.</td></tr>
+<tr><td>[retry](#retry)</td><td>Number</td><td>0</td><td>Сколько раз нужно перезапускать падающий тест.</td></tr>
+<tr><td>[shouldRetry](#should_retry)</td><td>Function</td><td>_см. описание_</td><td>Функция, которая определяет нужен ли ретрай. По умолчанию задается функция, которая возвращает _true_, если _retry > 0,_ и _false_, если _retry == 0_.</td></tr>
+<tr><td>[strictTestsOrder](#strict_test_order)</td><td>Boolean</td><td>false</td><td>Гарантировать строгий порядок тестов. Если _true_, то функция API _testplane.readTests_ будет всегда возвращать один и тот же результат.</td></tr>
+
+</tbody>
+</table>
+
+### sessionsPerBrowser {#sessions_per_browser}
+
+Число сессий, которые будут запущены одновременно для конкректного браузера. По умолчанию: `1`.
+
+### testsPerSession {#tests_per_session}
+
+Параметр определяет сколько тестов можно запускать последовательно в одной сессии браузера. Может быть полезно, чтобы ограничить переиспользование сессии. Если одну и ту же сессию браузера использовать много раз для прогона различных тестов, то в какой-то момент браузер может начать деградировать. И это начнет влиять на прогон тестов, приводя к их падениям. После того как будет достигнут лимит тестов, сессия будет закрыта и запустится новая сессия.
+
+По умолчанию: `Infinity`. То есть сессия будет переиспользована бесконечное число раз. Однако в реальной эксплуатации возможны ограничения со стороны грида, в рамках которого запускаются браузеры. Например, грид может ограничивать со своей стороны максимальное время жизни одной сессии, и тогда количество тестов, которые окажутся выполненными в рамках одной сессии, будет определяться временем её жизни.
+
+<Admonition type="warning">
+    Будьте внимательны: данный параметр не имеет отношения к параллельному запуску тестов.
+</Admonition>
+
+### retry {#retry}
+
+Сколько раз нужно запустить тест снова, если он будет падать. По умолчанию: `0`.
+
+### shouldRetry {#should_retry}
+
+Функция, которая определяет нужен ли ретрай. Должна возвращать значение типа `Boolean`. По умолчанию задается функция, которая возвращает `true`, если ещё остались доступные ретраи, и `false`, если достигнут предел ретраев для теста (см. настройку [retry](#retry)).
+
+Аргументом данной функции является объект со следующими полями:
+
+<table>
+<thead>
+<tr><td>ctx</td><td>Object</td><td>Данные об упавшем тесте: _\{ id(): string; browserId: string; sessionId: string; }_.</td></tr>
+</thead>
+<tbody>
+<tr><td>retriesLeft</td><td>Number</td><td>Число оставшихся ретраев</td></tr>
+
+</tbody>
+</table>
+
+### strictTestsOrder {#strict_test_order}
+
+Данная опция включает гарантию строгого порядка чтения тестов. По умолчанию: `false`.
+
+## Информация о тесте и падении {#info_when_test_fails}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[meta](#meta)</td><td>Object</td><td>_N/A_</td><td>Дополнительные данные, которые будут возвращаться командой _getMeta()_.</td></tr>
+<tr><td>[takeScreenshotOnFails](#take_screenshot_on_fails)</td><td>Object</td><td>_см. описание_</td><td>Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении теста, а также при падении команды _assertView_. Значение по умолчанию: _\{ testFail: true, assertViewFail: true }_.</td></tr>
+<tr><td>[takeScreenshotOnFailsMode](#take_screenshot_on_fails_mode)</td><td>String</td><td>"fullpage"</td><td>Режим снятия скриншота при падении теста. Доступные значения: _viewport_ и _fullpage_.</td></tr>
+<tr><td>[takeScreenshotOnFailsTimeout](#take_screenshot_on_fails_timeout)</td><td>Number</td><td>5000</td><td>Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении теста, в мс.</td></tr>
+<tr><td>[saveHistory](#save_history)</td><td>Boolean</td><td>true</td><td>Сохранять историю всех выполненных команд. _В testplane@7 заменена на `saveHistoryMode`_.</td></tr>
+<tr><td>[saveHistoryMode](#save_history_mode)</td><td>"all" или "none" или "onlyFailed"</td><td>"all"</td><td>Сохранять историю всех выполненных команд. _Доступна с testplane@7_.</td></tr>
+
+</tbody>
+</table>
+
+### meta {#meta}
+
+Дополнительные данные, которые будут возвращаться командой `getMeta()`. Данные можно добавлять также «на лету» с помощью команды `setMeta()`: до, во время или после завершения прогона теста.
+
+### takeScreenshotOnFails {#take_screenshot_on_fails}
+
+Опция задается в виде объекта с двумя ключами: `testFail` и `assertViewFail`. Данные ключи определяют нужно ли снимать скриншот страницы браузера _(Page Screenshot)_ при падении теста и при падении команды `assertView` соответственно. Значение по умолчанию: `{ testFail: true, assertViewFail: true }`. В случае `testFail` учитываются все падения тестов кроме падений из-за команд `assertView`.
+
+### takeScreenshotOnFailsMode {#take_screenshot_on_fails_mode}
+
+Режим снятия скриншота страницы браузера при падении теста. Доступные значения: `viewport` и `fullpage`:
+
+-   `viewport` &mdash; снять скриншот текущего вьюпорта.
+-   `fullpage` &mdash; снять скриншот всей страницы браузера.
+
+По умолчанию: `fullpage`.
+
+### takeScreenshotOnFailsTimeout {#take_screenshot_on_fails_timeout}
+
+Таймаут для снятия скриншота страницы браузера при падении теста, в миллисекундах. По умолчанию: `5000` мс.
+
+### saveHistory {#save_history}
+
+<Admonition type="warning">
+    В testplane@7 заменена на [saveHistoryMode](#save_history_mode).
+</Admonition>
+
+Сохранять историю всех выполненных команд. По умолчанию: `true`.
+
+Некоторые плагины могут полагаться на эту историю, например, [html-reporter][html-reporter].
+
+История доступна из следующих событий &mdash; `TEST_END`, `TEST_PASS`, `TEST_FAIL` &mdash; через `payload`:
+
+```javascript
+// пример кода плагина
+module.exports = testplane => {
+    testplane.on(testplane.events.TEST_PASS, async test => {
+        console.log(test.history);
+    });
+};
+```
+
+### saveHistoryMode {#save_history_mode}
+
+<Admonition type="warning">Доступна с testplane@7.</Admonition>
+
+Сохранять историю всех выполненных команд. По умолчанию: `all`.
+
+Available options:
+
+-   `all` &mdash; история включена.
+-   `none` &mdash; история отключена.
+-   `onlyFailed` &mdash; история сохраняется только для упавших тестов.
+
+Некоторые плагины могут полагаться на эту историю, например, [html-reporter][html-reporter].
+
+История доступна из следующих событий &mdash; `TEST_END`, `TEST_PASS`, `TEST_FAIL` &mdash; через `payload`:
+
+```javascript
+// sample plugin code
+module.exports = testplane => {
+    testplane.on(testplane.events.TEST_PASS, async test => {
+        console.log(test.history);
+    });
+};
+```
+
+## Подготовка к снятию скриншотов {#prepare_to_take_screenshot}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[calibrate](#calibrate)</td><td>Boolean</td><td>false</td><td>Выполнять калибровку перед снятием скриншота.</td></tr>
+<tr><td>[orientation](#orientation)</td><td>String</td><td>null</td><td>Ориентация окна браузера, которую нужно выставлять перед запуском каждого теста.</td></tr>
+<tr><td>[waitOrientationChange](#wait_orientation_change)</td><td>Boolean</td><td>true</td><td>Ждать реальной смены ориентации.</td></tr>
+<tr><td>[resetCursor](#reset_cursor)</td><td>Boolean</td><td>true</td><td>Перемещать курсор в точку _(0, 0)_ в координатах _body_ перед каждым запуском теста.</td></tr>
+<tr><td>[screenshotsDir](#screenshots_dir)</td><td>String</td><td>"./testplane/screens"</td><td>Папка для сохранения эталонных скриншотов командой _assertView_. По умолчанию _testplane/screens_ относительно рабочей папки: _process.cwd()_.</td></tr>
+
+</tbody>
+</table>
+
+### calibrate {#calibrate}
+
+Выполнять калибровку перед снятием скриншота. В некоторых реализациях WebDriver'а при снятии скриншота на изображение могут попадать элементы UI самого браузера. Калибровка позволяет решить данную проблему. По умолчанию: `false`.
+
+### orientation {#orientation}
+
+Ориентация окна браузера, которую нужно выставлять перед запуском каждого теста. Доступные значения: `landscape`, `portrait`, `null`. По умолчанию: `null`.
+
+<Admonition type="tip" title="Какое значение выбрать для orientation?">
+    Это зависит от того, в какой ориентации у вас выполняется большинство тестов. Если большая часть
+    тестов у вас выполняется в режиме _landscape,_ то и значение _orientation_ нужно выставлять в
+    _landscape._ Тогда тесты, которым нужна ориентация _portrait,_ будут самостоятельно выставлять
+    нужную им ориентацию. А опция _orientation_ будет гарантировать, что для всех остальных тестов
+    ориентация будет выставлена в _landscape_ автоматически перед их запуском, без необходимости
+    задавать её в каждом тесте самостоятельно.
+</Admonition>
+
+### waitOrientationChange {#wait_orientation_change}
+
+Ждать реальной смены ориентации. По умолчанию: `true`. При установке в значение `true` testplane гарантирует, что команда задания ориентации `setOrientation` будет завершаться только после реального изменения ориентации на заданную.
+
+### resetCursor {#reset_cursor}
+
+Перемещать курсор в точку _(0, 0)_ в координатах _body_ перед каждым запуском теста. По умолчанию: `true`. Может потребоваться в тех случаях, когда положение курсора по умолчанию влияет на выполнение тестов. Например, когда из-за курсора всплывает какая-нибудь подсказка _(hint)_, которая «портит» снимаемый скриншот.
+
+<Admonition type="tip">
+    Рекомендуется сбрасывать курсор для десктопных браузеров и не сбрасывать для мобильных.
+</Admonition>
+
+### screenshotsDir {#screenshots_dir}
+
+Папка для сохранения эталонных скриншотов командой `assertView`. По умолчанию это папка `testplane/screens` относительно рабочей папки: `process.cwd()`. Значением данной опции может быть также функция, которой передается один аргумент &mdash; инстанс теста, внутри которого была вызвана команда `assertView`, например:
+
+```javascript
+screenshotsDir: test => `tests/screenshots/${test.parent.title}`;
+```
+
+## Снятие и сравнение скриншотов {#taking_screenshots}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[tolerance](#tolerance)</td><td>Number</td><td>2.3</td><td>Максимально разрешенная разница [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) между цветами.</td></tr>
+<tr><td>[antialiasingTolerance](#antialiasing_tolerance)</td><td>Number</td><td>4</td><td>Задает чувствительность определения антиалиасинга, который будет игнорироваться при сравнении скриншотов.</td></tr>
+<tr><td>[compareOpts](#compare_opts)</td><td>Object</td><td>_[см. ниже](#compare_opts)_</td><td>Опции для сравнения изображений.</td></tr>
+<tr><td>[buildDiffOpts](#build_diff_opts)</td><td>Object</td><td>_[см. ниже](#build_diff_opts)_</td><td>Опции для построения диффа (изображения с разницей между скриншотами).</td></tr>
+<tr><td>[assertViewOpts](#assert_view_opts)</td><td>Object</td><td>_[см. ниже](#assert_view_opts)_</td><td>Опции для команды _assertView_, которые будут использоваться по умолчанию.</td></tr>
+<tr><td>[compositeImage](#composite_image)</td><td>Boolean</td><td>true</td><td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td></tr>
+<tr><td>[screenshotMode](#screenshot_mode)</td><td>String</td><td>"auto"</td><td>Режим снятия скриншота. Возможные значения: _auto, fullpage, viewport_.</td></tr>
+<tr><td>[screenshotDelay](#screenshot_delay)</td><td>Number</td><td>0</td><td>Задержка перед снятием скриншота, в мс.</td></tr>
+
+</tbody>
+</table>
+
+### tolerance {#tolerance}
+
+Максимально разрешенная разница [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) между цветами. Используется только в нестрогом режиме. По умолчанию `2.3`. Начиная со значения `2.3` разница в цветах становится уже различимой человеческим глазом. Чем меньше это значение, тем строже будет сравнение скриншотов.
+
+Не рекомендуется увеличивать значение `tolerance` на глобальном уровне. Попробуйте вместо этого задавать `tolerance` для конкретных наборов тестов или состояний.
+
+Например, если нужно снять скриншот для конкретного состояния с индивидуальной настройкой `tolerance`:
+
+```javascript
+it("some-test", async function (browser) {
+    await browser.assertView("some-state", ".selector1", { tolerance: 10 });
+    await browser.assertView("another-state", ".selector1");
+});
+```
+
+### antialiasingTolerance {#antialiasing_tolerance}
+
+Задает чувствительность определения антиалиасинга, который будет игнорироваться при сравнении скриншотов.
+
+Читайте подробнее об этой опции в пакете [looks-same](https://github.com/gemini-testing/looks-same#comparing-images-with-ignoring-antialiasing).
+
+### compareOpts {#compare_opts}
+
+Дополнительные опции для сравнения изображений. Смотрите в документации пакета [looks-same](https://github.com/gemini-testing/looks-same#comparing-images) список доступных опций. По умолчанию:
+
+```javascript
+compareOpts: {
+    shouldCluster: false,
+    clustersSize: 10,
+    stopOnFirstFail: false
+}
+```
+
+### buildDiffOpts {#build_diff_opts}
+
+Дополнительные опции для построения диффа (изображения с разницей между скриншотами). Смотрите в документации пакета [looks-same](https://github.com/gemini-testing/looks-same#building-diff-image) список доступных опций. По умолчанию:
+
+```javascript
+buildDiffOpts: {
+    ignoreAntialiasing: true,
+    ignoreCaret: true
+}
+```
+
+### assertViewOpts {#assert_view_opts}
+
+Опции для команды снятия и сравнения скриншотов `assertView`, которые будут использоваться по умолчанию. Могут быть перезаписаны при вызове команды `assertView`. По умолчанию:
+
+```javascript
+assertViewOpts: {
+    ignoreElements: [],
+    captureElementFromTop: true,
+    allowViewportOverflow: false
+}
+```
+
+Всего доступны следующие опции для `assertView`:
+
+<table>
+<thead>
+<tr><td>**Опция**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>ignoreElements</td><td>Array или String</td><td>Элементы (задаются как селекторы), которые будут проигнорированы при сравнении скриншотов. Игнор реализуется с помощью закраски перечисленных элементов черным цветом. В случае одного элемента параметр можно задавать как строку.</td></tr>
+<tr><td>tolerance</td><td>Number</td><td>Чувствительность к разнице в цветам. Значение перетирает [browsers.tolerance](#tolerance).</td></tr>
+<tr><td>antialiasingTolerance</td><td>Number</td><td>Чувствительность в антиалиасинге. Значение перетирает [browsers.antialiasingTolerance](#antialiasing_tolerance).</td></tr>
+<tr><td>allowViewportOverflow</td><td>Boolean</td><td>По умолчанию testplane выдает ошибку, если элемент находится за пределами границ вьюпорта. Этот параметр отключает проверку на границы, позволяя снимать скриншоты элементов, не влезающих во вьюпорт. При этом на скриншоте будут видны только те части элемента, которые влезли во вьюпорт. Однако если _compositeImage_ равен _true_, то части элемента, которые оказались за _нижней_ границей вьюпорта, тоже будут видны на скриншоте. Аналогично если _captureElementFromTop_ равен _true_, то на скриншот попадут и те части элемента, которые оказались за пределами _верхней_ границы вьюпорта.</td></tr>
+<tr><td>captureElementFromTop</td><td>Boolean</td><td>Снимать скриншот элемента с самого верха. Если элемент находится за пределами вьюпорта, то к нему будет выполнен подскролл.</td></tr>
+<tr><td>compositeImage</td><td>Boolean</td><td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td></tr>
+<tr><td>screenshotDelay</td><td>Number</td><td>Задержка в миллисекундах перед снятием скриншота. Может пригодиться, когда на странице есть элементы, использующие анимацию, или скроллбар, который исчезает не сразу и попадает на результирующий скриншот.</td></tr>
+<tr><td>selectorToScroll</td><td>String</td><td>Селектор, который нужно скроллировать. Может пригодиться, когда надо сделать скриншот модального окна, которое не помещается на экране. Иначе без указания селектора скролл будет применяться к объекту _window_, и скроллироваться будет задний фон, оставляя попап-окно на месте.</td></tr>
+
+</tbody>
+</table>
+
+### compositeImage {#composite_image}
+
+Позволяет тестировать элементы, не влезающие во вьюпорт по высоте. По умолчанию: `true`. Если тестируемый блок по высоте больше вьюпорта, то происходит склеивание изображений нескольких вьюпортов в одно изображение.
+
+### screenshotMode {#screenshot_mode}
+
+Режим снятия скриншотов. По умолчанию: `auto`.
+
+Возможные значения:
+
+<table>
+<thead>
+<tr><td>auto</td><td>режим будет определен автоматически</td></tr>
+</thead>
+<tbody>
+<tr><td>fullpage</td><td>будет снят скриншот всей страницы</td></tr>
+<tr><td>viewport</td><td>будет снят скриншот только вьюпорта</td></tr>
+
+</tbody>
+</table>
+
+По умолчанию для android-браузеров выставляется режим `viewport`, чтобы обойти [багу в Chromium](https://bugs.chromium.org/p/chromedriver/issues/detail?id=2853).
+
+В десктопных браузерах _прямо из коробки_ есть возможность получить изображение всей страницы, а не только видимого вьюпорта. При этом не нужно вручную склеивать изображения отдельных вьюпортов в один большой скриншот. Однако на мобильных устройствах такой функциональности нет.
+
+### screenshotDelay {#screenshot_delay}
+
+Задержка в миллисекундах перед снятием скриншота. По умолчанию: `0` мс. Задержка может пригодиться в тех случаях, когда на странице есть элементы, использующие анимацию, или скроллбар, который исчезает не сразу и попадает на результирующий скриншот.
+
+## Параметры запросов и ответов {#params_of_requests_and_responses}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[agent](#agent)</td><td>Object</td><td>null</td><td>Позволяет задать свои [агенты][got-agent] для запросов по _http, https, http2_.</td></tr>
+<tr><td>[headers](#headers)</td><td>Object</td><td>null</td><td>Позволяет настроить [заголовки][got-headers], которые будут передаваться в каждом запросе к WebDriver.</td></tr>
+<tr><td>[transformRequest](#transform_request)</td><td>Function</td><td>null</td><td>Позволяет перехватывать и преобразовывать [опции][got-options] http-запроса перед запросом к WebDriver.</td></tr>
+<tr><td>[transformResponse](#transform_response)</td><td>Function</td><td>null</td><td>Позволяет перехватывать и преобразовывать [http-ответ][got-response], полученный от WebDriver.</td></tr>
+<tr><td>[strictSSL](#strict_ssl)</td><td>Boolean</td><td>null</td><td>Должен ли SSL-сертификат быть действительным. Если _true_, то это означает, что будет использовано [значение по умолчанию][strict-ssl] от WebDriverIO.</td></tr>
+
+</tbody>
+</table>
+
+### agent {#agent}
+
+Позволяет задать свои [агенты][got-agent] для запросов по _http, https, http2_. По умолчанию: `null` (в таком случае будут использованы дефолтные http-агенты пакета [got][got]).
+
+### headers {#headers}
+
+Позволяет настроить [заголовки][got-headers], которые будут передаваться в каждом запросе к WebDriver. По умолчанию: `null`. Смотрите также в [документации](https://webdriver.io/docs/options/#headers) `WebDriverIO`.
+
+<Admonition type="warning">
+    Данные заголовки не передаются в запрос к браузеру, в котором выполняются тесты. Они передаются
+    только в запросах к WebDriver.
+</Admonition>
+
+### transformRequest {#transform_request}
+
+Позволяет перехватывать и преобразовывать [опции][got-options] http-запроса перед запросом к WebDriver. По умолчанию: `null`. Если передается функция, то первым аргументом ей будет передан объект `RequestOptions`. В ответ функция должна будет вернуть модифицированный `RequestOptions`.
+
+Тип функции:
+
+```javascript
+RequestOptions => RequestOptions;
+```
+
+### transformResponse {#transform_response}
+
+Позволяет перехватывать и преобразовывать [http-ответ][got-response], полученный от WebDriver. По умолчанию: `null`. Если передается функция, то первым аргументом ей будет передан объект `Response`, а вторым &mdash; `RequestOptions`. В ответ функция должна будет вернуть модифицированный `Response`.
+
+Тип функции:
+
+```javascript
+(Response, RequestOptions) => Response;
+```
+
+### strictSSL {#strict_ssl}
+
+Должен ли SSL-сертификат быть действительным. Если `true`, то это означает, что будет использовано [значение по умолчанию][strict-ssl] от WebDriverIO.
+
+## Облачные настройки {#cloud_settings}
+
+Следующие настройки могут пригодиться, если вы захотите запускать свои testplane-тесты в браузерах облачных сервисов.
+
+Примером такого облачного сервиса может быть [SauceLabs][sauce-labs], который [может предоставить](https://saucelabs.com/platform/cross-browser-testing) вам как десктопные, так и мобильные браузеры для запуска тестов в них.
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>user</td><td>String</td><td>null</td><td>Имя пользователя в облачном сервисе.</td></tr>
+<tr><td>key</td><td>String</td><td>null</td><td>Ключ доступа или секретный ключ для доступа в облачный сервис.</td></tr>
+<tr><td>region</td><td>String</td><td>null</td><td>Позволяет выбрать различные датацентры в облачном сервисе.</td></tr>
+<tr><td>headless</td><td>String</td><td>null</td><td>Позволяет запускать headless-браузер в облачном сервисе.</td></tr>
+
+</tbody>
+</table>
+
+### user {#user}
+
+Имя пользователя в облачном сервисе. По умолчанию: `null`.
+
+### key {#key}
+
+Ключ доступа или секретный ключ для доступа в облачный сервис. По умолчанию: `null`.
+
+### region {#region}
+
+Позволяет выбрать различные датацентры в облачном сервисе. По умолчанию: `null`.
+
+### headless {#headless}
+
+Позволяет запускать headless-браузер в облачном сервисе. По умолчанию: `null`.
+
+[desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
+[html-reporter]: ../html-reporter/html-reporter-setup
+[got]: https://github.com/sindresorhus/got/
+[got-agent]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#agent
+[got-headers]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#headers
+[got-options]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md
+[got-response]: https://github.com/sindresorhus/got/blob/main/documentation/3-streams.md#response-2
+[strict-ssl]: https://webdriver.io/docs/options/#strictssl
+[read-tests]: ./browsers
+[sauce-labs]: https://saucelabs.com
+[system-mocha-opts]: ./system#mocha_opts
+[element-wait-until]: ../commands/element/waitUntil
+[how-to-use-cdp]: ../guides/how-to-use-cdp

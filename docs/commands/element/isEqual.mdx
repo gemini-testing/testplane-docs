@@ -1,0 +1,39 @@
+# isEqual
+
+## Обзор {#overview}
+
+Используйте команду `isEqual`, чтобы сравнить заданный DOM-элемент с другим элементом.
+
+Команда возвращает `true`, если выбранный элемент совпадает с предоставленным, иначе возвращает `false`.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).isEqual(el);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>el</td><td>Element</td><td>Элемент, с которым нужно выполнить сравнение.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should detect if an element is clickable", async ({ browser }) => {
+    const el = await browser.$("#el");
+
+    const sameEl = await browser.$("#el");
+    const anotherEl = await browser.$("#anotherEl");
+
+    el.isEqual(sameEl); // выведет: true
+    el.isEqual(anotherEl); // выведет: false
+});
+```

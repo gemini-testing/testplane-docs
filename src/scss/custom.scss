@@ -1,19 +1,55 @@
 @tailwind base;
+
+@layer base {
+    h1 {
+        @apply mb-4 text-4xl font-medium;
+    }
+
+    h2 {
+        @apply mb-4 text-3xl font-medium;
+    }
+
+    h3 {
+        @apply mb-3 text-xl font-medium;
+    }
+
+    p {
+        @apply mb-3;
+    }
+
+    code {
+        font-size: var(--ifm-code-font-size);
+        font-family: monospace, monospace !important;
+    }
+
+    a {
+        @apply text-indigo-600;
+
+        &:hover {
+            @apply text-indigo-400;
+            text-decoration: none !important;
+        }
+    }
+}
+
 @tailwind components;
 @tailwind utilities;
 
 /* Infima variables. */
 :root {
-    --ifm-color-primary: #2e8555;
-    --ifm-color-primary-dark: #29784c;
-    --ifm-color-primary-darker: #277148;
-    --ifm-color-primary-darkest: #205d3b;
-    --ifm-color-primary-light: #33925d;
-    --ifm-color-primary-lighter: #359962;
-    --ifm-color-primary-lightest: #3cad6e;
+    --ifm-color-primary: theme(colors.indigo.600);
+    --ifm-color-primary-dark: theme(colors.indigo.700);
+    --ifm-color-primary-darker: theme(colors.indigo.800);
+    --ifm-color-primary-darkest: theme(colors.indigo.900);
+    --ifm-color-primary-light: theme(colors.indigo.500);
+    --ifm-color-primary-lighter: theme(colors.indigo.400);
+    --ifm-color-primary-lightest: theme(colors.indigo.300);
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
     --ifm-font-family-base: Jost, sans-serif;
+    --ifm-link-color: theme(colors.indigo.600);
+    --ifm-menu-color-active: theme(colors.indigo.600);
+    --ifm-breadcrumb-color-active: theme(colors.indigo.600);
 }
 
 /* Dark mode. */
@@ -40,6 +76,10 @@
 
     .navbar__link {
         @apply flex items-center font-medium text-gray-600 after:border-t-gray-600;
+
+        &::after {
+            transform: none;
+        }
     }
 
     .navbar__brand {
@@ -52,5 +92,28 @@
 
     .navbar__toggle {
         display: none;
+    }
+}
+
+.breadcrumbs svg,
+.theme-edit-this-page svg {
+    display: inline;
+}
+
+.menu {
+    padding: 0.5rem !important;
+}
+
+.theme-doc-markdown,
+article {
+    ul {
+        list-style: square;
+        padding-left: 2rem;
+    }
+
+    pre {
+        code {
+            font-size: 95%;
+        }
     }
 }

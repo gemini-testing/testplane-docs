@@ -1,0 +1,163 @@
+import Admonition from "@theme/Admonition";
+
+# system
+
+## Overview {#overview}
+
+The `system` section in testplane settings is optional.
+
+Use it to:
+
+-   enable debug mode for WebDriver;
+-   change mocha timeouts for tests;
+-   put any data in a global context that all tests will see;
+-   set the types of errors in which you need to close the current browser session forever, and not try to reuse it;
+-   set the number of subprocesses in which tests will be run to speed up their execution;
+-   determine the maximum available number of browsers at one time (it may be relevant if you get browsers from a cloud service where there are such restrictions);
+-   set file extensions, among which testplane will look for tests;
+-   etc.
+
+## Setup {#setup}
+
+The `system` section has the following format:
+
+```javascript
+module.exports = {
+    system: {
+        debug: false,
+        mochaOpts: {
+            timeout: 60000,
+        },
+        ctx: {
+            // ...
+        },
+        // The session will be closed if the test crashes with an error,
+        // corresponding to one of the specified templates,
+        // after which a new session will be created,
+        // to eliminate infrastructure problems
+        patternsOnReject: [
+            /timeout/i,
+            /timedout/i,
+            /timed out/i,
+            // ...
+        ],
+        workers: 1,
+        testsPerWorker: Infinity,
+        parallelLimit: 15,
+        fileExtensions: [".js", ".ts"],
+    },
+
+    // other testplane settings...
+};
+```
+
+### Description of configuration parameters {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[debug](#debug)</td><td>Boolean</td><td>false</td><td>Enable / disable debugging mode for WebDriver.</td></tr>
+<tr><td>[mochaOpts](#mocha_opts)</td><td>Object</td><td>_[see below](#mocha_opts)_</td><td>Additional options for _mocha_.</td></tr>
+<tr><td>[ctx](#ctx)</td><td>Object</td><td>`{ }`</td><td>The context you can get in all tests via the _testplane.ctx_ method.</td></tr>
+<tr><td>[patternsOnReject](#patterns_on_reject)</td><td>Array</td><td>`[ ]`</td><td>List of error patterns. The session will be closed if the test crashes with an error corresponding to one of the specified templates. After that, a new session will be created to eliminate infrastructure problems.</td></tr>
+<tr><td>[workers](#workers)</td><td>Number</td><td>1</td><td>The number of subprocesses that will be started to run tests.</td></tr>
+<tr><td>[testsPerWorker](#tests_per_worker)</td><td>Number</td><td>Infinity</td><td>The maximum number of tests that will be run in a single subprocess before the subprocess is restarted.</td></tr>
+<tr><td>[parallelLimit](#parallel_limit)</td><td>Number</td><td>1</td><td>The maximum number of browsers that can be launched simultaneously.</td></tr>
+<tr><td>[fileExtensions](#file_extensions)</td><td>Array</td><td>`[.js]`</td><td>File extensions in which testplane will look for tests to run.</td></tr>
+
+</tbody>
+</table>
+
+### debug {#debug}
+
+Enables debugging mode for WebDriver if set to `true`. By default: `false`.
+
+### mochaOpts {#mocha_opts}
+
+Additional options for `mocha` that are passed to `mocha.setup`. See the list of available options in [Mocha documentation](https://mochajs.org/). By default: `{ timeout: 60000 }`.
+
+```javascript
+module.exports = {
+    system: {
+        mochaOpts: {
+            timeout: 60000, // test execution timeout
+        },
+
+        // other system settings...
+    },
+
+    // other testplane settings...
+};
+```
+
+### ctx {#setup_ctx}
+
+The context you can get in all tests via the `testplane.ctx` method. Designed to share any data between all tests, without having to use global variables.
+
+For example:
+
+```javascript
+module.exports = {
+    system: {
+        ctx: {
+            services: ["video", "images"],
+        },
+
+        // other system settings...
+    },
+
+    // other testplane settings...
+};
+```
+
+```javascript
+it("awesome test", function () {
+    console.log(testplane.ctx); // { services: ['video', 'images'] }
+});
+```
+
+<Admonition type="tip">Use _testplane.ctx_ in tests instead of global variables.</Admonition>
+
+### patternsOnReject {#patterns_on_reject}
+
+Testplane will close the session if the test crashes with an error corresponding to one of the specified patterns in `patternsOnReject`. After that, testplane will create a new session to eliminate infrastructure problems.
+
+For example:
+
+```javascript
+module.exports = {
+    system: {
+        patternsOnReject: [
+            /timeout/i,
+            /timedout/i,
+            /timed out/i,
+
+            // other patterns...
+        ],
+
+        // other system settings...
+    },
+
+    // other testplane settings...
+};
+```
+
+### workers {#workers}
+
+Testplane runs all the tests in subprocesses to reduce CPU usage for the main process and not to run into the memory limit for _Node.js._ This option sets the number of subprocesses that will be started to run tests. By default: `1`.
+
+### testsPerWorker {#tests_per_worker}
+
+The maximum number of tests that will be run in a single subprocess before the subprocess is restarted. By default: `Infinity`.
+
+### parallelLimit {#parallel_limit}
+
+By default, testplane runs all browsers at the same time. Sometimes (for example, when using cloud services such as [SauceLabs][sauce-labs]) you may need to limit the number of browsers that can be running at the same time. This option sets this restriction. By default: `Infinity`.
+
+### fileExtensions {#file_extensions}
+
+File extensions in which testplane will search on the file system for tests to run. By default: `[.js]`.
+
+[sauce-labs]: https://saucelabs.com

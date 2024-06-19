@@ -1,0 +1,45 @@
+# setTimeout
+
+## Обзор {#overview}
+
+Используйте команду `setTimeout`, чтобы настроить таймауты для поиска элемента на странице, ожидания загрузки документа и выполнения скриптов через команды [execute][execute] или [executeAsync][execute-async].
+
+## Использование {#usage}
+
+```javascript
+await browser.setTimeout({ implicit, pageLoad, script });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>implicit</td><td>Number</td><td>Время в миллисекундах для повторной попытки определения местоположения элемента при поиске элемента.</td></tr>
+<tr><td>pageLoad</td><td>Number</td><td>Время ожидания загрузки документа, в миллисекундах.</td></tr>
+<tr><td>script</td><td>Number</td><td>Таймаут для скриптов, запущенных с помощью [execute][execute] или [executeAsync][execute-async]. Задается в миллисекундах.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should change timeout duration for session with long code duration", async ({ browser }) => {
+    await browser.setTimeout({
+        pageLoad: 10000,
+        script: 60000,
+    });
+
+    // выполняем код, который занимает длительное время
+    await browser.executeAsync(done => {
+        console.log("Wake me up before you go!");
+        setTimeout(done, 59000);
+    });
+});
+```
+
+[execute]: ./execute
+[execute-async]: ./executeAsync

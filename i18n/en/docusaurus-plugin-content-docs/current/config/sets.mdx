@@ -1,0 +1,110 @@
+# sets
+
+## Overview {#overview}
+
+You can use sets to bind a set of tests to specific browsers and run them at once with one command.
+
+For example, it can be convenient to run tests on platforms: `desktop`, `touch-phone`, etc. You can also have a `common` set corresponding to common tests that you will always run in all browsers.
+
+Define a set of tests as an array of paths to them or to folders with them on the file system. You can also specify paths to ignore when searching for tests to speed up the process of reading tests by testplane.
+
+If there are no sets in the config, or you do not specify them when starting testplane (see the section "[Usage](#usage)"), then all tests from the `testplane` folder will be run in all browsers that were specified in the [browsers][browsers] section of testplane config.
+
+## Setup {#setup}
+
+The `sets` section has the following format:
+
+```javascript
+module.exports = {
+    sets: {
+        "<set-id>": {
+            files: [
+                "path-1",
+                "some/folder/**/*.some-ext",
+                // other paths to the test files...
+            ],
+            ignoreFiles: [
+                "ignorePath-1",
+                "some/ignore/folder/**/",
+                // other paths to ignore when searching and reading tests...
+            ],
+            browsers: [
+                "browser-1",
+                "browser-2",
+                // other browsers in which you need to run tests on the paths specified in files...
+            ],
+        },
+
+        // other sets settings...
+    },
+
+    // other testplane settings...
+};
+```
+
+Where `<set-id>` is the name of the set to identify it.
+
+### Description of configuration parameters {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>files</td><td>Array or String</td><td>_N/A_</td><td>A list of paths to files or folders with tests. In the case of a single path, the parameter can be set as a string. You can also use [masks][fast-glob-patterns].</td></tr>
+<tr><td>ignoreFiles</td><td>Array or String</td><td>`[ ]`</td><td>A list of paths or [masks][fast-glob-patterns] to ignore when searching for test files. This parameter allows you to speed up the reading of tests by testplane.</td></tr>
+<tr><td>browsers</td><td>Array</td><td>_all browsers_</td><td>The list of browsers to run the tests in. You can only specify browsers that are in the [browsers][browsers] section of testplane config. By default: all browsers from the [browsers][browsers] section.</td></tr>
+
+</tbody>
+</table>
+
+## Setup example {#setup_example}
+
+```javascript
+module.exports = {
+    sets: {
+        common: {
+            // run tests from the "tests/common" folder in all browsers,
+            // which are configured in the browsers section
+            files: "tests/common/*.testplane.js",
+        },
+
+        desktop: {
+            files: ["tests/desktop/*.testplane.js", "tests/common/*.testplane.js"],
+            // exclude folders with screenshots while searching for test files
+            ignoreFiles: ["**/screens/**"],
+            // run tests in desktop browsers
+            browsers: ["chrome", "firefox"],
+        },
+    },
+
+    browsers: {
+        chrome: {
+            // chrome browser settings...
+        },
+        firefox: {
+            // firefox browser settings...
+        },
+        iphone: {
+            // iphone browser settings...
+        },
+    },
+
+    // other testplane settings...
+};
+```
+
+## Usage {#usage}
+
+Use the `--set` CLI option to specify a set when running tests.
+
+Example of how to run tests for a desktop platform in the case of the configuration given [above](#setup_example):
+
+```bash
+testplane --set desktop
+```
+
+If there are no sets in the config, or they exist, but the `--set` option was not specified, and the paths were not passed to testplane via the CLI, then all tests from the `testplane` folder will be run in all [browsers][browsers].
+
+[fast-glob-patterns]: https://github.com/mrmlnc/fast-glob#pattern-syntax
+[browsers]: ./browsers

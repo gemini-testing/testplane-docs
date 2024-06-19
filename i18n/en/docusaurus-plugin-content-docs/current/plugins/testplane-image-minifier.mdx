@@ -1,0 +1,114 @@
+import Admonition from "@theme/Admonition";
+
+# testplane-image-minifier
+
+## Overview {#overview}
+
+Use the `testplane-image-minifier` plugin to compress images (screenshots) in your tests.
+
+The plugin supports 8 compression levels: from 0 (do not apply compression) to 7 (maximum compression level).
+
+Compression is lossless.
+
+### How does it work? {#how_does_it_work}
+
+At startup, the plugin subscribes to the `UPDATE_REFERENCE` event, which Testplane sends in the following cases:
+
+-   if the user started testplane by passing the `--update-refs` option;
+-   if the user updates or saves screenshots using the [html-reporter][html-reporter] plugin.
+
+When the `UPDATE_REFERENCE` event is received in the `testplane-image-minifier` plugin, it gets a link to the image itself along with the event. Next, the plugin applies a compression algorithm to the received image with the compression level specified in the config. And saves the new image to the file system. After that, the developer can merge the updated files into the main branch of his project.
+
+To compress images, the `testplane-image-minifier` plugin uses the [optipng-bin][optipng-bin] package.
+
+<Admonition type="info">
+    When choosing the compression level for images in your project, remember that you are choosing
+    between the speed and the space that your images will occupy on disk. The higher the compression
+    ratio, the less space your images will occupy on disk, but the tests themselves will take
+    longer. Since before comparing the images in the tests, the system will have to unpack them.
+    Therefore, in order to get an acceptable test run time, match the selected compression ratio
+    with the capacity of the servers on which these tests will be running.
+</Admonition>
+
+## Install {#install}
+
+```bash
+npm install -D testplane-image-minifier
+```
+
+## Setup {#setup}
+
+Add the plugin to the `plugins` section of the `testplane` config:
+
+```javascript
+module.exports = {
+    plugins: {
+        "testplane-image-minifier": {
+            enabled: true, // Enable the plugin.
+            compressionLevel: 7, // Maximum compression level, compression will take some time
+        },
+
+        // other testplane plugins...
+    },
+
+    // other testplane settings...
+};
+```
+
+### Description of configuration parameters {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>compressionLevel</td><td>Number</td><td>2</td><td>Image compression level: from 0 to 7 (maximum compression level).</td></tr>
+
+</tbody>
+</table>
+
+### Passing parameters via the CLI {#setup_by_cli}
+
+All plugin parameters that can be defined in the config can also be passed as command-line options or through environment variables during the launch of Testplane. Use the prefix `--image-minifier-` for command line options and `testplane_image_minifier_` for environment variables. For example:
+
+```bash
+npx testplane --image-minifier-compression-level 5
+```
+
+```bash
+testplane_image_minifier_compression_level = 5 npx testplane
+```
+
+## Debugging {#debugging}
+
+Set the environment variable `DEBUG=testplane:image-minifier` to see messages in the console about the application of the compression algorithm for images in tests.
+
+```bash
+DEBUG=testplane:image-minifier npx testplane --update-refs
+```
+
+An example of how it will look in the console:
+
+```bash
+/path/to/reference/image.png compressed by 30%
+```
+
+## Usage {#usage}
+
+After adding the plugin to the project and configuring its parameters, run testplane with the `--update-refs` option:
+
+```bash
+npx testplane --update-refs
+```
+
+The images on the file system will be updated.
+
+## Useful links {#useful_links}
+
+-   [testplane-image-minifier plugin sources][testplane-image-minifier]
+-   [optipng-bin package to compress images][optipng-bin]
+
+[testplane-image-minifier]: https://github.com/gemini-testing/testplane-image-minifier/
+[html-reporter]: ./html-reporter
+[optipng-bin]: https://www.npmjs.com/package/optipng-bin

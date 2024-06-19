@@ -1,0 +1,93 @@
+# setCookies
+
+## Обзор {#overview}
+
+Используйте команду `setCookies`, чтобы установить _cookies_ на текущей странице.
+
+Убедитесь, что вы находитесь именно на той странице, для которой вы хотите установить _cookies_. Вы не можете установить _cookies_ для произвольной страницы, не находясь при этом на ней.
+
+## Использование {#usage}
+
+```javascript
+await browser.setCookies(cookies);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>cookies</td><td>WebDriver.Cookie или WebDriver.Cookie[]</td><td>Объект _cookie_ или массив объектов _cookie_.</td></tr>
+
+</tbody>
+</table>
+
+### Параметры объекта WebDriver.Cookie
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**По умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>String</td><td>_N/A_</td><td>Имя _cookie_.</td></tr>
+<tr><td>value</td><td>String</td><td>_N/A_</td><td>Значение _cookie_.</td></tr>
+<tr><td>path</td><td>String</td><td>"/"</td><td>Путь к _cookie_.</td></tr>
+<tr><td>domain</td><td>String</td><td>_см. описание_</td><td>Домен, для которого будет видна _cookie_. Если домен не указан, то подразумевается домен урла активного документа в текущем контексте браузера.</td></tr>
+<tr><td>secure</td><td>Boolean</td><td>false</td><td>Признак безопасной _cookie_.</td></tr>
+<tr><td>httpOnly</td><td>Boolean</td><td>false</td><td>Признак _cookie_ только для _http_.</td></tr>
+<tr><td>expiry</td><td>Number</td><td>_не устанавливается_</td><td>Срок годности _cookie_ в секундах от начала эпохи Unix.</td></tr>
+<tr><td>sameSite</td><td>String</td><td>"None"</td><td>Признак подчинения _cookie_ политике [SameSite][same-site]. Допустимые значения: _"Lax"_ или _"Strict"_.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should set a cookie for the page", async ({ browser }) => {
+    await browser.url("/");
+
+    // устанавливаем одну cookie
+    await browser.setCookies({
+        name: "test1",
+        value: "one",
+        // Следующие параметры опциональны:
+        // путь к cookie, по умолчанию: "/"
+        //      path: '/foo',
+        // домен, для которого будет видна cookie
+        // по умолчанию: домен урла активного документа в текущем контексте браузера
+        //      domain: '.example.com',
+        // признак, что это безопасная cookie, по умолчанию: false
+        //      secure: true,
+        // признак, что это cookie только для http, по умолчанию: false
+        //      httpOnly: true,
+        // срок, когда cookie истекает, указывается в секундах с начала эпохи Unix
+        //      expiry: 1551393875
+    });
+
+    // устанавливаем несколько cookies
+    await browser.setCookies([
+        { name: "test2", value: "two" },
+        { name: "test3", value: "three" },
+    ]);
+
+    const cookies = await browser.getCookies();
+
+    await console.log(cookies);
+    // выведет:
+    // [
+    //      { name: 'test1', value: 'one', domain: 'www.example.com' },
+    //      { name: 'test2', value: 'two', domain: 'www.example.com' },
+    //      { name: 'test3', value: 'three', domain: 'www.example.com' }
+    // ]
+});
+```
+
+## Связанные команды {#related}
+
+-   [getCookies](./getCookies)
+-   [deleteCookies](./deleteCookies)
+
+[same-site]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite

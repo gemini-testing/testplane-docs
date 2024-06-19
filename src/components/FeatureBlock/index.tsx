@@ -33,9 +33,9 @@ export function FeatureBlock(props: FeatureBlockProps) {
                     {props.items.map((item, index) => (
                         <div
                             key={index}
-                            className="mb-3 flex max-w-48 items-center text-lg font-medium text-gray-500"
+                            className="mb-3 flex max-w-48 text-lg font-medium text-gray-500"
                         >
-                            <TickIcon className="mr-1 size-5 flex-shrink-0 fill-gray-500" />
+                            <TickIcon className="mr-1 mt-1 size-5 flex-shrink-0 fill-gray-500" />
                             {item}
                         </div>
                     ))}

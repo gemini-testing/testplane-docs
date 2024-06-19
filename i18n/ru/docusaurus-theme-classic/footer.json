@@ -1,0 +1,70 @@
+{
+    "link.title.Quickstart": {
+        "message": "Быстрый старт",
+        "description": "The title of the footer links column with title=Quickstart in the footer"
+    },
+    "link.title.Core concepts": {
+        "message": "Ключевые функции",
+        "description": "The title of the footer links column with title=Core concepts in the footer"
+    },
+    "link.title.Customization": {
+        "message": "Кастомизация",
+        "description": "The title of the footer links column with title=Customization in the footer"
+    },
+    "link.title.Resources": {
+        "message": "Ресурсы",
+        "description": "The title of the footer links column with title=Resources in the footer"
+    },
+    "link.item.label.Installation": {
+        "message": "Установка",
+        "description": "The label of footer link with label=Installation linking to /docs/v8/quickstart"
+    },
+    "link.item.label.Why testplane?": {
+        "message": "Почему testplane?",
+        "description": "The label of footer link with label=Why testplane? linking to /docs/v8#why-testplane"
+    },
+    "link.item.label.Browser commands": {
+        "message": "Команды браузера",
+        "description": "The label of footer link with label=Browser commands linking to /docs/v8/commands/overview"
+    },
+    "link.item.label.Testplane config": {
+        "message": "Конфиг Testplane",
+        "description": "The label of footer link with label=Testplane config linking to /docs/v8/config/main"
+    },
+    "link.item.label.Testplane UI": {
+        "message": "Testplane UI",
+        "description": "The label of footer link with label=Testplane UI linking to /docs/v8/html-reporter/html-reporter-setup"
+    },
+    "link.item.label.Docs": {
+        "message": "Документация",
+        "description": "The label of footer link with label=Docs linking to /docs/v8"
+    },
+    "link.item.label.Blog": {
+        "message": "Блог",
+        "description": "The label of footer link with label=Blog linking to /blog"
+    },
+    "link.item.label.Changelog": {
+        "message": "Changelog",
+        "description": "The label of footer link with label=Changelog linking to https://github.com/gemini-testing/testplane/blob/master/CHANGELOG.md"
+    },
+    "copyright": {
+        "message": "MIT License © 2024",
+        "description": "The footer copyright"
+    },
+    "link.item.label.Overview": {
+        "message": "Обзор",
+        "description": "The label of footer link with label=Overview linking to /docs/v8"
+    },
+    "link.item.label.Testplane API": {
+        "message": "Testplane API",
+        "description": "The label of footer link with label=Testplane API linking to /docs/v8/reference/hermione-api"
+    },
+    "link.item.label.Testplane events": {
+        "message": "События Testplane",
+        "description": "The label of footer link with label=Testplane events linking to /docs/v8/reference/testplane-events"
+    },
+    "link.item.label.Plugins": {
+        "message": "Плагины",
+        "description": "The label of footer link with label=Plugins linking to /docs/v8/guides/how-to-write-your-own-plugin"
+    }
+}

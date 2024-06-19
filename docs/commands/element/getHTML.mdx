@@ -1,0 +1,49 @@
+# getHTML
+
+## Обзор {#overview}
+
+Используйте команду `getHTML`, чтобы получить исходный код указанного элемента DOM.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getHTML(includeSelectorTag);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>includeSelectorTag</td><td>Boolean</td><td>Необязательный параметр. Включить в исходный код тег элемента селектора. По умолчанию: _true_.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<div id="test">
+    <span>Lorem ipsum dolor amet</span>
+</div>
+```
+
+**getHTML.js**
+
+```javascript
+it("should get html for certain elements", async ({ browser }) => {
+    var outerHTML = await browser.$("#test").getHTML();
+    console.log(outerHTML);
+    // выведет:
+    // "<div id="test"><span>Lorem ipsum dolor amet</span></div>"
+
+    var innerHTML = await browser.$("#test").getHTML(false);
+    console.log(innerHTML);
+    // выведет:
+    // "<span>Lorem ipsum dolor amet</span>"
+});
+```

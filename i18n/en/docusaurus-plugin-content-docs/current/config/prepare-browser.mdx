@@ -1,0 +1,159 @@
+import Admonition from "@theme/Admonition";
+
+# prepareBrowser
+
+## Overview {#overview}
+
+This parameter is a hook. Testplane calls the function specified for this parameter before running tests in the browser. As an argument, the function receives a link to the browser session.
+
+Use this function to add new commands to the browser, or to expand the behaviour of existing commands.
+
+## Usage examples {#example}
+
+### Example 1: adding a new command for the browser {#example_add_new_command_to_browser}
+
+To add a new command, use [browser.addCommand()][add-command] of WebdriverIO.
+
+```javascript
+const querystring = require("querystring");
+
+function toStoryKind(value) {
+    /* here goes some code */
+}
+function toStoryId(value) {
+    /* here goes some code */
+}
+
+module.exports = {
+    prepareBrowser: function (browser) {
+        browser.addCommand("openScenario", function openScenario(rawComponent, rawStory, params) {
+            const component = toStoryKind(rawComponent);
+            const story = toStoryId(rawStory);
+            const queryParams = querystring.stringify(params);
+            const url = `/storybook/iframe.html?id=components-${component}-testplane--${story}&${queryParams}`;
+
+            return this.url(url);
+        });
+    },
+
+    // other testplane settings...
+};
+```
+
+### Example 2: adding a new command for the element {#example_2_add_new_command_to_element}
+
+You can add a command not for the browser, but for the element. Then the third argument of the [browser.addCommand()][add-command] function must specify `true`.
+
+<Admonition type="warning">
+    If a command is added for an element and not for the browser, then the function is executed in
+    the context of the element!
+</Admonition>
+
+```javascript
+module.exports = {
+    prepareBrowser: function(browser) {
+        await browser.addCommand(
+            'getCoords',
+            async function () {
+                // inside the function, the context is element, not browser!
+                const { x, y } = await this.getLocation();
+                const { width, height } = await this.getSize();
+
+                return {
+                    left: x,
+                    top: y,
+                    right: x + width,
+                    bottom: y + height
+                };
+            },
+            true // true means that we set the function for the element, (by default) false – for the browser
+        );
+    },
+
+    // other testplane settings...
+};
+```
+
+In the function above we use the commands [getLocation()][get-location] and [getSize()][get-size], which are available for the element in WebdriverIO.
+
+After adding the `getCoords()` command, we can use it in tests as follows:
+
+```javascript
+const { left, top, right, bottom } = await browser.$(‘.selector’).getCoords();
+```
+
+### Example 3: changing an existing command {#example_3_overwrite_command}
+
+To change an existing command, use [browser.overwriteCommand()][overwrite-command] of WebdriverIO.
+
+For example, we may want to pass an object with query parameters to the [browser.url()][url] command as a separate argument:
+
+```javascript
+const { URL } = require("url");
+
+module.exports = {
+    prepareBrowser: function (browser) {
+        browser.overwriteCommand("url", function (origUrlFunction, uri, query) {
+            if (!query) {
+                return origUrlFunction(uri);
+            }
+
+            const parsedUrl = new URL(uri);
+
+            for (const [key, value] of Object.entries(query)) {
+                parsedUrl.searchParams.set(key, value);
+            }
+
+            return origUrlFunction(parsedUrl.href);
+        });
+    },
+
+    // other testplane settings...
+};
+```
+
+### Example 4: adding a set of commands from the folder {#example_4_add_commands_from_folder}
+
+If the project has a lot of its own specific commands, then it is convenient to store them in a separate folder, and add all commands in `prepareBrowser` at once in a unified way. For example:
+
+```javascript
+const path = require("path");
+const glob = require("fast-glob");
+
+module.exports = {
+    prepareBrowser: function (browser) {
+        const files = glob.sync(["tests/testplane/commands/*.(js|ts)", "!**/*.d.ts"]);
+
+        files.forEach(file => {
+            const module = require(path.resolve(process.cwd(), file));
+            const name = path.basename(file, path.extname(file));
+
+            browser.addCommand(name, typeof module === "object" ? module[name] : module);
+        });
+    },
+
+    // other testplane settings...
+};
+```
+
+In this case, a file with one of the commands may look like this:
+
+```javascript
+// tests/testplane/commands/yaCheckCookie.js
+
+module.exports = async function (cookieName) {
+    // the context in the function is browser
+    const cookies = await this.getCookies(cookieName);
+
+    assert.isTrue(cookies[0], `cookie with name ${cookieName} is not set`);
+};
+```
+
+Here we use the [browser.getCookies()][get-cookies] command of WebDriverIO.
+
+[url]: ../commands/browser/url
+[add-command]: ../commands/browser/addCommand
+[overwrite-command]: ../commands/browser/overwriteCommand
+[get-cookies]: ../commands/browser/getCookies
+[get-location]: ../commands/element/getLocation
+[get-size]: ../commands/element/getSize

@@ -1,0 +1,45 @@
+# getAttribute
+
+## Обзор {#overview}
+
+Используйте команду `getAttribute`, чтобы получить атрибут из DOM-элемента на основе имени атрибута.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getAttribute(attributeName);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>attributeName</td><td>String</td><td>Имя запрашиваемого атрибута.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<form action="/submit" method="post" class="loginForm">
+    <input type="text" name="name" placeholder="username"></input>
+    <input type="text" name="password" placeholder="password"></input>
+    <input type="submit" name="submit" value="submit"></input>
+</form>
+```
+
+**getAttribute.js**
+
+```javascript
+it("should demonstrate the getAttribute command", async ({ browser }) => {
+    const form = await browser.$("form");
+    const attr = await form.getAttribute("method");
+    console.log(attr); // выведет: "post"
+});
+```
