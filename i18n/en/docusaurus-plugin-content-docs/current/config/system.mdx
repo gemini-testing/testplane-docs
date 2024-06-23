@@ -4,7 +4,7 @@ import Admonition from "@theme/Admonition";
 
 ## Overview {#overview}
 
-The `system` section in testplane settings is optional.
+The `system` section in Testplane settings is optional.
 
 Use it to:
 
@@ -14,7 +14,7 @@ Use it to:
 -   set the types of errors in which you need to close the current browser session forever, and not try to reuse it;
 -   set the number of subprocesses in which tests will be run to speed up their execution;
 -   determine the maximum available number of browsers at one time (it may be relevant if you get browsers from a cloud service where there are such restrictions);
--   set file extensions, among which testplane will look for tests;
+-   set file extensions, among which Testplane will look for tests;
 -   etc.
 
 ## Setup {#setup}
@@ -47,7 +47,7 @@ module.exports = {
         fileExtensions: [".js", ".ts"],
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -65,7 +65,7 @@ module.exports = {
 <tr><td>[workers](#workers)</td><td>Number</td><td>1</td><td>The number of subprocesses that will be started to run tests.</td></tr>
 <tr><td>[testsPerWorker](#tests_per_worker)</td><td>Number</td><td>Infinity</td><td>The maximum number of tests that will be run in a single subprocess before the subprocess is restarted.</td></tr>
 <tr><td>[parallelLimit](#parallel_limit)</td><td>Number</td><td>1</td><td>The maximum number of browsers that can be launched simultaneously.</td></tr>
-<tr><td>[fileExtensions](#file_extensions)</td><td>Array</td><td>`[.js]`</td><td>File extensions in which testplane will look for tests to run.</td></tr>
+<tr><td>[fileExtensions](#file_extensions)</td><td>Array</td><td>`[.js]`</td><td>File extensions in which Testplane will look for tests to run.</td></tr>
 
 </tbody>
 </table>
@@ -88,7 +88,7 @@ module.exports = {
         // other system settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -108,7 +108,7 @@ module.exports = {
         // other system settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -122,7 +122,7 @@ it("awesome test", function () {
 
 ### patternsOnReject {#patterns_on_reject}
 
-Testplane will close the session if the test crashes with an error corresponding to one of the specified patterns in `patternsOnReject`. After that, testplane will create a new session to eliminate infrastructure problems.
+Testplane will close the session if the test crashes with an error corresponding to one of the specified patterns in `patternsOnReject`. After that, Testplane will create a new session to eliminate infrastructure problems.
 
 For example:
 
@@ -140,7 +140,7 @@ module.exports = {
         // other system settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -154,10 +154,10 @@ The maximum number of tests that will be run in a single subprocess before the s
 
 ### parallelLimit {#parallel_limit}
 
-By default, testplane runs all browsers at the same time. Sometimes (for example, when using cloud services such as [SauceLabs][sauce-labs]) you may need to limit the number of browsers that can be running at the same time. This option sets this restriction. By default: `Infinity`.
+By default, Testplane runs all browsers at the same time. Sometimes (for example, when using cloud services such as [SauceLabs][sauce-labs]) you may need to limit the number of browsers that can be running at the same time. This option sets this restriction. By default: `Infinity`.
 
 ### fileExtensions {#file_extensions}
 
-File extensions in which testplane will search on the file system for tests to run. By default: `[.js]`.
+File extensions in which Testplane will search on the file system for tests to run. By default: `[.js]`.
 
 [sauce-labs]: https://saucelabs.com

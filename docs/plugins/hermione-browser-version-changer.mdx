@@ -12,7 +12,7 @@ npm install -D hermione-browser-version-changer
 
 ## Настройка {#setup}
 
-Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+Необходимо подключить плагин в разделе `plugins` конфига Testplane:
 
 ```javascript
 module.exports = {
@@ -85,7 +85,7 @@ browsers: {
 
 ### Передача параметров через CLI {#setup_by_cli}
 
-Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--browser-version-changer-` для опций командной строки и `testplane_browser_version_changer_` &mdash; для переменных окружения. Например:
+Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--browser-version-changer-` для опций командной строки и `testplane_browser_version_changer_` — для переменных окружения. Например:
 
 ```bash
 npx testplane --browser-version-changer-enabled false ...

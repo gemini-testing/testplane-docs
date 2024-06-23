@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 Use the `retry-limiter` plugin to limit the number of retries of failed tests, as well as the time during which retries are allowed.
 
 <Admonition type="tip">
-Use this plugin when running tests in CI.&mdash;Since in CI, as a rule, either all the tests of the project are run, or a significant part of them.
+Use this plugin when running tests in CI.—Since in CI, as a rule, either all the tests of the project are run, or a significant part of them.
 
 Using the _retry-limiter_ plugin for local launches of a few tests is most often impractical, due to their small number and, accordingly, the lack of a significant effect from saving hardware or time for running tests.
 
@@ -25,7 +25,7 @@ For example, if 1000 tests are run in the project and the `limit` parameter in t
 
 If the value _600 seconds (10 minutes)_ is still set in the plugin config for the `timeLimit` parameter, then regardless of how many times you can still retry the failed tests, the plugin will disable the retry mechanism after _10 minutes_ after the start of the test run. The latter protects against unreasonable waste of hardware resources for too long test runs.
 
-If testplane is launched with the `--retry` option, for example, with the value _7_, and at the same time, in the config of the `retry-limiter` plugin, the `setRetriesOnTestFail` parameter is set to _4_, this means the following: if at least one test fails in any of the browsers after _7_ retries, the plugin will consider that some kind of system problem has arisen and it is necessary to reduce the maximum allowed number of retries to the value specified in the `setRetriesOnTestFail` parameter, that is, to _4_. It also allows you to protect yourself from the unreasonable consumption of resources for running tests in case of system problems.
+If Testplane is launched with the `--retry` option, for example, with the value _7_, and at the same time, in the config of the `retry-limiter` plugin, the `setRetriesOnTestFail` parameter is set to _4_, this means the following: if at least one test fails in any of the browsers after _7_ retries, the plugin will consider that some kind of system problem has arisen and it is necessary to reduce the maximum allowed number of retries to the value specified in the `setRetriesOnTestFail` parameter, that is, to _4_. It also allows you to protect yourself from the unreasonable consumption of resources for running tests in case of system problems.
 
 <Admonition type="tip">
     If you are faced with a situation in your project when the retry mechanism starts to turn off
@@ -42,7 +42,7 @@ npm install -D retry-limiter
 
 ## Setup {#setup}
 
-Add the plugin to the `plugins` section of the `testplane` config:
+Add the plugin to the `plugins` section of the Testplane config:
 
 ```javascript
 module.exports = {
@@ -53,10 +53,10 @@ module.exports = {
             timeLimit: 600, // after 10 minutes the retries should be turned off
         },
 
-        // other testplane plugins...
+        // other Testplane plugins...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -89,7 +89,7 @@ retry_limiter_time_limit=900 npx testplane
 
 ## Usage {#usage}
 
-When using the plugin in testplane's logs, you can see the following messages:
+When using the plugin in Testplane's logs, you can see the following messages:
 
 ```bash
 retry-limiter: will stop retrying tests after 600 seconds
@@ -100,7 +100,7 @@ retry-limiter: with limit 0.3 will stop retrying tests after 1189 retries
 ```
 
 In the first message, the plugin informs about the limitation of the operation time of the retry mechanism.
-In the second message&mdash;about limiting the total number of retries.
+In the second message—about limiting the total number of retries.
 
 ## Useful links {#useful_links}
 

@@ -17,7 +17,7 @@ export const InstallationPromptSection = () => {
             new Typed(consoleRef.current, {
                 typeSpeed: 50,
                 cursorChar: "▊",
-                strings: ["npm init testplane"],
+                strings: ["npm init testplane@latest"],
             });
         }
     };

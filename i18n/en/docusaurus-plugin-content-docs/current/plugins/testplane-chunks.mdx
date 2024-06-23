@@ -34,7 +34,7 @@ You need to understand that acceleration is possible only due to the fact that t
 
 If you do not have servers available that could be allocated for the parallel launch of several testplanes at once, then it makes no sense to split the tests into the appropriate number of chunks. If CI waits for a server to be released in order to run the next chunk of tests, then your parallel launch will turn into a sequential one, and you will not get any acceleration. On the contrary, there will be a slowdown due to the overhead of separate launches of Testplane and the merging of the final report.
 
-That is, parallelism &mdash; the number of chunks into which you split your tests &mdash; must necessarily be provided with the appropriate amount of available hardware.
+That is, parallelism — the number of chunks into which you split your tests — must necessarily be provided with the appropriate amount of available hardware.
 
 ### And how to get the final report? {#how_to_get_report}
 

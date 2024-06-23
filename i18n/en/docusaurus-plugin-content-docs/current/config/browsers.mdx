@@ -4,7 +4,7 @@ import Admonition from "@theme/Admonition";
 
 ## Overview {#overview}
 
-The `browsers` section is required in testplane settings. It specifies all the browsers in which the tests will be run.
+The `browsers` section is required in Testplane settings. It specifies all the browsers in which the tests will be run.
 
 ## Setup {#setup}
 
@@ -300,8 +300,8 @@ This option enables a guarantee of a strict order of reading tests. By default: 
 <tr><td>[takeScreenshotOnFails](#take_screenshot_on_fails)</td><td>Object</td><td>_see description_</td><td>Determines whether to take a screenshot of the browser page _(Page Screenshot)_ when the test fails, as well as when the _assertView_ command fails. Default value: _\{ testFail: true, assertViewFail: true }_.</td></tr>
 <tr><td>[takeScreenshotOnFailsMode](#take_screenshot_on_fails_mode)</td><td>String</td><td>"fullpage"</td><td>The mode of taking a screenshot when the test fails. Available values: _viewport_ and _fullpage_.</td></tr>
 <tr><td>[takeScreenshotOnFailsTimeout](#take_screenshot_on_fails_timeout)</td><td>Number</td><td>5000</td><td>Timeout for taking a screenshot of the browser page _(Page Screenshot)_ when the test fails, in ms.</td></tr>
-<tr><td>[saveHistory](#save_history)</td><td>Boolean</td><td>true</td><td>Save the history of all executed commands. _Replaced to `saveHistoryMode` in testplane@7_.</td></tr>
-<tr><td>[saveHistoryMode](#save_history_mode)</td><td>"all" or "none" or "onlyFailed"</td><td>"all"</td><td>Save the history of all executed commands. _Available from testplane@7_.</td></tr>
+<tr><td>[saveHistory](#save_history)</td><td>Boolean</td><td>true</td><td>Save the history of all executed commands. _Replaced to `saveHistoryMode` in hermione@7_.</td></tr>
+<tr><td>[saveHistoryMode](#save_history_mode)</td><td>"all" or "none" or "onlyFailed"</td><td>"all"</td><td>Save the history of all executed commands. _Available from hermione@7_.</td></tr>
 
 </tbody>
 </table>
@@ -318,8 +318,8 @@ The option is set as an object with two keys: `testFail` and `assertViewFail`. T
 
 The mode of taking a screenshot of the browser page when the test fails. Available values are `viewport` and `fullpage`:
 
--   `viewport`&mdash;take a screenshot of the current viewport.
--   `fullpage`&mdash;take a screenshot of the entire browser page.
+-   `viewport`—take a screenshot of the current viewport.
+-   `fullpage`—take a screenshot of the entire browser page.
 
 By default: `fullpage`.
 
@@ -330,14 +330,14 @@ Timeout for taking a screenshot of the browser page when the test fails, in mill
 ### saveHistory {#save_history}
 
 <Admonition type="warning">
-    Replaced to [saveHistoryMode](#save_history_mode) in testplane@7.
+    Replaced to [saveHistoryMode](#save_history_mode) in hermione@7.
 </Admonition>
 
 Save the history of all executed commands. By default: `true`.
 
 Some plugins may rely on this history, for example, [html-reporter][html-reporter].
 
-The history is available from the following events&mdash;`TEST_END`, `TEST_PASS`, `TEST_FAIL`&mdash;via `payload`:
+The history is available from the following events—`TEST_END`, `TEST_PASS`, `TEST_FAIL`—via `payload`:
 
 ```javascript
 // sample plugin code
@@ -350,19 +350,19 @@ module.exports = testplane => {
 
 ### saveHistoryMode {#save_history_mode}
 
-<Admonition type="warning">Available from testplane@7.</Admonition>
+<Admonition type="warning">Available from hermione@7.</Admonition>
 
 Save the history of all executed commands. By default: `all`.
 
 Available options:
 
--   `all` &mdash; history is enabled.
--   `none` &mdash; history is disabled
--   `onlyFailed` &mdash; history is saved for failed tests only.
+-   `all` — history is enabled.
+-   `none` — history is disabled
+-   `onlyFailed` — history is saved for failed tests only.
 
 Some plugins may rely on this history, for example, [html-reporter][html-reporter].
 
-The history is available from the following events&mdash;`TEST_END`, `TEST_PASS`, `TEST_FAIL`&mdash;via `payload`:
+The history is available from the following events—`TEST_END`, `TEST_PASS`, `TEST_FAIL`—via `payload`:
 
 ```javascript
 // sample plugin code

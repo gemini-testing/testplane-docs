@@ -16,7 +16,7 @@ Use the [html-reporter][html-reporter] plugin to get an html-report on the tests
 [//]: # "![Html-report](_images/html-reporter.overview.png)"
 
 <Admonition type="warning" title="Requirements for testplane">
-    For the html-reporter plugin to work correctly, [testplane][testplane] version 4 and higher is
+    For the html-reporter plugin to work correctly, [hermione][testplane] version 4 and higher is
     required.
 </Admonition>
 
@@ -50,7 +50,7 @@ npm install -D html-reporter
 
 ## Setup {#setup}
 
-Add the plugin to the `plugins` section of the `testplane` config:
+Add the plugin to the `plugins` section of the Testplane config:
 
 <Tabs>
 <TabItem value="Minimum config" label="Minimum config">
@@ -61,10 +61,10 @@ Add the plugin to the `plugins` section of the `testplane` config:
                 enabled: true
             },
 
-            // other testplane plugins...
+            // other Testplane plugins...
         },
 
-        // other testplane settings...
+        // other Testplane settings...
     };
     ```
 
@@ -108,10 +108,10 @@ Add the plugin to the `plugins` section of the `testplane` config:
                 }
             },
 
-            // other testplane plugins...
+            // other Testplane plugins...
         },
 
-        // other testplane settings...
+        // other Testplane settings...
     };
     ```
 
@@ -301,7 +301,7 @@ Allows you to set the format in which the results of the tests run will be saved
 
 Only one value is available now, which is used by default:
 
--   `sqlite` &mdash; save the results of the tests run in the database of SQLite format.
+-   `sqlite` — save the results of the tests run in the database of SQLite format.
 
 ### customGui
 
@@ -354,8 +354,8 @@ With the help of metrics, you can find out how developers interact with your rep
 
 The report supports the following [goals of metrics][yandex-metrika-goals]:
 
--   **ACCEPT_SCREENSHOT**&mdash;there was a click on the _Accept_ button to accept a screenshot;
--   **ACCEPT_OPENED_SCREENSHOTS**&mdash;there was a click on the _Accept opened_ button to accept screenshots from open tests.
+-   **ACCEPT_SCREENSHOT**—there was a click on the _Accept_ button to accept a screenshot;
+-   **ACCEPT_OPENED_SCREENSHOTS**—there was a click on the _Accept opened_ button to accept screenshots from open tests.
 
 Example of setting up Yandex.Metrika in one of the projects:
 
@@ -410,9 +410,9 @@ Why do we use SQLite? Because it is:
 
 Files that are created during the execution of tests:
 
--   `sqlite.db`&mdash;Sqlite database with tests run results
--   `data.js`&mdash;report configuration
--   `databaseUrls.json`&mdash;absolute or relative URLs to SQLite databases (`sqlite.db`) and/or URLs of other `databaseUrls.json` files (see command [merge-reports][merge-reports]).
+-   `sqlite.db`—Sqlite database with tests run results
+-   `data.js`—report configuration
+-   `databaseUrls.json`—absolute or relative URLs to SQLite databases (`sqlite.db`) and/or URLs of other `databaseUrls.json` files (see command [merge-reports][merge-reports]).
 
 [html-reporter]: https://github.com/gemini-testing/html-reporter
 [testplane]: https://github.com/gemini-testing/testplane

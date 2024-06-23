@@ -300,7 +300,7 @@ throw err;
 
 Доступным осталось только одно значение, которое используется по умолчанию:
 
--   `sqlite` &mdash; сохранить результаты прогона тестов в базе данных формата SQLite.
+-   `sqlite` — сохранить результаты прогона тестов в базе данных формата SQLite.
 
 ### customGui
 
@@ -353,8 +353,8 @@ customScripts: [
 
 Отчет поддерживает следующие [цели для метрики][yandex-metrika-goals]:
 
--   **ACCEPT_SCREENSHOT** &mdash; было нажатие на кнопку _Accept_ для принятия скриншота;
--   **ACCEPT_OPENED_SCREENSHOTS** &mdash; было нажатие на кнопку _Accept opened_ для принятия скриншотов из открытых тестов.
+-   **ACCEPT_SCREENSHOT** — было нажатие на кнопку _Accept_ для принятия скриншота;
+-   **ACCEPT_OPENED_SCREENSHOTS** — было нажатие на кнопку _Accept opened_ для принятия скриншотов из открытых тестов.
 
 Пример настройки _Яндекс.Метрики_ в одном из проектов:
 
@@ -383,7 +383,7 @@ module.exports = {
 
 ### Передача параметров через CLI {#setup_by_cli}
 
-Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--html-reporter-` для опций командной строки и `html_reporter_` &mdash; для переменных окружения.
+Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--html-reporter-` для опций командной строки и `html_reporter_` — для переменных окружения.
 
 Например, параметр настроек [path](#path) можно передать следующими способами:
 
@@ -409,9 +409,9 @@ html_reporter_path=custom/dir testplane path/to/mytest.js
 
 Файлы, который создаются во время выполнения тестов:
 
--   `sqlite.db` &mdash; база данных Sqlite с результатами прогона тестов
--   `data.js` &mdash; конфиг отчета
--   `databaseUrls.json` &mdash; абсолютные или относительные URL-адреса на базы данных SQLite (`sqlite.db`) и/или URL-адреса других файлов `databaseUrls.json` (см. команду [merge-reports][merge-reports])
+-   `sqlite.db` — база данных Sqlite с результатами прогона тестов
+-   `data.js` — конфиг отчета
+-   `databaseUrls.json` — абсолютные или относительные URL-адреса на базы данных SQLite (`sqlite.db`) и/или URL-адреса других файлов `databaseUrls.json` (см. команду [merge-reports][merge-reports])
 
 [html-reporter]: https://github.com/gemini-testing/html-reporter
 [testplane]: https://github.com/gemini-testing/testplane

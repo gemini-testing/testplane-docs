@@ -4,7 +4,7 @@ import Admonition from "@theme/Admonition";
 
 ## Обзор {#overview}
 
-Раздел `browsers` является обязательным в настройках testplane. В нем задаются все браузеры, в которых будут запускаться тесты.
+Раздел `browsers` является обязательным в настройках Testplane. В нем задаются все браузеры, в которых будут запускаться тесты.
 
 ## Настройка {#setup}
 
@@ -23,13 +23,13 @@ module.exports = {
         // другие браузеры...
     },
 
-    // остальные настройки testplane...
+    // остальные настройки Testplane...
 }
 ```
 
-Где `<browser-id>` &mdash; это имя браузера, которое используется для его идентификации.
+Где `<browser-id>` — это имя браузера, которое используется для его идентификации.
 
-Чтобы не повторять одни и те же настройки для разных браузеров, вы можете задать все нужные вам значения по умолчанию в корне конфига testplane. Например:
+Чтобы не повторять одни и те же настройки для разных браузеров, вы можете задать все нужные вам значения по умолчанию в корне конфига Testplane. Например:
 
 ```javascript
 module.exports = {
@@ -45,7 +45,7 @@ module.exports = {
         },
     },
 
-    // остальные настройки testplane...
+    // остальные настройки Testplane...
 };
 ```
 
@@ -89,7 +89,7 @@ module.exports = {
         // настройки других браузеров...
     },
 
-    // другие настройки testplane...
+    // другие настройки Testplane...
 };
 ```
 
@@ -103,7 +103,7 @@ URL грида Selenium. По умолчанию: `http://localhost:4444/wd/hub`
 
 ### browserWSEndpoint {#browser_ws_endpoint}
 
-Эндпойнт websocket-соединения для подключения к браузеру через [Chrome DevTools Protocol (CDP)][how-to-use-cdp]. Например, вы указываете `browserWSEndpoint: "ws://YOUR_HOST/devtools"`, к которому в конце будет добавлен идентификатор сеанса браузера: `ws://YOUR_HOST/devtools/12345`, где `12345` &mdash; это идентификатор сеанса.
+Эндпойнт websocket-соединения для подключения к браузеру через [Chrome DevTools Protocol (CDP)][how-to-use-cdp]. Например, вы указываете `browserWSEndpoint: "ws://YOUR_HOST/devtools"`, к которому в конце будет добавлен идентификатор сеанса браузера: `ws://YOUR_HOST/devtools/12345`, где `12345` — это идентификатор сеанса.
 
 Значение по умолчанию: `null`. Означает, что WebDriverIO попытается самостоятельно определить эндпойнт для веб-сокета.
 
@@ -146,7 +146,7 @@ module.exports = {
         // настройки других браузеров...
     },
 
-    // другие настройки testplane...
+    // другие настройки Testplane...
 };
 ```
 
@@ -217,7 +217,7 @@ windowSize: {
 
 ### urlHttpTimeout {#url_http_timeout}
 
-Таймаут для запроса `/url` к Selenium-серверу, в миллисекундах. Иногда при открытии ссылки на стороне сервера выполняется масса логики в мидлварах, из-за чего ссылка долго открывается. Чтобы не поднимать из-за этого таймаут для всех команд, testplane позволяет настроить отдельный таймаут для запроса `/url`.
+Таймаут для запроса `/url` к Selenium-серверу, в миллисекундах. Иногда при открытии ссылки на стороне сервера выполняется масса логики в мидлварах, из-за чего ссылка долго открывается. Чтобы не поднимать из-за этого таймаут для всех команд, Testplane позволяет настроить отдельный таймаут для запроса `/url`.
 
 ### pageLoadTimeout {#page_load_timeout}
 
@@ -302,8 +302,8 @@ windowSize: {
 <tr><td>[takeScreenshotOnFails](#take_screenshot_on_fails)</td><td>Object</td><td>_см. описание_</td><td>Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении теста, а также при падении команды _assertView_. Значение по умолчанию: _\{ testFail: true, assertViewFail: true }_.</td></tr>
 <tr><td>[takeScreenshotOnFailsMode](#take_screenshot_on_fails_mode)</td><td>String</td><td>"fullpage"</td><td>Режим снятия скриншота при падении теста. Доступные значения: _viewport_ и _fullpage_.</td></tr>
 <tr><td>[takeScreenshotOnFailsTimeout](#take_screenshot_on_fails_timeout)</td><td>Number</td><td>5000</td><td>Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении теста, в мс.</td></tr>
-<tr><td>[saveHistory](#save_history)</td><td>Boolean</td><td>true</td><td>Сохранять историю всех выполненных команд. _В testplane@7 заменена на `saveHistoryMode`_.</td></tr>
-<tr><td>[saveHistoryMode](#save_history_mode)</td><td>"all" или "none" или "onlyFailed"</td><td>"all"</td><td>Сохранять историю всех выполненных команд. _Доступна с testplane@7_.</td></tr>
+<tr><td>[saveHistory](#save_history)</td><td>Boolean</td><td>true</td><td>Сохранять историю всех выполненных команд. _В hermione@7 заменена на `saveHistoryMode`_.</td></tr>
+<tr><td>[saveHistoryMode](#save_history_mode)</td><td>"all" или "none" или "onlyFailed"</td><td>"all"</td><td>Сохранять историю всех выполненных команд. _Доступна с hermione@7_.</td></tr>
 
 </tbody>
 </table>
@@ -320,8 +320,8 @@ windowSize: {
 
 Режим снятия скриншота страницы браузера при падении теста. Доступные значения: `viewport` и `fullpage`:
 
--   `viewport` &mdash; снять скриншот текущего вьюпорта.
--   `fullpage` &mdash; снять скриншот всей страницы браузера.
+-   `viewport` — снять скриншот текущего вьюпорта.
+-   `fullpage` — снять скриншот всей страницы браузера.
 
 По умолчанию: `fullpage`.
 
@@ -332,14 +332,14 @@ windowSize: {
 ### saveHistory {#save_history}
 
 <Admonition type="warning">
-    В testplane@7 заменена на [saveHistoryMode](#save_history_mode).
+    В hermione@7 заменена на [saveHistoryMode](#save_history_mode).
 </Admonition>
 
 Сохранять историю всех выполненных команд. По умолчанию: `true`.
 
 Некоторые плагины могут полагаться на эту историю, например, [html-reporter][html-reporter].
 
-История доступна из следующих событий &mdash; `TEST_END`, `TEST_PASS`, `TEST_FAIL` &mdash; через `payload`:
+История доступна из следующих событий — `TEST_END`, `TEST_PASS`, `TEST_FAIL` — через `payload`:
 
 ```javascript
 // пример кода плагина
@@ -352,19 +352,19 @@ module.exports = testplane => {
 
 ### saveHistoryMode {#save_history_mode}
 
-<Admonition type="warning">Доступна с testplane@7.</Admonition>
+<Admonition type="warning">Доступна с hermione@7.</Admonition>
 
 Сохранять историю всех выполненных команд. По умолчанию: `all`.
 
 Available options:
 
--   `all` &mdash; история включена.
--   `none` &mdash; история отключена.
--   `onlyFailed` &mdash; история сохраняется только для упавших тестов.
+-   `all` — история включена.
+-   `none` — история отключена.
+-   `onlyFailed` — история сохраняется только для упавших тестов.
 
 Некоторые плагины могут полагаться на эту историю, например, [html-reporter][html-reporter].
 
-История доступна из следующих событий &mdash; `TEST_END`, `TEST_PASS`, `TEST_FAIL` &mdash; через `payload`:
+История доступна из следующих событий — `TEST_END`, `TEST_PASS`, `TEST_FAIL` — через `payload`:
 
 ```javascript
 // sample plugin code
@@ -422,7 +422,7 @@ module.exports = testplane => {
 
 ### screenshotsDir {#screenshots_dir}
 
-Папка для сохранения эталонных скриншотов командой `assertView`. По умолчанию это папка `testplane/screens` относительно рабочей папки: `process.cwd()`. Значением данной опции может быть также функция, которой передается один аргумент &mdash; инстанс теста, внутри которого была вызвана команда `assertView`, например:
+Папка для сохранения эталонных скриншотов командой `assertView`. По умолчанию это папка `testplane/screens` относительно рабочей папки: `process.cwd()`. Значением данной опции может быть также функция, которой передается один аргумент — инстанс теста, внутри которого была вызвана команда `assertView`, например:
 
 ```javascript
 screenshotsDir: test => `tests/screenshots/${test.parent.title}`;
@@ -592,7 +592,7 @@ RequestOptions => RequestOptions;
 
 ### transformResponse {#transform_response}
 
-Позволяет перехватывать и преобразовывать [http-ответ][got-response], полученный от WebDriver. По умолчанию: `null`. Если передается функция, то первым аргументом ей будет передан объект `Response`, а вторым &mdash; `RequestOptions`. В ответ функция должна будет вернуть модифицированный `Response`.
+Позволяет перехватывать и преобразовывать [http-ответ][got-response], полученный от WebDriver. По умолчанию: `null`. Если передается функция, то первым аргументом ей будет передан объект `Response`, а вторым — `RequestOptions`. В ответ функция должна будет вернуть модифицированный `Response`.
 
 Тип функции:
 

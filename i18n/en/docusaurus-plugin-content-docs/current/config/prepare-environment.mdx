@@ -2,9 +2,9 @@
 
 ## Overview {#overview}
 
-This parameter is a hook. Testplane calls the function specified for this parameter after reading testplane config. With it, you can set environment variables or, for example, add some config parameters.
+This parameter is a hook. Testplane calls the function specified for this parameter after reading Testplane config. With it, you can set environment variables or, for example, add some config parameters.
 
-The context of the function is the testplane config.
+The context of the function is the Testplane config.
 
 ## Usage example {#example}
 
@@ -16,6 +16,6 @@ module.exports = {
         this.sets = pick(this.sets, ["touch-phone"]);
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
