@@ -1,0 +1,41 @@
+# getSize
+
+## Обзор {#overview}
+
+Используйте команду `getSize`, чтобы получить ширину и высоту DOM-элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getSize(prop);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>prop</td><td>String</td><td>Необязательный параметр. Размер, который нужно получить: "width" или "height". Если параметр не указан, то команда вернет объект вида _\{ width, height }_.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it('should demonstrate the getSize command', async ({ browser }) => {
+    await browser.url('http://github.com');
+    const logo = await browser.$('.octicon-mark-github');
+
+    const size = await logo.getSize();
+    console.log(size); // выведет: { width: 32, height: 32 }
+
+    const width = await logo.getSize('width');
+    console.log(width); // выведет: 32
+
+    const height = await logo.getSize('height';)
+    console.log(height); // выведет: 32
+})
+```

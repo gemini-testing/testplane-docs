@@ -1,0 +1,33 @@
+# getValue
+
+## Обзор {#overview}
+
+Используйте команду `getValue`, чтобы получить значение `<textarea>`, `<select>` или элемента `<input>` типа `text` для указанного селектора.
+
+Если для переданного селектора будет найдено несколько элементов, то команда вернет массив значений.
+
+Для получения значений элементов `<input>` типа `checkbox` или `radio` используйте команду [isSelected](./isSelected).
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getValue();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<input type="text" value="John Doe" id="username">
+```
+
+**getValue.js**
+
+```javascript
+it("should demonstrate the getValue command", async ({ browser }) => {
+    const value = await browser.$("#username").getValue();
+
+    console.log(value); // выведет: "John Doe"
+});
+```

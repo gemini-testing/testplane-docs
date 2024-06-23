@@ -1,0 +1,32 @@
+# doubleClick
+
+## Обзор {#overview}
+
+Используйте команду `doubleClick`, чтобы выполнить двойной клик по элементу.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).doubleClick();
+```
+
+## Примеры использования {#examples}
+
+**example.html**
+
+```javascript
+<button id="myButton" ondblclick="document.getElementById('someText').innerHTML='I was dblclicked'">Click me</button>
+<div id="someText">I was not clicked</div>
+```
+
+**doubleClick.js**
+
+```javascript
+it("should demonstrate the doubleClick command", async ({ browser }) => {
+    const myButton = await browser.$("#myButton");
+    await myButton.doubleClick();
+
+    const value = await myButton.getText();
+    assert.equal(value, "I was dblclicked"); // true
+});
+```

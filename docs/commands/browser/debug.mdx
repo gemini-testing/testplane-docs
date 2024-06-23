@@ -1,0 +1,27 @@
+# debug
+
+## Обзор {#overview}
+
+Используйте команду `debug`, чтобы остановить выполнение теста в браузере.
+
+Остановив работу теста, вы можете перейти в браузер, открыть _DevTools_ и в реальном времени проинспектировать web-страницу. Это может быть полезно для отладки теста.
+
+## Использование {#usage}
+
+```javascript
+await browser.debug();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the debug command", async ({ browser }) => {
+    await browser.$("#input").setValue("FOO");
+
+    await browser.debug(); // перейдите в браузер и измените значение #input на "BAR"
+
+    const value = await browser.$("#input").getValue();
+
+    console.log(value); // выведет: "BAR"
+});
+```

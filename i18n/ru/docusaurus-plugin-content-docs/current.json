@@ -1,0 +1,54 @@
+{
+    "version.label": {
+        "message": "v8",
+        "description": "The label for version current"
+    },
+    "sidebar.mainSidebar.category.Config": {
+        "message": "Конфиг testplane",
+        "description": "The label for category Config in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.HTML Reporter": {
+        "message": "HTML Отчет",
+        "description": "The label for category HTML Reporter in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Plugins": {
+        "message": "Плагины",
+        "description": "The label for category Plugins in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Commands": {
+        "message": "Команды в тестах",
+        "description": "The label for category Commands in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.browser": {
+        "message": "browser",
+        "description": "The label for category browser in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.element": {
+        "message": "element",
+        "description": "The label for category element in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.expect": {
+        "message": "expect",
+        "description": "The label for category expect in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.mock": {
+        "message": "mock",
+        "description": "The label for category mock in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Guides": {
+        "message": "Рецепты",
+        "description": "The label for category Guides in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Migrations": {
+        "message": "Руководства по миграции",
+        "description": "The label for category Migrations in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Reference": {
+        "message": "Справочник",
+        "description": "The label for category Reference in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.doc.Quickstart": {
+        "message": "Быстрый старт",
+        "description": "The label for the doc item Quickstart in sidebar mainSidebar, linking to the doc quickstart/index"
+    }
+}

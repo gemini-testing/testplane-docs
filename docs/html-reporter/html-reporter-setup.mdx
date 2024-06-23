@@ -1,0 +1,423 @@
+---
+sidebar_class_name: hidden
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# Подключение html-reporter
+
+## Обзор {#overview}
+
+Используйте плагин [html-reporter][html-reporter], чтобы получить html-отчет о прогоне тестов.
+
+![Html-отчет](/img/docs/html-reporter/html-reporter.overview.png)
+
+<Admonition type="warning" title="Требования к testplane">
+    Для корректной работы плагина _html-reporter_ требуется [testplane][testplane] версии 4 и выше.
+</Admonition>
+
+Плагин сохраняет результаты прогона тестов в базу данных [SQLite][sqlite]. Поэтому вы не сможете открыть локальный отчет как файл с помощью `file://` протокола.
+
+Чтобы посмотреть отчет, запустите testplane в GUI-режиме:
+
+```bash
+npx testplane gui
+```
+
+Или запустите [http-server][http-server] в папке с отчетом:
+
+```bash
+npx http-server -p 8000
+```
+
+Если вы запускаете локальный сервер не из папки с отчетом, то укажите путь к отчету:
+
+```bash
+npx http-server ./testplane-report -p 8000
+```
+
+После чего откройте страницу `http://localhost:8000` в браузере.
+
+## Установка {#install}
+
+```bash
+npm install -D html-reporter
+```
+
+## Настройка {#setup}
+
+Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+
+<Tabs>
+<TabItem value="Минимальный конфиг" label="Минимальный конфиг">
+```javascript
+    module.exports = {
+        plugins: {
+            'html-reporter/testplane': {
+                enabled: true
+            },
+
+            // другие плагины testplane...
+        },
+
+        // другие настройки testplane...
+    };
+    ```
+
+</TabItem>
+
+<TabItem value="Максимальный конфиг" label="Максимальный конфиг">
+```javascript
+    module.exports = {
+        plugins: {
+            'html-reporter/testplane': {
+                enabled: true,
+                path: 'my/testplane-reports',
+                defaultView: 'all',
+                baseHost: 'test.com',
+                errorPatterns: [
+                    'Parameter .* must be a string',
+                    {
+                        name: 'Cannot read property of undefined',
+                        pattern: 'Cannot read property .* of undefined',
+                        hint: '<div>google it, i dont know how to fix it =(</div>'
+                    }
+                ],
+                customScripts: [
+                    function() {
+                        // кастомный скрипт
+                    },
+
+                    // другие скрипты...
+                ],
+                customGui: {
+                    // DEPRECATED (этот параметр устарел)
+                    // дополнительные элементы управления для GUI-режима
+                    // используйте plugins (плагины для отчета) вместо customGui
+                },
+                pluginsEnabled: true,
+                plugins: [
+                    // плагины для отчета...
+                ],
+                yandexMetrika: {
+                    counter: 1234567
+                }
+            },
+
+            // другие плагины testplane...
+        },
+
+        // другие настройки testplane...
+    }
+    ```
+
+</TabItem>
+
+</Tabs>
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[enabled](#enabled)</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
+<tr><td>[path](#path)</td><td>String</td><td>"testplane-report"</td><td>Путь к папке для сохранения файлов html-отчета.</td></tr>
+<tr><td>[saveErrorDetails](#saveerrordetails)</td><td>Boolean</td><td>false</td><td>Сохранять / не сохранять подробности ошибок в json-файлах.</td></tr>
+<tr><td>[defaultView](#defaultview)</td><td>String</td><td>"all"</td><td>Режим фильтрации тестов при отображении, который будет установлен по умолчанию.</td></tr>
+<tr><td>[diffMode](#diffmode)</td><td>String</td><td>"3-up"</td><td>Режим просмотра диффов, который будет установлен по умолчанию.</td></tr>
+<tr><td>[baseHost](#basehost)</td><td>String</td><td>_N/A_</td><td>Заменяет оригинальный адрес хоста для просмотра в браузере.</td></tr>
+<tr><td>[errorPatterns](#errorpatterns)</td><td>Object[] или String[]</td><td>[ ]</td><td>Паттерны ошибок с подсказками для улучшения UX отчета.</td></tr>
+<tr><td>[metaInfoBaseUrls](#metainfobaseurls)</td><td>Object</td><td>`{ }`</td><td>Базовые URL-адреса для формирования ссылок в разделе _Meta_ на основе мета-информации о прогоне теста.</td></tr>
+<tr><td>[saveFormat](#saveformat)</td><td>String</td><td>"sqlite"</td><td>ПАРАМЕТР УСТАРЕЛ. Позволяет задать формат, в котором будут сохранены результаты прогона тестов.</td></tr>
+<tr><td>[customGui](#customgui)</td><td>Object</td><td>`{ }`</td><td>ПАРАМЕТР УСТАРЕЛ. Используйте вместо него [plugins](#plugins). Описание собственных элементов управления для GUI-режима.</td></tr>
+<tr><td>[pluginsEnabled](#pluginsenabled)</td><td>Boolean</td><td>false</td><td>Включить плагины для отчета.</td></tr>
+<tr><td>[plugins](#plugins)</td><td>Object[]</td><td>[ ]</td><td>Список плагинов с их настройками.</td></tr>
+<tr><td>[customScripts](#customscripts)</td><td>Function[]</td><td>[ ]</td><td>Список функций, реализующих кастомные скрипты. Например, скрипты Яндекс.Метрики или Жучка.</td></tr>
+<tr><td>[yandexMetrika](#yandexmetrika)</td><td>Object</td><td>`{ }`</td><td>[Яндекс.Метрика][yandex-metrika].</td></tr>
+
+</tbody>
+</table>
+
+### enabled
+
+Включает или отключает плагин.
+
+### path
+
+Путь к папке для сохранения файлов html-отчета. По умолчанию файлы будут сохранены в папку `testplane-report` в текущей рабочей папке.
+
+### saveErrorDetails
+
+Сохранять или не сохранять подробности ошибок в json-файлах (в папку `error-details`).
+
+По умолчанию «не сохранять»: `false`.
+
+Любой плагин testplane может добавить какие-либо подробности в объект ошибки при её возникновении. Эти подробности могут помочь пользователю в отладке проблем, которые возникли в тесте. Html-reporter сохраняет эти детали в папке `error-details` в файле с именем: `&lt;хэш от полного названия теста>-&lt;браузер>_&lt;номер ретрая>_&lt;временная метка>.json`.
+
+Под стектрейсом html-reporter добавляет раздел `Error details` со ссылкой `<title>`, указывающей на json-файл. Пользователь может открыть этот файл либо в браузере, либо в любой IDE.
+
+Пример как добавить подробности в объект ошибки из плагина:
+
+```javascript
+const err = new Error("some error");
+
+err.details = {
+    title: "description, will be used as url title",
+    data: {}, // или [], или String
+};
+
+throw err;
+```
+
+### defaultView
+
+Режим фильтрации тестов при отображении, который будет установлен по умолчанию. Доступны следующие значения:
+
+<table>
+<thead>
+<tr><td>**Режим**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>all</td><td>все тесты</td></tr>
+<tr><td>passed</td><td>только успешные тесты</td></tr>
+<tr><td>failed</td><td>только упавшие тесты</td></tr>
+<tr><td>retried</td><td>только те тесты, в которых были ретраи (повторные запуски)</td></tr>
+<tr><td>skipped</td><td>только отключенные (заскипанные) тесты</td></tr>
+
+</tbody>
+</table>
+
+По умолчанию: `all`, то есть если параметр не задан, то будут показываться все тесты.
+
+### diffMode
+
+Режим просмотра диффов, который будет установлен по умолчанию. Доступны следующие значения:
+
+<table>
+<thead>
+<tr><td>**Режим**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>3-up</td><td>все изображения _(expected, actual, diff)_ в одном столбце, друг под другом</td></tr>
+<tr><td>3&#8209;up&#8209;scaled</td><td>все изображения _(expected, actual, diff)_ в один ряд так, чтобы они помещались на экране</td></tr>
+<tr><td>only-diff</td><td>только дифф _(diff)_</td></tr>
+<tr><td>switch</td><td>эталонное изображение с возможностью переключаться на актуальное изображение по клику мыши</td></tr>
+<tr><td>swipe</td><td>актуальное изображение поверх эталонного, с разделителем открывающим эталонное изображение</td></tr>
+<tr><td>onion-skin</td><td>актуальное изображение поверх эталонного с возможностью менять прозрачность актуального изображения</td></tr>
+
+</tbody>
+</table>
+
+По умолчанию: `3-up`.
+
+### baseHost
+
+Заменяет оригинальный адрес хоста для просмотра в браузере. По умолчанию оригинальный адрес хоста не изменяется.
+
+### errorPatterns
+
+Паттерны ошибок используются:
+
+-   чтобы показать более понятную информацию об ошибках, если они соответствуют паттернам, для которых есть подробное описание;
+-   в режиме отображения `Group by` с выбранным ключом `error`.
+
+Паттерны ошибок можно задавать как в виде объектов, так и в виде строк.
+
+Чтобы задать паттерн ошибки в виде объекта, используйте следующий формат:
+
+```javascript
+{
+    name: '&lt;название ошибки>',
+    pattern: '&lt;паттерн ошибки>',
+    hint: '&lt;подсказка пользователю>'
+}
+```
+
+где:
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>String</td><td>Название ошибки.</td></tr>
+<tr><td>pattern</td><td>String или RegExp</td><td>Регулярное выражение или обычная строка, которой должна соответствовать ошибка.</td></tr>
+<tr><td>hint</td><td>String</td><td>Необязательный параметр. Подсказка, что можно сделать с данной ошибкой: почему она возникла, как её исправить и т. п.</td></tr>
+
+</tbody>
+</table>
+
+Если паттерн ошибки задан в виде строки, например: `&lt;ошибка>`, то эта строка автоматически рассматривается как объект вида:
+
+```javascript
+{
+    name: '&lt;ошибка>',
+    pattern: '&lt;ошибка>'
+}
+```
+
+Такой способ задания паттерна удобен для тех ошибок, у которых `name` и `pattern` полностью совпадают.
+
+Когда один из шаблонов ошибок совпадает с сообщением об ошибке, то:
+
+-   `name` шаблона ошибки будет отображаться как заголовок сообщения об ошибке, а исходное сообщение об ошибке будет скрыто под катом;
+-   `hint` для ошибки будет отображаться после поля ошибки `stack`. Подсказка может быть задана в виде html-строки. Например, `<div>some-useful-hint</div>`.
+
+В режиме `Group by` _(группировать по)_ с выбранным ключом `error` тест будет связан с группой, если ошибка теста совпадает с шаблоном ошибок группы. Если тест не может быть связан с существующими группами, то будет создана новая группа.
+
+### metaInfoBaseUrls
+
+Базовые URL-адреса для формирования ссылок в разделе `Meta` на основе мета-информации о прогоне теста.
+
+Параметр задается в виде объекта:
+
+```javascript
+{
+    '&lt;опция-1>': 'значение опции 1',
+    '&lt;опция-2>': 'значение опции 2',
+    // и т. д.
+}
+```
+
+Например:
+
+```javascript
+{
+    'file': 'base/path'
+}
+```
+
+### saveFormat
+
+**Параметр устарел**
+
+Позволяет задать формат, в котором будут сохранены результаты прогона тестов.
+
+Доступным осталось только одно значение, которое используется по умолчанию:
+
+-   `sqlite` — сохранить результаты прогона тестов в базе данных формата SQLite.
+
+### customGui
+
+**Параметр устарел**
+
+<Admonition type="warning">
+    Вместо _customGui_ рекомендуется использовать [плагины для отчета](#plugins).
+</Admonition>
+
+Описание собственных элементов управления для GUI-режима.
+
+Смотрите подробнее в разделе «[Кастомизация GUI](./html-reporter-custom-gui)».
+
+### pluginsEnabled
+
+Включить плагины для `html-reporter`.
+
+### plugins
+
+Список плагинов с их настройками.
+
+Смотрите подробнее в разделе «[Плагины для отчета](./html-reporter-plugins)».
+
+### customScripts
+
+Список кастомных скриптов в виде массива функций. С помощью этого параметра можно добавить любой скрипт на страницу html-отчета. Например, для сбора каких-либо метрик или реализации дополнительной функциональности. Скрипты будут выполнены сразу после рендеринга страницы.
+
+Пример:
+
+```javascript
+customScripts: [
+    function () {
+        console.info("some logs");
+    },
+    () => {
+        const div = document.createElement("div");
+        div.innerHTML = "hello";
+        document.body.prepend(div);
+    },
+];
+```
+
+### yandexMetrika
+
+Данный параметр позволяет добавить в отчет [Яндекс.Метрику][yandex-metrika]. Параметр задается в виде объекта с ключом `counterNumber` _(номер счетчика)_. В качестве значения ключа необходимо указать номер счетчика Яндекс.Метрики (см. «[Как создать счетчик][how-to-create-counter]»). Номер должен задаваться как число _(Number)_, а не строка.
+
+Также в интерфейсе Яндекс.Метрики необходимо перейти в разделе настроек на вкладку _«Счетчик»_, нажать кнопку _«Скопировать»_ и вставить код счетчика в поле [customScripts](#customscripts).
+
+С помощью метрики вы сможете узнать как разработчики взаимодействуют с вашим отчетом и с какого рода проблемами они сталкиваются.
+
+Отчет поддерживает следующие [цели для метрики][yandex-metrika-goals]:
+
+-   **ACCEPT_SCREENSHOT** — было нажатие на кнопку _Accept_ для принятия скриншота;
+-   **ACCEPT_OPENED_SCREENSHOTS** — было нажатие на кнопку _Accept opened_ для принятия скриншотов из открытых тестов.
+
+Пример настройки _Яндекс.Метрики_ в одном из проектов:
+
+```javascript
+module.exports = {
+    plugins: {
+        'html-reporter/testplane': {
+            customScripts: [
+                function(){(function(m,e,t,r,i,k,a){m[i]=m[i]<tr><td>function(){(m[i].a=m[i].a</td></tr>[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(56782912, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true })},
+
+                // другие скрипты...
+            ],
+            yandexMetrika: {
+                counterNumber: 1234567
+            },
+
+            // другие настройки плагина...
+        },
+
+        // другие плагины testplane...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Передача параметров через CLI {#setup_by_cli}
+
+Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--html-reporter-` для опций командной строки и `html_reporter_` — для переменных окружения.
+
+Например, параметр настроек [path](#path) можно передать следующими способами:
+
+```bash
+testplane path/to/mytest.js --html-reporter-path custom/dir
+```
+
+```bash
+html_reporter_path=custom/dir testplane path/to/mytest.js
+```
+
+## Хранение данных {#data_storage}
+
+Как уже было сказано выше, `html-reporter` сохраняет результаты прогона тестов в базу данных [SQLite][sqlite].
+
+Почему мы используем SQLite? Потому что он:
+
+-   бессерверный, легко подключаемый и не требует настроек
+-   кросс-платформенный, запускается на любой операционной системе
+-   одно-файловый, легко переиспользовать отчеты и делиться ими
+-   быстрее, чем если хранить отчет на файловой системе
+-   компактный и имеет полноценный SQL.
+
+Файлы, который создаются во время выполнения тестов:
+
+-   `sqlite.db` — база данных Sqlite с результатами прогона тестов
+-   `data.js` — конфиг отчета
+-   `databaseUrls.json` — абсолютные или относительные URL-адреса на базы данных SQLite (`sqlite.db`) и/или URL-адреса других файлов `databaseUrls.json` (см. команду [merge-reports][merge-reports])
+
+[html-reporter]: https://github.com/gemini-testing/html-reporter
+[testplane]: https://github.com/gemini-testing/testplane
+[sqlite]: https://www.sqlite.org/index.html
+[yandex-metrika]: https://yandex.ru/support/metrica/index.html
+[yandex-metrika-goals]: https://yandex.ru/support/metrica/general/goals.html
+[how-to-create-counter]: https://yandex.ru/support/metrica/general/creating-counter.html
+[merge-reports]: ./html-reporter-commands#merge-reports
+[http-server]: https://github.com/http-party/http-server#http-server-a-simple-static-http-server

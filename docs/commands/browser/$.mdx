@@ -1,0 +1,114 @@
+---
+sidebar_position: 1
+---
+
+import Admonition from "@theme/Admonition";
+
+# $
+
+## Обзор {#overview}
+
+Используйте команду `$` вместо [findElement][find-element] как более краткую команду, чтобы получить один элемент на странице.
+
+Команда `$` возвращает объект, описывающий элемент, на котором можно вызывать команды действия без передачи селектора. Однако, если вы все же передадите селектор, то сначала будет найден соответствующий элемент, а затем вызвано действие для этого элемента. Вы также можете передать объект в качестве селектора, где объект содержит свойство `element-6066-11e4-a52e-4f735466cecf` со значением ссылки на элемент. Затем команда преобразует ссылку в расширенный элемент WebdriverIO.
+
+Вы можете связать `$` или `$$` вместе, чтобы спуститься по дереву DOM.
+
+<Admonition type="info">
+    Подробнее о том, как выбрать определенные элементы, читайте в рецепте «[Как использовать
+    селекторы][how-to-use-selectors]».
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>selector</td><td>String или Function или Matcher</td><td>Селектор или JS-функция для получения конкретного элемента.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```html
+<ul id="menu">
+    <li>
+        <a href="/">Home</a>
+    </li>
+    <li>
+        <a href="/">Developer Guide</a>
+    </li>
+    <li>
+        <a href="/">API</a>
+    </li>
+    <li>
+        <a href="/">Contribute</a>
+    </li>
+</ul>
+```
+
+**$.js**
+
+```javascript
+it("should get text a menu link", async ({ browser }) => {
+    const text = await browser.$("#menu");
+
+    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+});
+
+it("should get text a menu link - JS Function", async ({ browser }) => {
+    const text = await browser.$(function () {
+        // Использовать здесь стрелочную функцию нельзя.
+        // Это Window – https://developer.mozilla.org/en-US/docs/Web/API/Window
+        //
+        // TypeScript-пользователи могут сделать что-нибудь вроде:
+        // return (this as Window).document.querySelector('#menu')
+        return this.document.querySelector("#menu"); // Element
+    });
+
+    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+});
+
+it("should allow to convert protocol result of an element into a WebdriverIO element", async ({
+    browser,
+}) => {
+    const activeElement = await browser.getActiveElement();
+
+    console.log(await browser.$(activeElement).getTagName()); // выведет активный элемент
+});
+
+it("should use Androids DataMatcher or ViewMatcher selector", async ({ browser }) => {
+    const menuItem = await browser.$({
+        name: "hasEntry",
+        args: ["title", "ViewTitle"],
+        class: "androidx.test.espresso.matcher.ViewMatchers",
+    });
+    await menuItem.click();
+
+    const menuItem = await browser.$({
+        name: "hasEntry",
+        args: ["title", "ViewTitle"],
+    });
+    await menuItem.click();
+});
+```
+
+## Связанные команды {#related}
+
+-   [browser.$$](./$$)
+-   [element.$](../element/$)
+-   [element.$$](../element/$$)
+
+[find-element]: https://webdriver.io/docs/api/webdriver/#findelement
+[how-to-use-selectors]: https://webdriver.io/docs/selectors

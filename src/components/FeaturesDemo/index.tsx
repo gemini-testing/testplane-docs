@@ -55,7 +55,10 @@ import {
     useScreenOrientation,
 } from "@site/src/components/FeaturesDemo/utils";
 
-export function FeaturesDemo(props: { className?: string }) {
+export function FeaturesDemo(props: {
+    className?: string;
+    headings?: { id: HeadingId; data: string }[];
+}) {
     const store = useStore();
     const heading = useStore(state => state.heading);
 
@@ -69,6 +72,7 @@ export function FeaturesDemo(props: { className?: string }) {
     }));
     const codeElementRef = useRef<HTMLDivElement>(null);
     const codeCleanupRef = useRef<() => void>(null);
+    const headings = props.headings ?? HEADINGS;
 
     const codeElement = (
         <div
@@ -108,7 +112,7 @@ export function FeaturesDemo(props: { className?: string }) {
 
     const steps: (() => void | Promise<void>)[] = [
         async function openCodeEditor() {
-            store.setHeading(getById(HEADINGS, HeadingId.FamiliarApi).data, signal);
+            store.setHeading(getById(headings, HeadingId.FamiliarApi).data, signal);
 
             if (useStore.getState().windows.length > 0) {
                 store.popWindow(signal);
@@ -136,7 +140,7 @@ export function FeaturesDemo(props: { className?: string }) {
             await pause(PAUSE_LG, signal);
         },
         async function typeLiveTestDeclaration() {
-            store.setHeading(getById(HEADINGS, HeadingId.ReplMode).data, signal);
+            store.setHeading(getById(headings, HeadingId.ReplMode).data, signal);
 
             await typeCode(getById(codeRefs, CodeId.ReplTestBegin), codeCleanupRef);
             await typeCode(getById(codeRefs, CodeId.ReplTestEnd), codeCleanupRef);
@@ -345,7 +349,7 @@ export function FeaturesDemo(props: { className?: string }) {
 
             await pause(PAUSE_SM, signal);
 
-            store.setHeading(getById(HEADINGS, HeadingId.HtmlReport).data, signal);
+            store.setHeading(getById(headings, HeadingId.HtmlReport).data, signal);
 
             store.popWindow(signal);
 
@@ -370,7 +374,7 @@ export function FeaturesDemo(props: { className?: string }) {
             await pause(PAUSE_LG, signal);
         },
         async function selectTestToRun() {
-            store.setHeading(getById(HEADINGS, HeadingId.GuiMode).data, signal);
+            store.setHeading(getById(headings, HeadingId.GuiMode).data, signal);
             await pause(1000, signal);
 
             // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
@@ -495,7 +499,7 @@ export function FeaturesDemo(props: { className?: string }) {
             store.popWindow(signal);
         },
         function displayTestResults() {
-            store.setHeading(getById(HEADINGS, HeadingId.GuiMode).data, signal);
+            store.setHeading(getById(headings, HeadingId.GuiMode).data, signal);
 
             const newTests = _.cloneDeep(
                 (

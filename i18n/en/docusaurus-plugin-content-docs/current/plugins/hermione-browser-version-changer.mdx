@@ -1,0 +1,104 @@
+# hermione-browser-version-changer
+
+## Overview {#overview}
+
+Use the `hermione-browser-version-changer` plugin to manage the definition of the browser version for tests.
+
+## Install {#install}
+
+```bash
+npm install -D hermione-browser-version-changer
+```
+
+## Setup {#setup}
+
+Add the plugin to the `plugins` section of the `testplane` config:
+
+```javascript
+module.exports = {
+    plugins: {
+        'hermione-browser-version-changer': {
+            enabled: true,
+            initStore: async () => {
+                return {
+                    '70.1': ['title1', 'title2'],
+                    '70.2': ['title3', 'title4']
+                };
+            }
+            browsers: {
+                chrome: {
+                    '70.1': (test, ver, store) => store[ver].includes(test.title),
+                    '70.2': (test, ver, store) => store[ver].includes(test.title)
+                }
+            }
+        },
+
+        // other testplane plugins...
+    },
+
+    // other testplane settings...
+};
+```
+
+### Description of configuration parameters {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[enabled](#setup_enabled)</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>[initStore](#setup_init_store)</td><td>Function</td><td>_[noop][noop]_</td><td>Function for initializing the storage _(store)_, which will be available in [predicate](#setup_predicate).</td></tr>
+<tr><td>[browsers](#setup_browsers)</td><td>Object</td><td>_N/A_</td><td>A list of browsers and their settings. See details [below](#setup_browsers).</td></tr>
+
+</tbody>
+</table>
+
+### enabled {#setup_enabled}
+
+Enable or disable the plugin. By default: `true`.
+
+### initStore {#setup_init_store}
+
+Optional parameter. Function for initializing the storage _(store)_, which will be available in [predicate](#setup_predicate). The store can be used in [predicate](#setup_predicate) for any test to determine which version of the browser belongs to it. By default: [\_.noop][noop] from [lodash][lodash].
+
+The function can be asynchronous.
+
+### browsers {#setup_browsers}
+
+A list of browsers and their settings. It has the following format:
+
+```javascript
+browsers: {
+    <browser-id>: {
+        <browser-version-1>: <predicate>,
+        <browser-version-2>: <predicate>,
+        // other browser versions...
+    },
+    // other browsers...
+}
+```
+
+### predicate(test, version, store) {#setup_predicate}
+
+A predicate function that receives the test instance _(test),_ browser version _(version)_ and a link to the storage _(store)_. It should return `true` if the test fits the specified browser version, otherwise it should return `false`.
+
+### Passing parameters via the CLI {#setup_cli}
+
+All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--browser-version-changer-` for command line options and `testplane_browser_version_changer_` for environment variables. For example:
+
+```bash
+npx testplane --browser-version-changer-enabled false
+```
+
+```bash
+testplane_browser_version_changer_enabled=false npx testplane
+```
+
+## Useful links {#useful_links}
+
+-   [hermione-browser-version-changer plugin sources][hermione-browser-version-changer]
+
+[hermione-browser-version-changer]: https://github.com/gemini-testing/hermione-browser-version-changer
+[noop]: https://lodash.com/docs/4.17.15#noop
+[lodash]: https://lodash.com/

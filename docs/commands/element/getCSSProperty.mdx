@@ -1,0 +1,102 @@
+import Admonition from "@theme/Admonition";
+
+# getCSSProperty
+
+## Обзор {#overview}
+
+Используйте команду `getCSSProperty`, чтобы получить свойство CSS из DOM-элемента, выбранного заданным селектором.
+
+Возвращаемое значение отформатировано так, чтобы его можно было проверить:
+
+-   цвета преобразуются с помощью [rgb2hex][rgb-to-hex];
+-   все остальные свойства преобразуются с помощью [css-value][css-value].
+
+<Admonition type="warning">
+    Обратите внимание, что сокращенные свойства CSS (например, _background, font, border, margin,
+    padding, list-style, outline, pause, cue)_ будут расширены для извлечения всех «длинных»
+    свойств, что приведет к нескольким вызовам _WebDriver_. Если вас интересует конкретное «длинное»
+    свойство, рекомендуется вместо этого запросить его.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getCSSProperty(cssProperty);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>cssProperty</td><td>String</td><td>Имя свойства CSS.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**example.html**
+
+```javascript
+<label
+    id="myLabel"
+    for="input"
+    style="color: #0088cc; font-family: helvetica, arial, freesans, clean, sans-serif, width: 100px"
+>
+    Some Label
+</label>
+```
+
+**getCSSProperty.js**
+
+```javascript
+it("should demonstrate the getCSSProperty command", async ({ browser }) => {
+    const elem = await browser.$("#myLabel");
+    const color = await elem.getCSSProperty("color");
+    console.log(color);
+    // выведет следующее:
+    // {
+    //     property: 'color',
+    //     value: 'rgba(0, 136, 204, 1)',
+    //     parsed: {
+    //         hex: '#0088cc',
+    //         alpha: 1,
+    //         type: 'color',
+    //         rgba: 'rgba(0, 136, 204, 1)'
+    //     }
+    // }
+
+    const font = await elem.getCSSProperty("font-family");
+    console.log(font);
+    // выведет следующее:
+    // {
+    //      property: 'font-family',
+    //      value: 'helvetica',
+    //      parsed: {
+    //          value: [ 'helvetica', 'arial', 'freesans', 'clean', 'sans-serif' ],
+    //          type: 'font',
+    //          string: 'helvetica, arial, freesans, clean, sans-serif'
+    //      }
+    // }
+
+    var width = await elem.getCSSProperty("width");
+    console.log(width);
+    // выведет следующее:
+    // {
+    //     property: 'width',
+    //     value: '100px',
+    //     parsed: {
+    //         type: 'number',
+    //         string: '100px',
+    //         unit: 'px',
+    //         value: 100
+    //     }
+    // }
+});
+```
+
+[rgb-to-hex]: https://github.com/christian-bromann/rgb2hex
+[css-value]: https://github.com/reworkcss/css-value

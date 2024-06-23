@@ -1,0 +1,59 @@
+import Admonition from "@theme/Admonition";
+
+# waitForExist
+
+## Обзор {#overview}
+
+Используйте команду `waitForExist`, чтобы подождать, пока элемент в течение указанного количества миллисекунд не появится в DOM.
+
+Команда возвращает значение `true`, если селектор соответствует хотя бы одному элементу, существующему в DOM, в противном случае выдает ошибку. Если параметр `reverse` имеет значение `true`, то команда поменяет логику и вернет значение `true`, если селектор не соответствует ни одному элементу.
+
+<Admonition type="warning">
+    В отличие от других команд элемента, testplane не будет дожидаться существования элемента, чтобы
+    выполнить эту команду.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).waitForExist({ timeout, reverse, timeoutMsg, interval });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>timeout</td><td>Number</td><td>500</td><td>Таймаут в миллисекундах.</td></tr>
+<tr><td>reverse</td><td>Boolean</td><td>false</td><td>Если значение _true_, то команда будет ждать противоположного условия: что элемент не отображается.</td></tr>
+<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Сообщение об ошибке, которое нужно бросить при таймауте.</td></tr>
+<tr><td>interval</td><td>Number</td><td>[waitforInterval][wait-for-interval]</td><td>Интервал в миллисекундах между проверками условия.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should display a notification message after successful form submit", async ({ browser }) => {
+    const form = await browser.$("form");
+    const notification = await browser.$(".notification");
+
+    await form.$(".send").click();
+    await notification.waitForExist({ timeout: 5000 });
+
+    assert.equal(await notification.getText(), "Data transmitted successfully!");
+});
+
+it("should remove a message after successful form submit", async ({ browser }) => {
+    const form = await browser.$("form");
+    const message = await browser.$(".message");
+
+    await form.$(".send").click();
+    await message.waitForExist({ reverse: true });
+});
+```
+
+[wait-for-interval]: ../../config/browsers#wait_interval

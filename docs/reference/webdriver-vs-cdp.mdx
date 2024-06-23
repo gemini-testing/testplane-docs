@@ -1,0 +1,90 @@
+# Протоколы общения с браузером: Webdriver vs Chrome DevTools Protocol
+
+## Обзор
+
+В мире автоматического тестирования интерфейсов сейчас наиболее популярны следующие протоколы для управления браузером: [WebDriver][webdriver] и [Chrome DevTools Protocol (CDP)][cdp].
+
+## WebDriver
+
+[WebDriver][webdriver] — это стандартизованный REST API протокол. Разработчики браузеров поддерживают данный протокол в своих драйверах — [chromedriver][chromedriver], [geckodriver][geckodriver], и т. п., — которые являются посредниками (прокси) между клиентом, отправляющим запросы, и самими браузерами. Такой посредник нужен, так как браузеры написаны совершенно по-разному и общение между драйвером и браузером никак не стандартизированно.
+
+Кроме этого, WebDriver-протокол используется в качестве базового протокола для автоматизации мобильных устройств на _iOS/Android_ с использованием [Appium][appium].
+
+![WebDriver-протокол](/img/docs/reference/webdriver-vs-cdp.webdriver-protocol.png)
+
+### Плюсы
+
+-   официальный стандарт, который поддерживается всеми популярными браузерами;
+-   поддержка автоматизации на мобильных устройствах;
+-   может быть использован как на локальной машине, так и на удаленной;
+
+### Минусы
+
+-   из коробки не позволяет отслеживать и перехватывать сетевые события (мок запросов/ответов);
+-   ограниченный набор возможностей для автоматизации (например, нет возможности управлять пропускной способностью сети или производительностью CPU): протокол охватывает только основные пользовательские сценарии взаимодействия с браузером;
+-   нет возможности подписаться на браузерные события (например, получить информацию от браузера, что открылась новая вкладка);
+-   нужны дополнительные «пляски с бубном» для работы (установка _selenium-standalone,_ необходимых драйверов к браузерам и т. п.).
+
+## CDP
+
+[Chrome DevTools Protocol (CDP)][cdp] — это по сути [JSON RPC][json-rpc], реализованный через [вебсокеты][websockets].
+
+_Chrome_ и _Node.js_ реализуют API к этому протоколу, с помощью которого общаться с _DevTools:_ посылать команды, подписываться на события и т.д.
+
+Данный API используется:
+
+-   в _Chrome DevTools_ (панель разработчика внутри браузера) для отлаживания и инспектирования кода;
+-   в IDE (например, в _VSCode)_ — для аналогичных целей;
+-   в различных инструментах автоматизации тестирования: [puppeteer][puppeteer], [cypress][cypress], и пр.;
+-   при общении между [chromedriver][chromedriver] и браузером Chrome (на картинке выше — `browser protocol`).
+
+API протокола поделено логическим образом на домены, которые содержат методы и могут посылать события.
+
+Например, домен [Runtime][cdp-runtime] позволяет инспектировать состояние JavaScript, а с помощью домена [Debugger][debugger] можно отлаживать JavaScript.
+
+<img
+    src={
+        require("@site/static/img/docs/reference/webdriver-vs-cdp.chrome-devtools-protocol.png")
+            .default
+    }
+    width="434"
+    height="200"
+/>
+
+### Плюсы
+
+-   предоставляет больше возможностей для автоматизации, чем Webdriver; с помощью CDP можно:
+    -   [отслеживать и перехватывать сетевые запросы и ответы][how-to-intercept-requests-and-responses]
+    -   [тестировать доступность (accessibility) страницы][how-to-check-accessibility]
+    -   [управлять пропускной способностью сети][how-to-manage-network-bandwidth]
+    -   [управлять быстродействием процессора][how-to-manage-cpu-performance]
+    -   [скрывать скроллбары][how-to-hide-scrollbars-by-cdp]
+    -   и т. д.
+-   не нужно настраивать _selenium-standalone_ или драйверы к браузерам: достаточно иметь локальный Chrome-браузер.
+
+### Минусы
+
+-   поддерживает ограниченный список браузеров: _Chrome, Chromium Edge и Firefox nightly;_
+-   по умолчанию работает только локально (но есть возможность подключиться к уже поднятому браузеру на удаленной машине).
+
+## Полезные ссылки
+
+-   [Как использовать CDP в Testplane][how-to-use-cdp]
+
+[webdriver]: https://www.w3.org/TR/webdriver/
+[cdp]: https://chromedevtools.github.io/devtools-protocol/
+[chromedriver]: https://chromedriver.chromium.org/
+[geckodriver]: https://github.com/mozilla/geckodriver
+[appium]: https://appium.io/
+[json-rpc]: https://ru.wikipedia.org/wiki/JSON-RPC
+[websockets]: https://learn.javascript.ru/websocket
+[puppeteer]: https://pptr.dev/
+[cypress]: https://cypress.io
+[cdp-runtime]: https://chromedevtools.github.io/devtools-protocol/tot/Runtime/
+[debugger]: https://chromedevtools.github.io/devtools-protocol/tot/Debugger/
+[how-to-intercept-requests-and-responses]: ../guides/how-to-intercept-requests-and-responses
+[how-to-check-accessibility]: ../guides/how-to-check-accessibility
+[how-to-manage-network-bandwidth]: ../guides/how-to-manage-network-bandwidth
+[how-to-manage-cpu-performance]: ../guides/how-to-manage-cpu-performance
+[how-to-hide-scrollbars-by-cdp]: ../guides/how-to-hide-scrollbars-by-cdp
+[how-to-use-cdp]: ../guides/how-to-use-cdp

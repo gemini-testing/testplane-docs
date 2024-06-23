@@ -1,0 +1,89 @@
+import Admonition from "@theme/Admonition";
+
+# $$
+
+## Обзор {#overview}
+
+Используйте команду `$$` вместо [findElements][find-elements] как более краткую команду, чтобы получить несколько элементов на странице в области видимости элемента. Эта команда похожа на команду [browser.$$()](../browser/$$), и отличается только тем, что поиск элементов будет осуществляться среди потомков _(children)_ текущего элемента.
+
+<Admonition type="info">
+    Подробнее о том, как выбрать определенные элементы, смотрите в рецепте «[Как использовать
+    селекторы][how-to-use-selectors]».
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).$$(subSelector);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>subSelector</td><td>String или Function или Matcher</td><td>Селектор, или JS-функция, или Matcher для получения множества элементов.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```html
+<ul id="menu">
+    <li>
+        <a href="/">Home</a>
+    </li>
+    <li>
+        <a href="/">Developer Guide</a>
+    </li>
+    <li>
+        <a href="/">API</a>
+    </li>
+    <li>
+        <a href="/">Contribute</a>
+    </li>
+</ul>
+```
+
+**$$.js**
+
+```javascript
+it("should get text a menu link", async ({ browser }) => {
+    const text = await browser.$("#menu");
+
+    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+});
+
+it("should get text a menu link - JS Function", async ({ browser }) => {
+    const text = await browser.$("#menu");
+
+    console.log(
+        await text
+            .$$(function () {
+                // Использовать здесь стрелочную функцию нельзя.
+                // Это Element – https://developer.mozilla.org/en-US/docs/Web/API/Element
+                // в этом конкретном примере – это HTMLUListElement
+                //
+                // TypeScript-пользователи могут сделать что-нибудь вроде:
+                // return (this as Element).querySelector('li')
+                return this.querySelectorAll("li"); // Element[]
+            })[2]
+            .$("a")
+            .getText(),
+    ); // выведет: "API"
+});
+```
+
+## Связанные команды
+
+-   [element.$](./$)
+-   [browser.$](../browser/$)
+-   [browser.$$](../browser/$$)
+
+[find-elements]: https://webdriver.io/docs/api/webdriver/#findelements
+[how-to-use-selectors]: https://webdriver.io/docs/selectors

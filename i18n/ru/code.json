@@ -1,0 +1,547 @@
+{
+    "versionsPage.versionEntry.link": {
+        "message": "Documentation"
+    },
+    "versionsPage.versionEntry.releaseNotes": {
+        "message": "Release Notes"
+    },
+    "versionsPage.title": {
+        "message": "Testplane versions"
+    },
+    "versionsPage.current.title": {
+        "message": "Current version (Stable)"
+    },
+    "versionsPage.current.description": {
+        "message": "Here you can find the documentation for current released version."
+    },
+    "versionsPage.next.title": {
+        "message": "Next version (Unreleased)"
+    },
+    "versionsPage.next.description": {
+        "message": "Here you can find the documentation for work-in-process unreleased version."
+    },
+    "theme.ErrorPageContent.title": {
+        "message": "На странице произошёл сбой.",
+        "description": "The title of the fallback page when the page crashed"
+    },
+    "theme.BackToTopButton.buttonAriaLabel": {
+        "message": "Прокрутка к началу",
+        "description": "The ARIA label for the back to top button"
+    },
+    "theme.blog.archive.title": {
+        "message": "Архив",
+        "description": "The page & hero title of the blog archive page"
+    },
+    "theme.blog.archive.description": {
+        "message": "Архив",
+        "description": "The page & hero description of the blog archive page"
+    },
+    "theme.blog.paginator.navAriaLabel": {
+        "message": "Навигация по странице списка блогов",
+        "description": "The ARIA label for the blog pagination"
+    },
+    "theme.blog.paginator.newerEntries": {
+        "message": "Следующие записи",
+        "description": "The label used to navigate to the newer blog posts page (previous page)"
+    },
+    "theme.blog.paginator.olderEntries": {
+        "message": "Предыдущие записи",
+        "description": "The label used to navigate to the older blog posts page (next page)"
+    },
+    "theme.blog.post.paginator.navAriaLabel": {
+        "message": "Навигация по странице поста блога",
+        "description": "The ARIA label for the blog posts pagination"
+    },
+    "theme.blog.post.paginator.newerPost": {
+        "message": "Следующий пост",
+        "description": "The blog post button label to navigate to the newer/previous post"
+    },
+    "theme.blog.post.paginator.olderPost": {
+        "message": "Предыдущий пост",
+        "description": "The blog post button label to navigate to the older/next post"
+    },
+    "theme.blog.post.plurals": {
+        "message": "{count} запись|{count} записи|{count} записей",
+        "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.blog.tagTitle": {
+        "message": "{nPosts} с тегом \"{tagName}\"",
+        "description": "The title of the page for a blog tag"
+    },
+    "theme.tags.tagsPageLink": {
+        "message": "Посмотреть все теги",
+        "description": "The label of the link targeting the tag list page"
+    },
+    "theme.colorToggle.ariaLabel": {
+        "message": "Переключение между темным и светлым режимом (сейчас используется {mode})",
+        "description": "The ARIA label for the navbar color mode toggle"
+    },
+    "theme.colorToggle.ariaLabel.mode.dark": {
+        "message": "Тёмный режим",
+        "description": "The name for the dark color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.light": {
+        "message": "Светлый режим",
+        "description": "The name for the light color mode"
+    },
+    "theme.docs.breadcrumbs.navAriaLabel": {
+        "message": "Навигационная цепочка текущей страницы",
+        "description": "The ARIA label for the breadcrumbs"
+    },
+    "theme.docs.DocCard.categoryDescription.plurals": {
+        "message": "{count} элемент|{count} элемента|{count} элементов",
+        "description": "The default description for a category card in the generated index about how many items this category includes"
+    },
+    "theme.docs.paginator.navAriaLabel": {
+        "message": "Страница документа",
+        "description": "The ARIA label for the docs pagination"
+    },
+    "theme.docs.paginator.previous": {
+        "message": "Предыдущая страница",
+        "description": "The label used to navigate to the previous doc"
+    },
+    "theme.docs.paginator.next": {
+        "message": "Следующая страница",
+        "description": "The label used to navigate to the next doc"
+    },
+    "theme.docs.tagDocListPageTitle.nDocsTagged": {
+        "message": "Одна страница|{count} страницы|{count} страниц",
+        "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.tagDocListPageTitle": {
+        "message": "{nDocsTagged} с тегом \"{tagName}\"",
+        "description": "The title of the page for a docs tag"
+    },
+    "theme.docs.versionBadge.label": {
+        "message": "Версия: {versionLabel}"
+    },
+    "theme.docs.versions.unreleasedVersionLabel": {
+        "message": "Это документация для будущей версии {siteTitle} {versionLabel}.",
+        "description": "The label used to tell the user that he's browsing an unreleased doc version"
+    },
+    "theme.docs.versions.unmaintainedVersionLabel": {
+        "message": "Это документация {siteTitle} для версии {versionLabel}, которая уже не поддерживается.",
+        "description": "The label used to tell the user that he's browsing an unmaintained doc version"
+    },
+    "theme.docs.versions.latestVersionSuggestionLabel": {
+        "message": "Актуальная документация находится на странице {latestVersionLink} ({versionLabel}).",
+        "description": "The label used to tell the user to check the latest version"
+    },
+    "theme.docs.versions.latestVersionLinkLabel": {
+        "message": "последней версии",
+        "description": "The label used for the latest version suggestion link label"
+    },
+    "theme.common.editThisPage": {
+        "message": "Отредактировать эту страницу",
+        "description": "The link label to edit the current page"
+    },
+    "theme.common.headingLinkTitle": {
+        "message": "Прямая ссылка на {heading}",
+        "description": "Title for link to heading"
+    },
+    "theme.lastUpdated.atDate": {
+        "message": " {date}",
+        "description": "The words used to describe on which date a page has been last updated"
+    },
+    "theme.lastUpdated.byUser": {
+        "message": " от {user}",
+        "description": "The words used to describe by who the page has been last updated"
+    },
+    "theme.lastUpdated.lastUpdatedAtBy": {
+        "message": "Последнее обновление{atDate}{byUser}",
+        "description": "The sentence used to display when a page has been last updated, and by who"
+    },
+    "theme.NotFound.title": {
+        "message": "Страница не найдена",
+        "description": "The title of the 404 page"
+    },
+    "theme.navbar.mobileVersionsDropdown.label": {
+        "message": "Версии",
+        "description": "The label for the navbar versions dropdown on mobile view"
+    },
+    "theme.tags.tagsListLabel": {
+        "message": "Теги:",
+        "description": "The label alongside a tag list"
+    },
+    "theme.AnnouncementBar.closeButtonAriaLabel": {
+        "message": "Закрыть",
+        "description": "The ARIA label for close button of announcement bar"
+    },
+    "theme.admonition.caution": {
+        "message": "предупреждение",
+        "description": "The default label used for the Caution admonition (:::caution)"
+    },
+    "theme.admonition.danger": {
+        "message": "осторожно",
+        "description": "The default label used for the Danger admonition (:::danger)"
+    },
+    "theme.admonition.info": {
+        "message": "к сведению",
+        "description": "The default label used for the Info admonition (:::info)"
+    },
+    "theme.admonition.note": {
+        "message": "примечание",
+        "description": "The default label used for the Note admonition (:::note)"
+    },
+    "theme.admonition.tip": {
+        "message": "подсказка",
+        "description": "The default label used for the Tip admonition (:::tip)"
+    },
+    "theme.admonition.warning": {
+        "message": "warning",
+        "description": "The default label used for the Warning admonition (:::warning)"
+    },
+    "theme.blog.sidebar.navAriaLabel": {
+        "message": "Навигация по последним постам в блоге",
+        "description": "The ARIA label for recent posts in the blog sidebar"
+    },
+    "theme.CodeBlock.copied": {
+        "message": "Скопировано",
+        "description": "The copied button label on code blocks"
+    },
+    "theme.CodeBlock.copyButtonAriaLabel": {
+        "message": "Скопировать в буфер обмена",
+        "description": "The ARIA label for copy code blocks button"
+    },
+    "theme.CodeBlock.copy": {
+        "message": "Скопировать",
+        "description": "The copy button label on code blocks"
+    },
+    "theme.CodeBlock.wordWrapToggle": {
+        "message": "Переключить перенос по строкам",
+        "description": "The title attribute for toggle word wrapping button of code block lines"
+    },
+    "theme.DocSidebarItem.expandCategoryAriaLabel": {
+        "message": "Expand sidebar category '{label}'",
+        "description": "The ARIA label to expand the sidebar category"
+    },
+    "theme.DocSidebarItem.collapseCategoryAriaLabel": {
+        "message": "Collapse sidebar category '{label}'",
+        "description": "The ARIA label to collapse the sidebar category"
+    },
+    "theme.NavBar.navAriaLabel": {
+        "message": "Main",
+        "description": "The ARIA label for the main navigation"
+    },
+    "theme.NotFound.p1": {
+        "message": "К сожалению, мы не смогли найти запрашиваемую вами страницу.",
+        "description": "The first paragraph of the 404 page"
+    },
+    "theme.NotFound.p2": {
+        "message": "Пожалуйста, обратитесь к владельцу сайта, с которого вы перешли на эту ссылку, чтобы сообщить ему, что ссылка не работает.",
+        "description": "The 2nd paragraph of the 404 page"
+    },
+    "theme.navbar.mobileLanguageDropdown.label": {
+        "message": "Языки",
+        "description": "The label for the mobile language switcher dropdown"
+    },
+    "theme.TOCCollapsible.toggleButtonLabel": {
+        "message": "Содержание этой страницы",
+        "description": "The label used by the button on the collapsible TOC component"
+    },
+    "theme.blog.post.readMore": {
+        "message": "Читать дальше",
+        "description": "The label used in blog post item excerpts to link to full blog posts"
+    },
+    "theme.blog.post.readMoreLabel": {
+        "message": "Подробнее о {title}",
+        "description": "The ARIA label for the link to full blog posts from excerpts"
+    },
+    "theme.blog.post.readingTime.plurals": {
+        "message": "{readingTime} мин. чтения|{readingTime} мин. чтения|{readingTime} мин. чтения",
+        "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.breadcrumbs.home": {
+        "message": "Главная страница",
+        "description": "The ARIA label for the home page in the breadcrumbs"
+    },
+    "theme.docs.sidebar.collapseButtonTitle": {
+        "message": "Свернуть сайдбар",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonAriaLabel": {
+        "message": "Свернуть сайдбар",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.navAriaLabel": {
+        "message": "Docs sidebar",
+        "description": "The ARIA label for the sidebar navigation"
+    },
+    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+        "message": "Закрыть панель навигации",
+        "description": "The ARIA label for close button of mobile sidebar"
+    },
+    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+        "message": "← Перейти к главному меню",
+        "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+    },
+    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
+        "message": "Переключить навигационную панель",
+        "description": "The ARIA label for hamburger menu button of mobile navigation"
+    },
+    "theme.docs.sidebar.expandButtonTitle": {
+        "message": "Развернуть сайдбар",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonAriaLabel": {
+        "message": "Развернуть сайдбар",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.ErrorPageContent.tryAgain": {
+        "message": "Попробуйте ещё раз",
+        "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    },
+    "theme.common.skipToMainContent": {
+        "message": "Перейти к основному содержимому",
+        "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
+    },
+    "theme.tags.tagsPageTitle": {
+        "message": "Теги",
+        "description": "The title of the tag list page"
+    },
+    "theme.unlistedContent.title": {
+        "message": "Unlisted page",
+        "description": "The unlisted content banner title"
+    },
+    "theme.unlistedContent.message": {
+        "message": "This page is unlisted. Search engines will not index it, and only users having a direct link can access it.",
+        "description": "The unlisted content banner message"
+    },
+    "landing.getStartedButton": {
+        "message": "Приступим"
+    },
+    "footer.slogan": {
+        "message": "Фреймворк для end-to-end тестирования современных веб-приложений в любых масштабах и окружениях."
+    },
+    "footer.contact-us": {
+        "message": "Связаться с нами"
+    },
+    "landing.installation-prompt.heading": {
+        "message": "Попробуйте {testplane} уже сейчас"
+    },
+    "landing.installation-prompt.description": {
+        "message": "Загляните в {docsLink} и запустите ваш первый тест на Testplane."
+    },
+    "landing.installation-prompt.description.docs-link": {
+        "message": "документацию"
+    },
+    "landing.landing-head.heading": {
+        "message": "{testplane} универсальное решение для e2e тестирования веба"
+    },
+    "landing.landing-head.heading.highlight": {
+        "message": "ultimate"
+    },
+    "landing.landing-head.description": {
+        "message": "Testplane — проверенный годами фреймворк для работы с тестами в {anyScale}, {anyBrowser} и на {anyPlatform}."
+    },
+    "landing.landing-head.description.anyScale": {
+        "message": "любых объемах"
+    },
+    "landing.landing-head.description.anyBrowser": {
+        "message": "любых браузерах"
+    },
+    "landing.landing-head.description.anyPlatform": {
+        "message": "любых платформах"
+    },
+    "landing.landing-head.badge.leftTitle": {
+        "message": "Testplane в open source!"
+    },
+    "landing.landing-head.badge.rightTitle": {
+        "message": "Поставьте звёздочку"
+    },
+    "landing.animated-demo.heading.familiar-api": {
+        "message": "Знакомое и удобное API, которое работает везде"
+    },
+    "landing.animated-demo.heading.instant-feedback": {
+        "message": "Мгновенная обратная связь по мере написания теста"
+    },
+    "landing.animated-demo.heading.html-report": {
+        "message": "Просмотр результатов прогона в HTML отчете"
+    },
+    "landing.animated-demo.heading.gui": {
+        "message": "Простой и мощный режим GUI"
+    },
+    "landing.animated-demo.heading.visual-testing": {
+        "message": "Широкие возможности по визуальным проверкам"
+    },
+    "landing.animated-demo.stats.tests": {
+        "message": "Запусков тестов"
+    },
+    "landing.animated-demo.stats.stars": {
+        "message": "Звёзд на GitHub"
+    },
+    "landing.animated-demo.stats.projects": {
+        "message": "Проектов на Testplane"
+    },
+    "landing.core-features.heading": {
+        "message": "Почти {highlight} возможности"
+    },
+    "landing.core-features.heading.highlight": {
+        "message": "безграничные"
+    },
+    "landing.additional-features.heading": {
+        "message": "Фреймворк, где {highlight}"
+    },
+    "landing.additional-features.heading.highlight": {
+        "message": "всё включено"
+    },
+    "landing.core-features.browsers.heading": {
+        "message": "Запускайте тесты в любом {underline}"
+    },
+    "landing.core-features.browsers.heading.underline": {
+        "message": "браузере"
+    },
+    "landing.core-features.scale.heading": {
+        "message": "Тестируйте в любых {underline}"
+    },
+    "landing.core-features.browsers.scale.underline": {
+        "message": "масштабах"
+    },
+    "landing.core-features.extend.heading": {
+        "message": "Кастомизируйте и {underline} функционал"
+    },
+    "landing.core-features.browsers.extend.underline": {
+        "message": "расширяйте"
+    },
+    "landing.additional-features.visual.heading": {
+        "message": "Визуальные проверки"
+    },
+    "landing.additional-features.tooling.heading": {
+        "message": "Продвинутый тулинг"
+    },
+    "landing.additional-features.repl.heading": {
+        "message": "Работа с тестами в live"
+    },
+    "landing.additional-features.flaky.heading": {
+        "message": "Подавление флапов"
+    },
+    "landing.additional-features.community.heading": {
+        "message": "Растущее сообщество"
+    },
+    "landing.additional-features.scale.heading": {
+        "message": "Масштабируемость"
+    },
+    "landing.core-features.browsers.descr": {
+        "message": "Выполняйте тесты в окружении ваших пользователей — не только в последних билдах Chrome."
+    },
+    "landing.core-features.scale.descr": {
+        "message": "Сколько бы тестов у вас ни было — testplane отлично с ними справится."
+    },
+    "landing.core-features.extend.descr": {
+        "message": "Благодаря многим точкам расширения testplane можно адаптировать даже к самым специфичным требованиям."
+    },
+    "landing.core-features.browsers.modern": {
+        "message": "Все современные браузеры"
+    },
+    "landing.core-features.browsers.devices": {
+        "message": "Android/iOS устройства"
+    },
+    "landing.core-features.browsers.appium": {
+        "message": "Смарт ТВ и IoT устройства через Appium"
+    },
+    "landing.core-features.browsers.protocols": {
+        "message": "Все современные протоколы"
+    },
+    "landing.core-features.browsers.version": {
+        "message": "Независимость от версий браузеров"
+    },
+    "landing.core-features.browsers.ancient": {
+        "message": "Древние браузеры, как Internet Explorer"
+    },
+    "landing.core-features.scale.grid": {
+        "message": "Удаленный грид (BrowserStack и др.)"
+    },
+    "landing.core-features.scale.local": {
+        "message": "Быстрый локальный запуск"
+    },
+    "landing.core-features.scale.sharding": {
+        "message": "Шардирование"
+    },
+    "landing.core-features.scale.parallel": {
+        "message": "Параллельное выполнение"
+    },
+    "landing.core-features.scale.isolation": {
+        "message": "Изоляция тестов"
+    },
+    "landing.core-features.extend.plugin-system": {
+        "message": "Система плагинов"
+    },
+    "landing.core-features.extend.plugin-opensource": {
+        "message": "Десятки плагинов в open source"
+    },
+    "landing.core-features.extend.reporters": {
+        "message": "Кастомные отчеты"
+    },
+    "landing.core-features.extend.execution": {
+        "message": "Кастомная логика выполнения"
+    },
+    "landing.core-features.extend.commands": {
+        "message": "Кастомные команды"
+    },
+    "landing.additional-features.visual.assertions": {
+        "message": "Скриншотные проверки"
+    },
+    "landing.additional-features.visual.ui": {
+        "message": "UI для работы со скриншотами"
+    },
+    "landing.additional-features.visual.diff-modes": {
+        "message": "7+ режимов просмотра диффов"
+    },
+    "landing.additional-features.visual.any-area": {
+        "message": "Отдельные элементы или вся страница"
+    },
+    "landing.additional-features.tooling.html-reporter": {
+        "message": "Html-reporter с множеством фич"
+    },
+    "landing.additional-features.tooling.gui": {
+        "message": "Удобный GUI режим"
+    },
+    "landing.additional-features.tooling.profiler": {
+        "message": "Профайлер тестов и плагинов"
+    },
+    "landing.additional-features.repl.feedback": {
+        "message": "Мгновенный фидбек"
+    },
+    "landing.additional-features.repl.step": {
+        "message": "Отладка каждого шага теста"
+    },
+    "landing.additional-features.repl.any-env": {
+        "message": "Работает и локально, и с удаленным гридом"
+    },
+    "landing.additional-features.flaky.auto-wait": {
+        "message": "Авто-ожидание"
+    },
+    "landing.additional-features.flaky.isolation": {
+        "message": "Изоляция на уровне браузерных контекстов"
+    },
+    "landing.additional-features.flaky.retries": {
+        "message": "Умные ретраи"
+    },
+    "landing.additional-features.flaky.animations": {
+        "message": "Автоматическое отключение анимаций"
+    },
+    "landing.additional-features.community.free": {
+        "message": "Открытый и бесплатный для всех"
+    },
+    "landing.additional-features.community.issues": {
+        "message": "Сотни разобранных обращений на GitHub"
+    },
+    "landing.additional-features.community.docs": {
+        "message": "Подробные документация и гайды"
+    },
+    "landing.additional-features.community.maintainers": {
+        "message": "Активная команда мэйнтейнеров"
+    },
+    "landing.additional-features.scale.battle-tested": {
+        "message": "Проверенный на десятках тысяч тестов"
+    },
+    "landing.additional-features.scale.ci-or-local": {
+        "message": "Работает одинаково хорошо локально и в CI"
+    },
+    "landing.additional-features.scale.independent": {
+        "message": "Нет привязки к браузерам, платформе или CI"
+    },
+    "landing.core-features.browsers.versions": {
+        "message": "Нет привязки к версиям браузеров"
+    }
+}

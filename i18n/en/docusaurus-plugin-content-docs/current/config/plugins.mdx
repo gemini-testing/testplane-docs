@@ -1,0 +1,82 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# plugins
+
+## Overview {#overview}
+
+Use the `plugins` section to mount external plugins to testplane, which will expand the available functionality.
+
+For example, plugins [html-reporter][html-reporter] or [testplane-test-repeater][testplane-test-repeater].
+
+A plugin is a module that exports a single function with the following arguments:
+
+-   testplane instance
+-   plugin options from testplane config
+
+All plugins will be loaded before testplane runs the tests.
+
+<Admonition type="tip">
+    When choosing a name for a plugin, add the prefix _testplane-_ to it. Then it will be easier to
+    search for such a plugin.
+</Admonition>
+
+If the plugin name starts with the prefix `testplane-`, then you can omit this prefix when adding the plugin to the `plugins` section. If testplane discovers modules with both names on the file system: _testplane-some-module_ and _some-module_, it will give preference to the module with the prefix `testplane-`.
+
+## Draft example {#example}
+
+<Tabs>
+<TabItem value=".testplane.conf.js" label=".testplane.conf.js">
+```javascript
+  module.exports = {
+      plugins: {
+          'my-cool-plugin': {
+              param: 'some-value'
+          },
+
+          // other testplane plugins...
+      },
+
+      // other testplane settings...
+
+};
+
+````
+</TabItem>
+
+
+<TabItem value="testplane-my-cool-plugin/index.js" label="testplane-my-cool-plugin/index.js">
+```javascript
+module.exports = function(testplane, opts) {
+    testplane.on(testplane.events.RUNNER_START, function(runner) {
+        console.info(opts.param); // outputs "some-value", see the plugin config in testplane
+
+        return setUp(testplane.config, opts.param); // config parameters can be changed
+    });
+
+    testplane.on(testplane.events.RUNNER_END, function() {
+        return tearDown();
+    });
+};
+````
+
+</TabItem>
+
+</Tabs>
+
+## Properties of testplane instance {#testplane_instance}
+
+<table>
+<thead>
+<tr><td>config</td><td>The config to use in the test runner. Can be changed.</td></tr>
+</thead>
+<tbody>
+<tr><td>events</td><td>A list of events to subscribe to.</td></tr>
+
+</tbody>
+</table>
+
+[html-reporter]: ../html-reporter/html-reporter-setup
+[testplane-test-repeater]: ../plugins/testplane-test-repeater

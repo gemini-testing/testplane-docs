@@ -1,0 +1,39 @@
+# previousElement
+
+## Обзор {#overview}
+
+Используйте команду `previousElement`, чтобы получить предыдущий дочерний элемент выбранного DOM-элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).previousElement();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<div class="parent">
+    <p>Sibling One</p>
+    <p>Sibling Two</p>
+    <p>Sibling Three</p>
+</div>
+```
+
+**previousElement.js**
+
+```javascript
+it("should get text from previous sibling element", async ({ browser }) => {
+    const elem = await browser.$$("p");
+    const previousElement = await elem[1].previousElement();
+
+    console.log(await previousElement.getText()); // выведет: "Sibling One"
+});
+```
+
+## Связанные команды {#related}
+
+-   [parentElement](./parentElement)
+-   [nextElement](./nextElement)

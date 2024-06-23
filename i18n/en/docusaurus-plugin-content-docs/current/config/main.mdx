@@ -1,0 +1,106 @@
+---
+sidebar_class_name: hidden
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Testplane config
+
+## Setup {#setup}
+
+To configure Testplane, use the following configuration file format:
+
+<Tabs>
+<TabItem value="Minimum config" label="Minimum config">
+```javascript
+  module.exports = {
+      browsers: {
+          chrome: {
+              desiredCapabilities: {
+                  browserName: 'chrome',
+
+                  // ...
+              },
+
+              // other chrome browser settings...
+          },
+
+          // other browsers settings...
+      }
+
+};
+
+````
+</TabItem>
+
+
+<TabItem value="Maximum config" label="Maximum config">
+```javascript
+module.exports = {
+    // global browser settings...
+
+    browsers: {
+        // browser-specific settings...
+    },
+    sets: {
+        // test group settings...
+        // test groups can be used, for example,
+        // to separate the launch of desktop and mobile tests
+    },
+    system: {
+        // system settings...
+    },
+    plugins: {
+        // external Testplane plugins settings...
+    },
+    prepareBrowser: function(browser) {
+        // here you can add new commands to the browser object,
+        // where browser is a WebdriverIO session
+    },
+    prepareEnvironment: function () {
+        // here you can set environment variables or
+        // change / add Testplane's config
+    }
+};
+````
+
+</TabItem>
+
+</Tabs>
+
+### Description of configuration sections {#config_sections_description}
+
+The only required section in Testplane settings is the `browsers` section.
+
+In order not to repeat common [settings of each browser][browsers] over and over again, you can take them to the global level.
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[browsers][browsers]</td><td>Required section. It sets the settings of all browsers in which the tests will be run.</td></tr>
+<tr><td>[sets][sets]</td><td>A section that allows you to bind a set of tests to certain browsers and run them at once with one command. For example, you can launch desktop and mobiles tests separately by using this option.</td></tr>
+<tr><td>[system][system]</td><td>Testplane system settings section. Allows you to set the number of subprocesses to run the tests in, enable the debug mode for WebDriver, and much more.</td></tr>
+<tr><td>[plugins][plugins]</td><td>A section with which you can mount external plugins to Testplane.</td></tr>
+<tr><td>[prepareBrowser][prepare-browser]</td><td>A function in which you can prepare the browser before to run the tests in it. For example, in this function you can add new commands for the _browser_ object.</td></tr>
+<tr><td>[prepareEnvironment][prepare-environment]</td><td>A function in which you can set environment variables or, for example, add some config parameters.</td></tr>
+
+</tbody>
+</table>
+
+Follow the link or select the appropriate section in the left navigation menu of the documentation to read more about the relevant settings.
+
+## Usage {#usage}
+
+By default, Testplane searches for the file `.testplane.conf.js` at startup in the current working folder.
+
+You can set your configuration file using the `--config` CLI option, specifying the path to the file relative to the current working folder as the option value.
+
+[browsers]: ./browsers
+[sets]: ./sets
+[system]: ./system
+[plugins]: ./plugins
+[prepare-browser]: ./prepare-browser
+[prepare-environment]: ./prepare-environment

@@ -1,0 +1,55 @@
+# selectByVisibleText
+
+## Обзор {#overview}
+
+Используйте команду `selectByVisibleText`, чтобы выбрать опцию с заданным отображаемым текстом.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).selectByVisibleText(text);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>text</td><td>String или Number</td><td>Текст (опции), по которому нужно выбрать опцию.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**example.html**
+
+```javascript
+<select id="selectbox">
+    <option value="someValue0">uno</option>
+    <option value="someValue1">dos</option>
+    <option value="someValue2">tres</option>
+    <option value="someValue3">cuatro</option>
+    <option value="someValue4">cinco</option>
+    <option value="someValue5">seis</option>
+</select>
+```
+
+**selectByVisibleText.js**
+
+```javascript
+it("demonstrate the selectByVisibleText command", async ({ browser }) => {
+    const selectBox = await browser.$("#selectbox");
+    console.log(await selectBox.getText("option:checked")); // выведет: "uno"
+
+    await selectBox.selectByVisibleText("cuatro");
+    console.log(await selectBox.getText("option:checked")); // выведет: "cuatro"
+});
+```
+
+## Связанные команды {#related}
+
+-   [selectByAttribute](./selectByAttribute)
+-   [selectByIndex](./selectByIndex)

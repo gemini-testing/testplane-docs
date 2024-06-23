@@ -1,0 +1,69 @@
+import Admonition from "@theme/Admonition";
+
+# throttle
+
+## Обзор {#overview}
+
+Используйте команду `throttle`, чтобы эмулировать разные типы сетевого соединения у пользователя.
+
+Эта команда позволяет промоделировать поведение сайта или веб-приложения при различной пропускной способности канала связи у пользователя.
+
+Существует также множество пресетов с готовыми настройками конфигурации сети. Например:
+
+-   offline | online
+-   GPRS
+-   Regular2G | Good2G
+-   Regular3G | Good3G
+-   Regular4G
+-   DSL
+-   WiFi
+
+<Admonition type="warning">
+Команда _throttle_ работает только при использовании _Chrome DevTools Protocol (CDP)_.
+
+Читайте подробности в разделе «[Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp]».
+
+А также читайте рецепт «[Как управлять пропускной способностью сети][how-to-manage-network-bandwidth]».
+
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>offline</td><td>Boolean</td><td>Включить эмуляцию потери соединения.</td></tr>
+<tr><td>latency</td><td>Number</td><td>Минимальная задержка от отправленного запроса до полученных заголовков ответа, в миллисекундах.</td></tr>
+<tr><td>downloadThroughput</td><td>Number</td><td>Максимальная совокупная пропускная способность загрузки (байт/сек). _-1_ отключает регулирование загрузки.</td></tr>
+<tr><td>uploadThroughput</td><td>Number</td><td>Максимальная совокупная пропускная способность аплоада (байт/сек). _-1_ отключает регулирование аплоада.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should throttle the network", async ({ browser }) => {
+    // используем готовый пресет
+    await browser.throttle("Regular 3G");
+
+    // а здесь настраиваем конфигурацию сети сами
+    await browser.throttle({
+        offline: false,
+        downloadThroughput: (200 * 1024) / 8,
+        uploadThroughput: (200 * 1024) / 8,
+        latency: 20,
+    });
+});
+```
+
+[how-to-use-cdp]: ../../guides/how-to-use-cdp
+[how-to-manage-network-bandwidth]: ../../guides/how-to-manage-network-bandwidth

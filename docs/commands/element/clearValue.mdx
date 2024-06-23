@@ -1,0 +1,42 @@
+import Admonition from "@theme/Admonition";
+
+# clearValue
+
+## Обзор {#overview}
+
+Используйте команду `clearValue`, чтобы очистить значение элемента типа `<input>` или `<textarea>`.
+
+<Admonition type="warning">
+Убедитесь, что вы можете взаимодействовать с элементом, прежде чем применять данную команду.
+
+Вы не сможете очистить значение элемента, который отключен или находится в режиме «только для чтения» _(readonly)_.
+
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).clearValue();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the clearValue command", async ({ browser }) => {
+    const elem = await browser.$(".input");
+    await elem.setValue("test123");
+
+    const value = await elem.getValue();
+    console.log(value); // выведет: 'test123'
+
+    await elem.clearValue();
+    value = await elem.getValue();
+    assert.equal(value, ""); // true
+});
+```
+
+## Связанные команды {#related}
+
+-   [element.addValue](./addValue)
+-   [element.setValue](./setValue)
+-   [browser.keys](../browser/keys)

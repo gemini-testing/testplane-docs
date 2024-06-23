@@ -1,0 +1,18 @@
+{
+    "version.label": {
+        "message": "v8",
+        "description": "The label for version current"
+    },
+    "sidebar.mainSidebar.category.Config": {
+        "message": "Config",
+        "description": "The label for category Config in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.HTML Reporter": {
+        "message": "HTML Reporter",
+        "description": "The label for category HTML Reporter in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Plugins": {
+        "message": "Plugins",
+        "description": "The label for category Plugins in sidebar mainSidebar"
+    }
+}

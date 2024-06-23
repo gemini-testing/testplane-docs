@@ -1,0 +1,53 @@
+import Admonition from "@theme/Admonition";
+
+# setValue
+
+## Обзор {#overview}
+
+Используйте команду `setValue`, чтобы отправить последовательность нажатий клавиш элементу после того, как поле ввода было предварительно очищено.
+
+Если элемент не нужно сначала очищать, используйте команду [addValue][add-value].
+
+<Admonition type="info">
+    Если вы хотите использовать специальные символы, например, для копирования и вставки значения из
+    одного ввода в другой, используйте команду [keys][keys].
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).setValue(value);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>value</td><td>String или Number</td><td>Значение, которое нужно установить.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should set value for a certain element", async ({ browser }) => {
+    const input = await browser.$(".input");
+    await input.setValue("test");
+    await input.setValue(123);
+
+    console.log(await input.getValue()); // выведет: '123'
+});
+```
+
+## Связанные команды {#related}
+
+-   [element.addValue][add-value]
+-   [element.clearValue](./clearValue)
+-   [browser.keys][keys]
+
+[add-value]: ./addValue
+[keys]: ../browser/keys

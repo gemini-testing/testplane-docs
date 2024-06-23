@@ -1,0 +1,119 @@
+# testplane-retry-progressive
+
+## Обзор {#overview}
+
+Используйте плагин [testplane-retry-progressive][testplane-retry-progressive], чтобы дополнительно прогонять тесты, если ошибки, с которыми они упали соответствуют заданному набору шаблонов.
+
+Для чего это может понадобиться?
+
+Тесты могут падать не только из-за ошибок разработчика, гонок между скриптами, исполняющимися на веб-странице, но и по инфраструктурным причинам. Например, когда моргает сеть, вовремя не отдается браузер, временные проблемы с DNS и т. п.
+
+<details>
+
+<summary>
+См. примеры шаблонов для таких ошибок
+
+</summary>
+
+-   Browser request was cancelled
+-   A window size operation failed because the window is not currently available
+-   chrome not reachable
+-   Tried to run command without establishing a connection
+-   No such driver
+-   no such window
+-   Session timed out or not found
+-   Reached error page
+-   getaddrinfo ENOTFOUND
+-   Browsing context has been discarded
+-   Cannot launch browser
+-   Failed to decode response from marionette
+-   session deleted because of page crash
+-   Couldn't connect to selenium server
+
+</details>
+
+## Установка {#install}
+
+```bash
+npm install -D testplane-retry-progressive
+```
+
+## Настройка {#setup}
+
+Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+
+```javascript
+module.exports = {
+    plugins: {
+        "testplane-retry-progressive": {
+            enabled: true,
+            extraRetry: 7,
+            errorPatterns: [
+                "Parameter .* must be a string",
+                {
+                    name: "Cannot read property of undefined",
+                    pattern: "Cannot read property .* of undefined",
+                },
+            ],
+        },
+
+        // другие плагины testplane...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
+<tr><td>extraRetry</td><td>Number</td><td>5</td><td>Количество раз, которые нужно повторно прогнать тест, если он падает с ошибкой, подходящей под один из шаблонов _errorPatterns_.</td></tr>
+<tr><td>errorPatterns</td><td>Array</td><td>`[ ]`</td><td>Список шаблонов, под один из которых должна подойти ошибка, чтобы плагин запустил тест повторно. Подробнее см. ниже.</td></tr>
+
+</tbody>
+</table>
+
+### errorPatterns {#setup_error_patterns}
+
+Каждый шаблон в массиве `errorPatterns` представляет собой либо объект вида:
+
+```javascript
+{
+    name: 'Понятное сообщение для пользователя, которое будет выводиться в консоль',
+    pattern: 'Шаблон ошибки, который может задаваться в том числе как строка для регулярного выражения'
+}
+```
+
+либо строку, которая будет проинтерпретирована плагином как объект вида:
+
+```javascript
+{
+    name: 'ваша строка',
+    pattern: 'ваша строка'
+}
+```
+
+Последний вариант удобен, если формат для консоли и шаблон ошибки полностью совпадают.
+
+### Передача параметров через CLI {#setup_by_cli}
+
+Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--retry-progressive-` для опций командной строки и `testplane_retry_progressive_` — для переменных окружения. Например:
+
+```bash
+npx testplane --retry-progressive-extra-retry 3 ...
+```
+
+```bash
+testplane_retry_progressive_extra_retry=3 npx testplane ...
+```
+
+## Полезные ссылки {#useful_links}
+
+-   [Исходники плагина testplane-retry-progressive][testplane-retry-progressive]
+
+[testplane-retry-progressive]: https://github.com/gemini-testing/testplane-retry-progressive

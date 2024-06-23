@@ -1,0 +1,40 @@
+# scroll
+
+## Обзор {#overview}
+
+Используйте команду `scroll`, чтобы проскроллить вьюпорт браузера. Обратите внимание, что координаты `x` и `y` относятся к текущей позиции прокрутки вьюпорта.
+
+## Использование {#usage}
+
+```typescript
+await browser.scroll(x, y);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>x</td><td>Number</td><td>Необязательный параметр. Координата x, куда нужно проскроллить. По умолчанию: _0_.</td></tr>
+<tr><td>y</td><td>Number</td><td>Необязательный параметр. Координата y, куда нужно проскроллить. По умолчанию: _0_.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```typescript
+it("should demonstrate the scroll command", async ({ browser }) => {
+    await browser.url("https://webdriver.io");
+
+    console.log(await browser.execute(() => window.scrollY)); // returns 0
+    await browser.scroll(0, 200);
+    console.log(await browser.execute(() => window.scrollY)); // returns 200
+});
+```
+
+## Связанные команды {#related}
+
+-   [element.scrollIntoView](../element/scrollIntoView)

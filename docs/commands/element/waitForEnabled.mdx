@@ -1,0 +1,62 @@
+import Admonition from "@theme/Admonition";
+
+# waitForEnabled
+
+## Обзор {#overview}
+
+Используйте команду `waitForEnabled`, чтобы подождать, пока элемент в течение указанного количества миллисекунд не станет включенным _(enabled)_ или отключенным _(disabled)_.
+
+<Admonition type="warning">
+    В отличие от других команд элемента, testplane не будет дожидаться существования элемента, чтобы
+    выполнить эту команду.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).waitForEnabled({ timeout, reverse, timeoutMsg, interval });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>timeout</td><td>Number</td><td>500</td><td>Таймаут в миллисекундах.</td></tr>
+<tr><td>reverse</td><td>Boolean</td><td>false</td><td>Если значение _true_, то команда будет ждать противоположного условия: что элемент отключен _(disabled)_.</td></tr>
+<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Сообщение об ошибке, которое нужно бросить при таймауте.</td></tr>
+<tr><td>interval</td><td>Number</td><td>[waitforInterval][wait-for-interval]</td><td>Интервал в миллисекундах между проверками условия.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<div id="elem" style="visibility: hidden;">Hello World!</div>
+<script type="text/javascript">
+    setTimeout(() => {
+        document.getElementById('elem').style.visibility = 'visible';
+    }, 2000);
+</script>
+```
+
+**waitForEnabled.js**
+
+```javascript
+it("should detect when element is visible", async ({ browser }) => {
+    const elem = await browser.$("#elem");
+    await elem.waitForDisplayed({ timeout: 3000 });
+});
+
+it("should detect when element is no longer visible", async ({ browser }) => {
+    const elem = await browser.$("#elem");
+    await elem.waitForDisplayed({ reverse: true });
+});
+```
+
+[wait-for-interval]: ../../config/browsers#wait_interval

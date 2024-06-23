@@ -1,0 +1,21 @@
+# prepareEnvironment
+
+## Overview {#overview}
+
+This parameter is a hook. Testplane calls the function specified for this parameter after reading Testplane config. With it, you can set environment variables or, for example, add some config parameters.
+
+The context of the function is the Testplane config.
+
+## Usage example {#example}
+
+```javascript
+const { pick } = require("lodash");
+
+module.exports = {
+    prepareEnvironment: function () {
+        this.sets = pick(this.sets, ["touch-phone"]);
+    },
+
+    // other Testplane settings...
+};
+```

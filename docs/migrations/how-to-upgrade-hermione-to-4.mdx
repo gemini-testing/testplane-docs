@@ -1,0 +1,477 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# Как обновить hermione до версии 4.x
+
+<Admonition type="warning">
+    Данный рецепт актуален только для тех проектов, которые используют hermione младше 4-й версии.
+</Admonition>
+
+## Почему стоит обновиться? {#why_to_upgrade}
+
+Когда-то очень давно hermione перешла на «временный» форк пакета [webdriverio@4][webdriverio] _(сокр. wdio)_, который она использовала «под капотом», т. к. проблемы во _внешнем_ _wdio_ тормозили её разработку: постоянные баги в _wdio,_ разногласия относительно вносимых изменений и т. п. И если сначала форк регулярно обновлялся командой hermione, чтобы предоставить пользователю актуальную функциональность, то со временем форк значительно отстал от текущей версии _wdio_ во внешнем мире.
+
+К тому времени во внешнем мире в _wdio_ уже появилось много различных фич, которые интересны разработчикам: [Chrome DevTools Protocol (CDP)][how-to-use-cdp], [стабы внешних запросов][how-to-intercept-requests-and-responses], расширенные возможности работы с мобильными устройствами и т. п. Поэтому у команды hermione не осталось выбора: нужно было отказываться от форка _webdriverio@4_ и переходить на самую актуальную версию _webdriverio@7_.
+
+<Admonition type="info">
+    Сейчас уже доступна 8-я версия _webdriverio_ и _hermione@7_ уже использует её.
+</Admonition>
+
+Кроме этого, пользователям становилось всё неудобнее пользоваться устаревшими командами: тайпинги приходилось подключать из отдельного пакета (в новом _wdio_ они поставляются из коробки), за документацией по командам приходилось ходить на [старый сайт][webdriverio-v4-api], в то время как некоторые пользователи иногда заходили на [актуальную страницу][webdriverio-api] и не могли понять, почему команды из документации не работают в hermione.
+
+Таким образом, причин для радикального апгрейда — сразу на 3 мажора вверх — накопилось достаточно.
+
+## Что изменилось? {#what_is_new}
+
+Изменений очень много, поэтому ниже будут перечислены только самые важные / интересные из них.
+
+### API команд {#api_changes}
+
+#### async/await вместо чейнинга {#feature_async_await}
+
+В новой версии теперь нельзя писать тесты, используя _chaining_. Доступен только _async/await_-синтаксис:
+
+<Tabs>
+<TabItem value="Было" label="Было">
+```javascript
+  it('some test', function() {
+      return this.browser
+          .foo()
+          .bar()
+          .baz();
+  });
+  ```
+</TabItem>
+
+<TabItem value="Стало" label="Стало">
+```javascript
+  it('some test', async function() {
+      await this.browser.foo();
+      await this.browser.bar();
+      await this.browser.baz();
+  });
+  ```
+</TabItem>
+
+</Tabs>
+
+А начиная с версии [hermione@4.9.0](https://github.com/gemini-testing/hermione/blob/master/CHANGELOG.md#490-2022-05-24) можно писать тесты ещё короче, так как hermione теперь передает в функцию объект с полем `browser`:
+
+```javascript
+it("some test", async function ({ browser }) {
+    await browser.foo();
+    await browser.bar();
+    await browser.baz();
+});
+```
+
+<Admonition type="warning">
+    Далее в примерах «Стало» мы будем везде предполагать, что речь идет о hermione с версией не
+    меньше, чем _4.9.0_. Если по какой-то причине вы планируете использовать версию hermione _4+_
+    младше _4.9.0_, то к браузеру в тестах нужно обращаться как и раньше — через _this_, например:
+    _await this.browser.getText('.selector')_.
+</Admonition>
+
+#### Результат вместо объекта с ключом value {#feature_direct_result}
+
+Теперь при получении результатов команд вместо объекта с ключом `value` возвращается реальный результат (старое поведение часто приводило к ошибкам в тестах):
+
+<Tabs>
+<TabItem value="Было" label="Было">
+```javascript
+  it('some test', async function() {
+      const { value } = await this.browser.getText('.selector');
+      console.log(value); // some text
+  });
+  ```
+</TabItem>
+
+<TabItem value="Стало" label="Стало">
+```javascript
+  it('some test', async function({ browser }) {
+      const text = await browser.getText('.selector');
+      console.log(text); // some text
+  });
+  ```
+</TabItem>
+
+</Tabs>
+
+#### Работа с элементами напрямую {#feature_commands_of_elements}
+
+С помощью команды [`browser.$`][browser-dollar] можно получить инстанс найденного элемента и работать с ним в тесте. Это удобно, когда с элементом нужно взаимодействовать больше одного раза (при этом элемент не будет повторно искаться на странице):
+
+<Tabs>
+<TabItem value="Было" label="Было">
+```javascript
+  it('some test', async function() {
+      await this.browser.clearElement('.input');
+      await this.browser.setValue('.input', 'text');
+  });
+  ```
+</TabItem>
+
+<TabItem value="Стало" label="Стало">
+```javascript
+  it('some test', async function({ browser }) {
+      const elem = await browser.$('.input');
+
+      await elem.clearElement();
+      await elem.setValue('text');
+
+});
+
+````
+</TabItem>
+
+</Tabs>
+
+Смотрите также команды:
+
+* [`browser.$$`][browser-dollar-dollar]
+* [`element.$`][element-dollar]
+* [`element.$$`][element-dollar-dollar]
+
+#### Передача аргументов через объект {#feature_passing_args_as_object}
+
+Для многих команд аргументы теперь передаются с помощью объекта с понятными ключами вместо последовательной передачи аргументов, в которых было очень легко запутаться. Например, в команде [waitForExist][element-wait-for-exist], в которой в качестве аргументов раньше передавались даже булевые значения:
+
+<Tabs>
+<TabItem value="Было" label="Было">
+```javascript
+it('some test', async function() {
+    await this.browser.waitForExist('.selector', 1000, true);
+});
+````
+
+</TabItem>
+
+<TabItem value="Стало" label="Стало">
+```javascript
+  it('some test', async function({ browser }) {
+      const elem = await browser.$('.selector');
+
+      await elem.waitForExist({
+          timeout: 1000,
+          interval: 500,
+          reverse: true,
+          timeoutMsg: 'still exists'
+      });
+
+});
+
+````
+</TabItem>
+
+</Tabs>
+
+#### Специальная команда для React {#feature_commands_for_react}
+
+Бонус для тех, кто уже перешел на React — теперь в тестах можно использовать команды [`browser.react$`][browser-react-dollar] и [`browser.react$$`][browser-react-dollar-dollar] для поиска на странице конкретных react-компонентов с определенными состояниями. Аналогичные команды есть и для элементов — [`element.react$`][element-react-dollar] и [`element.react$$`][element-react-dollar-dollar].
+
+Также читайте [статью о вариантах работы с react-компонентами][react-selectors] на сайте _webdriverio_.
+
+Пример использования:
+
+<Tabs>
+<TabItem value="Было" label="Было">
+```javascript
+it('some test', async function() {
+    // специальных команд для работы с react-компонентами – нет :(
+});
+````
+
+</TabItem>
+
+<TabItem value="Стало" label="Стало">
+```javascript
+  it('some test', async function({ browser }) {
+      const component = await browser.react$('MyComponent', {
+          props: { someProp: true },
+          state: 'some-state'
+      });
+
+      const result = await component.isDisplayed();
+
+});
+
+````
+</TabItem>
+
+</Tabs>
+
+### Актуальная документация {#feature_actual_docs}
+
+Пока hermione использовала старую версию _webdriverio@4_, приходилось все время уточнять, что документация на все команды лежит по отдельному адресу: [v4.webdriver.io/api.html][webdriverio-v4-api]. Теперь же описания всех команд _webdriverio_, которые используются hermione, можно найти по стандартному адресу: [webdriver.io/docs/api][webdriverio-api].
+
+Помимо этого, мы [перевели описания всех команд на русский язык][hermione-commands] и адаптировали все примеры использования этих команд под hermione, так как в _webdriverio_ свой раннер и примеры в его документации неприменимы напрямую в hermione.
+
+### Тесты выполняются быстрее {#feature_running_tests_faster}
+
+При локальных прогонах нескольких тестов вы, скорее всего, этого ускорения не заметите, но на большом количестве тестов это будет весьма ощутимо. Новые команды работают быстрее примерно на 15% (при условии, что вы отказались от использования старых команд).
+
+### Простой запуск тестов на локальном браузере {#feature_running_tests_in_local_browser}
+
+Раньше для того, чтобы запустить тесты локально на своем браузере, нужно было запустить `selenium-standalone` и указать hermione магический `gridUrl`, чтобы все заработало. Сейчас же — достаточно в конфиге указать браузеру опцию `automationProtocol` со значением `devtools`:
+
+```javascript
+// hermione.conf.js
+module.exports = {
+  browsers: {
+      chrome: {
+          automationProtocol: 'devtools',
+          desiredCapabilities: {
+              // ...
+          }
+      }
+  },
+
+  // другие настройки hermione...
+};
+````
+
+Также мы планируем добавить отдельную кнопку в hermione GUI для перехода в CDP-режим, чтобы было еще проще.
+
+<Admonition type="warning">
+    * На данный момент это полноценно поддержано только в браузере _Chrome_. * Переснимать скриншоты
+    в таком режиме можно только для дебага, т. к. в конвейере браузеры запускаются под _Linux_,
+    соответственно: рендеринг страницы будет отличаться и в пулл-реквесте тесты упадут с диффом.
+</Admonition>
+
+### API для стаба походов по сети {#feature_api_to_mock_network}
+
+В новой версии доступна возможность застабать ответы вашего сервиса или переопределить их. Делается это с помощью команды [mock.respond()][mock]. Также можно запрещать походы по урлам внешних сервисов.
+
+Более подробно о всех возможностях читайте в рецепте «[Как отслеживать и перехватывать сетевые запросы и ответы][how-to-intercept-requests-and-responses]».
+
+<Admonition type="warning">
+    На данный момент эта функциональность работает только в режиме _Chrome DevTools Protocol (CDP)_,
+    который работает только в _Chrome_ и _Firefox Nightly_.
+</Admonition>
+
+### Конфигурация браузеров в конфиге {#browsers_config}
+
+Для браузеров, поддерживающих работу W3C-протокола, вместо поля `version` нужно указывать `browserVersion`. А для дополнительных опций нужно добавлять префикс браузера:
+
+<Tabs>
+<TabItem value="Было" label="Было">
+```javascript
+  module.exports = {
+      browsers: {
+          'chrome-desktop': {
+              desiredCapabilities: {
+                  browserName: 'chrome',
+                  version: '75',
+                  'chromeOptions': {
+                      // ...
+                  }
+              }
+          }
+      }
+  };
+  ```
+</TabItem>
+
+<TabItem value="Стало" label="Стало">
+```javascript
+  module.exports = {
+      browsers: {
+          'chrome-desktop': {
+              desiredCapabilities: {
+                  browserName: 'chrome',
+                  browserVersion: '75',
+                  'goog:chromeOptions': { // для браузера Chrome нужен префикс 'goog'
+                      // ...
+                  }
+              }
+          }
+      }
+  };
+  ```
+</TabItem>
+
+</Tabs>
+
+Подробнее про вендорные префиксы читайте по [ссылке](https://w3c.github.io/webdriver/#protocol-extensions).
+
+Список всех доступных настроек можно посмотреть в [спецификации](https://w3c.github.io/webdriver/#capabilities).
+
+## Как переехать? {#how_to_move}
+
+Мы обновились сразу на 3 мажора _webdriverio_, поэтому просто обновить версию hermione в `package.json` не получится. Основные проблемы при переезде — это отсутствующий _chaining_ в тестах и устаревшие команды тестов. Чтобы вам было проще разобраться с обеими проблемами, мы написали для вас следующую инструкцию.
+
+### 1. Обновите hermione до 4+, установите плагин мигратора и кодмод {#update_hermione_and_install_plugin_and_codmode}
+
+А именно:
+
+-   обновите версию hermione до hermione@4.0.0;
+-   установите плагин [hermione-wdio-migrator][hermione-wdio-migrator] для плавной миграции команд;
+-   установите пакет [hermione-codemod][hermione-codemod] для конвертации существующих тестов в новый синтаксис;
+
+Всё это вы можете сделать одной командой:
+
+```shell
+npm install -D hermione@4.0.0 hermione-wdio-migrator hermione-codemod --save-exact
+```
+
+Версии всех плагинов hermione (например, [html-reporter][html-reporter]) также необходимо обновить до последних версий, т. к. часть из них может работать неправильно с новой версией hermione.
+
+### 2. Запустите кодмод на async/await {#change_to_async_await_by_codmode}
+
+Кодмод перегенерит ваши тесты с _chaining_-формата в формат _async/await:_
+
+<Tabs>
+<TabItem value="zsh" label="zsh">
+Если вы используете командный процессор _zsh_, то файлы тестов можно передавать не только в виде относительных путей, но и в виде глобов, например: _somefolder/**/*.js_ и т. п.
+
+    ```shell
+    npx jscodeshift -t node_modules/hermione-codemod/transforms/browser-chaining-to-async-await.js path_to_file_mask
+    ```
+
+</TabItem>
+
+<TabItem value="bash" label="bash">
+Если вы используете командный процессор _bash_, то задавать пути в виде глобов как в _zsh_ не получится, поэтому команда будет сложнее, если вам нужно обработать группу файлов. Например:
+
+    ```shell
+    npx jscodeshift -t node_modules/hermione-codemod/transforms/browser-chaining-to-async-await.js $(find ./somefolder -type f -iname '*.js' | xargs echo)
+    ```
+
+</TabItem>
+
+</Tabs>
+
+При успешном завершении вы увидите соответствующее сообщение:
+
+```shell
+Results:
+0 errors
+0 unmodified
+0 skipped
+251 ok
+```
+
+Но бывают и кейсы, с которыми текущий кодмод не может справиться. Для таких тестов будет выведена ошибка с информацией о проблемном файле:
+
+```shell
+WARN: can't correctly transform ConditionalExpression, fix it manually
+      file: tests/hermione/suites/common/promotion-page/promotion-page.hermione.js
+      position: {"start":112,"end":116}
+```
+
+Такие тесты придется править руками. Мы старались учесть большинство тестов, поэтому таких случаев должно быть не очень много.
+
+После этого вы **уже** можете вливать свои изменения (это не обязательно), чтобы выполнять переезд по частям. Дело в том, что в _wdio@4_ синтаксис _async/await_ тоже будет работать. Т. е. вы всегда могли писать тесты таким образом (а некоторые сервисы уже давно так и делали).
+
+### 3. Запустите кодмод на удаление value {#remove_value_by_codmode}
+
+Так как теперь при получении результатов команд вместо объекта с ключом `value` возвращается реальный результат, нужно изменить во всех тестах сохранение результата. Следующий кодмод предназначен именно для этого случая.
+
+Команда очень похожа на предыдущую, меняется только путь к файлу реализации очередного кодмода:
+
+```shell
+npx jscodeshift -t node_modules/hermione-codemod/transforms/remove-browser-prop.js path_to_file_mask
+```
+
+При наличии ворнингов проблемные тесты нужно будет исправить вручную. Например, если в рамках одного теста есть многократное использование `value` через деструктуризацию, то кодмод с таким не справится и в коде теста получится несколько переменных с одним именем. Например:
+
+```javascript
+// тест на wdio@4:
+it('test', function(){
+    return this.browser
+        ...
+        .getText('.button')
+        .then((value) => {
+            assert.equal(value, 'Кнопка', 'Нам нужна кнопка');
+        })
+        ...
+        .getValue('.input')
+        .then((value) => {
+            assert.equal(value, 'Привет', 'С нами не поздоровались');
+        });
+});
+
+// перегенерится для wdio@7 в такой формат:
+it('test', async function() {
+    const value = await this.browser.getText('.button');
+    assert.equal(value, 'Кнопка', 'Нам нужна кнопка');
+    ...
+    // здесь будет ошибка из-за повторного использования названия переменной,
+    // поэтому кодмод выдаст ворнинг о проблемном месте
+    const value = await this.browser.getValue('.input');
+    assert.equal(value, 'Привет', 'С нами не поздоровались');
+});
+```
+
+Если при запуске кодмодов в вашем проекте оказалось слишком много тестов, которые не поддаются автоматической миграции, то обратитесь, пожалуйста, в [github issues][gh-issues] за помощью. Мы проанализируем эти ошибки и поможем с переездом.
+
+### 4. Добавьте hermione-wdio-migrator в конфиг hermione {#add_migrator}
+
+Этот плагин «под капотом» просто добавляет реализацию старых команд с помощью нового API, чтобы в момент переезда вам не пришлось актуализировать тесты самостоятельно. В дальнейшем, конечно, нужно будет в своих тестах заменить эти устаревшие команды на новые:
+
+```javascript
+module.exports = {
+    plugins: {
+        "hermione-wdio-migrator": {
+            enabled: true,
+        },
+
+        // остальные плагины hermione...
+    },
+
+    // другие настройки hermione...
+};
+```
+
+### 5. Удалите кодмод {#remove_codemod}
+
+Пакет [hermione-codemod][hermione-codemod] нужно деинсталлировать, т. к. в дальнейшем он не понадобится.
+
+```shell
+npm uninstall hermione-codemod
+```
+
+### 6. Запустите линтеры {#run_linters}
+
+Нужно запустить линтеры на измененные тесты, т. к. кодмод мог нарушить правила написания кода в вашем проекте.
+
+### 7. Запустите тесты {#run_tests}
+
+На последнем шаге нужно убедиться, что все тесты успешно проходят, например, создав пулл-реквест и проверив, что все тесты успешно выполнились в CI.
+
+## Заключение {#conclusion}
+
+Обновление _webdriverio_ принесло много полезных вещей. Некоторыми можно пользоваться уже сейчас, некоторые в более удобном виде появятся чуть позже. Поэтому, мы крайне настоятельно рекомендуем переезжать на новую версию, чтобы написание тестов стало более удобным, быстрым и приятным.
+
+<Admonition type="warning">
+    Старая версия hermione находится в режиме ограниченной поддержки и новые фичи в ней появляться
+    не будут.
+</Admonition>
+
+## Поддержка {#support}
+
+Если при переезде на новую версию вы столкнетесь с проблемами, или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] — и мы обязательно вам поможем!
+
+[how-to-use-cdp]: ../guides/how-to-use-cdp
+[how-to-intercept-requests-and-responses]: ../guides/how-to-intercept-requests-and-responses
+[webdriverio]: https://webdriver.io
+[webdriverio-api]: https://webdriver.io/docs/api
+[webdriverio-v4-api]: http://v4.webdriver.io/api.html
+[browser-dollar]: ../commands/browser/_dollar
+[browser-dollar-dollar]: ../commands/browser/_dollardollar
+[element-dollar]: ../commands/element/_dollar
+[element-dollar-dollar]: ../commands/element/_dollardollar
+[element-wait-for-exist]: ../commands/element/waitForExist
+[browser-react-dollar]: ../commands/browser/reactDollar
+[browser-react-dollar-dollar]: ../commands/browser/reactDollarDollar
+[element-react-dollar]: ../commands/element/reactDollar
+[element-react-dollar-dollar]: ../commands/element/reactDollarDollar
+[react-selectors]: https://webdriver.io/docs/selectors/#react-selectors
+[mock]: ../commands/mock/respond
+[hermione-commands]: ../commands/overview
+[hermione-wdio-migrator]: https://github.com/gemini-testing/hermione-wdio-migrator
+[hermione-codemod]: https://github.com/gemini-testing/hermione-codemod
+[html-reporter]: ../html-reporter/html-reporter-setup
+[gh-issues]: https://github.com/gemini-testing/testplane/issues/

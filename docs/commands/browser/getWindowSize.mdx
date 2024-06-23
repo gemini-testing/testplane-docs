@@ -1,0 +1,25 @@
+# getWindowSize
+
+## Обзор {#overview}
+
+Используйте команду `getWindowSize`, чтобы получить размер окна браузера.
+
+## Использование {#usage}
+
+```javascript
+await browser.getWindowSize();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it("should return browser window size", async ({ browser }) => {
+    const windowSize = await browser.getWindowSize();
+
+    console.log(windowSize); // выведет: { width: 1280, height: 767 }
+});
+```
+
+## Связанные команды {#related}
+
+-   [setWindowSize](./setWindowSize)

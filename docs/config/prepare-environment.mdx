@@ -1,0 +1,21 @@
+# prepareEnvironment
+
+## Обзор {#overview}
+
+Данный параметр является хуком. Функция, заданная для данного параметра, будет автоматически вызвана после чтения конфига Testplane. С помощью нее можно задать переменные окружения или, например, дополнить какие-то параметры конфига.
+
+Контекстом функции является конфиг Testplane.
+
+## Пример использования {#example}
+
+```javascript
+const { pick } = require("lodash");
+
+module.exports = {
+    prepareEnvironment: function () {
+        this.sets = pick(this.sets, ["touch-phone"]);
+    },
+
+    // другие настройки Testplane...
+};
+```

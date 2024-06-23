@@ -1,0 +1,45 @@
+# isDisplayedInViewport
+
+## Обзор {#overview}
+
+Используйте команду `isDisplayedInViewport`, чтобы определить, отображается ли заданный DOM-элемент во вьюпорте.
+
+Команда возвращает `true`, если выбранный DOM-элемент частично виден и находится во вьюпорте, иначе возвращает `false`.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).isDisplayedInViewport();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<div id="notDisplayed" style="display: none"></div>
+<div id="notVisible" style="visibility: hidden"></div>
+<div id="notInViewport" style="position:absolute; left: 9999999"></div>
+<div id="zeroOpacity" style="opacity: 0"></div>
+```
+
+**isDisplayed.js**
+
+```javascript
+it("should detect if an element is visible", async ({ browser }) => {
+    let isDisplayedInViewport = await browser.$("#notDisplayed").isDisplayedInViewport();
+    console.log(isDisplayedInViewport); // выведет: false
+
+    isDisplayedInViewport = await browser.$("#notVisible").isDisplayedInViewport();
+    console.log(isDisplayedInViewport); // выведет: false
+
+    isDisplayedInViewport = await browser.$("#notExisting").isDisplayedInViewport();
+    console.log(isDisplayedInViewport); // выведет: false
+
+    isDisplayedInViewport = await browser.$("#notInViewport").isDisplayedInViewport();
+    console.log(isDisplayedInViewport); // выведет: false
+
+    isDisplayedInViewport = await browser.$("#zeroOpacity").isDisplayedInViewport();
+    console.log(isDisplayedInViewport); // выведет: false
+});
+```

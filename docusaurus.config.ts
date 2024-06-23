@@ -24,8 +24,8 @@ const config: Config = {
     onBrokenMarkdownLinks: "warn",
 
     i18n: {
-        defaultLocale: "en",
-        locales: ["en"],
+        defaultLocale: "ru",
+        locales: ["en", "ru"],
     },
     headTags: [
         {
@@ -43,6 +43,13 @@ const config: Config = {
                 docs: {
                     sidebarPath: "./sidebars.ts",
                     editUrl: "https://github.com/gemini-testing/testplane-docs/tree/main/docs/",
+                    lastVersion: "current",
+                    versions: {
+                        current: {
+                            label: "v8",
+                            path: "v8",
+                        },
+                    },
                 },
                 blog: {
                     showReadingTime: true,
@@ -94,16 +101,16 @@ const config: Config = {
                     title: "Quickstart",
                     items: [
                         {
-                            label: "Installation",
-                            to: "#",
+                            label: "Overview",
+                            to: "/docs/v8",
                         },
                         {
-                            label: "Writing your first tests",
-                            to: "#",
+                            label: "Installation",
+                            to: "/docs/v8/quickstart",
                         },
                         {
                             label: "Why testplane?",
-                            to: "#",
+                            to: "/docs/v8#why-testplane",
                         },
                     ],
                 },
@@ -112,15 +119,15 @@ const config: Config = {
                     items: [
                         {
                             label: "Browser commands",
-                            href: "#",
+                            href: "/docs/v8/commands/overview",
                         },
                         {
                             label: "Testplane config",
-                            href: "#",
+                            href: "/docs/v8/config/main",
                         },
                         {
                             label: "Testplane UI",
-                            href: "#",
+                            href: "/docs/v8/html-reporter/html-reporter-setup",
                         },
                     ],
                 },
@@ -128,16 +135,16 @@ const config: Config = {
                     title: "Customization",
                     items: [
                         {
-                            label: "Custom commands",
-                            href: "#",
+                            label: "Testplane API",
+                            href: "/docs/v8/reference/hermione-api",
                         },
                         {
-                            label: "Plugins and reporters",
-                            href: "#",
+                            label: "Testplane events",
+                            href: "/docs/v8/reference/testplane-events",
                         },
                         {
-                            label: "Usage in CI",
-                            href: "#",
+                            label: "Plugins",
+                            href: "/docs/v8/guides/how-to-write-your-own-plugin",
                         },
                     ],
                 },
@@ -146,15 +153,15 @@ const config: Config = {
                     items: [
                         {
                             label: "Docs",
-                            href: "#",
+                            href: "/docs/v8",
                         },
                         {
                             label: "Blog",
-                            href: "#",
+                            href: "/blog",
                         },
                         {
                             label: "Changelog",
-                            to: "#",
+                            to: "https://github.com/gemini-testing/testplane/blob/master/CHANGELOG.md",
                         },
                     ],
                 },

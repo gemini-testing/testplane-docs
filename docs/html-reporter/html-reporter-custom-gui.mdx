@@ -1,0 +1,112 @@
+import Admonition from "@theme/Admonition";
+
+# Кастомизация GUI
+
+## Обзор {#overview}
+
+<Admonition type="warning">
+Данный способ кастомизации GUI устарел.
+
+Вместо него рекомендуется использовать [плагины для отчета](./html-reporter-plugins).
+
+</Admonition>
+
+Используйте опцию `customGui` в конфиге плагина `html-reporter`, чтобы добавить собственные элементы управления для GUI-режима.
+
+Для элементов управления задается их тип (кнопка или радиокнопка), надписи и значения, а также функции инициализации и основного действия по нажатию. Элементы управления должны быть разбиты на отдельные разделы в зависимости от их назначения. Как минимум, должен быть указан один раздел.
+
+По умолчанию значение опции `customGui`: `{}`.
+
+## Настройка {#setup}
+
+Опция `customGui` требует для своего значения объект следующего формата:
+
+```javascript
+customGui: {
+    '&lt;название раздела>': [
+        {
+            type: '&lt;тип элементов управления>', // 'button' или 'radiobutton'
+            controls: [
+                {
+                    label: '&lt;надпись на элементе управления>',
+                    value: '&lt;значение элемента управления>'
+                },
+
+                // другие элементы управления...
+            ],
+            initialize: async ({ testplane, ctx }) => {
+                // код инициализации
+                // возвращаемое значение будет проигнорировано
+            },
+            action: async ({ testplane, ctx, control }) => {
+                // код действия
+                // возвращаемое значение будет проигнорировано
+            }
+        },
+
+        // другие группы элементов управления...
+    ],
+
+    // другие разделы...
+}
+```
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Название**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>type</td><td>String</td><td>Обязательный параметр. Тип элементов управления. Доступные значения: _'button'_ и _'radiobutton'_.</td></tr>
+<tr><td>controls</td><td>Array</td><td>Массив объектов, каждый из которых описывает элемент управления. Объект должен состоять из двух ключей: _label_ и _value_, которые задают надпись на элементе управления и его значение.</td></tr>
+<tr><td>initialize</td><td>Function</td><td>Необязательный параметр. Асинхронная функция, которая будет выполнена на серверной стороне при старте Testplane в GUI-режиме. В функцию будет передан объект вида _\{ testplane, ctx }_, где _testplane_ — это инстанс testplane, а _ctx_ — объект, описывающий группу элементов, для которых вызывается функция инициализации.</td></tr>
+<tr><td>action</td><td>Function</td><td>Обязательный параметр. Асинхронная функция, которая будет выполнена на серверной стороне, когда пользователь нажмет на элемент управления. В функцию будет передан объект вида _\{ testplane, ctx, control }_, где _testplane_ — это инстанс testplane, _ctx_ — объект, описывающий группу элементов, для которых вызывается _action_-функция, и _control_ — ссылка на элемент управления, по которому кликнул пользователь.</td></tr>
+
+</tbody>
+</table>
+
+## Пример использования {#usage_example}
+
+Добавляем радиокнопки для изменения baseUrl'а в GUI-режиме:
+
+```javascript
+customGui: {
+    'some-meaningful-name-of-section': [
+        {
+            type: 'radiobutton',
+            controls: [
+                {
+                    label: 'Dev',
+                    value: 'http://localhost/development/'
+                },
+                {
+                    label: 'Prod',
+                    value: 'http://localhost/production/'
+                }
+            ],
+            initialize: async ({ testplane, ctx }) => {
+                const { config } = testplane;
+                const browserIds = config.getBrowserIds();
+
+                if (browserIds.length) {
+                    const { baseUrl } = config.forBrowser(browserIds[0]);
+
+                    ctx.controls.forEach((control) => {
+                        control.active = (baseUrl === control.value);
+                    });
+                }
+            },
+            action: async ({ testplane, ctx, control }) => {
+                const { config } = testplane;
+
+                config
+                    .getBrowserIds()
+                    .forEach((browserId) => {
+                        config.forBrowser(browserId).baseUrl = control.value;
+                    });
+            }
+        }
+    ]
+}
+```
