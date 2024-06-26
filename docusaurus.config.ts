@@ -172,6 +172,11 @@ const config: Config = {
             theme: prismThemes.github,
             darkTheme: prismThemes.dracula,
         },
+        algolia: {
+            appId: "GEUAOEJ3NK",
+            apiKey: "329ccc709854898024bad32d341d441f",
+            indexName: "testplane",
+        },
     } satisfies Preset.ThemeConfig,
 
     plugins: ["docusaurus-plugin-sass", tailwindPlugin, svgFixDuplicateIdsPlugin],
