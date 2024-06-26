@@ -37,19 +37,19 @@
 
 /* Infima variables. */
 :root {
-    --ifm-color-primary: theme(colors.indigo.600);
-    --ifm-color-primary-dark: theme(colors.indigo.700);
-    --ifm-color-primary-darker: theme(colors.indigo.800);
-    --ifm-color-primary-darkest: theme(colors.indigo.900);
-    --ifm-color-primary-light: theme(colors.indigo.500);
-    --ifm-color-primary-lighter: theme(colors.indigo.400);
-    --ifm-color-primary-lightest: theme(colors.indigo.300);
+    --ifm-color-primary: theme("colors.indigo.600");
+    --ifm-color-primary-dark: theme("colors.indigo.700");
+    --ifm-color-primary-darker: theme("colors.indigo.800");
+    --ifm-color-primary-darkest: theme("colors.indigo.900");
+    --ifm-color-primary-light: theme("colors.indigo.500");
+    --ifm-color-primary-lighter: theme("colors.indigo.400");
+    --ifm-color-primary-lightest: theme("colors.indigo.300");
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
     --ifm-font-family-base: Jost, sans-serif;
-    --ifm-link-color: theme(colors.indigo.600);
-    --ifm-menu-color-active: theme(colors.indigo.600);
-    --ifm-breadcrumb-color-active: theme(colors.indigo.600);
+    --ifm-link-color: theme("colors.indigo.600");
+    --ifm-menu-color-active: theme("colors.indigo.600");
+    --ifm-breadcrumb-color-active: theme("colors.indigo.600");
 }
 
 /* Dark mode. */
@@ -104,8 +104,16 @@
     padding: 0.5rem !important;
 }
 
+.table-of-contents {
+    font-size: theme("fontSize.sm");
+}
+
 .theme-doc-markdown,
 article {
+    p {
+        font-size: theme("fontSize.lg");
+    }
+
     ul {
         list-style: square;
         padding-left: 2rem;
