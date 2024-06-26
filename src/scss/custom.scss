@@ -50,6 +50,7 @@
     --ifm-link-color: theme("colors.indigo.600");
     --ifm-menu-color-active: theme("colors.indigo.600");
     --ifm-breadcrumb-color-active: theme("colors.indigo.600");
+    --docsearch-searchbox-background: transparent !important;
 }
 
 /* Dark mode. */
@@ -66,16 +67,46 @@
 
 .navbar {
     &.navbar--fixed-top {
-        backdrop-filter: blur(5px);
-        background-color: #ffffff60;
+        background-color: rgba(255, 255, 255, 0.7);
+
+        &::before {
+            content: "";
+            position: absolute;
+            backdrop-filter: blur(5px);
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        & .navbar__inner,
+        & .navbar-sidebar,
+        & .navbar-sidebar__backdrop {
+            z-index: 1;
+        }
     }
 
-    .navbar__item {
-        @apply text-base font-semibold text-gray-700 hover:text-gray-500;
+    .DocSearch-Button {
+        background-color: rgba(75, 85, 99, 0.1);
+
+        color: theme("colors.gray.600") !important;
+
+        svg {
+            color: theme("colors.gray.600") !important;
+        }
     }
 
     .navbar__link {
-        @apply flex items-center font-medium text-gray-600 after:border-t-gray-600;
+        @apply font-medium text-gray-600 after:border-t-gray-600;
+
+        svg {
+            display: inline;
+            margin-top: -2px;
+        }
+
+        &::after {
+            top: 0;
+        }
 
         &::after {
             transform: none;
@@ -83,15 +114,7 @@
     }
 
     .navbar__brand {
-        @apply flex-row-reverse font-mono text-indigo-600 hover:text-indigo-400;
-    }
-
-    .navbar__brand .navbar__logo {
-        @apply ml-1 size-6;
-    }
-
-    .navbar__toggle {
-        display: none;
+        @apply font-mono text-indigo-600 hover:text-indigo-400;
     }
 }
 
