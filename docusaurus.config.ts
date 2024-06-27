@@ -42,7 +42,7 @@ const config: Config = {
             {
                 docs: {
                     sidebarPath: "./sidebars.ts",
-                    editUrl: "https://github.com/gemini-testing/testplane-docs/tree/main/docs/",
+                    editUrl: "https://github.com/gemini-testing/testplane-docs/tree/master/",
                     lastVersion: "current",
                     versions: {
                         current: {
@@ -53,7 +53,7 @@ const config: Config = {
                 },
                 blog: {
                     showReadingTime: true,
-                    editUrl: "https://github.com/gemini-testing/testplane-docs/tree/main/blog/",
+                    editUrl: "https://github.com/gemini-testing/testplane-docs/tree/master/",
                 },
                 theme: {
                     customCss: "./src/scss/custom.scss",
@@ -136,7 +136,7 @@ const config: Config = {
                     items: [
                         {
                             label: "Testplane API",
-                            href: "/docs/v8/reference/hermione-api",
+                            href: "/docs/v8/reference/testplane-api",
                         },
                         {
                             label: "Testplane events",
