@@ -1,16 +1,29 @@
 @tailwind base;
 
 @layer base {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply mb-3 text-lg font-medium;
+    }
+
     h1 {
-        @apply mb-4 text-4xl font-medium;
+        @apply mb-4 text-4xl;
     }
 
     h2 {
-        @apply mb-4 text-3xl font-medium;
+        @apply mb-4 text-3xl;
     }
 
     h3 {
-        @apply mb-3 text-xl font-medium;
+        @apply text-2xl;
+    }
+
+    h4 {
+        @apply text-xl;
     }
 
     p {
@@ -133,7 +146,10 @@
 
 .theme-doc-markdown,
 article {
-    p {
+    p,
+    ul,
+    ol,
+    table {
         font-size: theme("fontSize.lg");
     }
 
