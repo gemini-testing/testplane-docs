@@ -11,6 +11,10 @@
         "message": "HTML Reporter",
         "description": "The label for category HTML Reporter in sidebar mainSidebar"
     },
+    "sidebar.mainSidebar.category.Migrations": {
+        "message": "Migrations",
+        "description": "The label for category Migrations in sidebar mainSidebar"
+    },
     "sidebar.mainSidebar.category.Plugins": {
         "message": "Plugins",
         "description": "The label for category Plugins in sidebar mainSidebar"
