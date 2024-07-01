@@ -179,7 +179,19 @@ const config: Config = {
         },
     } satisfies Preset.ThemeConfig,
 
-    plugins: ["docusaurus-plugin-sass", tailwindPlugin, svgFixDuplicateIdsPlugin],
+    plugins: [
+        "docusaurus-plugin-sass",
+        tailwindPlugin,
+        svgFixDuplicateIdsPlugin,
+        [
+            "docusaurus-plugin-yandex-metrica",
+            {
+                counterID: "97719088",
+                webvisor: true,
+                trackHash: true,
+            },
+        ],
+    ],
 };
 
 export default config;
