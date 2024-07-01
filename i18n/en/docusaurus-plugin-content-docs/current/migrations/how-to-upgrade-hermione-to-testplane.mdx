@@ -1,0 +1,72 @@
+import Admonition from "@theme/Admonition";
+
+# How to migrate from Hermione to Testplane
+
+<Admonition type="warning">
+If in your project Hermione is younger than the v8.x version, then read first:
+* «[How to update hermione to the v.4.x][how-to-upgrade-hermione-to-4]»;
+* «[How to update hermione to the v.5.x][how-to-upgrade-hermione-to-5]»;
+* «[How to update hermione to the v.6.x][how-to-upgrade-hermione-to-6]»;
+* «[How to update hermione to the v.7.x][how-to-upgrade-hermione-to-7]»;
+* «[How to update hermione to the v.8.x][how-to-upgrade-hermione-to-8]».
+
+We recommend updating Hermione step by step, ensuring at each stage that all project tests are executed correctly.
+
+</Admonition>
+
+## What has changed? {#what_is_new}
+
+This project was formerly known as "Hermione", but eventually some copyright and trademark issues surfaced, leading to the decision to rebrand. After some discussion, we settled on "Testplane" as the official new title. Considering this change as merely a rebranding, we've proceeded with the existing version count instead of starting anew. Thus, Testplane `v8.x` is a drop-in replacement for Hermione `v8.x`.
+
+## How to move? {#how_to_move}
+
+### 1. Replace hermione deps with tesplane in `package.json` {#uninstall_hermione}
+
+```bash
+npm uninstall hermione
+npm install -D testplane
+```
+
+### 2. Replace "hermione" with "testplane" in compilerOptions.types field of your tsconfig.json file {#update_ts_config}
+
+```javascript
+{
+    "compilerOptions": {
+        "types": [
+            "testplane"
+        ]
+    }
+}
+```
+
+### 3. Replace all imports, requires and declarations {#remove_from_code}
+
+-   `import ... from "hermione"` → `import ... from "testplane"`
+-   `require("hermione")` → `require("testplane")`
+-   `declare module "hermione"` → `declare module "testplane"`
+
+### 4. Optional changes list (these are not required, but recommended) {#optional_changes}
+
+-   use `testplane` binary instead of `hermione` binary;
+-   rename `.hermione.conf.ts`, `.hermione.conf.js` configs to `.testplane.conf.ts`, `.testplane.conf.js`;
+-   use `globalThis.testplane` helper instead of `globalThis.hermione`;
+-   use `testplane_` environment variables instead of `hermione_` environment variables;
+-   use testplane field instead of hermione on event handlers;
+-   use [TestplaneCtx][tp-ctx] instead of `HermioneCtx` type;
+-   use `executionContext.testplaneCtx` as browser property instead of `executionContext.hermioneCtx`;
+-   if you use default [screenshotsDir][screenshotsdir] value, rename "hermione/screens" directory to "testplane/screens" or specify the value "hermione/screens" explicitly;
+-   if you use default [sets.files][sets] value, move your tests from "hermione" to "testplane" directory or specify the value "hermione" explicitly.
+
+## Support {#support}
+
+If you encounter any problems during the migration or have any questions, come to [github issues][gh-issues] - and we will definitely help you!
+
+[how-to-upgrade-hermione-to-4]: ../migrations/how-to-upgrade-hermione-to-4
+[how-to-upgrade-hermione-to-5]: ../migrations/how-to-upgrade-hermione-to-5
+[how-to-upgrade-hermione-to-6]: ../migrations/how-to-upgrade-hermione-to-6
+[how-to-upgrade-hermione-to-7]: ../migrations/how-to-upgrade-hermione-to-7
+[how-to-upgrade-hermione-to-8]: ../migrations/how-to-upgrade-hermione-to-8
+[tp-ctx]: https://github.com/gemini-testing/testplane/blob/master/docs/typescript.md#testplanectx-typings
+[screenshotsdir]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#https://github.com/gemini-testing/testplane/blob/master/docs/config.md#screenshotsdir
+[sets]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#sets
+[gh-issues]: https://github.com/gemini-testing/testplane/issues/

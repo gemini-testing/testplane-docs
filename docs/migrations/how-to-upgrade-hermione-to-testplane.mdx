@@ -1,0 +1,74 @@
+import Admonition from "@theme/Admonition";
+
+# Как обновить Hermione до Testplane
+
+<Admonition type="warning">
+Если в вашем проекте Hermione младше 8-й версии, то прочтите сначала:
+* «[Как обновить hermione до версии 4.x][how-to-upgrade-hermione-to-4]»;
+* «[Как обновить hermione до версии 5.x][how-to-upgrade-hermione-to-5]»;
+* «[Как обновить hermione до версии 6.x][how-to-upgrade-hermione-to-6]»;
+* «[Как обновить hermione до версии 7.x][how-to-upgrade-hermione-to-7]»;
+* «[Как обновить hermione до версии 8.x][how-to-upgrade-hermione-to-8]».
+
+Мы рекомендуем вам обновлять Hermione поэтапно, убеждаясь на каждом этапе, что все тесты проекта корректно выполняются.
+
+</Admonition>
+
+## Что изменилось? {#what_is_new}
+
+Этот проект ранее назывался Hermione, но со временем возникли некоторые проблемы с авторскими правами и товарными знаками, что привело к решению о ребрендинге. После некоторого обсуждения мы остановились на Testplane в качестве официального нового названия.
+Так как это изменение является простым ребрендингом, мы продолжили сквозное версионирование, вместо того, чтобы начинать версионирование заново. Таким образом, Testplane@8.x является простой заменой Hermione@8.x.
+Testplane имеет полную обратную совместимость c Hermione — умеет читать конфиги Hermione, поддерживает ее плагины, а для более плавного переезда экспортирует сразу 2 bin-файла (testplane и hermione).
+
+## Как переехать? {#how_to_move}
+
+### 1. Заменить npm-зависимости `hermione` на `testplane` в package.json {#uninstall_hermione}
+
+```bash
+npm uninstall hermione
+npm install -D testplane
+```
+
+### 2. В вашем ts-конфиге `tsconfig.json` заменить поле `hermione` на `testplane` {#update_ts_config}
+
+```javascript
+{
+    "compilerOptions": {
+        "types": [
+            "testplane"
+        ]
+    }
+}
+```
+
+### 3. Заменить все импорты и декларации пакета hermione (при наличии) {#remove_from_code}
+
+-   `import ... from "hermione"` → `import ... from "testplane"`
+-   `require("hermione")` → `require("testplane")`
+-   `declare module "hermione"` → `declare module "testplane"`
+
+### 4. Опциональные изменения (не обязательны для переезда, но рекомендованные) {#optional_changes}
+
+-   при запуске используйте bin-файл `testplane` вместо `hermione`;
+-   переименуйте файл конфигурации `.hermione.conf.(t|j)s` в `.testplane.conf.(t|j)s`;
+-   используйте глобальный хелпер `globalThis.testplane` вместо `globalThis.hermione`;
+-   для переопределения конфига используйте переменные окружения, начинающиеся на `testplane_` вместо `hermione_`;
+-   используйте поле `testplane` вместо `hermione` в обработчиках событий;
+-   для тайпингов используйте [TestplaneCts][tp-ctx] вместо `HermioneCtx`;
+-   для получения контекста в тесте используйте свойство браузера `executionContext.testplaneCtx` вместо `executionContext.hermioneCtx`;
+-   если вы используете дефолтное значение опции [screenshotsDir][screenshotsdir], то переименуйте папку со скриншотами "hermione/screens" в "testplane/screens" иил явно укажите в конфиге значение;
+-   если вы используете дефолтное значение опции [sets.files][sets], то переименуйте вашу папку с тестами "hermione → testplane" или укажите явно значение опции.
+
+## Поддержка {#support}
+
+Если при переезде вы столкнетесь с проблемами или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] — и мы обязательно вам поможем!
+
+[how-to-upgrade-hermione-to-4]: ../migrations/how-to-upgrade-hermione-to-4
+[how-to-upgrade-hermione-to-5]: ../migrations/how-to-upgrade-hermione-to-5
+[how-to-upgrade-hermione-to-6]: ../migrations/how-to-upgrade-hermione-to-6
+[how-to-upgrade-hermione-to-7]: ../migrations/how-to-upgrade-hermione-to-7
+[how-to-upgrade-hermione-to-8]: ../migrations/how-to-upgrade-hermione-to-8
+[tp-ctx]: https://github.com/gemini-testing/testplane/blob/master/docs/typescript.md#testplanectx-typings
+[screenshotsdir]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#https://github.com/gemini-testing/testplane/blob/master/docs/config.md#screenshotsdir
+[sets]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#sets
+[gh-issues]: https://github.com/gemini-testing/testplane/issues/
