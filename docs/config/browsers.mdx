@@ -62,7 +62,7 @@ module.exports = {
 <tr><td>[gridUrl](#grid_url)</td><td>String</td><td>"http://localhost:4444/wd/hub"</td><td>URL грида Selenium.</td></tr>
 <tr><td>[baseUrl](#base_url)</td><td>String</td><td>"http://localhost"</td><td>Базовый URL тестируемого сервиса.</td></tr>
 <tr><td>[browserWSEndpoint](#browser_ws_endpoint)</td><td>String</td><td>null</td><td>Эндпойнт websocket-соединения для подключения к браузеру через [Chrome DevTools Protocol (CDP)][how-to-use-cdp].</td></tr>
-<tr><td>[automationProtocol](#automation_protocol)</td><td>String</td><td>"webdriver"</td><td>Протокол общения с браузером. См. [WebDriver vs CDP](../reference/webdriver-vs-cdp).</td></tr>
+<tr><td>[automationProtocol](#automation_protocol)</td><td>String</td><td>"webdriver"</td><td>Протокол общения с браузером. См. [WebDriver vs CDP](../../reference/webdriver-vs-cdp).</td></tr>
 <tr><td>[sessionEnvFlags](#session_env_flags)</td><td>Object</td><td>`{ }`</td><td>Флаги окружения, задающие протокол, который будет использоваться в созданной сессии браузера.</td></tr>
 <tr><td>[windowSize](#window_size)</td><td>String или Object</td><td>null</td><td>Размеры окна браузера.</td></tr>
 
@@ -109,7 +109,7 @@ URL грида Selenium. По умолчанию: `http://localhost:4444/wd/hub`
 
 ### automationProtocol {#automation_protocol}
 
-Протокол общения с браузером. Доступные значения: `webdriver` и `devtools`. См. также [WebDriver vs CDP](../reference/webdriver-vs-cdp). По умолчанию: `webdriver`.
+Протокол общения с браузером. Доступные значения: `webdriver` и `devtools`. См. также [WebDriver vs CDP](../../reference/webdriver-vs-cdp). По умолчанию: `webdriver`.
 
 ### sessionEnvFlags {#session_env_flags}
 
@@ -640,15 +640,15 @@ RequestOptions => RequestOptions;
 Позволяет запускать headless-браузер в облачном сервисе. По умолчанию: `null`.
 
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
-[html-reporter]: ../html-reporter/html-reporter-setup
+[html-reporter]: ../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
 [got-agent]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#agent
 [got-headers]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#headers
 [got-options]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md
 [got-response]: https://github.com/sindresorhus/got/blob/main/documentation/3-streams.md#response-2
 [strict-ssl]: https://webdriver.io/docs/options/#strictssl
-[read-tests]: ./browsers
+[read-tests]: ../browsers
 [sauce-labs]: https://saucelabs.com
-[system-mocha-opts]: ./system#mocha_opts
-[element-wait-until]: ../commands/element/waitUntil
-[how-to-use-cdp]: ../guides/how-to-use-cdp
+[system-mocha-opts]: ../system#mocha_opts
+[element-wait-until]: ../../commands/element/waitUntil
+[how-to-use-cdp]: ../../guides/how-to-use-cdp

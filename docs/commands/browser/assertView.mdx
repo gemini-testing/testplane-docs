@@ -43,20 +43,102 @@ await browser.assertView(state, selector, options);
 Задает настройки команды `assertView`:
 
 <table>
-<thead>
-<tr><td>**Опция**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>ignoreElements</td><td>Array или String</td><td>Элементы (задаются как селекторы), которые будут проигнорированы при сравнении скриншотов. Игнор реализуется с помощью закраски перечисленных элементов черным цветом. В случае одного элемента параметр можно задавать как строку.</td></tr>
-<tr><td>tolerance</td><td>Number</td><td>Чувствительность к разнице в цветам. Значение перетирает [browsers.tolerance][browsers-tolerance].</td></tr>
-<tr><td>antialiasingTolerance</td><td>Number</td><td>Чувствительность в антиалиасинге. Значение перетирает [browsers.antialiasingTolerance][browsers-antialiasing-tolerance].</td></tr>
-<tr><td>allowViewportOverflow</td><td>Boolean</td><td>По умолчанию testplane выдает ошибку, если элемент находится за пределами границ вьюпорта. Этот параметр отключает проверку на границы, позволяя снимать скриншоты элементов, не влезающих во вьюпорт. При этом на скриншоте будут видны только те части элемента, которые влезли во вьюпорт. Однако если _compositeImage_ равен _true_, то части элемента, которые оказались за _нижней_ границей вьюпорта, тоже будут видны на скриншоте. Аналогично если _captureElementFromTop_ равен _true_, то на скриншот попадут и те части элемента, которые оказались за пределами _верхней_ границы вьюпорта.</td></tr>
-<tr><td>captureElementFromTop</td><td>Boolean</td><td>Снимать скриншот элемента с самого верха. Если элемент находится за пределами вьюпорта, то к нему будет выполнен подскролл.</td></tr>
-<tr><td>compositeImage</td><td>Boolean</td><td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td></tr>
-<tr><td>screenshotDelay</td><td>Number</td><td>Задержка в миллисекундах перед снятием скриншота. Может пригодиться, когда на странице есть элементы, использующие анимацию, или скроллбар, который исчезает не сразу и попадает на результирующий скриншот.</td></tr>
-<tr><td>selectorToScroll</td><td>String</td><td>Селектор, который нужно скроллировать. Может пригодиться, когда надо сделать скриншот модального окна, которое не помещается на экране. Иначе без указания селектора скролл будет применяться к объекту _window_, и скроллироваться будет задний фон, оставляя попап-окно на месте.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Опция**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ignoreElements</td>
+            <td>Array или String</td>
+            <td>
+                Элементы (задаются как селекторы), которые будут проигнорированы при сравнении
+                скриншотов. Игнор реализуется с помощью закраски перечисленных элементов черным
+                цветом. В случае одного элемента параметр можно задавать как строку.
+            </td>
+        </tr>
+        <tr>
+            <td>tolerance</td>
+            <td>Number</td>
+            <td>
+                Чувствительность к разнице в цветам. Значение перетирает
+                [browsers.tolerance][browsers-tolerance].
+            </td>
+        </tr>
+        <tr>
+            <td>antialiasingTolerance</td>
+            <td>Number</td>
+            <td>
+                Чувствительность в антиалиасинге. Значение перетирает
+                [browsers.antialiasingTolerance][browsers-antialiasing-tolerance].
+            </td>
+        </tr>
+        <tr>
+            <td>allowViewportOverflow</td>
+            <td>Boolean</td>
+            <td>
+                По умолчанию testplane выдает ошибку, если элемент находится за пределами границ
+                вьюпорта. Этот параметр отключает проверку на границы, позволяя снимать скриншоты
+                элементов, не влезающих во вьюпорт. При этом на скриншоте будут видны только те
+                части элемента, которые влезли во вьюпорт. Однако если _compositeImage_ равен
+                _true_, то части элемента, которые оказались за _нижней_ границей вьюпорта, тоже
+                будут видны на скриншоте. Аналогично если _captureElementFromTop_ равен _true_, то
+                на скриншот попадут и те части элемента, которые оказались за пределами _верхней_
+                границы вьюпорта.
+            </td>
+        </tr>
+        <tr>
+            <td>captureElementFromTop</td>
+            <td>Boolean</td>
+            <td>
+                Снимать скриншот элемента с самого верха. Если элемент находится за пределами
+                вьюпорта, то к нему будет выполнен подскролл.
+            </td>
+        </tr>
+        <tr>
+            <td>compositeImage</td>
+            <td>Boolean</td>
+            <td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td>
+        </tr>
+        <tr>
+            <td>screenshotDelay</td>
+            <td>Number</td>
+            <td>
+                Задержка в миллисекундах перед снятием скриншота. Может пригодиться, когда на
+                странице есть элементы, использующие анимацию, или скроллбар, который исчезает не
+                сразу и попадает на результирующий скриншот.
+            </td>
+        </tr>
+        <tr>
+            <td>selectorToScroll</td>
+            <td>String</td>
+            <td>
+                Селектор, который нужно скроллировать. Может пригодиться, когда надо сделать
+                скриншот модального окна, которое не помещается на экране. Иначе без указания
+                селектора скролл будет применяться к объекту _window_, и скроллироваться будет
+                задний фон, оставляя попап-окно на месте.
+            </td>
+        </tr>
+        <tr>
+            <td>disableAnimation</td>
+            <td>Boolean</td>
+            <td>
+                Отключение анимаций и переходов при снятии скриншота. По умолчанию `true` начиная с
+                версии `8.0.0`.
+            </td>
+        </tr>
+        <tr>
+            <td>ignoreDiffPixelCount</td>
+            <td>`` `${number}%` `` или Number</td>
+            <td>
+                Процент пикселей, которые нужно игнорировать при диффе. Удобно для игнорирования
+                очень маленьких диффов. По умолчанию `0`. Доступен начиная с версии `8.2.0`.
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ## Примеры использования {#examples}
@@ -93,11 +175,11 @@ it("should assert view with given options", async ({ browser }) => {
 
 ## Связанные команды {#related}
 
--   [element.assertView](../element/assertView)
--   [browser.saveRecordingScreen](./saveRecordingScreen)
--   [browser.saveScreenshot](./saveScreenshot)
--   [element.saveScreenshot](../element/saveScreenshot)
+-   [element.assertView](../../element/assertView)
+-   [browser.saveRecordingScreen](../saveRecordingScreen)
+-   [browser.saveScreenshot](../saveScreenshot)
+-   [element.saveScreenshot](../../element/saveScreenshot)
 
 [webdriverio-api]: https://webdriver.io/docs/api
-[browsers-tolerance]: ../../config/browsers#tolerance
-[browsers-antialiasing-tolerance]: ../../config/browsers#antialiasing_tolerance
+[browsers-tolerance]: ../../../config/browsers#tolerance
+[browsers-antialiasing-tolerance]: ../../../config/browsers#antialiasing_tolerance
