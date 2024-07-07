@@ -1,10 +1,15 @@
+---
+slug: _dollardollar
+sidebar_label: $$
+---
+
 import Admonition from "@theme/Admonition";
 
 # $$
 
 ## Обзор {#overview}
 
-Используйте команду `$$` вместо [findElements][find-elements] как более краткую команду, чтобы получить несколько элементов на странице в области видимости элемента. Эта команда похожа на команду [browser.$$()](../browser/$$), и отличается только тем, что поиск элементов будет осуществляться среди потомков _(children)_ текущего элемента.
+Используйте команду `$$` вместо [findElements][find-elements] как более краткую команду, чтобы получить несколько элементов на странице в области видимости элемента. Эта команда похожа на команду [browser.$$()](../../browser/_dollardollar), и отличается только тем, что поиск элементов будет осуществляться среди потомков _(children)_ текущего элемента.
 
 <Admonition type="info">
     Подробнее о том, как выбрать определенные элементы, смотрите в рецепте «[Как использовать
@@ -81,9 +86,9 @@ it("should get text a menu link - JS Function", async ({ browser }) => {
 
 ## Связанные команды
 
--   [element.$](./$)
--   [browser.$](../browser/$)
--   [browser.$$](../browser/$$)
+-   [element.$](../_dollar)
+-   [browser.$](../../browser/_dollar)
+-   [browser.$$](../../browser/_dollardollar)
 
 [find-elements]: https://webdriver.io/docs/api/webdriver/#findelements
 [how-to-use-selectors]: https://webdriver.io/docs/selectors
