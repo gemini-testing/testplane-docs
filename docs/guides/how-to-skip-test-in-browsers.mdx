@@ -62,9 +62,20 @@ testplane.only.in("chrome"); // запустить тест только в chro
 testplane.only.notIn("ie8"); // запустить тест во всех браузерах, кроме ie8
 ```
 
+## Решение 4: директива .also.in и браузерная опция passive {#solution_4}
+
+В случае если вы внедряете новый браузер и вам необходимо его запускать только в нескольких тестах, а у вас их тысячи, то использовать хелпер `.skip.in` неудобно. Для решения этой проблемы можно воспользоваться браузерной опцией [passive][passive-option] и хелпером `.also.in`:
+
+```javascript
+testplane.also.in("ie8"); // запустить тест в пассивном браузере ie8
+```
+
 ## Ключевые слова {#keywords}
 
 -   testplane.skip.in
 -   testplane.skip.notIn
 -   testplane.only.in
 -   testplane.only.notIn
+-   testplane.also.in
+
+[passive-option]: ../../config/browsers#passive
