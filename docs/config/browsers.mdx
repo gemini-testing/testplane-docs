@@ -249,6 +249,7 @@ windowSize: {
 <tr><td>[retry](#retry)</td><td>Number</td><td>0</td><td>Сколько раз нужно перезапускать падающий тест.</td></tr>
 <tr><td>[shouldRetry](#should_retry)</td><td>Function</td><td>_см. описание_</td><td>Функция, которая определяет нужен ли ретрай. По умолчанию задается функция, которая возвращает _true_, если _retry > 0,_ и _false_, если _retry == 0_.</td></tr>
 <tr><td>[strictTestsOrder](#strict_test_order)</td><td>Boolean</td><td>false</td><td>Гарантировать строгий порядок тестов. Если _true_, то функция API _testplane.readTests_ будет всегда возвращать один и тот же результат.</td></tr>
+<tr><td>[passive](#passive)</td><td>Boolean</td><td>false</td><td>Позволяет сделать браузер пассивным. В пассивных браузерах тесты не запускаются по умолчанию. _Доступна с testplane@8.16.0_.</td></tr>
 
 </tbody>
 </table>
@@ -290,6 +291,17 @@ windowSize: {
 ### strictTestsOrder {#strict_test_order}
 
 Данная опция включает гарантию строгого порядка чтения тестов. По умолчанию: `false`.
+
+### passive {#passive}
+
+<Admonition type="warning">
+    Доступна с testplane@8.16.0. Не работает вместе с устаревшим плагином
+    [hermione-passive-browsers](https://github.com/gemini-testing/testplane-passive-browsers).
+</Admonition>
+
+Позволяет сделать браузер пассивным. В пассивных браузерах тесты не запускаются по умолчанию. С помощью хелпера [testplane.also.in][testplane-also-in-helper] можно включить тест или сьют, перед которым он указан.
+
+По умолчанию: `false`.
 
 ## Информация о тесте и падении {#info_when_test_fails}
 
@@ -652,3 +664,4 @@ RequestOptions => RequestOptions;
 [system-mocha-opts]: ../system#mocha_opts
 [element-wait-until]: ../../commands/element/waitUntil
 [how-to-use-cdp]: ../../guides/how-to-use-cdp
+[testplane-also-in-helper]: ../../guides/how-to-skip-test-in-browsers#solution_4
