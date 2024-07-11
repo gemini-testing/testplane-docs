@@ -1,0 +1,69 @@
+import Admonition from "@theme/Admonition";
+
+# throttle
+
+## Overview {#overview}
+
+Use the `throttle` command to simulate different types of network connections for the user.
+
+This command allows you to model the behavior of a website or web application under various network bandwidth conditions.
+
+There are also many presets with ready-made network configuration settings. For example:
+
+-   offline | online
+-   GPRS
+-   Regular2G | Good2G
+-   Regular3G | Good3G
+-   Regular4G
+-   DSL
+-   WiFi
+
+<Admonition type="warning">
+The _throttle_ command only works when using the _Chrome DevTools Protocol (CDP)_.
+
+Read more in the section "[How to use Chrome DevTools Protocol in testplane][how-to-use-cdp]".
+
+Also, see the recipe "[How to manage network bandwidth][how-to-manage-network-bandwidth]".
+
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>offline</td><td>Boolean</td><td>Enable emulation of a loss of connection.</td></tr>
+<tr><td>latency</td><td>Number</td><td>Minimum latency from the sent request to received response headers, in milliseconds.</td></tr>
+<tr><td>downloadThroughput</td><td>Number</td><td>Maximum total download throughput (bytes/sec). _-1_ disables download throttling.</td></tr>
+<tr><td>uploadThroughput</td><td>Number</td><td>Maximum total upload throughput (bytes/sec). _-1_ disables upload throttling.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should throttle the network", async ({ browser }) => {
+    // use a preset
+    await browser.throttle("Regular 3G");
+
+    // configure the network settings manually
+    await browser.throttle({
+        offline: false,
+        downloadThroughput: (200 * 1024) / 8,
+        uploadThroughput: (200 * 1024) / 8,
+        latency: 20,
+    });
+});
+```
+
+[how-to-use-cdp]: ../../../guides/how-to-use-cdp
+[how-to-manage-network-bandwidth]: ../../../guides/how-to-manage-network-bandwidth

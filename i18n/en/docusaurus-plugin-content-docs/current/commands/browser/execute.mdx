@@ -1,0 +1,55 @@
+# execute
+
+## Overview {#overview}
+
+Use `execute` to _synchronously_ execute the specified JavaScript code in the context of the currently selected frame.
+
+The command returns the result of the script execution to the client.
+
+The `script` argument defines the script to be executed as the body of a function. The value returned by this function will be returned to the client. The function will be invoked with the provided array of `args`, and access to the values can be obtained through the `arguments` object in the specified order.
+
+Arguments can be any JSON primitives, arrays, or JSON objects. JSON objects that define a reference to a _WebElement_ will be converted to the corresponding DOM element. Similarly, any _WebElements_ in the script result will be returned to the client as _WebElement JSON_ objects.
+
+## Usage {#usage}
+
+```javascript
+await browser.execute(script, arguments);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>script</td><td>String or Function</td><td>The script to be executed.</td></tr>
+<tr><td>arguments</td><td>Any</td><td>Optional parameter. Arguments for the script.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should inject javascript on the page", async ({ browser }) => {
+    const result = await browser.execute(
+        (a, b, c, d) => {
+            // here we are in the browser context: no access to console or client
+            return a + b + c + d;
+        },
+        1,
+        2,
+        3,
+        4,
+    );
+
+    // here we are in the node.js context: access to console and client is available
+    console.log(result); // outputs: 10
+});
+```
+
+## Related Commands {#related}
+
+-   [executeAsync](../executeAsync)
+-   [setTimeout](../setTimeout)

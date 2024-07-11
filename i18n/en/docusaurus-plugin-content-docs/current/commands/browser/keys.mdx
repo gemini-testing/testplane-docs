@@ -1,0 +1,49 @@
+# keys
+
+## Overview {#overview}
+
+Use the `keys` command to send a sequence of key presses to the active element.
+
+You can also use symbols like “Left Arrow” or “Right Arrow”. They will be automatically transformed to the corresponding unicode characters. You can see all supported characters [here][keyboard-actions].
+
+Modifiers such as `Ctrl`, `Shift`, `Alt`, and `Meta` remain pressed until you release them by calling the function again. However, modifying clicks requires using the [performActions][perform-actions] method from the WebDriver Actions API.
+
+## Usage {#usage}
+
+```javascript
+await browser.keys(value);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>value</td>
+            <td>String or String[]</td>
+            <td>The sequence of keys to type.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("copies text out of active element", async ({ browser }) => {
+    // copy text from input element
+    await browser.$("#username").setValue("anonymous");
+
+    await browser.keys(["Meta", "a"]);
+    await browser.keys(["Meta", "c"]);
+});
+```
+
+[keyboard-actions]: https://w3c.github.io/webdriver/#keyboard-actions
+[perform-actions]: https://webdriver.io/docs/api/webdriver#performactions

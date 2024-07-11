@@ -1,0 +1,59 @@
+# url
+
+## Overview {#overview}
+
+Use the `url` command to navigate to the specified URL in the browser.
+
+If [baseUrl][base-url] is specified in the configuration, it will be added to the `url` parameter using the Node.js method [url.resolve()][url-resolve].
+
+Calling `browser.url()` with the same URL as before will reload the page.
+
+## Usage {#usage}
+
+```javascript
+await browser.url(url);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>url</td><td>String</td><td>The URL to open.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+**url.js**
+
+```javascript
+// navigate to URL
+await browser.url("https://webdriver.io");
+
+// get the URL
+console.log(await browser.getUrl()); // outputs: "https://webdriver.io"
+```
+
+**baseUrlResolutions.js**
+
+```javascript
+// Let baseUrl = http://example.com/site
+
+// Specifying a full URL results in https://webdriver.io
+await browser.url("https://webdriver.io");
+
+// Specifying a URL without a leading slash
+// results in the URL relative to the baseUrl: http://example.com/site/relative
+await browser.url("relative");
+
+// Specifying a URL with a leading slash
+// results in the URL relative to the root of baseUrl: http://example.com/rootRelative
+await browser.url("/rootRelative");
+```
+
+[base-url]: ../../../config/browsers#base_url
+[url-resolve]: https://nodejs.org/api/url.html#urlresolvefrom-to

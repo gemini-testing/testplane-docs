@@ -1,0 +1,57 @@
+import Admonition from "@theme/Admonition";
+
+# react$$
+
+## Overview {#overview}
+
+Use the `react$$` command to find multiple React components on the page by their actual name, while filtering them by props and state.
+
+<Admonition type="warning">
+The _react$_ command only works in applications that use _React v16.x._
+
+Read more about React selectors in the recipe "[How to use selectors][how-to-use-selectors]".
+
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.react$$(reactComponentSelector, { props, state });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>reactComponentSelector</td><td>String</td><td>The React component selector.</td></tr>
+<tr><td>props</td><td>Object</td><td>React properties the component should have.</td></tr>
+<tr><td>state</td><td>Any or Any[]</td><td>React state the component should be in.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should calculate 7 * 6", async ({ browser }) => {
+    await browser.url("https://ahfarmer.github.io/calculator/");
+
+    const orangeButtons = await browser.react$$("t", {
+        props: { orange: true },
+    });
+
+    console.log(await Promise.all(orangeButtons.map(btn => btn.getText())));
+    // outputs: "[ '÷', 'x', '-', '+', '=' ]"
+});
+```
+
+## Related Commands {#related}
+
+-   [browser.react$](../reactDollar)
+-   [element.react$](../../element/reactDollar)
+-   [element.react$$](../../element/reactDollarDollar)
+
+[how-to-use-selectors]: https://webdriver.io/docs/selectors

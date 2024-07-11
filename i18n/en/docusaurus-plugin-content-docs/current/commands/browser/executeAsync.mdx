@@ -1,0 +1,59 @@
+# executeAsync
+
+## Overview {#overview}
+
+Use the `executeAsync` command to _asynchronously_ execute the specified JavaScript code in the context of the currently selected frame.
+
+The last argument of the command must be a callback that will be called as soon as the script completes its execution. The command passes the script result to the callback as an input parameter.
+
+The `script` argument defines the script to be executed as the body of a function. The function will be invoked with the provided array of `args`, and access to the values can be obtained through the `arguments` object in the specified order. The last argument must always be a callback function, which will be called once the script has been executed.
+
+Arguments can be any JSON primitives, arrays, or JSON objects. JSON objects that define a reference to a _WebElement_ will be converted to the corresponding DOM element. Similarly, any _WebElements_ in the script result will be returned to the client as _WebElement JSON_ objects.
+
+## Usage {#usage}
+
+```javascript
+await browser.executeAsync(script, arguments);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>script</td><td>String or Function</td><td>The script to be executed.</td></tr>
+<tr><td>arguments</td><td>Any</td><td>Arguments for the script. The last argument must be a callback function, which will be called once the script has been executed.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should execute async JavaScript on the page", async ({ browser }) => {
+    await browser.setTimeout({ script: 5000 });
+
+    const result = await browser.executeAsync(
+        function (a, b, c, d, done) {
+            // here we are in the browser context: no access to console or client
+            setTimeout(() => {
+                done(a + b + c + d);
+            }, 3000);
+        },
+        1,
+        2,
+        3,
+        4,
+    );
+
+    // here we are in the node.js context: access to console and client is available
+    console.log(result); // outputs: 10
+});
+```
+
+## Related Commands {#related}
+
+-   [execute](../execute)
+-   [setTimeout](../setTimeout)

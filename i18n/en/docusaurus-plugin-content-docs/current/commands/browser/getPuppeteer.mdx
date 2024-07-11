@@ -1,0 +1,47 @@
+import Admonition from "@theme/Admonition";
+
+# getPuppeteer
+
+## Overview {#overview}
+
+Use the `getPuppeteer` command to get an instance of the browser's [Puppeteer][puppeteer] in order to execute specialized commands with it.
+
+Please note that all [Puppeteer][puppeteer] commands are asynchronous by default, so to switch between synchronous and asynchronous execution, be sure to wrap [Puppeteer][puppeteer] calls in [browser.call][browser-call], as shown in the example below.
+
+<Admonition type="warning">
+The _getPuppeteer_ command only works when using _Chrome DevTools Protocol (CDP)_.
+
+Read more in the section "[How to use Chrome DevTools Protocol in testplane][how-to-use-cdp]".
+
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.getPuppeteer();
+```
+
+## Usage Examples {#examples}
+
+```javascript
+it("should allow me to use Puppeteer", async ({ browser }) => {
+    await browser.url("https://webdriver.io");
+
+    const puppeteerBrowser = await browser.getPuppeteer();
+
+    // switch to Puppeteer
+    const metrics = await browser.call(async () => {
+        const pages = await puppeteerBrowser.pages();
+
+        await pages[0].setGeolocation({ latitude: 59.95, longitude: 30.31667 });
+
+        return pages[0].metrics();
+    });
+
+    console.log(metrics.LayoutCount); // outputs: 42
+});
+```
+
+[how-to-use-cdp]: ../../../guides/how-to-use-cdp
+[puppeteer]: https://pptr.dev/#?product=Puppeteer&version=v5.1.0&show=api-class-browser
+[browser-call]: ../call

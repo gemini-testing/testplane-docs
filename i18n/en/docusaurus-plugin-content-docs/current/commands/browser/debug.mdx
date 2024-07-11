@@ -1,0 +1,27 @@
+# debug
+
+## Overview {#overview}
+
+Use the `debug` command to pause the execution of a test in the browser.
+
+By pausing the test, you can switch to the browser, open _DevTools_, and inspect the web page in real-time. This can be useful for debugging the test.
+
+## Usage {#usage}
+
+```javascript
+await browser.debug();
+```
+
+## Usage Examples {#examples}
+
+```javascript
+it("should demonstrate the debug command", async ({ browser }) => {
+    await browser.$("#input").setValue("FOO");
+
+    await browser.debug(); // switch to the browser and change the value of #input to "BAR"
+
+    const value = await browser.$("#input").getValue();
+
+    console.log(value); // outputs: "BAR"
+});
+```
