@@ -1,0 +1,41 @@
+# mockRestoreAll
+
+## Overview {#overview}
+
+Use the `mockRestoreAll` command to restore the information and behavior in registered mocks to their original state. Mocks are registered using the [mock][mock] command.
+
+## Usage {#usage}
+
+```typescript
+await browser.mockRestoreAll();
+```
+
+## Usage Examples {#examples}
+
+```typescript
+it("should restore all mocks", async ({ browser }) => {
+    const googleMock = await browser.mock("https://google.com/");
+    googleMock.respond("https://webdriver.io");
+    const wdioMock = await browser.mock("https://webdriver.io");
+    wdioMock.respond("http://json.org");
+
+    await browser.url("https://google.com/");
+    console.log(await browser.getTitle()); // JSON
+
+    await browser.mockRestoreAll();
+
+    await browser.url("https://google.com/");
+    console.log(await browser.getTitle()); // Google
+});
+```
+
+## Related Commands {#related}
+
+-   [mock][mock]
+-   [mockClearAll](../mockClearAll)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/mockRestoreAll), from which we drew some information while writing our version.
+
+[mock]: ../mock

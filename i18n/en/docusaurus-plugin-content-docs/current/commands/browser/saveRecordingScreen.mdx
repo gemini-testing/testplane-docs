@@ -1,0 +1,52 @@
+import Admonition from "@theme/Admonition";
+
+# saveRecordingScreen
+
+## Overview {#overview}
+
+Use the `saveRecordingScreen` command to save a video to a file that was started with the [startRecordingScreen][start-recording-screen] command.
+
+<Admonition type="warning">
+    The _saveRecordingScreen_ command is only supported for mobile sessions that use
+    [Appium][appium].
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.saveRecordingScreen(filepath);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>filepath</td><td>String</td><td>Full or relative path to the video file from the execution directory.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should save a video", async ({ browser }) => {
+    await browser.startRecordingScreen();
+    await browser.$("~BUTTON").click();
+    await browser.saveRecordingScreen("./some/path/video.mp4");
+});
+```
+
+## Related Commands {#related}
+
+-   [savePDF](../savePDF)
+-   [saveScreenshot](../saveScreenshot)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/saveRecordingScreen), from which we drew some information while writing our version.
+
+[start-recording-screen]: https://webdriver.io/docs/api/appium/#startrecordingscreen
+[appium]: http://appium.io/docs/en/commands/device/recording-screen/start-recording-screen/

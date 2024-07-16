@@ -1,0 +1,63 @@
+import Admonition from "@theme/Admonition";
+
+# newWindow
+
+## Overview {#overview}
+
+Use the `newWindow` command to open a new window in the browser.
+
+This command is equivalent to the [window.open()][window-open] function.
+
+Note that this command will automatically switch you to the new window upon execution.
+
+<Admonition type="warning">
+    The _newWindow_ command does not work in mobile environments (!)
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.newWindow(url, { windowName, windowFeatures });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>url</td><td>String</td><td>The URL of the website to open.</td></tr>
+<tr><td>windowName</td><td>String</td><td>The name of the new window.</td></tr>
+<tr><td>windowFeatures</td><td>String</td><td>Settings for the new window, such as size, position, scrollbars, etc.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should open a new tab", async ({ browser }) => {
+    await browser.url("http://google.com");
+    console.log(await browser.getTitle());
+    // outputs: "Google"
+
+    await browser.newWindow(
+        "https://webdriver.io",
+        "WebdriverIO window",
+        "width=420,height=230,resizable,scrollbars=yes,status=1",
+    );
+    console.log(await browser.getTitle());
+    // outputs: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+
+    await browser.closeWindow();
+    console.log(await browser.getTitle());
+    // outputs: "Google"
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/newWindow), from which we drew some information while writing our version.
+
+[window-open]: https://developer.mozilla.org/en-US/docs/Web/API/Window/open

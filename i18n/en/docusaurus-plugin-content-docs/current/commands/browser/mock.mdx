@@ -1,0 +1,139 @@
+import Admonition from "@theme/Admonition";
+
+# mock
+
+## Overview {#overview}
+
+Use the `mock` command to mock the response to a request.
+
+You can enable mocking depending on the URL, headers, or status code. Calling the `mock` method returns a stub object that you can use to modify the response from the web resource. With the stub object, you can return a mock response or abort the request.
+
+There are 3 ways to modify the response:
+
+-   return a custom JSON object (e.g., to mock an API response);
+-   replace the response with a local file (inject a modified JavaScript file);
+-   redirect to another URL and return the response from there.
+
+<Admonition type="warning">
+The _mock_ command only works when using _Chrome DevTools Protocol (CDP)_.
+
+Read more in the section "[How to use Chrome DevTools Protocol in testplane][how-to-use-cdp]".
+
+Also, see the recipe "[How to intercept requests and responses][how-to-intercept-requests-and-responses]".
+
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.mock(url, { method, headers, responseHeaders, postData, statusCode });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>url</td><td>String</td><td>The URL of the request to mock.</td></tr>
+<tr><td>method</td><td>String or Function</td><td>The HTTP method to filter the resource.</td></tr>
+<tr><td>headers</td><td>Object or Function</td><td>The request headers to filter the resource.</td></tr>
+<tr><td>responseHeaders</td><td>Object or Function</td><td>The response headers to filter the resource.</td></tr>
+<tr><td>postData</td><td>String or Function</td><td>The request postData to filter the resource.</td></tr>
+<tr><td>statusCode</td><td>Number or Function</td><td>The status code to filter the resource.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should mock network resources", async ({ browser }) => {
+    // use a static string
+    const userListMock = await browser.mock("**" + "/users/list");
+
+    // we can also mock responses based on
+    // request or response headers, status code, or postData
+    const strictMock = await browser.mock("**", {
+        // mock all json responses
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        responseHeaders: { "Cache-Control": "no-cache" },
+        postData: "foobar",
+    });
+
+    // comparator function
+    const apiV1Mock = await browser.mock("**" + "/api/v1", {
+        statusCode: statusCode => statusCode >= 200 && statusCode <= 203,
+        headers: headers =>
+            headers["Authorization"] && headers["Authorization"].startsWith("Bearer "),
+        responseHeaders: headers => headers["Impersonation"],
+        postData: data => typeof data === "string" && data.includes("foo"),
+    });
+});
+
+it("should modify API responses", async ({ browser }) => {
+    // filter by method
+    const todoMock = await browser.mock("**" + "/todos", {
+        method: "get",
+    });
+
+    // mock the response of the endpoint with predefined fixture
+    mock.respond([
+        {
+            title: "Injected Todo",
+            order: null,
+            completed: false,
+            url: "http://todo-backend-express-knex.herokuapp.com/916",
+        },
+    ]);
+
+    // respond with a different status code or header
+    mock.respond(
+        [
+            {
+                title: "Injected Todo",
+                order: null,
+                completed: false,
+                url: "http://todo-backend-express-knex.herokuapp.com/916",
+            },
+        ],
+        {
+            statusCode: 404,
+            headers: {
+                "x-custom-header": "foobar",
+            },
+        },
+    );
+});
+
+it("should modify text assets", async ({ browser }) => {
+    const scriptMock = await browser.mock("**" + "/script.min.js");
+    scriptMock.respond("./tests/fixtures/script.js");
+});
+
+it("should redirect web resources", async ({ browser }) => {
+    const headerMock = await browser.mock("**" + "/header.png");
+    headerMock.respond("https://media.giphy.com/media/F9hQLAVhWnL56/giphy.gif");
+
+    const pageMock = await browser.mock("https://google.com/");
+    pageMock.respond("https://webdriver.io");
+    await browser.url("https://google.com");
+
+    console.log(await browser.getTitle());
+    // outputs: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+});
+```
+
+## Related Commands {#related}
+
+-   [mockClearAll](../mockClearAll)
+-   [mockRestoreAll](../mockRestoreAll)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/mock), from which we drew some information while writing our version.
+
+[how-to-use-cdp]: ../../../guides/how-to-use-cdp
+[how-to-intercept-requests-and-responses]: ../../../guides/how-to-intercept-requests-and-responses

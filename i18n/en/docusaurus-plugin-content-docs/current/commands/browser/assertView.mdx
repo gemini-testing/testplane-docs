@@ -1,0 +1,190 @@
+import Admonition from "@theme/Admonition";
+
+# assertView
+
+## Overview {#overview}
+
+Use the `assertView` command to take a screenshot for a specific test state and compare it with a reference.
+
+<Admonition type="info">
+    This command is implemented within Testplane, it's not available in the [API
+    WebDriverIO][webdriverio-api].
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.assertView(state, selector, options);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[state](#state)</td><td>String</td><td>Required parameter. The name of the test state. It must be unique within a single test.</td></tr>
+<tr><td>[selector](#selector)</td><td>String or String[]</td><td>Required parameter. The DOM element selector to capture.</td></tr>
+<tr><td>[options](#options)</td><td>Object</td><td>Settings for the _assertView_ command.</td></tr>
+
+</tbody>
+</table>
+
+### state
+
+Required parameter. Specifies the name of the test state. The name must be unique within a single test.
+
+### selector
+
+Required parameter. Specifies the selector of the DOM element to capture.
+
+### options
+
+Specifies the settings for the `assertView` command:
+
+<table>
+    <thead>
+        <tr>
+            <td>**Option**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ignoreElements</td>
+            <td>Array or String</td>
+            <td>
+                Elements (specified as selectors) that will be ignored when comparing screenshots.
+                Ignoring is implemented by painting the listed elements black. For a single element,
+                the parameter can be set as a string.
+            </td>
+        </tr>
+        <tr>
+            <td>tolerance</td>
+            <td>Number</td>
+            <td>
+                Sensitivity to color differences. The value overrides
+                [browsers.tolerance][browsers-tolerance].
+            </td>
+        </tr>
+        <tr>
+            <td>antialiasingTolerance</td>
+            <td>Number</td>
+            <td>
+                Sensitivity to anti-aliasing. The value overrides
+                [browsers.antialiasingTolerance][browsers-antialiasing-tolerance].
+            </td>
+        </tr>
+        <tr>
+            <td>allowViewportOverflow</td>
+            <td>Boolean</td>
+            <td>
+                By default, Testplane throws an error if the element is outside the viewport
+                boundaries. This parameter disables boundary checks, allowing screenshots of
+                elements that don't fully fit in the viewport. On the screenshot, only the parts of
+                the element that fit into the viewport will be visible. However, if _compositeImage_
+                is set to _true_, the parts of the element that are below the viewport boundary will
+                also be visible in the screenshot. Similarly, if _captureElementFromTop_ is set to
+                _true_, the parts of the element that are above the viewport boundary will also be
+                captured in the screenshot.
+            </td>
+        </tr>
+        <tr>
+            <td>captureElementFromTop</td>
+            <td>Boolean</td>
+            <td>
+                Capture the screenshot of the element from the very top. If the element is outside
+                the viewport, it will be scrolled into view.
+            </td>
+        </tr>
+        <tr>
+            <td>compositeImage</td>
+            <td>Boolean</td>
+            <td>
+                If the element does not fit into the viewport, multiple screenshots of different
+                parts of the element will be taken sequentially, and then stitched together into one
+                to display the entire element.
+            </td>
+        </tr>
+        <tr>
+            <td>screenshotDelay</td>
+            <td>Number</td>
+            <td>
+                Delay in milliseconds before taking a screenshot. Useful when there are elements
+                with animations on the page, or a scrollbar that does not disappear immediately and
+                appears in the resulting screenshot.
+            </td>
+        </tr>
+        <tr>
+            <td>selectorToScroll</td>
+            <td>String</td>
+            <td>
+                Selector to scroll. Useful when you need to take a screenshot of a modal window that
+                doesn’t fit on the screen. Otherwise, without specifying a selector, the scroll will
+                be applied to the _window_ object, scrolling the background while keeping the popup
+                window in place.
+            </td>
+        </tr>
+        <tr>
+            <td>disableAnimation</td>
+            <td>Boolean</td>
+            <td>
+                Disable animations and transitions when taking a screenshot. Default is `true`
+                starting from version `8.0.0`.
+            </td>
+        </tr>
+        <tr>
+            <td>ignoreDiffPixelCount</td>
+            <td>`` `${number}%` `` or Number</td>
+            <td>
+                The percentage of pixels to ignore during the diff. Useful to ignore very small
+                differences. Default is `0`. Available starting from version `8.2.0`.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+## Usage Examples {#examples}
+
+**example-1.js**
+
+```javascript
+it("should assert view", async ({ browser }) => {
+    await browser.url("some/url");
+    await browser.assertView("plain", ".button");
+
+    await browser.click(".button");
+    await browser.assertView("clicked", ".button");
+});
+```
+
+**example-2.js**
+
+```javascript
+it("should assert view with given options", async ({ browser }) => {
+    await browser.url("some/url");
+    await browser.assertView("plain", ".form", {
+        ignoreElements: [".link"],
+        tolerance: 5,
+        antialiasingTolerance: 4,
+        allowViewportOverflow: true,
+        captureElementFromTop: true,
+        compositeImage: true,
+        screenshotDelay: 10,
+        selectorToScroll: ".modal",
+    });
+});
+```
+
+## Related Commands {#related}
+
+-   [element.assertView](../../element/assertView)
+-   [browser.saveRecordingScreen](../saveRecordingScreen)
+-   [browser.saveScreenshot](../saveScreenshot)
+-   [element.saveScreenshot](../../element/saveScreenshot)
+
+[webdriverio-api]: https://webdriver.io/docs/api
+[browsers-tolerance]: ../../../config/browsers#tolerance
+[browsers-antialiasing-tolerance]: ../../../config/browsers#antialiasing_tolerance

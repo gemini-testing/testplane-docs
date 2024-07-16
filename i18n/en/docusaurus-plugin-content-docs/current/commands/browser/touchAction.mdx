@@ -1,0 +1,90 @@
+import Admonition from "@theme/Admonition";
+
+# touchAction
+
+## Overview {#overview}
+
+Use the `touchAction` command to perform gestures in mobile platform tests.
+
+The command allows chaining separate ad hoc actions, which will then be applied to the application element on the device.
+
+The main actions you can use are:
+
+-   **press** — requires an element or coordinates (x, y), or both
+-   **longPress** — requires an element or coordinates (x, y), or both
+-   **tap** — requires an element or coordinates (x, y), or both
+-   **moveTo** — requires absolute coordinates (x, y)
+-   **wait** — requires time in milliseconds
+-   **release** — no parameters needed
+
+<Admonition type="warning">
+    Currently, the _touchAction_ command is only available for native apps and cannot be used to
+    interact with web apps.
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.touchAction(action);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>action</td><td>Object</td><td>The action to perform.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should do a touch gesture", async ({ browser }) => {
+    const screen = await browser.$("//UITextbox");
+
+    // simple touch action on element
+    await browser.touchAction({
+        action: "tap",
+        element: screen,
+    });
+
+    // simple touch action with x and y coordinates
+    // touch coordinates are 30px right and 20px down from the viewport
+    await browser.touchAction({
+        action: "tap",
+        x: 30,
+        y: 20,
+    });
+
+    // simple touch action with x and y coordinates
+    // touch coordinates are 30px right and 20px down from the element center
+    await browser.touchAction({
+        action: "tap",
+        x: 30,
+        y: 20,
+        element: screen,
+    });
+
+    // multi action on element
+    // drag&drop from point (200, 200) down by 100px on the screen
+    await browser.touchAction([
+        { action: "press", x: 200, y: 200 },
+        { action: "moveTo", x: 200, y: 300 },
+        "release",
+    ]);
+});
+```
+
+## Related Commands {#related}
+
+-   [element.touchAction](../../element/touchAction)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/touchAction), from which we drew some information while writing our version.
+
+[ad-hoc]: https://en.wikipedia.org/wiki/Ad_hoc

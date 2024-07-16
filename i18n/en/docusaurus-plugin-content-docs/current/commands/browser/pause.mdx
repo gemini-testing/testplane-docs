@@ -1,0 +1,49 @@
+import Admonition from "@theme/Admonition";
+
+# pause
+
+## Overview {#overview}
+
+Use the `pause` command to halt the execution of the test for a specified period of time.
+
+<Admonition type="warning">
+    It is not recommended to use this command for waiting for an element to appear. To avoid false
+    test results, it's better to use commands like [waitForExist][wait-for-exist] or other
+    _waitFor*_ commands.
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.pause(milliseconds);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>milliseconds</td><td>Number</td><td>Time in milliseconds.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should pause the execution", async ({ browser }) => {
+    const starttime = new Date().getTime();
+    await browser.pause(3000);
+    const endtime = new Date().getTime();
+
+    console.log(endtime - starttime); // outputs: 3000
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/pause), from which we drew some information while writing our version.
+
+[wait-for-exist]: ../../element/waitForExist
