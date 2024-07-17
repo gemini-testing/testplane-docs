@@ -1,0 +1,36 @@
+# doubleClick
+
+## Overview {#overview}
+
+Use the `doubleClick` command to perform a double-click on an element.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).doubleClick();
+```
+
+## Usage Examples {#examples}
+
+**example.html**
+
+```javascript
+<button id="myButton" ondblclick="document.getElementById('someText').innerHTML='I was dblclicked'">Click me</button>
+<div id="someText">I was not clicked</div>
+```
+
+**doubleClick.js**
+
+```javascript
+it("should demonstrate the doubleClick command", async ({ browser }) => {
+    const myButton = await browser.$("#myButton");
+    await myButton.doubleClick();
+
+    const value = await myButton.getText();
+    assert.equal(value, "I was dblclicked"); // true
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/doubleClick), from which we drew some information while writing our version.

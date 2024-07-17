@@ -1,0 +1,63 @@
+import Admonition from "@theme/Admonition";
+
+# waitForExist
+
+## Overview {#overview}
+
+Use the `waitForExist` command to wait until an element appears in the DOM within a specified number of milliseconds.
+
+The command returns `true` if the selector matches at least one element existing in the DOM; otherwise, it throws an error. If the `reverse` parameter is set to `true`, the command reverses its logic and returns `true` if the selector matches no elements.
+
+<Admonition type="warning">
+    Unlike other element commands, Testplane will not wait for the element to exist before executing
+    this command.
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).waitForExist({ timeout, reverse, timeoutMsg, interval });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Default**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>timeout</td><td>Number</td><td>500</td><td>Timeout in milliseconds.</td></tr>
+<tr><td>reverse</td><td>Boolean</td><td>false</td><td>If _true_, the command will wait for the opposite condition: the element does not exist.</td></tr>
+<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Error message to throw when the timeout is reached.</td></tr>
+<tr><td>interval</td><td>Number</td><td>[waitforInterval][wait-for-interval]</td><td>Interval in milliseconds between condition checks.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should display a notification message after successful form submit", async ({ browser }) => {
+    const form = await browser.$("form");
+    const notification = await browser.$(".notification");
+
+    await form.$(".send").click();
+    await notification.waitForExist({ timeout: 5000 });
+
+    assert.equal(await notification.getText(), "Data transmitted successfully!");
+});
+
+it("should remove a message after successful form submit", async ({ browser }) => {
+    const form = await browser.$("form");
+    const message = await browser.$(".message");
+
+    await form.$(".send").click();
+    await message.waitForExist({ reverse: true });
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/waitForExist), from which we drew some information while writing our version.
+
+[wait-for-interval]: ../../../config/browsers#wait_interval

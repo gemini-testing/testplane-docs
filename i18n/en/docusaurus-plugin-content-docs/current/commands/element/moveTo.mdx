@@ -1,0 +1,32 @@
+# moveTo
+
+## Overview {#overview}
+
+Use the `moveTo` command to move the mouse by specified offsets along the X and Y axes relative to the specified element.
+
+If no element is specified, the movement will be executed relative to the current mouse cursor position.
+If an element is specified and no offsets are provided, the mouse will move to the center of the element.
+If the element is not visible, it will scroll into view.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).moveTo({ xOffset, yOffset });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>xOffset</td><td>Number</td><td>The X-axis offset relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.</td></tr>
+<tr><td>yOffset</td><td>Number</td><td>The Y-axis offset relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.</td></tr>
+
+</tbody>
+</table>
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/moveTo), from which we drew some information while writing our version.

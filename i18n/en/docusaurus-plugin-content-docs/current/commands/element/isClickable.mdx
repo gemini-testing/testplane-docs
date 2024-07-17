@@ -1,0 +1,49 @@
+import Admonition from "@theme/Admonition";
+
+# isClickable
+
+## Overview {#overview}
+
+Use the `isClickable` command to determine whether a given DOM element is clickable.
+
+The command returns `true` if the selected DOM element:
+
+-   exists
+-   is visible
+-   is within the viewport (if not, try scrolling to the element)
+-   has its center unobstructed by another element
+-   is not disabled
+
+Otherwise, the command returns `false`.
+
+<Admonition type="warning">
+The _isClickable_ command works only in a web browser and in the _webview_ context of mobile applications.
+
+The command does not work in the native context of mobile applications.
+
+Additionally, unlike other element commands, Testplane will not wait for the element to exist before executing this command.
+
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).isClickable();
+```
+
+## Usage Examples {#examples}
+
+```javascript
+it("should detect if an element is clickable", async ({ browser }) => {
+    const el = await browser.$("#el");
+    let clickable = await el.isClickable();
+    console.log(clickable); // outputs: true or false
+
+    // wait until the element is clickable
+    await browser.waitUntil(() => el.isClickable());
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/isClickable), from which we drew some information while writing our version.

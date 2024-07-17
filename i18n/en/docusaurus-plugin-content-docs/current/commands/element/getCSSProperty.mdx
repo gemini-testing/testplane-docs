@@ -1,0 +1,106 @@
+import Admonition from "@theme/Admonition";
+
+# getCSSProperty
+
+## Overview {#overview}
+
+Use the `getCSSProperty` command to get a CSS property from a DOM element selected by a given selector.
+
+The returned value is formatted for easy verification:
+
+-   Colors are converted using [rgb2hex][rgb-to-hex];
+-   All other properties are converted using [css-value][css-value].
+
+<Admonition type="warning">
+    Note that CSS shorthand properties (e.g., _background, font, border, margin, padding,
+    list-style, outline, pause, cue_) will be expanded to retrieve all the longhand properties,
+    leading to multiple _WebDriver_ calls. If you are interested in a specific longhand property, it
+    is recommended to request that instead.
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).getCSSProperty(cssProperty);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>cssProperty</td><td>String</td><td>The name of the CSS property.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+**example.html**
+
+```javascript
+<label
+    id="myLabel"
+    for="input"
+    style="color: #0088cc; font-family: helvetica, arial, freesans, clean, sans-serif; width: 100px"
+>
+    Some Label
+</label>
+```
+
+**getCSSProperty.js**
+
+```javascript
+it("should demonstrate the getCSSProperty command", async ({ browser }) => {
+    const elem = await browser.$("#myLabel");
+    const color = await elem.getCSSProperty("color");
+    console.log(color);
+    // outputs:
+    // {
+    //     property: 'color',
+    //     value: 'rgba(0, 136, 204, 1)',
+    //     parsed: {
+    //         hex: '#0088cc',
+    //         alpha: 1,
+    //         type: 'color',
+    //         rgba: 'rgba(0, 136, 204, 1)'
+    //     }
+    // }
+
+    const font = await elem.getCSSProperty("font-family");
+    console.log(font);
+    // outputs:
+    // {
+    //      property: 'font-family',
+    //      value: 'helvetica',
+    //      parsed: {
+    //          value: [ 'helvetica', 'arial', 'freesans', 'clean', 'sans-serif' ],
+    //          type: 'font',
+    //          string: 'helvetica, arial, freesans, clean, sans-serif'
+    //      }
+    // }
+
+    var width = await elem.getCSSProperty("width");
+    console.log(width);
+    // outputs:
+    // {
+    //     property: 'width',
+    //     value: '100px',
+    //     parsed: {
+    //         type: 'number',
+    //         string: '100px',
+    //         unit: 'px',
+    //         value: 100
+    //     }
+    // }
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getCSSProperty), from which we drew some information while writing our version.
+
+[rgb-to-hex]: https://github.com/christian-bromann/rgb2hex
+[css-value]: https://github.com/reworkcss/css-value
