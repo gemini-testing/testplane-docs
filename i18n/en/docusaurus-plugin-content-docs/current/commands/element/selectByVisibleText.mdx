@@ -1,0 +1,59 @@
+# selectByVisibleText
+
+## Overview {#overview}
+
+Use the `selectByVisibleText` command to select an option by its displayed text.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).selectByVisibleText(text);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>text</td><td>String or Number</td><td>The text (of the option) by which to select the option.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+**example.html**
+
+```html
+<select id="selectbox">
+    <option value="someValue0">uno</option>
+    <option value="someValue1">dos</option>
+    <option value="someValue2">tres</option>
+    <option value="someValue3">cuatro</option>
+    <option value="someValue4">cinco</option>
+    <option value="someValue5">seis</option>
+</select>
+```
+
+**selectByVisibleText.js**
+
+```javascript
+it("should demonstrate the selectByVisibleText command", async ({ browser }) => {
+    const selectBox = await browser.$("#selectbox");
+    console.log(await selectBox.getText("option:checked")); // outputs: "uno"
+
+    await selectBox.selectByVisibleText("cuatro");
+    console.log(await selectBox.getText("option:checked")); // outputs: "cuatro"
+});
+```
+
+## Related Commands {#related}
+
+-   [selectByAttribute](../selectByAttribute)
+-   [selectByIndex](../selectByIndex)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/selectByVisibleText), from which we drew some information while writing our version.

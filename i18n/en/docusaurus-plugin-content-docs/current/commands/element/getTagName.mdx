@@ -1,0 +1,33 @@
+# getTagName
+
+## Overview {#overview}
+
+Use the `getTagName` command to get the tag name of a DOM element.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).getTagName();
+```
+
+## Usage Examples {#examples}
+
+**index.html**
+
+```html
+<div id="elem">Lorem ipsum</div>
+```
+
+**getTagName.js**
+
+```javascript
+it("should demonstrate the getTagName command", async ({ browser }) => {
+    const tagName = await browser.$("#elem").getTagName();
+
+    console.log(tagName); // outputs: "div"
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getTagName), from which we drew some information while writing our version.

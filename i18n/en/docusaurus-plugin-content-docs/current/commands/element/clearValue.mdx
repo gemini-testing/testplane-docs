@@ -1,0 +1,46 @@
+import Admonition from "@theme/Admonition";
+
+# clearValue
+
+## Overview {#overview}
+
+Use the `clearValue` command to clear the value of an `<input>` or `<textarea>` element.
+
+<Admonition type="warning">
+Make sure you can interact with the element before applying this command.
+
+You won't be able to clear the value of an element that is disabled or in read-only mode.
+
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).clearValue();
+```
+
+## Usage Examples {#examples}
+
+```javascript
+it("should demonstrate the clearValue command", async ({ browser }) => {
+    const elem = await browser.$(".input");
+    await elem.setValue("test123");
+
+    const value = await elem.getValue();
+    console.log(value); // outputs: 'test123'
+
+    await elem.clearValue();
+    value = await elem.getValue();
+    assert.equal(value, ""); // true
+});
+```
+
+## Related Commands {#related}
+
+-   [element.addValue](../addValue)
+-   [element.setValue](../setValue)
+-   [browser.keys](../../browser/keys)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/clearValue), from which we drew some information while writing our version.

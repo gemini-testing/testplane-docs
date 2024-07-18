@@ -1,0 +1,37 @@
+# getValue
+
+## Overview {#overview}
+
+Use the `getValue` command to get the value of a `<textarea>`, `<select>`, or `<input>` element of type `text` for the specified selector.
+
+If multiple elements are found for the given selector, the command will return an array of values.
+
+To get the values of `<input>` elements of type `checkbox` or `radio`, use the [isSelected](../isSelected) command.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).getValue();
+```
+
+## Usage Examples {#examples}
+
+**index.html**
+
+```html
+<input type="text" value="John Doe" id="username" />
+```
+
+**getValue.js**
+
+```javascript
+it("should demonstrate the getValue command", async ({ browser }) => {
+    const value = await browser.$("#username").getValue();
+
+    console.log(value); // outputs: "John Doe"
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getValue), from which we drew some information while writing our version.
