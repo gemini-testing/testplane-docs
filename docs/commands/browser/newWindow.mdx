@@ -12,6 +12,24 @@ import Admonition from "@theme/Admonition";
 
 <Admonition type="warning">Команда _newWindow_ не работает в мобильных окружениях (!)</Admonition>
 
+<Admonition type="warning">
+    Команда может не работать c _devtools_ протоколом. Также она не дожидается загрузки страницы.
+    Чтобы решить эти проблемы, рекомендуется перезаписать команду (на стороне Testplane это будет сделано в версии 9.0.0):
+    ```javascript
+    browser.overwriteCommand("newWindow", async function(pageUrl, windowName, windowFeatures) {
+        if (browser.isDevTools) {
+            const puppeteer = await browser.getPuppeteer();
+            await puppeteer.newPage();
+        } else {
+            await browser.newWindow("about:blank", windowName, windowFeatures);
+        }
+
+        await browser.url(pageUrl);
+    });
+    ```
+
+</Admonition>
+
 ## Использование {#usage}
 
 ```javascript

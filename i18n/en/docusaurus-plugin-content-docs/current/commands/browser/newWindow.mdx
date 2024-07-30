@@ -14,6 +14,24 @@ Note that this command will automatically switch you to the new window upon exec
     The _newWindow_ command does not work in mobile environments (!)
 </Admonition>
 
+<Admonition type="warning">
+    The command might not work with _devtools_ protocol. It also does not wait untill page load.
+    In order to fix these problems, it is recommended to overwrite the command (on the Testplane side it would be done in version 9.0.0):
+    ```javascript
+    browser.overwriteCommand("newWindow", async function(pageUrl, windowName, windowFeatures) {
+        if (browser.isDevTools) {
+            const puppeteer = await browser.getPuppeteer();
+            await puppeteer.newPage();
+        } else {
+            await browser.newWindow("about:blank", windowName, windowFeatures);
+        }
+
+        await browser.url(pageUrl);
+    });
+    ```
+
+</Admonition>
+
 ## Usage {#usage}
 
 ```javascript
