@@ -1,0 +1,95 @@
+import Admonition from "@theme/Admonition";
+
+# How to Upgrade hermione to Version 8.x
+
+<Admonition type="warning">
+If your project is using a hermione version earlier than 4.x, first read:
+* "How to Upgrade hermione to Version 4.x";
+* "How to Upgrade hermione to Version 5.x";
+* "How to Upgrade hermione to Version 6.x";
+* "How to Upgrade hermione to Version 7.x".
+
+We recommend upgrading hermione in stages, ensuring each step that all project tests run correctly.
+</Admonition>
+
+## What Has Changed? {#what_is_new}
+
+### Major Changes {#major_changes}
+
+#### Package Exports Changed {#package_exports_changed}
+
+To use hermione via API in JavaScript, you now need to import `hermione` as follows:
+
+```javascript
+const { default: hermione } = require("hermione");
+```
+
+Previously, you could write it like this:
+
+```javascript
+const hermione = require("hermione");
+```
+
+For TypeScript:
+
+```typescript
+import hermione from "hermione";
+```
+
+#### moveTo Command Changed {#move_command_changed}
+
+The `moveTo` command now moves the cursor relative to the center of the element rather than the top-left corner. If the element is not visible, it will scroll to it. Previously, calling the command without arguments (`await browser.$('body').moveTo()`) moved the cursor to the top-left corner of the element - now it will move to the center of the element.
+
+If you don't have time to switch to the new logic of `moveTo`, you can use the `moveCursorTo` command, which works as it did in hermione@7. This command was added in hermione@8.1.0. The `moveCursorTo` command is temporary and will be removed in the next major version.
+
+#### Dropped Support for Node.JS < 18.x {#dropped_nodejs_less_than_18x}
+
+In this major version, hermione no longer supports versions _Node.JS < 18.x_.
+
+### Minor Changes {#minor_changes}
+
+- Added REPL mode for step-by-step debugging of tests in all browsers (not only CDP) without restarting.
+- Added a browser command [clearSession][hermione-clear-session] to clear session state:
+    - Deletes cookies;
+    - Clears local storage;
+    - Clears session storage.
+- Added a browser command `openAndWait` with customizable wait options for page loads (by selector, custom predicate, network request, etc.).
+- Added a CLI option `--devtools` to simplify switching between the two protocols (`devtools` and `webdriver`).
+- Improved stack trace for `unhandled rejection` errors.
+- Now [isolation][hermione-isolation] is enabled by default for Chrome >= 94.
+- During the execution of the [assertView][hermione-assert-view] command, CSS animations on the page will be disabled by default.
+- Implemented generation of a unique `X-Request-ID` header for each request in the browser. The header consists of `${TEST_X_REQ_ID}${DELIMITER}$BROWSER_X_REQ_ID}`, where:
+
+    - `TEST_X_REQ_ID` - a unique UUID for each test run (including retries of the same test). This allows you to find all requests related to a single test run in the logs.
+    - `DELIMITER` - `__` separator between the test and request UUIDs.
+    - `BROWSER_X_REQ_ID` - a unique UUID for each browser request.
+
+    A real example of a UUID is `2f31ffb7-369d-41f4-bbb8-77744615d2eb__e8d011d8-bb76-42b9-b80e-02f03b8d6fe1`.
+
+### Patch Changes {#patch_changes}
+
+- Fixed disabling animations in iframes for iOS when using [assertView][hermione-assert-view].
+- Eliminated reinitialization of browser sessions in workers.
+- Fixed a bug where it was impossible to disable [isolation][hermione-isolation].
+
+## How to Migrate? {#how_to_move}
+
+### 1. Update hermione to 8+ and Plugins to the Latest Versions {#update_hermione_and_plugins}
+
+### 2. If Using hermione via API in JavaScript, Switch to TypeScript or Change the Import Statement {#replace_hermione_require}
+
+### 3. If Using moveTo, Switch to moveToCursor or Specify Coordinates from the Center of the Element {#replace_move_to}
+
+## Support {#support}
+
+If you encounter issues during the migration to the new version or have any questions, visit [github issues][gh-issues] — we will definitely help you!
+
+[how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
+[how-to-upgrade-hermione-to-5]: ../../migrations/how-to-upgrade-hermione-to-5
+[how-to-upgrade-hermione-to-6]: ../../migrations/how-to-upgrade-hermione-to-6
+[how-to-upgrade-hermione-to-7]: ../../migrations/how-to-upgrade-hermione-to-7
+[prepare-browser]: ../../config/prepare-browser
+[hermione-clear-session]: https://github.com/gemini-testing/hermione?tab=readme-ov-file#clearsession
+[hermione-isolation]: https://github.com/gemini-testing/hermione?tab=readme-ov-file#isolation
+[hermione-assert-view]: https://github.com/gemini-testing/hermione?tab=readme-ov-file#assertview
+[gh-issues]: https://github.com/gemini-testing/testplane/issues

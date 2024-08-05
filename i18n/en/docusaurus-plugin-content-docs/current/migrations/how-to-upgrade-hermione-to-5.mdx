@@ -1,0 +1,76 @@
+import Admonition from "@theme/Admonition";
+
+# How to Upgrade hermione to Version 5.x
+
+<Admonition type="warning">
+If your project uses hermione version earlier than 4.x, please read “How to Upgrade hermione to Version 4.x” before upgrading to version 5.x.
+
+We recommend upgrading hermione in stages, ensuring at each stage that all project tests run correctly.
+</Admonition>
+
+## What Has Changed? {#what_is_new}
+
+### New Default Configurations {#changes_in_config_options}
+
+The first thing to note during the upgrade is the change in default values for some configuration options. All changes aim to speed up test execution with basic hermione setup and provide more information about tests after execution.
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Old**</td><td>**New**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[antialiasingTolerance][antialiasing-tolerance]</td><td>0</td><td>4</td><td>Sets the sensitivity for detecting antialiasing, which will be ignored when comparing screenshots.</td></tr>
+<tr><td>[compositeImage][composite-image]</td><td>false</td><td>true</td><td>Allows testing elements that do not fit into the viewport height.</td></tr>
+<tr><td>[saveHistory][save-history]</td><td>false</td><td>true</td><td>Save the history of all executed commands.</td></tr>
+<tr><td>[takeScreenshotOnFails.assertViewFail][take-screenshot-on-fails-assert-view-fail]</td><td>false</td><td>true</td><td>Determines whether to take a page screenshot on test failure, including on _assertView_ command failure.</td></tr>
+<tr><td>[takeScreenshotOnFailsMode][take-screenshot-on-fails-mode]</td><td>"viewport"</td><td>"fullpage"</td><td>Screenshot mode on test failure. Available values: _viewport_ and _fullpage_.</td></tr>
+<tr><td>[takeScreenshotOnFailsTimeout][take-screenshot-on-fails-timeout]</td><td>90000</td><td>5000</td><td>Timeout for taking a page screenshot on test failure, in ms.</td></tr>
+<tr><td>[httpTimeout][http-timeout]</td><td>90000</td><td>30000</td><td>Timeout for any requests to the Selenium server, in ms.</td></tr>
+<tr><td>[pageLoadTimeout][page-load-timeout]</td><td>300000</td><td>20000</td><td>Timeout for full page loading, in ms.</td></tr>
+<tr><td>[sessionQuitTimeout][session-quit-timeout]</td><td>90000</td><td>5000</td><td>Timeout for session termination, in ms.</td></tr>
+
+</tbody>
+</table>
+
+Additionally, the `screenshotOnReject` and `screenshotOnRejectTimeout` options, previously marked as deprecated, have been removed.
+
+You can read more about these options [here][config-browsers]. If the new values suit you and there are no apparent reasons to override them, you can skip this section during the migration.
+
+### CLI Reporters {#changes_in_reporters}
+
+This section discusses CLI reporters that come out of the box and not the html-reporter.
+
+-   The teamcity reporter has been removed, as it seemed out of place within hermione. If you still use such a report, you can use the [hermione-teamcity-reporter][hermione-teamcity-reporter] plugin.
+-   The `-r` option, which previously allowed specifying the reporter type, no longer does this. It is more often used for the `--require` option. Many users found this confusing, so we decided to fix it. You can still specify the reporter using the `--reporter` option.
+-   If you want to add your own reporter, it must have a `create` method for initialization.
+
+So, if you did not use the teamcity reporter or did not write new reporters, you can skip this section during migration.
+
+### testParserAPI {#changes_in_test_parser_api}
+
+The [testParser][test-parser] object, which could be obtained by subscribing to the [BEFORE_FILE_READ][before-file-read] event, is no longer an instance of `EventEmitter`. This means that you can no longer use it to subscribe to the [SUITE_BEGIN][event-suite-begin] and [TEST_BEGIN][event-test-begin] events.
+
+To be fair, this initially did not work correctly, and no one used it. Therefore, this functionality was removed. You can read about all available events [here][hermione-events].
+
+## Support {#support}
+
+If you encounter any issues during the migration to the new version or have any questions, visit [github issues][gh-issues] — we will definitely help you!
+
+[how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
+[config-browsers]: ../../config/browsers
+[hermione-teamcity-reporter]: https://github.com/gemini-testing/hermione-teamcity-reporter
+[before-file-read]: ../../reference/testplane-events#before_file_read
+[event-suite-begin]: ../../reference/testplane-events#suite_begin
+[event-test-begin]: ../../reference/testplane-events#test_begin
+[test-parser]: ../../reference/testplane-events#test_parser
+[hermione-events]: ../../reference/testplane-events
+[antialiasing-tolerance]: ../../config/browsers#antialiasing_tolerance
+[composite-image]: ../../config/browsers#composite_image
+[take-screenshot-on-fails-assert-view-fail]: ../../config/browsers#take_screenshot_on_fails
+[take-screenshot-on-fails-mode]: ../../config/browsers#take_screenshot_on_fails_mode
+[take-screenshot-on-fails-timeout]: ../../config/browsers#take_screenshot_on_fails_timeout
+[http-timeout]: ../../config/browsers#http_timeout
+[page-load-timeout]: ../../config/browsers#page_load_timeout
+[session-quit-timeout]: ../../config/browsers#session_quit_timeout
+[save-history]: ../../config/browsers#save_history
+[gh-issues]: https://github.com/gemini-testing/testplane/issues
