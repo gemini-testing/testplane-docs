@@ -1,0 +1,548 @@
+# API testplane
+
+With the testplane API, you can use it in your scripts or build tools.
+
+To do this, you must include the testplane module and create its instance:
+
+```javascript
+const Testplane = require("testplane");
+
+const config = require("./testplane.conf.js");
+
+const testplane = new Testplane(config);
+```
+
+Then you will have access to the following parameters and methods:
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[config](#testplane_config)</td><td>Object or String</td><td>A testplane config object or a path to the configuration file, relative to the working folder.</td></tr>
+<tr><td>[events](#testplane_events)</td><td>Object</td><td>[testplane Events][testplane-events] that you can subscribe to.</td></tr>
+<tr><td>[errors](#testplane_errors)</td><td>Object</td><td>Errors that testplane can return.</td></tr>
+<tr><td>[intercept](#testplane_intercept)</td><td>Function</td><td>A function that allows you to subscribe to testplane [event interception][testplane-events-interception].</td></tr>
+<tr><td>[init](#testplane_init)</td><td>Method</td><td>Initializes the testplane instance, loads all plugins, etc.</td></tr>
+<tr><td>[run](#testplane_run)</td><td>Method</td><td>Runs tests located at the specified paths.</td></tr>
+<tr><td>[addTestToRun](#testplane_add_test_to_run)</td><td>Method</td><td>Adds a test to the current run.</td></tr>
+<tr><td>[readTests](#testplane_read_tests)</td><td>Method</td><td>Returns an object of type [TestCollection](#test_collection).</td></tr>
+<tr><td>[isFailed](#testplane_is_failed)</td><td>Method</td><td>Returns `true` or `false` depending on whether there was an error or test failure during the test run.</td></tr>
+<tr><td>[isWorker](#testplane_is_worker)</td><td>Method</td><td>Returns `true` if the method was called from a testplane worker.</td></tr>
+<tr><td>[halt](#testplane_halt)</td><td>Method</td><td>Forcibly terminates the test run in case of a critical error.</td></tr>
+
+</tbody>
+</table>
+
+## config {#testplane_config}
+
+A testplane config object or a path to the configuration file, relative to the working folder: `process.cwd()`.
+
+## events {#testplane_events}
+
+[testplane Events][testplane-events] that you can subscribe to.
+
+Example of using the `testplane.events` object in a testplane plugin:
+
+```javascript
+testplane.on(testplane.events.INIT, async () => {
+    console.info("Processing INIT event...");
+});
+```
+
+## errors {#testplane_errors}
+
+Testplane can return errors of the following types:
+
+-   [CoreError](#testplane_errors_core_error)
+-   [CancelledError](#testplane_errors_cancelled_error)
+-   [ClientBridgeError](#testplane_errors_client_bridge_error)
+-   [HeightViewportError](#testplane_errors_height_viewport_error)
+-   [OffsetViewportError](#testplane_errors_offset_viewport_error)
+-   [AssertViewError](#testplane_errors_assert_view_error)
+-   [ImageDiffError](#testplane_errors_image_diff_error)
+-   [NoRefImageError](#testplane_errors_no_ref_image_error)
+
+### CoreError {#testplane_errors_core_error}
+
+The `CoreError` is returned in the case of a failed calibration of an empty page (`about:blank`) in the browser.
+
+The error includes the following message:
+
+```
+Could not calibrate. This could be due to calibration page has failed to open properly
+```
+
+### CancelledError {#testplane_errors_cancelled_error}
+
+The `CancelledError` is returned in case of emergency termination by the [halt](#testplane_halt) command.
+
+The error includes the following message:
+
+```
+Browser request was cancelled
+```
+
+### ClientBridgeError {#testplane_errors_client_bridge_error}
+
+The `ClientBridgeError` is returned in case of a failed JavaScript code injection on the client side (browser). Testplane performs code injection using the [execute][wdio-execute] command of WebDriverIO.
+
+The error includes the following message:
+
+```
+Unable to inject client script
+```
+
+### HeightViewportError {#testplane_errors_height_viewport_error}
+
+The `HeightViewportError` is returned when trying to capture a screenshot of an area whose bottom bound does not fit into the viewport.
+
+The error includes the following message:
+
+```
+Can not capture the specified region of the viewport.
+The region bottom bound is outside of the viewport height.
+Alternatively, you can test such cases by setting "true" value to option "compositeImage" in the config file
+or setting "false" to "compositeImage" and "true" to option "allowViewportOverflow" in "assertView" command.
+Element position: <cropArea.left>, <cropArea.top>; size: <cropArea.width>, <cropArea.height>.
+Viewport size: <viewport.width>, <viewport.height>.
+```
+
+The message advises the testplane user on what settings to configure in testplane to be able to capture the screenshot of the specified area.
+
+### OffsetViewportError {#testplane_errors_offset_viewport_error}
+
+The `OffsetViewportError` is returned when trying to capture a screenshot of an area whose left, right, or top bounds go beyond the viewport.
+
+The error includes the following message:
+
+```
+Can not capture the specified region of the viewport.
+Position of the region is outside of the viewport left, top or right bounds.
+Check that elements:
+- does not overflow the document
+- does not overflow browser viewport
+Alternatively, you can increase browser window size using
+"setWindowSize" or "windowSize" option in the config file.
+But if viewport overflow is expected behavior then you can use
+option "allowViewportOverflow" in "assertView" command.
+```
+
+The message advises the testplane user on what settings to configure in testplane to be able to capture the screenshot of the specified area.
+
+### AssertViewError {#testplane_errors_assert_view_error}
+
+The `AssertViewError` is returned in case of a failed attempt to capture a screenshot.
+
+The error can contain one of the following messages, depending on the cause of the failure:
+
+```
+duplicate name for "<state>" state
+```
+
+```
+element ("<selector>") still not existing after <this.options.waitforTimeout> ms
+```
+
+```
+element ("<this.selector>") still not existing after <this.options.waitforTimeout> ms
+```
+
+### ImageDiffError {#testplane_errors_image_diff_error}
+
+The `ImageDiffError` is returned from the `assertView` command if a difference (diff) is found when capturing and comparing the screenshot with the reference screenshot.
+
+The error includes the following message:
+
+```
+images are different for "<stateName>" state
+```
+
+Additionally, the `ImageDiffError` contains the following data:
+
+<table>
+<thead>
+<tr><td>**Property**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>stateName</td><td>the name of the state for which the screenshot was taken</td></tr>
+<tr><td>currImg</td><td>link to the actual image</td></tr>
+<tr><td>refImg</td><td>link to the reference image</td></tr>
+<tr><td>diffOpts</td><td>settings for detecting the diff</td></tr>
+<tr><td>diffBounds</td><td>bounds of areas with diffs on the image</td></tr>
+<tr><td>diffClusters</td><td>clusters with diffs on the image</td></tr>
+
+</tbody>
+</table>
+
+Read more about [diffBounds][diff-bounds] and [diffClusters][diff-clusters] in the [looks-same][looks-same] package documentation.
+
+```
+exports.handleImageDiff = (currImg, refImg, state, opts) => {
+    const {tolerance, antialiasingTolerance, canHaveCaret, diffAreas, config} = opts;
+    const {buildDiffOpts, system: {diffColor}} = config;
+    buildDiffOpts.ignoreCaret = buildDiffOpts.ignoreCaret && canHaveCaret;
+
+    const diffOpts = {
+        current: currImg.path, reference: refImg.path,
+        diffColor, tolerance, antialiasingTolerance, ...buildDiffOpts
+    };
+
+    return Promise.reject(ImageDiffError.create(state, currImg, refImg, diffOpts, diffAreas));
+};
+```
+
+### NoRefImageError {#testplane_errors_no_ref_image_error}
+
+The `NoRefImageError` is returned from the `assertView` command if testplane does not find the reference screenshot on the filesystem when capturing and comparing the screenshot.
+
+The error includes the following message:
+
+```
+can not find reference image at <refImg.path> for "<stateName>" state
+```
+
+Additionally, the `NoRefImageError` contains the following data:
+
+<table>
+<thead>
+<tr><td>**Property**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>stateName</td><td>the name of the state for which the screenshot was taken</td></tr>
+<tr><td>currImg</td><td>link to the actual image</td></tr>
+<tr><td>refImg</td><td>link to the reference image</td></tr>
+
+</tbody>
+</table>
+
+## intercept {#testplane_intercept}
+
+A function that allows you to subscribe to testplane [event interception][testplane-events-interception].
+
+The first argument is the event to intercept, and the second is the event handler.
+
+For example:
+
+```javascript
+testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+    return {};
+});
+```
+
+Read more about event interception in the section "[About Event Interception][testplane-events-interception]".
+
+## init {#testplane_init}
+
+Initializes the testplane instance, loads all plugins, etc.
+
+### Example Call
+
+```javascript
+await testplane.init();
+```
+
+## run {#testplane_run}
+
+Runs tests located at the specified paths.
+
+Returns `true` if the test run was successful and `false` if it was not.
+
+### Example Call
+
+```javascript
+const success = await testplane.run(testPaths, options);
+```
+
+### Call Parameters
+
+All parameters of the `testplane.run()` method are optional.
+
+<table>
+<thead>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>testPaths</td><td>String[] or TestCollection</td><td>Paths to tests relative to the working folder _(process.cwd())_ or an object of type _TestCollection_ returned by the _readTests_ method. If paths are not specified, all tests will be run.</td></tr>
+<tr><td>options</td><td>Object</td><td>Object with run options.</td></tr>
+<tr><td>options.reporters</td><td>String[]</td><td>Reporters for the test run results.</td></tr>
+<tr><td>options.browsers</td><td>String[]</td><td>Browsers in which to run the tests.</td></tr>
+<tr><td>options.sets</td><td>String[]</td><td>Sets in which to run the tests.</td></tr>
+<tr><td>options.grep</td><td>RegExp</td><td>A regular expression pattern that specifies tests to run.</td></tr>
+
+</tbody>
+</table>
+
+## addTestToRun {#testplane_add_test_to_run}
+
+Adds a test to the current run. Returns `false` if the current run is already finished or cancelled. Otherwise, returns `true`.
+
+### Example Call
+
+```javascript
+const success = testplane.addTestToRun(test, browser);
+```
+
+### Call Parameters
+
+All parameters are required.
+
+<table>
+<thead>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>test</td><td>Test</td><td>The test to run.</td></tr>
+<tr><td>browserId</td><td>String</td><td>The browser in which to run the test.</td></tr>
+
+</tbody>
+</table>
+
+## readTests {#testplane_read_tests}
+
+An asynchronous method that returns an object of type [TestCollection](#test_collection).
+
+### Example Call
+
+```javascript
+await testplane.readTests(testPaths, options);
+```
+
+### Call Parameters
+
+<table>
+<thead>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>testPaths</td><td>String[]</td><td>Paths to tests relative to the working folder _(process.cwd())_.</td></tr>
+<tr><td>options</td><td>Object</td><td>Object with test reading mode settings.</td></tr>
+<tr><td>options.browsers</td><td>String[]</td><td>Read tests only for the specified browsers.</td></tr>
+<tr><td>options.silent</td><td>Boolean</td><td>Disable event generation while reading tests. Default: _false_.</td></tr>
+<tr><td>options.ignore</td><td>String or Glob or String[] or Glob[]</td><td>Patterns specifying paths on the filesystem to exclude when searching for tests.</td></tr>
+<tr><td>options.sets</td><td>String[]</td><td>Sets in which to read tests.</td></tr>
+<tr><td>options.grep</td><td>RegExp</td><td>A regular expression pattern that specifies tests to read.</td></tr>
+
+</tbody>
+</table>
+
+## isFailed {#testplane_is_failed}
+
+Returns `true` or `false` depending on whether there was an error or test failure during the test run. Might be useful in plugins to determine the current status of testplane.
+
+### Example Call
+
+```javascript
+const failed = testplane.isFailed();
+```
+
+## isWorker {#testplane_is_worker}
+
+Returns `true` if the method was called from a testplane worker.
+Returns `false` if the method was called from the testplane master process.
+
+Might be useful in plugins to distinguish the execution context.
+
+### Example Call
+
+```javascript
+// Implementation of some plugin
+module.exports = testplane => {
+    if (testplane.isWorker()) {
+        // This code will be executed only in testplane workers
+    } else {
+        // This code will be executed only in the testplane master process
+    }
+};
+```
+
+## halt {#testplane_halt}
+
+Forcibly terminates the test run in case of a critical error. If the process cannot gracefully shut down within the specified timeout, it will be forcibly terminated unless the timeout is explicitly set to `0`.
+
+### Example Call
+
+```javascript
+testplane.halt(error, [timeout=60000ms]);
+```
+
+### Call Parameters
+
+<table>
+<thead>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>error</td><td>Error</td><td>The critical error that requires stopping testplane.</td></tr>
+<tr><td>timeout</td><td>Number</td><td>Optional parameter. Timeout for shutting down the testplane process. Default: _60000 ms_.</td></tr>
+
+</tbody>
+</table>
+
+## Test Collection {#test_collection}
+
+An object of type `TestCollection` is returned by the [testplane.readTests](#testplane_read_tests) method and is also passed as an argument to the handler of the [AFTER_TESTS_READ][after-tests-read] event.
+
+### getBrowsers {#test_collection_get_browsers}
+
+Returns a list of browsers for which tests are available in the collection.
+
+#### Example Call
+
+```javascript
+const browsers = testCollection.getBrowsers();
+```
+
+### mapTests {#test_collection_map_tests}
+
+Builds a mapping of tests for the specified browser.
+
+#### Example Call
+
+```javascript
+const tests = testCollection.mapTests(browserId, (test, browserId) => {
+    // ...
+});
+```
+
+If the browser is not specified (i.e., a callback is passed as the first argument), the mapping will be built for all browsers.
+
+### sortTests {#test_collection_sort_tests}
+
+Sorts tests for the specified browser.
+
+#### Example Call
+
+```javascript
+testCollection.sortTests(browserId, (currentTest, nextTest) => {
+    // ...
+});
+```
+
+If the browser is not specified (i.e., a callback is passed as the first argument), the sorting will be applied to all browsers.
+
+### eachTest {#test_collection_each_test}
+
+Iterates through the tests for the specified browser.
+
+#### Example Call
+
+```javascript
+testCollection.eachTest(browserId, (test, browserId) => {
+    // ...
+});
+```
+
+If the browser is not specified (i.e., a callback is passed as the first argument), the iteration will occur for tests in all browsers.
+
+### eachTestByVersions {#test_collection_each_test_by_versions}
+
+Iterates through the tests and browser versions for the specified browser.
+
+Utilizes the presence of the `browserVersion` property for each test.
+
+#### Example Call
+
+```javascript
+testCollection.eachTestByVersions(browserId, (test, browserId, browserVersion) => {
+    // ...
+});
+```
+
+### disableAll {#test_collection_disable_all}
+
+Disables all tests or tests for the specified browser. Returns a reference to the test collection instance.
+
+#### Example Calls
+
+```javascript
+disableAll();
+```
+
+or
+
+```javascript
+disableAll(browserId);
+```
+
+If the browser is not specified, all tests will be disabled.
+
+### enableAll {#test_collection_enable_all}
+
+Enables all tests or tests for the specified browser. Returns a reference to the test collection instance.
+
+#### Example Calls
+
+```javascript
+enableAll();
+```
+
+or
+
+```javascript
+enableAll(browserId);
+```
+
+If the browser is not specified, all tests will be enabled.
+
+### disableTest {#test_collection_disable_test}
+
+Disables the specified test in all browsers or only in the specified browser. Returns a reference to the test collection instance.
+
+#### Example Calls
+
+```javascript
+disableTest(fullTitle);
+```
+
+or
+
+```javascript
+disableTest(fullTitle, browserId);
+```
+
+The test is identified by its full title: `fullTitle`.
+
+### enableTest {#test_collection_enable_test}
+
+Enables the specified test in all browsers or only in the specified browser.
+
+```javascript
+enableTest(fullTitle);
+```
+
+or
+
+```javascript
+enableTest(fullTitle, browserId);
+```
+
+### getRootSuite {#test_collection_get_root_suite}
+
+Returns the root suite for the specified browser. Returns undefined if there are no tests for the specified browser in the collection.
+
+#### Example Call
+
+```javascript
+const rootSuite = getRootSuite(browserId);
+```
+
+### eachRootSuite {#test_collection_each_root_suite}
+
+Iterates through all root suites in the collection that have tests.
+
+#### Example Call
+
+```javascript
+eachRootSuite((root, browserId) => {
+    // ...
+});
+```
+
+[after-tests-read]: ../testplane-events#after_tests_read
+[testplane-events]: ../testplane-events
+[wdio-execute]: ../../commands/browser/execute
+[diff-bounds]: https://github.com/gemini-testing/looks-same/blob/master/README.md#getting-diff-bounds
+[diff-clusters]: https://github.com/gemini-testing/looks-same/blob/master/README.md#getting-diff-clusters
+[looks-same]: https://github.com/gemini-testing/looks-same
+[testplane-events-interception]: ../testplane-events#events_interception
