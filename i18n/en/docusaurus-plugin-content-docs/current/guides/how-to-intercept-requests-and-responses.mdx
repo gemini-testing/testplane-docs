@@ -1,0 +1,346 @@
+import Admonition from "@theme/Admonition";
+
+# How to Track and Intercept Network Requests and Responses
+
+## Overview {#overview}
+
+[//]: # "TODO: add screencasts"
+
+<Admonition type="warning">
+This recipe only works when using _Chrome DevTools Protocol (CDP)_.
+
+Read details in the section “[How to Use CDP in Testplane][how-to-use-cdp]”
+
+</Admonition>
+
+CDP has [Fetch][fetch] and [Network][network] domains that provide full access to all network requests and responses. If we used the Webdriver protocol, we would have to write a separate proxy server and route all traffic through it.
+
+In _webdriverio_, there is a [mock][mock] method for working with network requests, which uses the API of the [Fetch][fetch] domain.
+
+With this method, we can:
+
+-   mock a request to a resource and return our own data;
+-   cancel a request, returning a necessary error;
+-   modify a response from a resource;
+-   redirect from the requested resource to another resource;
+-   mock a resource and, for example, collect information on how many times this resource was called and what response it returned.
+
+Let's try writing tests using this API and cover different cases. To clarify, all graphical representations of the test execution process are slowed down by a factor of 2 because locally the tests run very quickly, making it difficult to observe anything.
+
+## Example 1: Mocking a Request to google.com and Returning Our Own Response {#example_1}
+
+```javascript
+it("should mock google.com", async function () {
+    // Mocking the request to google.com
+    const mock = await this.browser.mock("https://google.com");
+
+    // Returning the string "Hello, world!" instead of the response from the site.
+    // The "fetchResponse" option dictates whether the request should be made
+    // to the mocked resource; default is true.
+    mock.respond("Hello, world!", { fetchResponse: false });
+
+    await this.browser.url("https://google.com");
+});
+```
+
+From the graphical representation, you can see that we returned our text, although the browser's address bar shows we navigated to _google.com._ Also, it's clear that we didn't mock the favicon, which was fetched from an external source. We can write this same example using the puppeteer API. For this, _webdriverio_ has the [getPuppeteer()][get-puppeteer] command:
+
+```javascript
+it("should mock google.com using puppeteer api", async function () {
+    // Get puppeteer instance
+    const puppeteer = await this.browser.getPuppeteer();
+
+    // Get the first open page (considering it to be currently active)
+    const [page] = await puppeteer.pages();
+
+    // Enable request interception
+    await page.setRequestInterception(true);
+    page.on("request", async request => {
+        if (request.url() !== "https://google.com/") {
+            // If the request URL does not match https://google.com/,
+            // continue the request (i.e., don't intercept it)
+            return request.continue();
+        }
+
+        // Respond with our own data
+        return request.respond({ body: "Hello, world!" });
+    });
+
+    // Here, we could call "page.goto('https://google.com')", but it's better to call "url",
+    // because most plugins have wrappers for the "url" command adding additional logic.
+    // For example, in testplane, the URL is added to the meta.
+    await this.browser.url("https://google.com");
+});
+```
+
+### Hardcore Example Using CDP Directly {#hardcore_example}
+
+Now, let's imagine that puppeteer doesn't yet have an API for mocking requests, but this is already implemented in the [Fetch][fetch] domain of CDP. In this case, we will use this domain's method by interacting with the CDP session directly. For this, puppeteer has the [CDPSession.send()][cdp-session-send] method:
+
+```javascript
+it("should mock google.com using cdp fetch domain", async function () {
+    // Get puppeteer instance
+    const puppeteer = await this.browser.getPuppeteer();
+
+    // Get the first open page (considering it to be currently active)
+    const [page] = await puppeteer.pages();
+
+    // Create a CDP session
+    const client = await page.target().createCDPSession();
+
+    // Enable request interception by subscribing to the "requestPaused" event
+    await client.send("Fetch.enable");
+
+    client.on("Fetch.requestPaused", event => {
+        const {
+            request: { url },
+            requestId,
+            responseHeaders,
+        } = event;
+
+        if (url !== "https://google.com/") {
+            // If the request URL does not match https://google.com/,
+            // continue the request (i.e., don't intercept it)
+            return client.send("Fetch.continueRequest", { requestId });
+        }
+
+        // Replace the response with our own and encode it in base64
+        return client.send("Fetch.fulfillRequest", {
+            requestId,
+            responseCode: 200,
+            responseHeaders,
+            body: Buffer.from("Hello, world!", "utf8").toString("base64"),
+        });
+    });
+
+    await this.browser.url("https://google.com");
+});
+```
+
+Obviously, when using the _webdriverio_ API for mocking requests, the code is much shorter, but the _webdriverio_ API is very limited, and for more complex cases, it is necessary to use puppeteer's API. However, puppeteer itself might not have an API for some new methods or CDP domains. Therefore, in rare cases, direct communication via CDP using [CDPSession.send()][cdp-session-send] might come in handy.
+
+## Example 2: Canceling the Request for Google's Logo {#example_2}
+
+```javascript
+it("should abort request to logo on google.com", async function () {
+    // You can use a mask for the URL
+    const mock = await this.browser.mock("https://www.google.com/images/**/*.png");
+
+    // Throw an error "ERR_FAILED" when loading a resource that matches the mask
+    mock.abort("Failed");
+
+    await this.browser.url("https://google.com");
+});
+```
+
+From the graphical representation, it is clear that the logo is not displayed, and there is a `net::ERR_FAILED` error in the log. This solution can be useful for disabling some scripts that hinder the quick execution of the test. For example, analytics collection scripts can be disabled.
+
+## Example 3: Loading google.com Using a Fixture for the Response {#example_3}
+
+```javascript
+it("should mock google.com and return answer from fixture", async function () {
+    // Mocking the request to google.com
+    const mock = await this.browser.mock("https://google.com");
+
+    // Specify the path from which to take the fixture, and with
+    // "fetchResponse: false", indicate that the real request should not be made
+    mock.respond("./fixtures/my-google.com.html", { fetchResponse: false });
+
+    await this.browser.url("https://google.com");
+});
+```
+
+From the graphical representation, it is clear that instead of google.com's content, our fixture's data is displayed.
+
+## Example 4: Redirecting the Request from google.com to yandex.ru {#example_4}
+
+```javascript
+it("should redirect from google.com to yandex.ru", async function () {
+    // Mocking the request to google.com
+    const mock = await this.browser.mock("https://google.com");
+
+    // For redirection, simply specify the URL
+    mock.respond("https://yandex.ru");
+
+    await this.browser.url("https://google.com");
+});
+```
+
+## Example 5: Modifying google.com's Response in Real-Time {#example_5}
+
+Puppeteer still does not have an API for conveniently modifying responses. There is an [issue#1191](https://github.com/puppeteer/puppeteer/issues/1191) on this. But this capability is already supported in CDP. Webdriverio uses CDP directly through [puppeteer][puppeteer], so it works in _webdriverio_.
+
+Replace all occurrences of the string `Google` with `Yandex` in google.com's response:
+
+```javascript
+it("should modify response from google.com", async function () {
+    // Here, you need to mock with www because navigating to google.com
+    // returns a 301 response without a body and redirects to www
+    const mock = await this.browser.mock("https://www.google.com");
+
+    mock.respond(req => {
+        // Replace "Google" with "Yandex" using a regular expression
+        return req.body.replace(/Google/g, "Yandex");
+    });
+
+    await this.browser.url("https://google.com");
+});
+```
+
+Additionally, we can modify responses from unknown sources in advance. For example, let's modify all scripts loaded on _google.com:_
+
+```javascript
+it("should modify response from google.com", async function () {
+    // The first argument specifies that we will intercept all requests
+    const mock = await this.browser.mock("**", {
+        headers: headers => {
+            // Filter only the requests where the "content-type"
+            // header contains values "text/javascript" or "application/javascript"
+            return (
+                headers["content-type"] &&
+                /^(text|application)\/javascript/.test(headers["content-type"])
+            );
+        },
+    });
+
+    mock.respond(req => {
+        // Append our own console.log to the end of each script
+        return (req.body += `\nconsole.log("This script was modified in real time.");`);
+    });
+
+    await this.browser.url("https://google.com");
+});
+```
+
+## Example 6: Intercepting All Requests to yandex.ru and Collecting a List of All Loaded URLs {#example_6}
+
+Let's say we need to collect a list of all URLs loaded on the page. Using this information, we could determine if we have requests for external resources or neighboring services that we do not control. This means they could fail at any time and break our tests. Here's what our code might look like:
+
+```javascript
+it("should mock yandex.ru and log all loaded urls", async function () {
+    // Intercept absolutely all requests
+    const mock = await this.browser.mock("**");
+
+    await this.browser.url("https://yandex.ru");
+
+    // mock.calls contains not only the visited URL information
+    // but also the response from the source, the request headers, response headers, etc.
+    const urls = mock.calls.map(({ url }) => url);
+
+    console.log("visited urls:", JSON.stringify(urls, null, "\t"));
+    console.log("count of visited urls:", urls.length);
+});
+```
+
+Most likely, your tests are more complex than these examples and involve various clicks on elements that open in new tabs. In such cases, the previous code will not capture the opening of new tabs or that URLs need to be collected there as well. Therefore, in such cases, you need to use puppeteer's API:
+
+```javascript
+it("should mock yandex.ru and log all loaded urls (using puppeteer)", async function () {
+    // Accumulative list of all URLs
+    const urls = [];
+
+    // Helper that expects a page instance from puppeteer:
+    // https://pptr.dev/#?product=Puppeteer&version=v10.1.0&show=api-class-page
+    function urlsHandler(page) {
+        // Subscribe to all requests occurring on the given page
+        page.on("request", req => {
+            urls.push(req.url());
+        });
+    }
+
+    // Get puppeteer instance
+    const puppeteer = await this.browser.getPuppeteer();
+
+    // Get all open pages at the current moment
+    const pages = await puppeteer.pages();
+
+    // Subscribe to all requests occurring on these pages
+    await Promise.all(pages.map(p => urlsHandler(p)));
+
+    // Subscribe to the creation of new pages
+    puppeteer.on("targetcreated", async target => {
+        // Check that the opened target is indeed a new page
+        const page = await target.page();
+
+        if (!page) {
+            return;
+        }
+
+        // Since the new page opens with some URL,
+        // it needs to be explicitly recorded (the request subscription will not detect it)
+        urls.push(target.url());
+
+        // Subscribe to all requests occurring on the new tab
+        urlsHandler(page);
+    });
+
+    await this.browser.url("https://yandex.ru");
+
+    // Find the first element in the list of services (at that time it was a football page)
+    const elem = await this.browser.$(".services-new__list-item > a");
+
+    // Click the service that opens in a new tab
+    await elem.click();
+
+    console.log("visited urls:", JSON.stringify(urls, null, "\t"));
+    console.log("count of visited urls:", urls.length);
+});
+```
+
+## Example 7: Mocking the google.com Resource in All Chrome Tests {#example_7}
+
+To avoid manually mocking the same resources in all tests, you can use the [testplane-global-hook][testplane-global-hook] plugin. Configure it appropriately in the testplane config:
+
+```javascript
+// .testplane.conf.js
+module.exports = {
+    plugins: {
+        "testplane-global-hook": {
+            enabled: true,
+
+            beforeEach: async function () {
+                // Check that the browser name starts with "chrome"
+                if (!/^chrome$/i.test(this.browser.capabilities.browserName)) {
+                    return;
+                }
+
+                // Mocking the request to google.com
+                const mock = await this.browser.mock("https://google.com");
+                mock.respond("hello world", { fetchResponse: false });
+            },
+
+            afterEach: function () {
+                // Clear all mocks in the current session
+                this.browser.mockRestoreAll();
+            },
+        },
+
+        // other testplane plugins...
+    },
+
+    // other testplane settings...
+};
+```
+
+The test code will now only contain the URL transition:
+
+```javascript
+// Explicitly indicate that the test is only executed in browsers whose name starts with chrome
+testplane.only.in(/^chrome/);
+it("should mock google.com inside global before each", async function () {
+    await this.browser.url("https://google.com");
+});
+```
+
+## Useful Links {#useful_links}
+
+More usage examples can be found in the "[Mocks and Spies][wdio-mocks-and-spies]" guide on the _webdriverio_ website.
+
+[how-to-use-cdp]: ../how-to-use-cdp
+[wdio-mocks-and-spies]: https://webdriver.io/docs/mocksandspies/
+[fetch]: https://chromedevtools.github.io/devtools-protocol/tot/Fetch/
+[network]: https://chromedevtools.github.io/devtools-protocol/tot/Network/
+[mock]: ../../commands/browser/mock
+[get-puppeteer]: ../../commands/browser/getPuppeteer
+[cdp-session-send]: https://pptr.dev/next/api/puppeteer.cdpsession.send
+[testplane-global-hook]: ../../plugins/testplane-global-hook

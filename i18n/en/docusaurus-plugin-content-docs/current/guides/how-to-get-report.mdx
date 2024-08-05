@@ -1,0 +1,97 @@
+# How to Get a Test Run Report
+
+## testplane Report {#testplane_report}
+
+After completing all test runs, testplane writes the result to the console in the form of a string like this:
+
+```bash
+Total: 1812 Passed: 1792 Failed: 0 Skipped: 20 Retries: 47
+```
+
+Where:
+
+<table>
+<thead>
+<tr><td>Status</td><td>Description</td></tr>
+</thead>
+<tbody>
+<tr><td>Total</td><td>Total number of tests that testplane read from the file system during launch.</td></tr>
+<tr><td>Passed</td><td>Number of tests that passed successfully.</td></tr>
+<tr><td>Failed</td><td>Number of tests that failed.</td></tr>
+<tr><td>Skipped</td><td>Number of tests that were skipped during the run.</td></tr>
+<tr><td>Retries</td><td>Total number of test retries that occurred during the run.</td></tr>
+</tbody>
+</table>
+
+However, this information may not be sufficient, so you can add the [stat-reporter][stat-reporter] plugin to your project.
+
+## stat-reporter Plugin Report {#stat_reporter_report}
+
+If you add the [stat-reporter][stat-reporter] plugin to your project, you will get a more detailed report of the run results in the console after completing all the tests. For example:
+
+```bash
+┌──────────────────────┬────────┬───────┬────────┬────────┬─────────┬─────────┬──────────┐
+│ Browser              │ Status │ Tests │ Passed │ Failed │ Skipped │ Retries │ Duration │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ firefox              │ passed │ 25    │ 24     │ 0      │ 1       │ 0       │ 01:02    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-desktop       │ passed │ 466   │ 464    │ 0      │ 2       │ 4       │ 07:40    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ ipad                 │ passed │ 24    │ 23     │ 0      │ 1       │ 0       │ 01:27    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ iphone               │ passed │ 376   │ 372    │ 0      │ 4       │ 7       │ 07:12    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-phone         │ passed │ 427   │ 421    │ 0      │ 6       │ 14      │ 07:32    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ iphone-dark          │ passed │ 74    │ 72     │ 0      │ 2       │ 4       │ 02:18    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ searchapp-phone      │ passed │ 319   │ 317    │ 0      │ 2       │ 9       │ 10:00    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ safari13             │ passed │ 15    │ 13     │ 0      │ 2       │ 4       │ 02:42    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-desktop-1920  │ passed │ 3     │ 3      │ 0      │ 0       │ 0       │ 00:57    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ iphoneX              │ passed │ 3     │ 3      │ 0      │ 0       │ 0       │ 00:36    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-desktop-dark  │ passed │ 77    │ 77     │ 0      │ 0       │ 5       │ 01:33    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ yandex-browser-phone │ passed │ 1     │ 1      │ 0      │ 0       │ 0       │ 00:28    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-grid-720      │ passed │ 2     │ 2      │ 0      │ 0       │ 0       │ 00:49    │
+└──────────────────────┴────────┴───────┴────────┴────────┴─────────┴─────────┴──────────┘
+```
+
+Unlike the simple testplane report, the `stat-reporter` plugin report breaks down the results by browser. It also displays the maximum execution time _(Duration)_ in minutes and seconds and the test run result _(Status)_ in each browser.
+
+Such a report allows for a better understanding of which browsers encountered problems, specifically: where the most tests failed or the execution time sharply increased.
+
+The `stat-reporter` plugin also allows generating reports in HTML or JSON formats. See details in the [plugin description][stat-reporter].
+
+However, in terms of capabilities, the [stat-reporter][stat-reporter] plugin is significantly inferior to the [html-reporter][html-reporter] plugin, which provides much more advanced ways to work with tests and their run results.
+
+## html-reporter Plugin Report {#html_reporter_report}
+
+Add the [html-reporter][html-reporter] plugin to your project to get a graphical HTML report with the results of all test runs. Additionally, in the generated report, you will be able to:
+
+-   filter tests by completion status;
+-   group tests by errors or any parameter from the test metadata;
+-   view screenshot differences in 6 different ways;
+-   view all retries or errors in tests separately.
+
+![html-reporter](/img/docs/guides/how-to-get-report.html-reporter.png)
+
+Moreover, the [html-reporter][html-reporter] allows running testplane in a special GUI mode. In this mode, you can run and rerun tests, reshoot screenshots, use special debugging modes, and much more.
+
+## Keywords {#keywords}
+
+-   stat-reporter
+-   html-reporter
+-   gui
+
+## Useful Links {#useful_links}
+
+-   [stat-reporter Plugin][stat-reporter]
+-   [html-reporter Plugin][html-reporter]
+
+[stat-reporter]: ../../plugins/stat-reporter
+[html-reporter]: ../../html-reporter/html-reporter-setup

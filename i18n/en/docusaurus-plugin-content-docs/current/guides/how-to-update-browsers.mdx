@@ -1,0 +1,92 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# How to Update Browsers in Large Projects
+
+## Problem
+
+In a large project, handled by multiple teams, there are usually a lot of tests. Updating browsers in such a project can become a real headache. Changing the browser version often requires retaking screenshots because the browser's rendering, animation, and antialiasing mechanisms might change. Even the slightest changes in the internal rendering implementation of a browser can lead to diffs between reference and actual screenshots in tests.
+
+After retaking thousands of screenshots, a developer creates a pull request that needs to be merged into the main branch of the project. Merging such a pull request becomes extremely challenging due to the constantly occurring merge conflicts. Development doesn’t stop, and teams might change tests, retake reference screenshots to account for new functionality, or delete outdated tests and their screenshots. This means a pull request with a large number of changed files quickly becomes outdated and requires constant rebasing relative to the main branch. Moreover, this rebase involves a series of actions: not only updating the codebase but also rerunning the tests to retake the screenshots. Simply resolving the merge conflict between screenshots will not work. Both conflicting screenshots will be incorrect: one outdated and the other not corresponding to the new browser version.
+
+Thus, if a team wants to update the version of the browser in which their tests are run, they are forced to update the tests for the entire project and face the difficulties described above.
+
+There are three ways to solve this problem.
+
+## Solution 1: testplane.browser().version()
+
+Testplane allows you to override the browser version for a specific test or set of tests using the `testplane.browser().version()` helper.
+
+For example:
+
+```javascript
+// Override the browser version for chrome-desktop to 70.3 for the entire test suite
+testplane.browser("chrome-desktop").version("70.3");
+describe("suite", function () {
+    it("test 1", function () {
+        // ...
+    });
+
+    // Override the browser version for chrome-desktop to 70.1 for a specific test
+    testplane.browser("chrome-desktop").version("70.1");
+    it("test 2", function () {
+        // ...
+    });
+});
+```
+
+The drawback of this approach is that you need to manually change the test files themselves. With many files, this can take quite a long time.
+
+## Solution 2: Browser Version Changer
+
+You can use the [hermione-browser-version-changer][hermione-browser-version-changer] plugin, which allows you to define the browser version for a specific test based on a special dictionary _(store)_ and predicates for all available browser versions in the project.
+
+Example usage of the plugin:
+
+```javascript
+module.exports = {
+    plugins: {
+        "hermione-browser-version-changer": {
+            enabled: true,
+            initStore: async () => {
+                // Prepare a dictionary with arbitrary tags for labeling
+                return {
+                    "title-test1": "tag1",
+                    "title-test2": "tag1",
+                    "title-test3": "tag2",
+                };
+            },
+            browsers: {
+                "chrome-desktop": {
+                    // Key "70.1" – browser version, value – predicate
+                    // If the function returns a true value, this version will be set for the browser
+                    70.1: (test, version, store) => {
+                        // test – current test
+                        // version – proposed version "70.1"
+                        // store – dictionary prepared in the initStore method
+
+                        // Set browser version 70.1 if the test belongs to "tag1"
+                        return store[test.title] === "tag1";
+                    },
+                    80: (test, version, store) => {
+                        return store[test.title] === "tag2";
+                    },
+                },
+            },
+        },
+
+        // other testplane plugins...
+    },
+
+    // other testplane settings...
+};
+```
+
+The provided example is very conditional, and it is possible that in your project you won’t even need to use a _store_, and checking the test against a given regex pattern will be sufficient.
+
+[hermione-browser-version-changer]: ../../plugins/hermione-browser-version-changer
+[testplane]: https://github.com/gemini-testing/testplane
+[html-reporter]: ../../html-reporter/html-reporter-setup
+[gh-issues]: https://github.com/gemini-testing/testplane/issues/

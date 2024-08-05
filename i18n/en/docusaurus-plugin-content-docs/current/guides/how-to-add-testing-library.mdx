@@ -1,0 +1,65 @@
+# How to Connect testing-library in testplane
+
+## Introduction {#preface}
+
+[Testing-library][testing-library] is a collection of tools for testing web application user interfaces, focused on creating reliable and maintainable tests by emphasizing user behavior. The main advantage of `testing-library` is its focus on interaction with interface elements. And in testplane, you can use the element search methods provided by the `testing-library` itself.
+
+## Connection
+
+To be able to use [queries][queries] from `testing-library` in testplane tests, you only need to follow a few steps.
+
+1. Install the npm package `'@testing-library/webdriverio'`
+
+```bash
+npm i -D @testing-library/webdriverio
+```
+
+2. Connect the implementation in the testplane configuration in the `prepareBrowser` section
+
+```javascript
+// .testplane.conf.js
+const { setupBrowser } = require("@testing-library/webdriverio");
+
+module.exports = {
+    prepareBrowser(browser) {
+        setupBrowser(browser);
+    },
+
+    // other testplane settings...
+};
+```
+
+## Usage
+
+After connecting, you will be able to use the search by selectors from `testing-library`, as described in the [official documentation](https://testing-library.com/docs/queries/about/). For example, searching for an element by its text:
+
+```javascript
+it("example", async ({ browser }) => {
+    await browser.url("https://github.com/");
+
+    const newRepoButton = await browser.getByText("New");
+
+    await newRepoButton.click();
+});
+```
+
+In the context of found elements, this feature will also be available:
+
+```javascript
+it("example", async ({ browser }) => {
+    await browser.url("https://github.com/");
+
+    const sidebar = await browser.$(".dashboard-sidebar");
+    const newRepoButton = await sidebar.getByText("New");
+
+    await newRepoButton.click();
+});
+```
+
+## Useful Links {#useful_links}
+
+-   [Testing-library][testing-library]
+-   [WebdriverIO Testing Library](https://testing-library.com/docs/webdriverio-testing-library/intro)
+
+[testing-library]: https://testing-library.com/
+[queries]: https://testing-library.com/docs/queries/about
