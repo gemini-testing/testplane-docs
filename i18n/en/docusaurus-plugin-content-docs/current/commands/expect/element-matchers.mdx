@@ -1,0 +1,353 @@
+# expect for elements
+
+## toBeDisplayed
+
+Calls [isDisplayed](../../element/isDisplayed) on the given element.
+
+For example:
+
+```javascript
+const elem = await browser.$("#someElem");
+await expect(elem).toBeDisplayed();
+```
+
+## toExist
+
+Calls [isExisting](../../element/isExisting) on the given element.
+
+For example:
+
+```javascript
+const elem = await browser.$("#someElem");
+await expect(elem).toExist();
+```
+
+## toBePresent
+
+Same as [toExist](#toexist).
+
+For example:
+
+```javascript
+const elem = await browser.$("#someElem");
+await expect(elem).toBePresent();
+```
+
+## toBeExisting
+
+Same as [toExist](#toexist).
+
+For example:
+
+```javascript
+const elem = await browser.$("#someElem");
+await expect(elem).toBeExisting();
+```
+
+## toBeFocused
+
+Checks if the element has focus. This assertion works only in the web context.
+
+For example:
+
+```javascript
+const elem = await browser.$("#someElem");
+await expect(elem).toBeFocused();
+```
+
+## toHaveAttribute
+
+Checks if the element has the given attribute with the specified value.
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveAttribute("class", "form-control");
+```
+
+## toHaveAttr
+
+Same as [toHaveAttribute](#tohaveattribute).
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveAttr("class", "form-control");
+```
+
+## toHaveAttributeContaining
+
+Checks if the given substring is contained in the specified attribute's value of the element.
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveAttributeContaining("class", "form");
+```
+
+## toHaveAttrContaining
+
+Same as [toHaveAttributeContaining](#tohaveattrcontaining).
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveAttrContaining("class", "form");
+```
+
+## toHaveElementClass
+
+Checks if the element has the specified class name.
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveElementClass("form-control", { message: "Not a form control!" });
+```
+
+## toHaveElementClassContaining
+
+Checks if the element's class name contains the specified substring.
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveElementClassContaining("form");
+```
+
+## toHaveElementProperty
+
+Checks if the element has the specified property with the given value.
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toHaveElementProperty("height", 23);
+await expect(elem).not.toHaveElementProperty("height", 0);
+```
+
+## toHaveValue
+
+Checks if an input element has the given value.
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveValue("user", { ignoreCase: true });
+```
+
+## toHaveValueContaining
+
+Checks if the given substring is contained in the specified input element's value.
+
+For example:
+
+```javascript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveValueContaining("us");
+```
+
+## toBeClickable
+
+Checks if the element is clickable by calling [isClickable](../../element/isClickable).
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toBeClickable();
+```
+
+## toBeDisabled
+
+Checks if the element is disabled by calling [isEnabled](../../element/isEnabled).
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toBeDisabled();
+// or, equivalently:
+await expect(elem).not.toBeEnabled();
+```
+
+## toBeEnabled
+
+Checks if the element is enabled by calling [isEnabled](../../element/isEnabled).
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toBeEnabled();
+// or, equivalently:
+await expect(elem).not.toBeDisabled();
+```
+
+## toBeSelected
+
+Checks if the element is selected by calling [isSelected](../../element/isSelected).
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toBeSelected();
+```
+
+## toBeChecked
+
+Same as [toBeSelected](#tobeselected).
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toBeChecked();
+```
+
+## toHaveHref
+
+Checks if the element link has the specified URL.
+
+For example:
+
+```javascript
+const link = await browser.$("a");
+await expect(link).toHaveHref("https://webdriver.io");
+```
+
+## toHaveLink
+
+Same as [toHaveHref](#tohavehref).
+
+For example:
+
+```javascript
+const link = await browser.$("a");
+await expect(link).toHaveLink("https://webdriver.io");
+```
+
+## toHaveHrefContaining
+
+Checks if the given substring is contained in the element link's URL.
+
+For example:
+
+```javascript
+const link = await browser.$("a");
+await expect(link).toHaveHrefContaining("webdriver.io");
+```
+
+## toHaveLinkContaining
+
+Same as [toHaveHrefContaining](#tohavehrefcontaining).
+
+For example:
+
+```javascript
+const link = await browser.$("a");
+await expect(link).toHaveLinkContaining("webdriver.io");
+```
+
+## toHaveId
+
+Checks if the element has the given ID.
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toHaveId("elem");
+```
+
+## toHaveText
+
+Checks if the element's text matches the specified value.
+
+It can also be called with an array as a parameter in case the element can have different texts.
+
+For example:
+
+```javascript
+await browser.url("https://webdriver.io/");
+const elem = await browser.$(".container");
+await expect(elem).toHaveText("Next-gen browser and mobile automation test framework for Node.js");
+await expect(elem).toHaveText([
+    "Next-gen browser and mobile automation test framework for Node.js",
+    "Get Started",
+]);
+```
+
+## toHaveTextContaining
+
+Checks if the element's text contains the specified substring.
+
+It can also be called with an array as a parameter in case the element can have different texts.
+
+For example:
+
+```javascript
+await browser.url("https://webdriver.io/");
+const elem = await browser.$(".container");
+await expect(elem).toHaveTextContaining("browser and mobile automation test framework");
+await expect(elem).toHaveTextContaining([
+    "browser and mobile automation test framework",
+    "Started",
+]);
+```
+
+## toBeDisplayedInViewport
+
+Checks if the element is within the viewport using the [isDisplayedInViewport](../../element/isDisplayedInViewport) command.
+
+For example:
+
+```javascript
+const elem = await browser.$("#elem");
+await expect(elem).toBeDisplayedInViewport();
+```
+
+## toHaveChildren
+
+Checks the number of child elements of the given element using the [element.$('./\*')](../../element/_dollar) command.
+
+For example:
+
+```javascript
+const list = await browser.$("ul");
+await expect(list).toHaveChildren(); // list has at least 1 element
+// or, equivalently:
+await expect(list).toHaveChildren({ gte: 1 });
+```
+
+```javascript
+await expect(list).toHaveChildren(3); // list has 3 elements
+// or, equivalently:
+await expect(list).toHaveChildren({ eq: 3 });
+```
+
+## toBeElementsArrayOfSize
+
+Checks the number of elements obtained using the [$$](../../element/_dollardollar) command.
+
+For example:
+
+```javascript
+const listItems = await browser.$$("ul>li");
+await expect(listItems).toBeElementsArrayOfSize(5); // 5 items in the list
+```
+
+```javascript
+await expect(listItems).toBeElementsArrayOfSize({ lte: 10 });
+// or, equivalently:
+assert.ok(listItems.length <= 10);
+```

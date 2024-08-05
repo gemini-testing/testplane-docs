@@ -1,0 +1,47 @@
+# expect for the browser
+
+## toHaveUrl
+
+Checks if the browser is on the specified page.
+
+For example:
+
+```javascript
+await browser.url("https://webdriver.io/");
+await expect(browser).toHaveUrl("https://webdriver.io");
+```
+
+## toHaveUrlContaining
+
+Checks if the specified substring is contained in the URL of the page the browser is on.
+
+For example:
+
+```javascript
+await browser.url("https://webdriver.io/");
+await expect(browser).toHaveUrlContaining("webdriver");
+```
+
+## toHaveTitle
+
+Checks if the website has the specified title.
+
+For example:
+
+```javascript
+await browser.url("https://webdriver.io/");
+await expect(browser).toHaveTitle(
+    "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js",
+);
+```
+
+## toHaveTitleContaining
+
+Checks if the specified substring is contained in the website's title.
+
+For example:
+
+```javascript
+await browser.url("https://webdriver.io/");
+await expect(browser).toHaveTitleContaining("WebdriverIO");
+```
