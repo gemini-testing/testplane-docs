@@ -1,0 +1,184 @@
+---
+title: Component Testing
+slug: component-testing-intro
+hide_table_of_contents: false
+date: 2024-06-10T14:00
+---
+
+import Admonition from "@theme/Admonition";
+
+In testplane, experimental support for component testing and unit tests running in the browser has been added.
+
+<!-- truncate -->
+
+Almost all modern web interfaces are built using frameworks (React, Vue, Svelte, ...) to simplify the creation and reuse of components. It is important to test such components in isolation from each other to ensure that each component correctly performs its function. Just as we write unit tests separately from integration tests. Testplane already supports screenshot testing of components using [Storybook](https://storybook.js.org/), but this tool is not relevant for all projects. Therefore, we developed another option for component testing that does not require the use of Storybook.
+
+This feature can be useful if your project uses React components. At the same time, there are no tests at all or only heavy integration tests are used (i.e., entire pages containing many components are checked). According to the [testing pyramid](https://martinfowler.com/articles/practical-test-pyramid.html), there should be fewer integration tests because they are more prone to "flaps" and often redundant. Many scenarios can be checked using component tests, thereby reducing test execution time in CI and improving their stability.
+
+### Component Testing Implementation Options
+
+Component testing is a type of testing where the logic of a web component is checked in isolation from the web page in which it is used. To perform such a test, you need to be able to correctly render the component. Often, [JSDom](https://github.com/jsdom/jsdom) (used in [Jest](https://jestjs.io/)) is used for this task, which renders web components using virtual rendering in Node.js, i.e., without using a real browser. On the one hand, this works faster (the browser is not launched), but on the other hand, it is less stable because the checks are not performed in a real browser. The second popular solution is to use a very fast dev server [Vite](https://vitejs.dev/), which supports many frameworks (React, Vue, Svelte, ...) and is responsible for rendering components in isolation.
+
+We chose the option of using Vite because this approach provides testing of the page closer to reality (as if it were opened by a user). At the same time, the tests themselves run a little longer than in jsdom. But for us, the most important thing is the stability and reproducibility of test results, so the choice was obvious.
+
+<details>
+    <summary>Brief information on how this is implemented</summary>
+
+    - when specifying the `testRunEnv: 'browser'` option in the Testplane config, a browser runner will be used, which launches Vite on localhost with a random free port (the user can set the required port in the Vite config). It is on this launched server that all user components will be rendered and all necessary commands/checks will be performed (i.e., directly inside the browser);
+    - then the tests are read in Node.js, i.e., as it is done for integration tests. This is necessary for all plugins to work correctly (we are talking about event triggers when reading tests), as well as to be able to run tests from one file in parallel. If the test were read only in the browser context, it would be necessary to run absolutely all tests inside one file, and a critical failure in one of them would lead to the stopping of all subsequent ones. That is, at this stage, we understand which tests need to be run;
+    - after that, as usual, the necessary browsers are launched, and the tests are run in them. Each test, before executing user code, navigates to the launched Vite server. When such a request is made, a special index.html is generated, into which all necessary libraries are loaded:
+    - mocha — for reading tests;
+    - webdriverio — for using the browser instance inside the browser itself;
+    - expect — for performing checks;
+    - and other internal modules necessary for correct operation.
+    - when opening index.html from Vite, the browser establishes a websocket connection with the Testplane master process to exchange the necessary data. For example, if the construct `await browser.$("body").assertView("plain", "body")` is called in the browser, it is obvious that it cannot be executed in the browser itself, as access to the file system is required inside `assertView`. Therefore, the execution of this command is sent to the Testplane master, which in turn sends it to the worker in which this test is running. And it is the worker that executes the command passed to it. When the result is obtained, it is sent back to the browser in the same way. All communication is implemented using the [socket.io](https://socket.io/) library;
+    - after that, the specified test begins to run in the browser, which returns the result to the Node.js process upon completion.
+
+</details>
+
+### How to use?
+
+We will set up testing of react components written in TypeScript. Therefore, first, we will install the necessary dependencies:
+
+```bash
+npm i testplane vite @vitejs/plugin-react @testing-library/react --save-dev
+npm i react --save
+```
+
+Create a Vite config in which we connect the plugin to support React. Example:
+
+```javascript
+// vite.config.ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+});
+```
+
+Now we will set up running tests in the browser. To do this, we will specify the [testRunEnv](https://github.com/gemini-testing/testplane/blob/master/docs/config.md#testrunenv) option. Example:
+
+```javascript
+// .testplane.conf.ts
+export const {
+    // ...
+    system: {
+        // ...
+        testRunEnv: ['browser', { viteConfig: './vite.config.ts' }],
+    },
+    sets: {
+        linux: {
+            files: [
+                'src/tests/**/*.testplane.tsx'
+            ],
+            browsers: [
+                'chrome'
+            ]
+        },
+    },
+}
+```
+
+After that, we can write a test in which we simply output the value of `document` to the console without using the [browser.execute](/docs/v8/commands/browser/execute) command:
+
+```javascript
+// src/tests/test.testplane.tsx
+it("should log document", async () => {
+    console.log(document);
+});
+```
+
+If such a test were run in the Node.js environment, it would fail with the error `ReferenceError: document is not defined`. But in our case, it will be executed directly in the browser, where the global variable `document` is available. Therefore, in the browser log and terminal (we will talk about this feature below), we will see the following:
+
+```
+{
+  location: {
+    ancestorOrigins: {},
+    href: 'http://localhost:56292/run-uuids/23d2af81-4259-425c-8214-c9e770d75ea4',
+    origin: 'http://localhost:56292',
+    protocol: 'http:',
+    host: 'localhost:56292',
+    hostname: 'localhost',
+    port: '56292',
+    pathname: '/run-uuids/23d2af81-4259-425c-8214-c9e770d75ea4',
+    search: '',
+    hash: ''
+  }
+}
+```
+
+Let's write a more complex test with rendering a React component. To do this, first, we will write a small component:
+
+```javascript
+// src/components/Component.tsx
+import { useState } from "react";
+
+// Simple component with a title and a counter button
+function Component() {
+    const [count, setCount] = useState(0);
+
+    return (
+        <div id="root">
+            <h1>Testplane Component Testing!</h1>
+            <button onClick={() => setCount(count => count + 1)}>count is {count}</button>
+        </div>
+    );
+}
+
+export default Component;
+```
+
+And write the test itself, which will test our React component:
+
+```javascript
+// src/tests/test.testplane.tsx
+import { render } from "@testing-library/react";
+import Component from "../components/Component";
+
+it("should render react button", async ({ browser }) => {
+    render(<Component />); // render the component on the generated Vite page
+
+    const button = await browser.$("button");
+
+    await button.click();
+    await button.click();
+
+    await expect(button).toHaveText("count is 2");
+});
+```
+
+You can find fully working examples [here](https://github.com/gemini-testing/testplane/tree/master/examples/component-testing).
+
+<Admonition type="warning" title="Currently, there are limitations">
+    - only components written in React in `.jsx` and `.tsx` files are supported. Vue support
+    is also planned; - no access to `currentTest` from hooks and tests; - the @testplane/global-hook plugin is temporarily not supported.
+</Admonition>
+
+### What additional features are supported?
+
+#### 1. Hot Module Replacement (HMR)
+
+Vite supports [HMR](https://vitejs.dev/guide/api-hmr.html). This means that if a loaded file is changed, either the component will be remounted, or the page will be fully reloaded. If the component is described in a separate file (i.e., not in the same file as the test), it will be remounted, but the test will not be restarted. And if the test file is changed, the page will be reloaded, which will cause Testplane to interrupt the current test and start it again. Thanks to this feature in Vite, you can very quickly develop components and write tests for them. It is recommended to use it together with the REPL mode.
+
+When changing the component's source code, the test is not fully restarted (only the component itself is remounted). However, if the test code is changed, a full restart occurs.
+
+#### 2. Using the browser instance and expect directly in the browser's DevTools
+
+In the browser console where the test is running, the `browser` instance and the `expect` instance are available. This is quite convenient to use when debugging the test.
+
+#### 3. Logs from the browser console in the terminal
+
+Calling the `log`, `info`, `warn`, `error`, `debug`, and `table` commands on the `console` object in the browser results in the information being displayed not only in the browser's DevTools but also in the terminal from which Testplane was launched. That is, you can call `console.log` in the test/component and then see the result of its execution in the terminal. This is also quite convenient when debugging the test.
+
+### Conclusion
+
+This functionality provides our users with new capabilities:
+
+- isolated testing of React components in a real browser;
+- stability and reproducibility of test results compared to JSDom;
+- HMR support;
+- access to browser/expect instances in the browser's DevTools for convenient debugging;
+- log display in the terminal to enhance comfort and speed up development.
+
+Switch to Testplane and try the new feature yourself. If you encounter any problems, come to the [issue github](https://github.com/gemini-testing/testplane/issues) — we will definitely help you!
