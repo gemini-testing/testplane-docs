@@ -7,7 +7,8 @@ import Admonition from "@theme/Admonition";
 Use the `respond` command to always reply with the same overwrite.
 
 <Admonition type="info">
-    Also read the recipe "[How to Track and Intercept Network Requests and Responses][how-to-intercept-requests-and-responses]".
+    Also read the recipe "[How to Track and Intercept Network Requests and
+    Responses][how-to-intercept-requests-and-responses]".
 </Admonition>
 
 ## Usage {#usage}
@@ -34,46 +35,57 @@ mock.respond(overwrites, { header, statusCode, fetchResponse });
 ## Usage Examples {#examples}
 
 ```javascript
-it('should demonstrate response overwrite with static data', async ({ browser }) => {
-    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/', {
-        method: 'get'
+it("should demonstrate response overwrite with static data", async ({ browser }) => {
+    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/", {
+        method: "get",
     });
 
-    mock.respond([{
-        title: 'Injected (non) completed Todo',
-        order: null,
-        completed: false
-    }, {
-        title: 'Injected completed Todo',
-        order: null,
-        completed: true
-    }], {
-        statusCode: 200,
-        fetchResponse: true // default
-    });
+    mock.respond(
+        [
+            {
+                title: "Injected (non) completed Todo",
+                order: null,
+                completed: false,
+            },
+            {
+                title: "Injected completed Todo",
+                order: null,
+                completed: true,
+            },
+        ],
+        {
+            statusCode: 200,
+            fetchResponse: true, // default
+        },
+    );
 
-    await browser.url('https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/');
+    await browser.url(
+        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
+    );
 
-    await browser.$('#todo-list li').waitForExist();
+    await browser.$("#todo-list li").waitForExist();
 
-    const todoElements = await browser.$$('#todo-list li');
+    const todoElements = await browser.$$("#todo-list li");
     console.log(await Promise.all(todoElements.map(el => el.getText())));
     // will output: "[ 'Injected (non) completed Todo', 'Injected completed Todo' ]"
 });
 
-it('should demonstrate response overwrite with dynamic data', async ({ browser }) => {
-    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/');
+it("should demonstrate response overwrite with dynamic data", async ({ browser }) => {
+    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/");
 
-    mock.respond((request) => {
-        if (request.body.username === 'test') {
-            return { ...request.body, foo: 'bar' };
-        }
-        return request.body;
-    }, {
-        statusCode: () => 200,
-        headers: () => ({ foo: 'bar' }),
-        fetchResponse: false // do not fetch the actual response
-    });
+    mock.respond(
+        request => {
+            if (request.body.username === "test") {
+                return { ...request.body, foo: "bar" };
+            }
+            return request.body;
+        },
+        {
+            statusCode: () => 200,
+            headers: () => ({ foo: "bar" }),
+            fetchResponse: false, // do not fetch the actual response
+        },
+    );
 });
 ```
 

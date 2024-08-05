@@ -10,6 +10,7 @@ If your project is using a hermione version earlier than 4.x, first read:
 * "How to Upgrade hermione to Version 7.x".
 
 We recommend upgrading hermione in stages, ensuring each step that all project tests run correctly.
+
 </Admonition>
 
 ## What Has Changed? {#what_is_new}
@@ -48,29 +49,29 @@ In this major version, hermione no longer supports versions _Node.JS < 18.x_.
 
 ### Minor Changes {#minor_changes}
 
-- Added REPL mode for step-by-step debugging of tests in all browsers (not only CDP) without restarting.
-- Added a browser command [clearSession][hermione-clear-session] to clear session state:
-    - Deletes cookies;
-    - Clears local storage;
-    - Clears session storage.
-- Added a browser command `openAndWait` with customizable wait options for page loads (by selector, custom predicate, network request, etc.).
-- Added a CLI option `--devtools` to simplify switching between the two protocols (`devtools` and `webdriver`).
-- Improved stack trace for `unhandled rejection` errors.
-- Now [isolation][hermione-isolation] is enabled by default for Chrome >= 94.
-- During the execution of the [assertView][hermione-assert-view] command, CSS animations on the page will be disabled by default.
-- Implemented generation of a unique `X-Request-ID` header for each request in the browser. The header consists of `${TEST_X_REQ_ID}${DELIMITER}$BROWSER_X_REQ_ID}`, where:
+-   Added REPL mode for step-by-step debugging of tests in all browsers (not only CDP) without restarting.
+-   Added a browser command [clearSession][hermione-clear-session] to clear session state:
+    -   Deletes cookies;
+    -   Clears local storage;
+    -   Clears session storage.
+-   Added a browser command `openAndWait` with customizable wait options for page loads (by selector, custom predicate, network request, etc.).
+-   Added a CLI option `--devtools` to simplify switching between the two protocols (`devtools` and `webdriver`).
+-   Improved stack trace for `unhandled rejection` errors.
+-   Now [isolation][hermione-isolation] is enabled by default for Chrome >= 94.
+-   During the execution of the [assertView][hermione-assert-view] command, CSS animations on the page will be disabled by default.
+-   Implemented generation of a unique `X-Request-ID` header for each request in the browser. The header consists of `${TEST_X_REQ_ID}${DELIMITER}$BROWSER_X_REQ_ID}`, where:
 
-    - `TEST_X_REQ_ID` - a unique UUID for each test run (including retries of the same test). This allows you to find all requests related to a single test run in the logs.
-    - `DELIMITER` - `__` separator between the test and request UUIDs.
-    - `BROWSER_X_REQ_ID` - a unique UUID for each browser request.
+    -   `TEST_X_REQ_ID` - a unique UUID for each test run (including retries of the same test). This allows you to find all requests related to a single test run in the logs.
+    -   `DELIMITER` - `__` separator between the test and request UUIDs.
+    -   `BROWSER_X_REQ_ID` - a unique UUID for each browser request.
 
     A real example of a UUID is `2f31ffb7-369d-41f4-bbb8-77744615d2eb__e8d011d8-bb76-42b9-b80e-02f03b8d6fe1`.
 
 ### Patch Changes {#patch_changes}
 
-- Fixed disabling animations in iframes for iOS when using [assertView][hermione-assert-view].
-- Eliminated reinitialization of browser sessions in workers.
-- Fixed a bug where it was impossible to disable [isolation][hermione-isolation].
+-   Fixed disabling animations in iframes for iOS when using [assertView][hermione-assert-view].
+-   Eliminated reinitialization of browser sessions in workers.
+-   Fixed a bug where it was impossible to disable [isolation][hermione-isolation].
 
 ## How to Migrate? {#how_to_move}
 

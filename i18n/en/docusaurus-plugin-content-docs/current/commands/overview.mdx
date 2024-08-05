@@ -9,7 +9,9 @@ import Admonition from "@theme/Admonition";
 ## Overview
 
 <Admonition type="warning">
-    Only commands for the latest version Testplane v8 and WebDriverIO v8 are described. Commands for older versions should be referenced in the WebDriverIO documentation (example for [WebDriverIO v7][webdriverio@7-api]).
+    Only commands for the latest version Testplane v8 and WebDriverIO v8 are described. Commands for
+    older versions should be referenced in the WebDriverIO documentation (example for [WebDriverIO
+    v7][webdriverio@7-api]).
 </Admonition>
 
 Since testplane is based on [WebDriverIO v8][webdriverio-api], all commands provided by WebDriverIO are available in it.
@@ -19,7 +21,7 @@ However, the command descriptions on the [WebDriverIO][webdriverio-api] website 
 -   In WebDriverIO, the `browser` object exists in the global scope, whereas in testplane you need to either write `this.browser`:
 
 ```javascript
-it("should test something", async function() {
+it("should test something", async function () {
     const browser = this.browser;
     // test code...
 });

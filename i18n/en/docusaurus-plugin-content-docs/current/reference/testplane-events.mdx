@@ -54,7 +54,10 @@ Testplane then launches subprocesses (known as workers) in which all tests will 
 The number of workers that testplane launches is regulated by the [workers][system-workers] parameter in the [system][system] section of the testplane config. When a new worker is launched, testplane triggers the [NEW_WORKER_PROCESS](#new_worker_process) event.
 
 <Admonition type="info">
-    Testplane runs all tests in workers to avoid memory and CPU limitations on the master process. Once the number of tests completed in a worker reaches the value of [testsPerWorker][system-tests-per-worker], the worker stops, and a new worker is launched. Accordingly, the [NEW_WORKER_PROCESS](#new_worker_process) event is triggered again.
+    Testplane runs all tests in workers to avoid memory and CPU limitations on the master process.
+    Once the number of tests completed in a worker reaches the value of
+    [testsPerWorker][system-tests-per-worker], the worker stops, and a new worker is launched.
+    Accordingly, the [NEW_WORKER_PROCESS](#new_worker_process) event is triggered again.
 </Admonition>
 
 #### Test reading
@@ -77,6 +80,7 @@ If a test fails with a critical error, testplane will:
 -   request a new browser and link it to the new session.
 
 This is to ensure that a failure in a session during one test run does not affect the subsequent test runs.
+
 </Admonition>
 
 After creating a new session, testplane proceeds to run the tests. All tests are executed in workers, but the actual starting and collecting of the test results is done in the master process. The master process triggers the [SUITE_BEGIN](#suite_begin) event for describe-blocks in the test file and [TEST_BEGIN](#test_begin) for it-blocks. If a test is disabled using helpers like [skip.in][skip-in] and others, the [TEST_PENDING](#test_pending) event is triggered.
@@ -88,7 +92,9 @@ Once the relevant test files are read by the worker, the [AFTER_TESTS_READ](#aft
 The listed 3 events — [BEFORE_FILE_READ](#before_file_read), [AFTER_FILE_READ](#after_file_read), and [AFTER_TESTS_READ](#after_tests_read) will be triggered in the workers during the test runs every time workers receive new tests to run from the master process. Except when the corresponding test file has already been read by the worker before. After the first reading of any file, the worker caches it to avoid re-reading the test file next time.
 
 <Admonition type="info" title="Why may a file be requested multiple times?">
-    Because one file may contain many tests. The test run is done per individual test, not per file. Therefore, at some point in time, a test from a file that already had another test run may be executed. In such cases, caching protects from unnecessary re-reading of the same files.
+    Because one file may contain many tests. The test run is done per individual test, not per file.
+    Therefore, at some point in time, a test from a file that already had another test run may be
+    executed. In such cases, caching protects from unnecessary re-reading of the same files.
 </Admonition>
 
 Before a test is run, the [NEW_BROWSER](#new_browser) event is triggered. However, this event will not be triggered for all tests, as the same browser can be used many times to launch tests (see the [sessionsPerBrowser][browser-sessions-per-browser] parameter). Also, in case of a critical test failure, the browser is recreated to prevent other tests in that browser from failing due to a system crash. In this case, the [NEW_BROWSER](#new_browser) event will be sent again.
@@ -353,7 +359,7 @@ Click to see the code
 </summary>
 
 ```javascript
-const parseConfig = require('./config');
+const parseConfig = require("./config");
 
 module.exports = (testplane, opts) => {
     const pluginConfig = parseConfig(opts);
@@ -363,12 +369,12 @@ module.exports = (testplane, opts) => {
         return;
     }
 
-    testplane.on(testplane.events.CLI, (cli) => {
+    testplane.on(testplane.events.CLI, cli => {
         // add the --repeat option
         cli.option(
-            '--repeat <number>',
-            'how many times tests should be repeated regardless of the result',
-            (value) => parseNonNegativeInteger(value, 'repeat')
+            "--repeat <number>",
+            "how many times tests should be repeated regardless of the result",
+            value => parseNonNegativeInteger(value, "repeat"),
         );
     });
 
@@ -401,7 +407,8 @@ No data is passed to the event handler.
 In the [INIT](#init) event handler, you can organize, for example, the launch of a dev server for your project.
 
 <Admonition type="info" title="What is a dev server?">
-    A dev server is an [express][express]-like application that allows you to develop the frontend of the project.
+    A dev server is an [express][express]-like application that allows you to develop the frontend
+    of the project.
 </Admonition>
 
 Below is the shortest implementation. A more detailed example can be found in the section "[Automatic dev server startup](#usage_starting_dev_server)".
@@ -1298,7 +1305,7 @@ An object of the following format is passed to the event handler:
 ```javascript
 {
     state, // String: the state that the screenshot reflects, e.g., plain, map-view, scroll-left, etc.
-    refImg; // Object: of type { path, size: { width, height } }, describing the reference screenshot
+        refImg; // Object: of type { path, size: { width, height } }, describing the reference screenshot
 }
 ```
 
@@ -1487,8 +1494,8 @@ Click to view the code
 **Plugin Code**
 
 ```javascript
-const http = require('http');
-const parseConfig = require('./config');
+const http = require("http");
+const parseConfig = require("./config");
 
 module.exports = (testplane, opts) => {
     const pluginConfig = parseConfig(opts);
@@ -1500,19 +1507,19 @@ module.exports = (testplane, opts) => {
 
     let program;
 
-    testplane.on(testplane.events.CLI, (cli) => {
+    testplane.on(testplane.events.CLI, cli => {
         // need to save a reference to the commander instance (https://github.com/tj/commander.js),
         // to later check for the option
         program = cli;
         // add the --dev-server option to testplane,
         // so the user can explicitly specify when to start the dev server
-        cli.option('--dev-server', 'run dev-server');
+        cli.option("--dev-server", "run dev-server");
     });
 
     testplane.on(testplane.events.INIT, () => {
         // the dev server can be started either by specifying the --dev-server option
         // when launching testplane, or in the plugin settings
-        const devServer = program && program.devServer || pluginConfig.devServer;
+        const devServer = (program && program.devServer) || pluginConfig.devServer;
 
         if (!devServer) {
             // if the dev server doesn't need to be started – exit
@@ -1520,12 +1527,10 @@ module.exports = (testplane, opts) => {
         }
 
         // content served by the dev server
-        const content = '<h1>Hello, World!</h1>';
+        const content = "<h1>Hello, World!</h1>";
 
         // create the server and start listening on port 3000
-        http
-            .createServer((req, res) => res.end(content))
-            .listen(3000);
+        http.createServer((req, res) => res.end(content)).listen(3000);
 
         // at http://localhost:3000/index.html, the content will be: <h1>Hello, World!</h1>
     });

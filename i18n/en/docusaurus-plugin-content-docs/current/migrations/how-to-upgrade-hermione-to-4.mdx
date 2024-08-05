@@ -68,7 +68,10 @@ it("some test", async function ({ browser }) {
 ```
 
 <Admonition type="warning">
-    In the "New" examples going forward, it is assumed that the hermione version is at least _4.9.0_. If you plan to use hermione _4+_ but at a lower version than _4.9.0_, you should still access the browser in tests through _this_, for example: _await this.browser.getText('.selector')_.
+    In the "New" examples going forward, it is assumed that the hermione version is at least
+    _4.9.0_. If you plan to use hermione _4+_ but at a lower version than _4.9.0_, you should still
+    access the browser in tests through _this_, for example: _await
+    this.browser.getText('.selector')_.
 </Admonition>
 
 #### Direct Result Instead of Object with value Key {#feature_direct_result}
@@ -118,7 +121,7 @@ Using the [`browser.$`][browser-dollar] command, you can get an instance of the 
       await elem.clearElement();
       await elem.setValue('text');
 
-  });
+});
 
 ````
 </TabItem>
@@ -157,7 +160,7 @@ it('some test', async function() {
           timeoutMsg: 'still exists'
       });
 
-  });
+});
 
 ````
 </TabItem>
@@ -192,7 +195,7 @@ it('some test', async function() {
 
       const result = await component.isDisplayed();
 
-  });
+});
 
 ````
 </TabItem>
@@ -232,7 +235,9 @@ module.exports = {
 We also plan to add a separate button in the hermione GUI for switching to CDP mode to make it even easier.
 
 <Admonition type="warning">
-    * Currently, this is fully supported only in the _Chrome_ browser. * Retaking screenshots in this mode should only be done for debugging, as browsers in the pipeline run under _Linux_, which means page rendering will differ and tests in the pull request will fail with diffs.
+    * Currently, this is fully supported only in the _Chrome_ browser. * Retaking screenshots in
+    this mode should only be done for debugging, as browsers in the pipeline run under _Linux_,
+    which means page rendering will differ and tests in the pull request will fail with diffs.
 </Admonition>
 
 ### API for Network Request Stubbing {#feature_api_to_mock_network}
@@ -242,7 +247,8 @@ The new version provides the ability to stub or override the responses of your s
 Read more about all the features in the "How to Track and Intercept Network Requests and Responses" guide.
 
 <Admonition type="warning">
-    Currently, this functionality only works in _Chrome DevTools Protocol (CDP)_ mode, which only works in _Chrome_ and _Firefox Nightly_.
+    Currently, this functionality only works in _Chrome DevTools Protocol (CDP)_ mode, which only
+    works in _Chrome_ and _Firefox Nightly_.
 </Admonition>
 
 ### Browser Configuration in the Config {#browsers_config}
