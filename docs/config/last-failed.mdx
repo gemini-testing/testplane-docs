@@ -1,0 +1,51 @@
+import Admonition from "@theme/Admonition";
+
+# lastFailed
+
+## Обзор {#overview}
+
+Раздел `lastFailed` в настройках Testplane не является обязательным.
+
+Используйте его, чтобы настроить перезапуск упавших тестов.
+
+## Настройка {#setup}
+
+Раздел `lastFailed` имеет следующий формат:
+
+```javascript
+module.exports = {
+    lastFailed: {
+        only: false,
+        input: [".testplane/failed.json"],
+        output: ".testplane/failed.json",
+    },
+
+    // другие настройки Testplane...
+};
+```
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[only](#only)</td><td>Boolean</td><td>false</td><td>Включить / отключить режим перезапуска упавших тестов.</td></tr>
+<tr><td>[input](#input)</td><td>String или Array</td><td>.testplane/failed.json</td><td>Путь или список путей для чтения списка упавших тестов</td></tr>
+<tr><td>[output](#output)</td><td>String</td><td>.testplane/failed.json</td><td>Путь для сохранения списка упавших тестов</td></tr>
+
+</tbody>
+</table>
+
+### only {#only}
+
+Включает режим перезапуска упавших тестов, в котором запускаются только тесты из списка, путь к которому указан в input, если установить значение в `true`. По умолчанию: `false`.
+
+### input {#input}
+
+Путь или список путей для чтения списка упавших тестов. Если указан список путей к файлам, то перезапускаются все тесты, которые встречаются хотя бы в одном из них. По умолчанию: `.testplane/failed.json`
+
+### output {#output}
+
+Путь для сохранения списка упавших тестов. Используется всегда, независимо от опции `only`. По умолчанию: `.testplane/failed.json`

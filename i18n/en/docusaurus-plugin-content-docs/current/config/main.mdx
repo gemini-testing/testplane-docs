@@ -54,6 +54,9 @@ module.exports = {
     plugins: {
         // external Testplane plugins settings...
     },
+    lastFailed: {
+        // failed tests rerun settings...
+    },
     prepareBrowser: function(browser) {
         // here you can add new commands to the browser object,
         // where browser is a WebdriverIO session
@@ -84,6 +87,7 @@ In order not to repeat common [settings of each browser][browsers] over and over
 <tr><td>[sets][sets]</td><td>A section that allows you to bind a set of tests to certain browsers and run them at once with one command. For example, you can launch desktop and mobiles tests separately by using this option.</td></tr>
 <tr><td>[system][system]</td><td>Testplane system settings section. Allows you to set the number of subprocesses to run the tests in, enable the debug mode for WebDriver, and much more.</td></tr>
 <tr><td>[plugins][plugins]</td><td>A section with which you can mount external plugins to Testplane.</td></tr>
+<tr><td>[lastFailed][last-failed]</td><td>A section with which you can configure the rerun of failed tests.</td></tr>
 <tr><td>[prepareBrowser][prepare-browser]</td><td>A function in which you can prepare the browser before to run the tests in it. For example, in this function you can add new commands for the _browser_ object.</td></tr>
 <tr><td>[prepareEnvironment][prepare-environment]</td><td>A function in which you can set environment variables or, for example, add some config parameters.</td></tr>
 
@@ -102,5 +106,6 @@ You can set your configuration file using the `--config` CLI option, specifying 
 [sets]: ../sets
 [system]: ../system
 [plugins]: ../plugins
+[last-failed]: ../last-failed
 [prepare-browser]: ../prepare-browser
 [prepare-environment]: ../prepare-environment
