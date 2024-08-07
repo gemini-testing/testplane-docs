@@ -8,7 +8,7 @@ For example, it can be convenient to run tests on platforms: `desktop`, `touch-p
 
 Define a set of tests as an array of paths to them or to folders with them on the file system. You can also specify paths to ignore when searching for tests to speed up the process of reading tests by testplane.
 
-If there are no sets in the config, or you do not specify them when starting testplane (see the section "[Usage](#usage)"), then all tests from the `testplane` folder will be run in all browsers that were specified in the [browsers][browsers] section of testplane config.
+If there are no sets in the config, or you do not specify them when starting Testplane (see the section "[Usage](#usage)"), then all tests from the `testplane` folder will be run in all browsers that were specified in the [browsers][browsers] section of Testplane config.
 
 ## Setup {#setup}
 
@@ -38,7 +38,7 @@ module.exports = {
         // other sets settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -53,7 +53,7 @@ Where `<set-id>` is the name of the set to identify it.
 <tbody>
 <tr><td>files</td><td>Array or String</td><td>_N/A_</td><td>A list of paths to files or folders with tests. In the case of a single path, the parameter can be set as a string. You can also use [masks][fast-glob-patterns].</td></tr>
 <tr><td>ignoreFiles</td><td>Array or String</td><td>`[ ]`</td><td>A list of paths or [masks][fast-glob-patterns] to ignore when searching for test files. This parameter allows you to speed up the reading of tests by testplane.</td></tr>
-<tr><td>browsers</td><td>Array</td><td>_all browsers_</td><td>The list of browsers to run the tests in. You can only specify browsers that are in the [browsers][browsers] section of testplane config. By default: all browsers from the [browsers][browsers] section.</td></tr>
+<tr><td>browsers</td><td>Array</td><td>_all browsers_</td><td>The list of browsers to run the tests in. You can only specify browsers that are in the [browsers][browsers] section of Testplane config. By default: all browsers from the [browsers][browsers] section.</td></tr>
 
 </tbody>
 </table>
@@ -90,7 +90,7 @@ module.exports = {
         },
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -104,7 +104,7 @@ Example of how to run tests for a desktop platform in the case of the configurat
 testplane --set desktop
 ```
 
-If there are no sets in the config, or they exist, but the `--set` option was not specified, and the paths were not passed to testplane via the CLI, then all tests from the `testplane` folder will be run in all [browsers][browsers].
+If there are no sets in the config, or they exist, but the `--set` option was not specified, and the paths were not passed to Testplane via the CLI, then all tests from the `testplane` folder will be run in all [browsers][browsers].
 
 [fast-glob-patterns]: https://github.com/mrmlnc/fast-glob#pattern-syntax
 [browsers]: ../browsers

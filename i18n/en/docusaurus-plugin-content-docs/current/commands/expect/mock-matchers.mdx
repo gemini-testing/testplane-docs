@@ -1,0 +1,66 @@
+# expect for network mocks
+
+## toBeRequested
+
+Checks if the specified request was made.
+
+For example:
+
+```javascript
+const mock = browser.mock("**/api/todo*");
+await expect(mock).toBeRequested();
+```
+
+## toBeRequestedTimes
+
+Checks if the specified request was made the expected number of times.
+
+For example:
+
+```javascript
+const mock = browser.mock("**/api/todo*");
+await expect(mock).toBeRequestedTimes(2);
+// or, equivalently:
+await expect(mock).toBeRequestedTimes({ eq: 2 });
+```
+
+```javascript
+const mock = browser.mock("**/api/todo*");
+// Check if the request was made at least 5 times but no more than 10 times
+await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 });
+```
+
+## toBeRequestedWith
+
+Checks if the specified request was made with the given options.
+
+Most options support partial matchers _expect.* / jasmine.*_ such as [expect.objectContaining](https://jestjs.io/docs/expect#expectobjectcontainingobject).
+
+For example:
+
+```javascript
+const mock = browser.mock("**/api/todo*", { method: "POST" });
+
+await expect(mock).toBeRequestedWith({
+    url: "http://localhost:8080/api/todo", // [optional] string | function | custom matcher
+    method: "POST", // [optional] string | array
+    statusCode: 200, // [optional] number | array
+    requestHeaders: { Authorization: "foo" }, // [optional] object | function | custom matcher
+    responseHeaders: { Authorization: "bar" }, // [optional] object | function | custom matcher
+    postData: { title: "foo", description: "bar" }, // [optional] object | function | custom matcher
+    response: { success: true }, // [optional] object | function | custom matcher
+});
+
+await expect(mock).toBeRequestedWith({
+    url: expect.stringMatching(/.*\/api\/.*/i),
+    method: ["POST", "PUT"], // Either POST or PUT
+    statusCode: [401, 403], // Either 401 or 403
+    requestHeaders: headers => headers.Authorization.startsWith("Bearer "),
+    postData: expect.objectContaining({ released: true, title: expect.stringContaining("foobar") }),
+    response: r => Array.isArray(r) && r.data.items.length === 20,
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/expect-webdriverio), from which we drew some information while writing our version.

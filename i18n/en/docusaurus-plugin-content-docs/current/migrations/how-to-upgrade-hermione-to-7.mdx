@@ -1,0 +1,137 @@
+import Admonition from "@theme/Admonition";
+
+# How to Upgrade hermione to Version 7.x
+
+<Admonition type="warning">
+If your project is using a hermione version earlier than 4.x, first read "How to Upgrade hermione to Version 4.x," "How to Upgrade hermione to Version 5.x," and "How to Upgrade hermione to Version 6.x."
+
+We recommend upgrading hermione in stages, ensuring each step that all project tests run correctly.
+
+</Admonition>
+
+## What Has Changed? {#what_is_new}
+
+### Major Changes {#major_changes}
+
+#### Dropped Support for Node.JS < 16.x {#dropped_nodejs_less_than_16x}
+
+In this major version, hermione no longer supports versions _Node.JS < 16.x_.
+
+#### Handling Unhandled Rejections {#handle_unhandled_rejection}
+
+When an `Unhandled rejection` error occurs in the master or workers, hermione now performs a graceful shutdown. This means all subsequent tests in the queue will end with the error `Browser request was cancelled`, and hermione itself will terminate with `exit code 1`.
+
+This change is necessary to protect users from writing incorrect tests. Example of a test with an error:
+
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://yandex.ru/search/?text=aaa");
+    expect(browser).toHaveUrlContaining("foo-bar-baz");
+});
+```
+
+A keen observer will notice that I forgot to add `await` before calling `expect`. In this case, the test will immediately pass after navigating to the URL. Only then will an `Unhandled rejection` error appear, which hermione@6 would swallow. But hermione@7 will catch and immediately terminate the test run. Unfortunately, it is impossible to determine from which test the `Unhandled rejection` error originated. For example, a test could be written like this:
+
+```typescript
+it("test2", async () => {
+    new Promise((resolve, reject) => {
+        setTimeout(() => {
+            reject("Something goes wrong");
+        }, 30000);
+    });
+});
+```
+
+This test will immediately pass, and only after 30 seconds (assuming there are still tests in the queue to run) will an `Unhandled rejection` error appear.
+
+Therefore, to find the problematic test, you will need to look at the execution log and find the last completed tests before the error information. The error will look something like this:
+
+```bash
+[13:48:57 GMT+3] Unhandled Rejection in hermione:worker:10830:
+Promise: {}
+Reason: Something goes wrong
+[13:48:57 GMT+3] Terminating on critical error: Unhandled Rejection in hermione:worker:10830:
+Promise: {}
+Reason: Something goes wrong
+```
+
+#### test.id and suite.id Are Now Properties {#test_id_and_suite_id_are_properties}
+
+The `id` for a test and suite is now a property, not a method, and should be used as `test.id` or `suite.id`. The `test.id` call is usually used in the hermione config to define the [screenshotsDir][screenshots-dir] option.
+
+#### Removed the saveHistory Option from the Config {#removed_save_history_option_from_config}
+
+The [saveHistory][save_history] option has been removed from the config. You now need to use [saveHistoryMode][save_history_mode] with available values: `all`, `none`, `onlyFailed`. The default is `all`, meaning history is saved for all tests. So, you can skip explicitly setting this option.
+
+### Minor Changes {#minor_changes}
+
+-   Upgraded from [webdriverio@7][webdriverio@7] to [webdriverio@8][webdriverio@8];
+-   Increased test reading speed by about 3 times: tests are now read once in the master (previously read separately for each browser);
+-   Added the ability to write the config in TS. You can create `.hermione.conf.ts`, and hermione will compile and read it (assuming your project includes `ts-node`);
+-   Added timestamps to hermione logs, looking like:
+
+    ```bash
+    [13:48:09 GMT+3] ✓ suite test2 [chrome-desktop:SESSION_ID] - 875ms
+    ```
+
+### Patch Changes {#patch_changes}
+
+-   Properly supported taking screenshots on devices with fractional `pixelRatio` (e.g., `Google Pixel`). Previously, screenshots on such devices were incorrect;
+-   Moving the cursor away using the `resetCursor: true` option no longer triggers an error if the top-left corner of the `body` element has negative coordinates.
+
+## How to Migrate? {#how_to_move}
+
+### 1. Update hermione to 7+ and Plugins to the Latest Versions {#update_hermione_and_plugins}
+
+Specifically:
+
+-   [hermione][hermione]
+-   [html-reporter][html-reporter]
+-   [hermione-hide-scrollbars][hermione-hide-scrollbars]
+-   [hermione-safari-commands][hermione-safari-commands]
+-   [hermione-wdio-migrator][hermione-wdio-migrator]
+-   [json-reporter][json-reporter]
+-   [hermione-passive-browsers][hermione-passive-browsers]
+
+If you are not using any of these plugins, you do not need to install them.
+
+### 2. Replace test.id() with test.id in the hermione Config {#replace_test_id_method_on_test_id_property}
+
+If you are not using `test.id()`, there is nothing to do.
+
+### 3. Replace the saveHistory Option with saveHistoryMode in the hermione Config {#replace_save_history_on_save_history_mode}
+
+If you are not using [saveHistory][save_history], there is nothing to do.
+
+### 4. Replace the Usage of a Custom Mocha Interface {#replace_custom_mocha_interface}
+
+If you are using a custom mocha interface, replace it with the mocha interface from hermione dependencies:
+
+```javascript
+- const baseBdd = require('@gemini-testing/mocha/lib/interfaces/bdd');
+
++ const { dependencies: hermioneDeps } = require('hermione/package');
++ const mochaModule = '@gemini-testing/mocha' in hermioneDeps ? '@gemini-testing/mocha' : 'mocha';
++ const { interfaces: { bdd: baseBdd } } = require(mochaModule);
+```
+
+## Support {#support}
+
+If you encounter issues during the migration to the new version or have any questions, visit [github issues][gh-issues] — we will definitely help you!
+
+[how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
+[how-to-upgrade-hermione-to-5]: ../../migrations/how-to-upgrade-hermione-to-5
+[how-to-upgrade-hermione-to-6]: ../../migrations/how-to-upgrade-hermione-to-6
+[screenshots-dir]: ../../config/browsers#screenshots_dir
+[save_history]: ../../config/browsers#save_history
+[save_history_mode]: ../../config/browsers#save_history_mode
+[webdriverio@7]: https://webdriver.io/
+[webdriverio@8]: https://webdriver.io/
+[gh-issues]: https://github.com/gemini-testing/testplane/issues/
+[hermione]: https://github.com/gemini-testing/hermione
+[html-reporter]: https://github.com/gemini-testing/html-reporter
+[hermione-hide-scrollbars]: https://github.com/gemini-testing/hermione-hide-scrollbars
+[hermione-safari-commands]: https://github.com/gemini-testing/hermione-safari-commands
+[hermione-wdio-migrator]: https://github.com/gemini-testing/hermione-wdio-migrator
+[json-reporter]: https://github.com/gemini-testing/json-reporter
+[hermione-passive-browsers]: https://github.com/gemini-testing/hermione-passive-browsers

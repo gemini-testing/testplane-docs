@@ -145,7 +145,7 @@ const config: Config = {
                         },
                         {
                             label: "Plugins",
-                            href: "/docs/v8/guides/how-to-write-your-own-plugin",
+                            href: "/docs/v8/plugins/hermione-browser-version-changer",
                         },
                     ],
                 },

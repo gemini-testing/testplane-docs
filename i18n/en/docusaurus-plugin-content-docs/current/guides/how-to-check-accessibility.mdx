@@ -1,0 +1,83 @@
+import Admonition from "@theme/Admonition";
+
+# How to Test Page Accessibility
+
+## Overview {#overview}
+
+<Admonition type="warning">
+This recipe only works when using _Chrome DevTools Protocol (CDP) or Chrome_.
+
+Read more details in the section “[How to Use CDP in Testplane][how-to-use-cdp]”
+
+</Admonition>
+
+[Accessibility tree][accessibility-tree] is an accessibility tree that contains a hierarchical structure of accessible objects. Unlike the DOM tree, which is intended for browsers, the accessibility tree is intended for [screen readers][screen-reader] and other tools that help people with disabilities interact with websites.
+
+To obtain such a tree, _puppeteer_ has a special [Accessibility class][puppeteer-accessibility].
+
+## Example {#example}
+
+Here's an example of how to use it:
+
+```javascript
+it("should get accessibility tree of yandex.ru", async function () {
+    // Get puppeteer instance
+    const puppeteer = await this.browser.getPuppeteer();
+
+    // Get the first open page (considering it to be currently active)
+    const [page] = await puppeteer.pages();
+
+    await this.browser.url("https://yandex.ru");
+
+    // Get the current state of the accessibility tree
+    const snapshot = await page.accessibility.snapshot();
+    console.log("snapshot:", JSON.stringify(snapshot, null, 4));
+});
+```
+
+## Accessibility Tree {#accessibility_tree}
+
+And here's how the obtained accessibility tree looks:
+
+```json
+{
+    "role": "WebArea",
+    "name": "Yandex",
+    "children": [
+        {
+            "role": "link",
+            "name": "Login"
+        },
+        {
+            "role": "link",
+            "name": "Mail"
+        },
+        {
+            "role": "link",
+            "name": "Disk"
+        },
+        {
+            "role": "link",
+            "name": "Try Plus"
+        },
+
+        // omitted for brevity...
+
+        {
+            "role": "link",
+            "name": "finance"
+        },
+        {
+            "role": "link",
+            "name": "politics"
+        }
+    ]
+}
+```
+
+Using the obtained tree, we can check that all necessary nodes are contained in the tree and have the correct structure.
+
+[how-to-use-cdp]: ../how-to-use-cdp
+[accessibility-tree]: https://web.dev/the-accessibility-tree/
+[screen-reader]: https://en.wikipedia.org/wiki/Screen_reader
+[puppeteer-accessibility]: https://pptr.dev/api/puppeteer.accessibility

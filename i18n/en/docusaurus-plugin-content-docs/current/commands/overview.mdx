@@ -1,0 +1,50 @@
+---
+sidebar_class_name: hidden
+---
+
+import Admonition from "@theme/Admonition";
+
+# Testplane Commands
+
+## Overview
+
+<Admonition type="warning">
+    Only commands for the latest version Testplane v8 and WebDriverIO v8 are described. Commands for
+    older versions should be referenced in the WebDriverIO documentation (example for [WebDriverIO
+    v7][webdriverio@7-api]).
+</Admonition>
+
+Since Testplane is based on [WebDriverIO v8][webdriverio-api], all commands provided by WebDriverIO are available in it.
+
+However, the command descriptions on the [WebDriverIO][webdriverio-api] website for version 8 are not quite suitable _as is_ for Testplane users due to a number of reasons:
+
+-   In WebDriverIO, the `browser` object exists in the global scope, whereas in Testplane you need to either write `this.browser`:
+
+```javascript
+it("should test something", async function () {
+    const browser = this.browser;
+    // test code...
+});
+```
+
+or get the `browser` object from the function argument (note that the `browser` object is passed inside an object!):
+
+```javascript
+it("should test something", async ({ browser }) => {
+    // test code...
+});
+```
+
+-   Similarly, the `browser.$` and `browser.$$` functions in WebDriverIO are available in tests under the names `$` and `$$`, while in Testplane you need to refer to them by their full path: `browser.$` and `browser.$$`;
+
+-   There are no links established between similar commands: no clustering of commands;
+
+-   All commands are described only in English.
+
+Nevertheless, our description does not yet include protocol-specific commands. You can find the relevant commands on the WebDriverIO website under the "[Protocols][webdriverio-protocols]" section.
+
+Also, in the descriptions of some commands, links to individual recipes are still not localized and lead to the WebDriverIO website.
+
+[webdriverio@7-api]: https://webdriver.io/docs/api
+[webdriverio-api]: https://webdriver.io/docs/api
+[webdriverio-protocols]: https://webdriver.io/docs/api/webdriver

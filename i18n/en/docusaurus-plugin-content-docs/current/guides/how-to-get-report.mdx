@@ -1,21 +1,51 @@
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
+# How to Get a Test Run Report
 
-import Admonition from "@theme/Admonition";
+## Testplane Report {#testplane_report}
 
-# stat-reporter
+After completing all test runs, Testplane writes the result to the console in the form of a string like this:
 
-## Overview {#overview}
+```bash
+Total: 1812 Passed: 1792 Failed: 0 Skipped: 20 Retries: 47
+```
 
-Use the [stat-reporter][stat-reporter] plugin to get a report(s) with test run statistics in [testplane][testplane].
+Where:
 
-The plugin allows you to receive a report both in the console and as an html and/or json file. At the same time, the reports are not mutually exclusive: after running the tests, you can get 3 types of reports at once.
+<table>
+    <thead>
+        <tr>
+            <td>Status</td>
+            <td>Description</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Total</td>
+            <td>Total number of tests that Testplane read from the file system during launch.</td>
+        </tr>
+        <tr>
+            <td>Passed</td>
+            <td>Number of tests that passed successfully.</td>
+        </tr>
+        <tr>
+            <td>Failed</td>
+            <td>Number of tests that failed.</td>
+        </tr>
+        <tr>
+            <td>Skipped</td>
+            <td>Number of tests that were skipped during the run.</td>
+        </tr>
+        <tr>
+            <td>Retries</td>
+            <td>Total number of test retries that occurred during the run.</td>
+        </tr>
+    </tbody>
+</table>
 
-### Report format {#report_format}
+However, this information may not be sufficient, so you can add the [stat-reporter][stat-reporter] plugin to your project.
 
-In the plugin report, the test run results are split by browsers. The maximum execution time _(Duration)_ in minutes and seconds and the result of running tests _(Status)_ in each browser are also displayed. Such a report allows you to understand which browsers have problems: the most tests do not pass or the execution time has increased dramatically.
+## stat-reporter Plugin Report {#stat_reporter_report}
 
-By default, only the report in the console is enabled:
+If you add the [stat-reporter][stat-reporter] plugin to your project, you will get a more detailed report of the run results in the console after completing all the tests. For example:
 
 ```bash
 ┌──────────────────────┬────────┬───────┬────────┬────────┬─────────┬─────────┬──────────┐
@@ -49,148 +79,37 @@ By default, only the report in the console is enabled:
 └──────────────────────┴────────┴───────┴────────┴────────┴─────────┴─────────┴──────────┘
 ```
 
-<Admonition type="info">
-    If you want to get more functionality, then use [html-reporter][html-reporter] to get a test run
-    report.
-</Admonition>
+Unlike the simple Testplane report, the `stat-reporter` plugin report breaks down the results by browser. It also displays the maximum execution time _(Duration)_ in minutes and seconds and the test run result _(Status)_ in each browser.
 
-## Install {#install}
+Such a report allows for a better understanding of which browsers encountered problems, specifically: where the most tests failed or the execution time sharply increased.
 
-```bash
-npm install -D stat-reporter
-```
+The `stat-reporter` plugin also allows generating reports in HTML or JSON formats. See details in the [plugin description][stat-reporter].
 
-## Setup {#setup}
+However, in terms of capabilities, the [stat-reporter][stat-reporter] plugin is significantly inferior to the [html-reporter][html-reporter] plugin, which provides much more advanced ways to work with tests and their run results.
 
-Add the plugin to the `plugins` section of the `testplane` config:
+## html-reporter Plugin Report {#html_reporter_report}
 
-<Tabs>
-<TabItem value="Minimum config" label="Minimum config">
-```javascript
-    module.exports = {
-        plugins: {
-            'stat-reporter': {
-                enabled: true
-                // the report will only be in the console
-            },
+Add the [html-reporter][html-reporter] plugin to your project to get a graphical HTML report with the results of all test runs. Additionally, in the generated report, you will be able to:
 
-            // other Testplane plugins...
-        },
+-   filter tests by completion status;
+-   group tests by errors or any parameter from the test metadata;
+-   view screenshot differences in 6 different ways;
+-   view all retries or errors in tests separately.
 
-        // other Testplane settings...
-    };
-    ```
+![html-reporter](/img/docs/guides/how-to-get-report.html-reporter.png)
 
-</TabItem>
+Moreover, the [html-reporter][html-reporter] allows running Testplane in a special GUI mode. In this mode, you can run and rerun tests, reshoot screenshots, use special debugging modes, and much more.
 
-<TabItem value="Maximum config" label="Maximum config">
-```javascript
-    module.exports = {
-        plugins: {
-            'stat-reporter': {
-                enabled: true,
-                reporters: {
-                    flat: {
-                        enabled: true
-                    },
-                    html: {
-                        enabled: true,
-                        path: 'some/path/to/file.html'
-                        // if you do not specify path, the report will be saved
-                        // in stat-reporter.html in the current working directory
-                    },
-                    json: {
-                        enabled: true,
-                        path: 'some/path/to/file.json'
-                        // if you do not specify path, the report will be saved
-                        // in stat-reporter.json in the current working directory
-                    }
-                }
-            },
+## Keywords {#keywords}
 
-            // other Testplane plugins...
-        },
+-   stat-reporter
+-   html-reporter
+-   gui
 
-        // other Testplane settings...
-    };
-    ```
+## Useful Links {#useful_links}
 
-</TabItem>
+-   [stat-reporter Plugin][stat-reporter]
+-   [html-reporter Plugin][html-reporter]
 
-</Tabs>
-
-### Description of configuration parameters {#setup_description}
-
-<table>
-<thead>
-<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>[enabled](#setup_enabled)</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
-<tr><td>[reporters](#setup_reporters)</td><td>Object</td><td>_see&nbsp;description_</td><td>Settings for reports with test run statistics. By default, only the report in the console is enabled _(flat)_.</td></tr>
-
-</tbody>
-</table>
-
-### enabled {#setup_enabled}
-
-Enable or disable the plugin. By default: `true`.
-
-### reporters {#setup_reporters}
-
-Optional parameter. Sets the settings for reports with test run statistics.
-
-By default:
-
-```javascript
-{
-    // the statistics report will only be in the console
-    flat: {
-        enabled: true;
-    }
-}
-```
-
-The parameter is an object in which the key determines the type of report, and its value in the form of an object is the corresponding report settings. You can set the following keys:
-
--   _flat_—for a report in the console;
--   _html_—for html-report;
--   _json_—for json-report.
-
-All reports in the settings have an `enabled` parameter of the `Boolean` type, which determines whether the report is enabled or disabled. By default, only the report in the console is enabled.
-
-Also, reports of the type `html` and `json` have an additional parameter `path`—the path to the file to which you want to save the report.
-
-By default, the report is saved in the current working directory to a file `stat-reporter.html` or `stat-reporter.json` depending on the type of report.
-
-### Passing parameters via the CLI {#setup_by_cli}
-
-All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--stat-reporter-` for command line options and `stat_reporter_` for environment variables. For example:
-
-```bash
-npx testplane --stat-reporter-reporters-html-enabled=true ...
-```
-
-```bash
-stat_reporter_reporters_html_enabled = true npx testplane ...
-```
-
-## Commands {#commands}
-
-### merge-stat-reports {#commands_merge_stat_reports}
-
-The plugin adds the `merge-stat-reports` command to Testplane, with which you can merge several reports into one report in both html and json format. At the same time, the command allows you to get the output of the final reports in two formats at once.
-
-To save the final report in the required format, you need to specify the appropriate option: `--html` or `--json`.
-
-```bash
-npx testplane merge-stat-reports src-report-1.json src-report-2.json --html dest-html-report --json report.json
-```
-
-## Useful links {#useful_links}
-
--   [stat-reporter plugin sources][stat-reporter]
-
-[stat-reporter]: https://github.com/gemini-testing/stat-reporter
+[stat-reporter]: ../../plugins/stat-reporter
 [html-reporter]: ../../html-reporter/html-reporter-setup
-[testplane]: https://github.com/gemini-testing/testplane

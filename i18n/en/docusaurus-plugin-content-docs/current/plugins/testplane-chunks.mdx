@@ -12,7 +12,7 @@ The plugin allows you to run tests in parallel on multiple servers. Thereby spee
 
 ### What does this plugin do then? {#what_does_plugin_do}
 
-The `testplane-chunks` plugin splits **always in the same way** your tests into a given number of chunks and gives testplane to run only the chunk that you specified. The key here is _"always in the same way"_. That is, the operation of splitting into chunks is [idempotent][idempotence].
+The `testplane-chunks` plugin splits **always in the same way** your tests into a given number of chunks and gives Testplane to run only the chunk that you specified. The key here is _"always in the same way"_. That is, the operation of splitting into chunks is [idempotent][idempotence].
 
 ### What gives idempotence? {#what_does_idempotence_give}
 
@@ -60,10 +60,10 @@ module.exports = {
             run: 1, // Run 1st chunk
         },
 
-        // other testplane plugins...
+        // other Testplane plugins...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 

@@ -1,0 +1,32 @@
+# restore
+
+## Overview {#overview}
+
+Use the `restore` command to perform all actions that [mock.clear()](../clear) does, as well as remove any fake return values or implementations.
+
+## Usage {#usage}
+
+```javascript
+mock.restore();
+```
+
+## Usage Examples {#examples}
+
+```javascript
+it("should demonstrate the addValue command", async ({ browser }) => {
+    const mock = await browser.mock("**/googlelogo_color_272x92dp.png");
+    mock.respond("https://webdriver.io/img/webdriverio.png");
+
+    await browser.url("https://google.com"); // will show WebdriverIO logo instead of Google logo
+    mock.restore();
+    await browser.url("https://google.com"); // will show the native Google logo
+});
+```
+
+## Related Commands {#related}
+
+-   [clear](../clear)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/restore), from which we drew some information while writing our version.
