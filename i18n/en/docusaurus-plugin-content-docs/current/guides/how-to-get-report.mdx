@@ -1,8 +1,8 @@
 # How to Get a Test Run Report
 
-## testplane Report {#testplane_report}
+## Testplane Report {#testplane_report}
 
-After completing all test runs, testplane writes the result to the console in the form of a string like this:
+After completing all test runs, Testplane writes the result to the console in the form of a string like this:
 
 ```bash
 Total: 1812 Passed: 1792 Failed: 0 Skipped: 20 Retries: 47
@@ -20,7 +20,7 @@ Where:
     <tbody>
         <tr>
             <td>Total</td>
-            <td>Total number of tests that testplane read from the file system during launch.</td>
+            <td>Total number of tests that Testplane read from the file system during launch.</td>
         </tr>
         <tr>
             <td>Passed</td>
@@ -79,7 +79,7 @@ If you add the [stat-reporter][stat-reporter] plugin to your project, you will g
 └──────────────────────┴────────┴───────┴────────┴────────┴─────────┴─────────┴──────────┘
 ```
 
-Unlike the simple testplane report, the `stat-reporter` plugin report breaks down the results by browser. It also displays the maximum execution time _(Duration)_ in minutes and seconds and the test run result _(Status)_ in each browser.
+Unlike the simple Testplane report, the `stat-reporter` plugin report breaks down the results by browser. It also displays the maximum execution time _(Duration)_ in minutes and seconds and the test run result _(Status)_ in each browser.
 
 Such a report allows for a better understanding of which browsers encountered problems, specifically: where the most tests failed or the execution time sharply increased.
 
@@ -98,7 +98,7 @@ Add the [html-reporter][html-reporter] plugin to your project to get a graphical
 
 ![html-reporter](/img/docs/guides/how-to-get-report.html-reporter.png)
 
-Moreover, the [html-reporter][html-reporter] allows running testplane in a special GUI mode. In this mode, you can run and rerun tests, reshoot screenshots, use special debugging modes, and much more.
+Moreover, the [html-reporter][html-reporter] allows running Testplane in a special GUI mode. In this mode, you can run and rerun tests, reshoot screenshots, use special debugging modes, and much more.
 
 ## Keywords {#keywords}
 

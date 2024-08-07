@@ -6,7 +6,7 @@
 
 ## Connection
 
-To be able to use [queries][queries] from `testing-library` in testplane tests, you only need to follow a few steps.
+To be able to use [queries][queries] from `testing-library` in Testplane tests, you only need to follow a few steps.
 
 1. Install the npm package `'@testing-library/webdriverio'`
 
@@ -14,7 +14,7 @@ To be able to use [queries][queries] from `testing-library` in testplane tests, 
 npm i -D @testing-library/webdriverio
 ```
 
-2. Connect the implementation in the testplane configuration in the `prepareBrowser` section
+2. Include it in the Testplane config in the `prepareBrowser` section:
 
 ```javascript
 // .testplane.conf.js
@@ -25,13 +25,13 @@ module.exports = {
         setupBrowser(browser);
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
 ## Usage
 
-After connecting, you will be able to use the search by selectors from `testing-library`, as described in the [official documentation](https://testing-library.com/docs/queries/about/). For example, searching for an element by its text:
+After configuring, you will be able to use the search by selectors from `testing-library`, as described in the [official documentation](https://testing-library.com/docs/queries/about/). For example, searching for an element by its text:
 
 ```javascript
 it("example", async ({ browser }) => {
@@ -43,7 +43,7 @@ it("example", async ({ browser }) => {
 });
 ```
 
-In the context of found elements, this feature will also be available:
+This feature will also be available in the context of found elements:
 
 ```javascript
 it("example", async ({ browser }) => {
@@ -55,6 +55,8 @@ it("example", async ({ browser }) => {
     await newRepoButton.click();
 });
 ```
+
+For a complete usage example, visit [this link](https://github.com/gemini-testing/testplane/tree/master/examples/).
 
 ## Useful Links {#useful_links}
 

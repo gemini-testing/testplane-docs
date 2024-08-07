@@ -14,11 +14,11 @@ import Admonition from "@theme/Admonition";
     v7][webdriverio@7-api]).
 </Admonition>
 
-Since testplane is based on [WebDriverIO v8][webdriverio-api], all commands provided by WebDriverIO are available in it.
+Since Testplane is based on [WebDriverIO v8][webdriverio-api], all commands provided by WebDriverIO are available in it.
 
-However, the command descriptions on the [WebDriverIO][webdriverio-api] website for version 8 are not quite suitable _as is_ for testplane users due to a number of reasons:
+However, the command descriptions on the [WebDriverIO][webdriverio-api] website for version 8 are not quite suitable _as is_ for Testplane users due to a number of reasons:
 
--   In WebDriverIO, the `browser` object exists in the global scope, whereas in testplane you need to either write `this.browser`:
+-   In WebDriverIO, the `browser` object exists in the global scope, whereas in Testplane you need to either write `this.browser`:
 
 ```javascript
 it("should test something", async function () {
@@ -35,7 +35,7 @@ it("should test something", async ({ browser }) => {
 });
 ```
 
--   Similarly, the `browser.$` and `browser.$$` functions in WebDriverIO are available in tests under the names `$` and `$$`, while in testplane you need to refer to them by their full path: `browser.$` and `browser.$$`;
+-   Similarly, the `browser.$` and `browser.$$` functions in WebDriverIO are available in tests under the names `$` and `$$`, while in Testplane you need to refer to them by their full path: `browser.$` and `browser.$$`;
 
 -   There are no links established between similar commands: no clustering of commands;
 

@@ -6,7 +6,7 @@ import Admonition from "@theme/Admonition";
 
 ### How event descriptions are organized {#how_is_events_description_made}
 
-Below are described all the testplane events you can subscribe to in your plugin.
+Below are described all the Testplane events you can subscribe to in your plugin.
 
 Each event description begins with tags, which come in the following variants:
 
@@ -37,21 +37,21 @@ Next are:
 
 Testplane can be launched through both the [CLI (command line interface)][cli-wiki] and its API: from a script using the [run][testplane-run] command.
 
-After launching, testplane loads all plugins and proceeds to parsing the CLI, if it was launched through the CLI, or directly to the initialization stage if it was launched through its API.
+After launching, Testplane loads all plugins and proceeds to parsing the CLI, if it was launched through the CLI, or directly to the initialization stage if it was launched through its API.
 
 #### CLI Parsing
 
-If testplane was launched through the CLI, it triggers the [CLI](#cli) event. Any plugin can subscribe to this event to add its options and commands to the testplane before testplane parses the CLI.
+If Testplane was launched through the CLI, it triggers the [CLI](#cli) event. Any plugin can subscribe to this event to add its options and commands to the Testplane before Testplane parses the CLI.
 
-If testplane was launched via the API, the CLI parsing stage will be skipped and it will move straight to the initialization stage.
+If Testplane was launched via the API, the CLI parsing stage will be skipped and it will move straight to the initialization stage.
 
 #### Initialization
 
-During initialization, testplane triggers the [INIT](#init) event. This event occurs only once for the entire launch of testplane. Plugins can use this event to perform all necessary preparatory work: open and read files, set up a dev server, initialize data structures, etc.
+During initialization, Testplane triggers the [INIT](#init) event. This event occurs only once for the entire launch of testplane. Plugins can use this event to perform all necessary preparatory work: open and read files, set up a dev server, initialize data structures, etc.
 
 Testplane then launches subprocesses (known as workers) in which all tests will be executed. Tests are not executed in the master process of testplane; the master process handles the overall orchestration of the test run process, including generating events upon the completion of individual tests.
 
-The number of workers that testplane launches is regulated by the [workers][system-workers] parameter in the [system][system] section of the testplane config. When a new worker is launched, testplane triggers the [NEW_WORKER_PROCESS](#new_worker_process) event.
+The number of workers that Testplane launches is regulated by the [workers][system-workers] parameter in the [system][system] section of the Testplane config. When a new worker is launched, Testplane triggers the [NEW_WORKER_PROCESS](#new_worker_process) event.
 
 <Admonition type="info">
     Testplane runs all tests in workers to avoid memory and CPU limitations on the master process.
@@ -62,18 +62,18 @@ The number of workers that testplane launches is regulated by the [workers][syst
 
 #### Test reading
 
-Afterwards, testplane reads all tests from the file system in the master process. Before reading each file, it sends the [BEFORE_FILE_READ](#before_file_read) event, and after reading it — the [AFTER_FILE_READ](#after_file_read) event.
+Afterwards, Testplane reads all tests from the file system in the master process. Before reading each file, it sends the [BEFORE_FILE_READ](#before_file_read) event, and after reading it — the [AFTER_FILE_READ](#after_file_read) event.
 
 After all tests are read, the [AFTER_TESTS_READ](#after_tests_read) event is triggered.
 
 #### Test execution
 
-Then testplane sends the [RUNNER_START](#runner_start) and [BEGIN](#begin) events, and starts a new session (a browser session) in which the tests will be run. At the start of the session, testplane triggers the [SESSION_START](#session_start) event.
+Then Testplane sends the [RUNNER_START](#runner_start) and [BEGIN](#begin) events, and starts a new session (a browser session) in which the tests will be run. At the start of the session, Testplane triggers the [SESSION_START](#session_start) event.
 
 <Admonition type="info">
-If the number of tests executed within one session reaches the value of the [testsPerSession][browser-tests-per-session] parameter, testplane will end the session, triggering the [SESSION_END](#session_end) event, and start a new one, sending the [SESSION_START](#session_start) event.
+If the number of tests executed within one session reaches the value of the [testsPerSession][browser-tests-per-session] parameter, Testplane will end the session, triggering the [SESSION_END](#session_end) event, and start a new one, sending the [SESSION_START](#session_start) event.
 
-If a test fails with a critical error, testplane will:
+If a test fails with a critical error, Testplane will:
 
 -   prematurely terminate the session and the browser associated with it;
 -   create a new session;
@@ -83,7 +83,7 @@ This is to ensure that a failure in a session during one test run does not affec
 
 </Admonition>
 
-After creating a new session, testplane proceeds to run the tests. All tests are executed in workers, but the actual starting and collecting of the test results is done in the master process. The master process triggers the [SUITE_BEGIN](#suite_begin) event for describe-blocks in the test file and [TEST_BEGIN](#test_begin) for it-blocks. If a test is disabled using helpers like [skip.in][skip-in] and others, the [TEST_PENDING](#test_pending) event is triggered.
+After creating a new session, Testplane proceeds to run the tests. All tests are executed in workers, but the actual starting and collecting of the test results is done in the master process. The master process triggers the [SUITE_BEGIN](#suite_begin) event for describe-blocks in the test file and [TEST_BEGIN](#test_begin) for it-blocks. If a test is disabled using helpers like [skip.in][skip-in] and others, the [TEST_PENDING](#test_pending) event is triggered.
 
 Next, the workers receive from the master process the information about specific tests they need to run. Since tests are stored in files, workers read specifically those files where the required tests are located. Before reading each of those files in each worker, the [BEFORE_FILE_READ](#before_file_read) event is triggered, and after reading — the [AFTER_FILE_READ](#after_file_read) event.
 
@@ -103,17 +103,17 @@ Before a test is run, the [NEW_BROWSER](#new_browser) event is triggered. Howeve
 
 After a test completes, the [SESSION_END](#session_end) event can be sent. But this is only if the total number of tests run in the session exceeds the value of the [testsPerSession][browser-tests-per-session] parameter.
 
-Then everything will depend on the result of the test run. If the test passed successfully, testplane triggers the [TEST_PASS](#test_pass) event. If the test failed — [TEST_FAIL](#test_fail). If the test failed but needs to be re-run (see the [retry][browsers-retry] and [shouldRetry][browsers-should-retry] settings in the testplane config), instead of the [TEST_FAIL](#test_fail) event, the [RETRY](#retry) event will be sent.
+Then everything will depend on the result of the test run. If the test passed successfully, Testplane triggers the [TEST_PASS](#test_pass) event. If the test failed — [TEST_FAIL](#test_fail). If the test failed but needs to be re-run (see the [retry][browsers-retry] and [shouldRetry][browsers-should-retry] settings in the Testplane config), instead of the [TEST_FAIL](#test_fail) event, the [RETRY](#retry) event will be sent.
 
-If the test does not need to be re-run, and the result is final, testplane triggers the [TEST_END](#test_end) and [SUITE_END](#suite_end) events if it refers to the completion of a describe-block.
+If the test does not need to be re-run, and the result is final, Testplane triggers the [TEST_END](#test_end) and [SUITE_END](#suite_end) events if it refers to the completion of a describe-block.
 
-After all tests have been executed and sessions completed, testplane triggers the [END](#end) and [RUNNER_END](#runner_end) events.
+After all tests have been executed and sessions completed, Testplane triggers the [END](#end) and [RUNNER_END](#runner_end) events.
 
 #### Updating reference screenshots
 
 During the test run, reference screenshots may be updated for the following reasons:
 
--   The developer launched testplane in a special GUI mode and commanded "accept screenshots";
+-   The developer launched Testplane in a special GUI mode and commanded "accept screenshots";
 -   The developer specified the `--update-ref` option when launching testplane;
 -   The tests did not have reference screenshots.
 
@@ -121,9 +121,9 @@ In all these cases, the [UPDATE_REFERENCE](#update_reference) event is triggered
 
 #### Errors and premature termination
 
-If during the test run, a critical error occurs in one of the [event interceptors](#events_interception), testplane triggers the [ERROR](#error) event for this test. However, the other tests will proceed normally.
+If during the test run, a critical error occurs in one of the [event interceptors](#events_interception), Testplane triggers the [ERROR](#error) event for this test. However, the other tests will proceed normally.
 
-If during the test run, testplane receives a [SIGTERM][sigterm] signal (for example, as a result of pressing `Ctrl + C`), testplane triggers the [EXIT](#exit) event and prematurely terminates the test run.
+If during the test run, Testplane receives a [SIGTERM][sigterm] signal (for example, as a result of pressing `Ctrl + C`), Testplane triggers the [EXIT](#exit) event and prematurely terminates the test run.
 
 ### About event interception {#events_interception}
 
@@ -223,7 +223,7 @@ module.exports = testplane => {
 
 ### Information sharing between event handlers {#events_handlers_info_interchange}
 
-Events triggered in the master process and in the testplane workers cannot exchange information through global variables.
+Events triggered in the master process and in the Testplane workers cannot exchange information through global variables.
 
 For example, this approach will not work:
 
@@ -237,7 +237,7 @@ module.exports = testplane => {
 
     testplane.on(testplane.events.NEW_BROWSER, () => {
         // the value false will be output, because the NEW_BROWSER event
-        // is triggered in the testplane worker, and RUNNER_START – in the master process
+        // is triggered in the Testplane worker, and RUNNER_START – in the master process
         console.info(flag);
     });
 
@@ -269,7 +269,7 @@ Or as follows: see the [example](#new_worker_process_usage) from the description
 
 ### Parallel execution of plugin code {#plugin_code_parallel_execution}
 
-The test runner has a `registerWorkers` method which registers the plugin code for parallel execution in the testplane workers. The method takes the following parameters:
+The test runner has a `registerWorkers` method which registers the plugin code for parallel execution in the Testplane workers. The method takes the following parameters:
 
 <table>
 <thead>
@@ -325,7 +325,7 @@ module.exports = {
 
 **sync | master**
 
-The `CLI` event is triggered immediately upon startup, before testplane parses the [CLI][cli-wiki]. The event handler executes synchronously. With it, you can add new commands or extend testplane's help.
+The `CLI` event is triggered immediately upon startup, before Testplane parses the [CLI][cli-wiki]. The event handler executes synchronously. With it, you can add new commands or extend testplane's help.
 
 ### Subscribing to the event {#cli_subscription}
 
@@ -454,7 +454,7 @@ module.exports = (testplane, opts) => {
 
 **sync | master | worker**
 
-The `BEFORE_FILE_READ` event is triggered before the test file is read to parse it. The event handler is executed synchronously. The event is also available in testplane workers.
+The `BEFORE_FILE_READ` event is triggered before the test file is read to parse it. The event handler is executed synchronously. The event is also available in Testplane workers.
 
 ### Subscribing to the event {#before_file_read_subscription}
 
@@ -539,7 +539,7 @@ Another example of using the [BEFORE_FILE_READ](#before_file_read) event can be 
 
 **sync | master | worker**
 
-The `AFTER_FILE_READ` event is triggered after the test file is read. The event handler is executed synchronously. The event is also available in testplane workers.
+The `AFTER_FILE_READ` event is triggered after the test file is read. The event handler is executed synchronously. The event is also available in Testplane workers.
 
 ### Subscribing to the event {#after_file_read_subscription}
 
@@ -564,7 +564,7 @@ The event handler receives an object with the following format:
 
 **sync | master | worker**
 
-The `AFTER_TESTS_READ` event is triggered after the methods [readTests][read-tests] or [run][run] of the [TestCollection][test-collection] object are called. The event handler is executed synchronously. The event is also available in testplane workers.
+The `AFTER_TESTS_READ` event is triggered after the methods [readTests][read-tests] or [run][run] of the [TestCollection][test-collection] object are called. The event handler is executed synchronously. The event is also available in Testplane workers.
 
 By subscribing to this event, you can perform various manipulations on the test collection before they are run. For example, you can exclude certain tests from the runs.
 
@@ -620,7 +620,7 @@ More examples of using the [AFTER_TESTS_READ](#after_tests_read) event can be fo
 
 **async | master**
 
-The `RUNNER_START` event is triggered after all testplane workers are initialized and before the tests are run. The event handler can be asynchronous: in this case, the tests will start running only after the _Promise_ returned by the event handler is resolved.
+The `RUNNER_START` event is triggered after all Testplane workers are initialized and before the tests are run. The event handler can be asynchronous: in this case, the tests will start running only after the _Promise_ returned by the event handler is resolved.
 
 ### Subscribing to the event {#runner_start_subscription}
 
@@ -706,7 +706,7 @@ See the example [above](#runner_start_usage) about opening and closing the tunne
 
 **sync | master**
 
-The `NEW_WORKER_PROCESS` event is triggered after a new testplane subprocess (worker) is spawned. The event handler is executed synchronously.
+The `NEW_WORKER_PROCESS` event is triggered after a new Testplane subprocess (worker) is spawned. The event handler is executed synchronously.
 
 ### Subscribing to the event {#new_worker_process_subscription}
 
@@ -722,7 +722,7 @@ The event handler receives a wrapper object over the spawned subprocess, with a 
 
 ### Usage example {#new_worker_process_usage}
 
-The example below shows how to use the [NEW_WORKER_PROCESS](#new_worker_process) event to organize interaction between the master process and all testplane workers. For example, to update the value of a parameter in all testplane workers from the master process before the test run starts.
+The example below shows how to use the [NEW_WORKER_PROCESS](#new_worker_process) event to organize interaction between the master process and all Testplane workers. For example, to update the value of a parameter in all Testplane workers from the master process before the test run starts.
 
 The example also uses the [BEGIN](#begin) event.
 
@@ -738,7 +738,7 @@ const masterPlugin = (testplane, opts) => {
     const workers = [];
 
     testplane.on(testplane.events.NEW_WORKER_PROCESS, (workerProcess) => {
-        // store references to all created testplane workers
+        // store references to all created Testplane workers
         workers.push(workerProcess);
     });
 
@@ -889,7 +889,7 @@ No data is passed to the event handler.
 
 ### Usage example {#begin_usage}
 
-See the example [above](#new_worker_process_usage) about organizing interaction between the testplane master process and all workers.
+See the example [above](#new_worker_process_usage) about organizing interaction between the Testplane master process and all workers.
 
 ## END {#end}
 
@@ -1148,7 +1148,7 @@ See the example "Collecting Test Run Statistics" [here](#usage_collecting_stats)
 
 **sync | master | can be intercepted**
 
-The `RETRY` event is triggered if the test fails but is retried. The retry capabilities are determined by the [retry][browsers-retry] and [shouldRetry][browsers-should-retry] settings in the testplane config. Testplane plugins can also influence this by modifying these settings on the fly. See plugins [retry-limiter][retry-limiter] and [testplane-retry-progressive][testplane-retry-progressive] for examples.
+The `RETRY` event is triggered if the test fails but is retried. The retry capabilities are determined by the [retry][browsers-retry] and [shouldRetry][browsers-should-retry] settings in the Testplane config. Testplane plugins can also influence this by modifying these settings on the fly. See plugins [retry-limiter][retry-limiter] and [testplane-retry-progressive][testplane-retry-progressive] for examples.
 
 The event handler is executed synchronously. The event can also be intercepted and modified in a special handler.
 
@@ -1238,7 +1238,7 @@ No data is passed to the event handler.
 
 **sync | worker**
 
-The `NEW_BROWSER` event is triggered after a new browser instance is created. The event handler is executed synchronously. The event is only available in testplane workers.
+The `NEW_BROWSER` event is triggered after a new browser instance is created. The event handler is executed synchronously. The event is only available in Testplane workers.
 
 ### Event Subscription {#new_browser_subscription}
 

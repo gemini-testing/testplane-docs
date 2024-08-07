@@ -158,7 +158,7 @@ Save or not save error details in json files (to the `error-details` folder).
 
 By default, "do not save": `false`.
 
-Any testplane plugin can add any details to the error object when it occurs. These details can help the user in debugging problems that have occurred in the test. Html-reporter saves these details in the `error-details` folder in a file named: `<hash from the full name of the test>-<browser>_<retry number>_<timestamp>.json`.
+Any Testplane plugin can add any details to the error object when it occurs. These details can help the user in debugging problems that have occurred in the test. Html-reporter saves these details in the `error-details` folder in a file named: `<hash from the full name of the test>-<browser>_<retry number>_<timestamp>.json`.
 
 Under the stack trace, the html-reporter adds an `Error details` section with a `<title>` link pointing to the json file. The user can open this file either in the browser or in any IDE.
 
@@ -375,10 +375,10 @@ module.exports = {
             // other plugin settings...
         },
 
-        // other testplane plugins...
+        // other Testplane plugins...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 

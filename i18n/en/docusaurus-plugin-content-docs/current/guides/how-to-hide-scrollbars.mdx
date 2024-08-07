@@ -16,7 +16,7 @@ The screenshot below shows an example corresponding to the first scenario:
 
 ## Solution 1: screenshotDelay {#solution_1}
 
-In testplane settings, there is a mandatory option `browsers` that specifies the set of browsers available in the project and their properties. Select the browser where you are experiencing diffs due to scrollbars and add the `screenshotDelay` option for it:
+In Testplane settings, there is a mandatory option `browsers` that specifies the set of browsers available in the project and their properties. Select the browser where you are experiencing diffs due to scrollbars and add the `screenshotDelay` option for it:
 
 ```javascript
 module.exports = {
@@ -30,11 +30,11 @@ module.exports = {
         // other browsers...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
-The `screenshotDelay` option sets a pause in milliseconds that testplane should wait before taking a screenshot (before executing the `assertView` command).
+The `screenshotDelay` option sets a pause in milliseconds that Testplane should wait before taking a screenshot (before executing the `assertView` command).
 
 ### How can it help? {#how_can_it_help}
 

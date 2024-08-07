@@ -13,17 +13,17 @@ For example, plugins [html-reporter][html-reporter] or [testplane-test-repeater]
 
 A plugin is a module that exports a single function with the following arguments:
 
--   testplane instance
--   plugin options from testplane config
+-   Testplane instance
+-   plugin options from Testplane config
 
-All plugins will be loaded before testplane runs the tests.
+All plugins will be loaded before Testplane runs the tests.
 
 <Admonition type="tip">
     When choosing a name for a plugin, add the prefix _testplane-_ to it. Then it will be easier to
     search for such a plugin.
 </Admonition>
 
-If the plugin name starts with the prefix `testplane-`, then you can omit this prefix when adding the plugin to the `plugins` section. If testplane discovers modules with both names on the file system: _testplane-some-module_ and _some-module_, it will give preference to the module with the prefix `testplane-`.
+If the plugin name starts with the prefix `testplane-`, then you can omit this prefix when adding the plugin to the `plugins` section. If Testplane discovers modules with both names on the file system: _testplane-some-module_ and _some-module_, it will give preference to the module with the prefix `testplane-`.
 
 ## Draft example {#example}
 
@@ -36,10 +36,10 @@ If the plugin name starts with the prefix `testplane-`, then you can omit this p
               param: 'some-value'
           },
 
-          // other testplane plugins...
+          // other Testplane plugins...
       },
 
-      // other testplane settings...
+      // other Testplane settings...
 
 };
 
@@ -66,7 +66,7 @@ module.exports = function(testplane, opts) {
 
 </Tabs>
 
-## Properties of testplane instance {#testplane_instance}
+## Properties of Testplane instance {#testplane_instance}
 
 <table>
 <thead>

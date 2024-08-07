@@ -1,15 +1,15 @@
 import Admonition from "@theme/Admonition";
 
-# How to Use Chrome DevTools Protocol in testplane
+# How to Use Chrome DevTools Protocol in Testplane
 
 ## Introduction {#preface}
 
 <Admonition type="warning">
-    Install testplane version 4 or higher in your project to use _Chrome DevTools Protocol (CDP)_ in
-    testplane tests.
+    Install Hermione (Testplane) version 4 or higher in your project to use _Chrome DevTools
+    Protocol (CDP)_ in Testplane tests.
 </Admonition>
 
-The `WebDriver` protocol has been used in testplane for a long time, but the possibility of using [CDP][CDP] appeared only after migrating to _[WebdriverIO@7](https://webdriver.io/versions)_ in testplane version 4.
+The `WebDriver` protocol has been used in Testplane for a long time, but the possibility of using [CDP][CDP] appeared only after migrating to _[WebdriverIO@7](https://webdriver.io/versions)_ in Hermione version 4.
 
 CDP support in _WebdriverIO@7_ is implemented using [puppeteer][puppeteer], which is a wrapper with a convenient API over CDP.
 
@@ -17,7 +17,7 @@ For a comparison of the _WebDriver_ and _CDP_ protocols, see the "WebDriver vs C
 
 ## Local Usage {#local_usage}
 
-To work with the browser via CDP locally, add the `automationProtocol: 'devtools'` option to the browser settings in the testplane config:
+To work with the browser via CDP locally, add the `automationProtocol: 'devtools'` option to the browser settings in the Testplane config:
 
 ```javascript
 // .testplane.conf.js
@@ -34,7 +34,7 @@ module.exports = {
         // other browser settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -54,7 +54,7 @@ npx testplane ... --browsers-chrome-automation-protocol=devtools
 
 ## Remote Usage {#remote_usage}
 
-When using CDP on a remote machine (e.g., in a grid), testplane will first start the browser using the WebDriver protocol and then, upon user request (i.e., when calling a CDP command), switch to CDP connection. Thus, in a single test scenario with a remote browser, we will interact using both protocols.
+When using CDP on a remote machine (e.g., in a grid), Testplane will first start the browser using the WebDriver protocol and then, upon user request (i.e., when calling a CDP command), switch to CDP connection. Thus, in a single test scenario with a remote browser, we will interact using both protocols.
 
 It looks something like this:
 
@@ -82,7 +82,7 @@ module.exports = {
         // other browser settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 

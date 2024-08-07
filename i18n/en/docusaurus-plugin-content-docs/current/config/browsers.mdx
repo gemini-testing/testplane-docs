@@ -23,13 +23,13 @@ module.exports = {
         // other browsers...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
 Where `<browser-id>` is the browser name that is used to identify it.
 
-In order not to repeat the same settings for different browsers, you can set all the default values you need in the root of testplane config. For example:
+In order not to repeat the same settings for different browsers, you can set all the default values you need in the root of Testplane config. For example:
 
 ```javascript
 module.exports = {
@@ -45,7 +45,7 @@ module.exports = {
         },
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -89,7 +89,7 @@ module.exports = {
         // other browsers settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -144,7 +144,7 @@ module.exports = {
         // other browsers settings...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -215,7 +215,7 @@ Timeout for any requests to the Selenium server, in ms. By default: `30000` ms.
 
 ### urlHttpTimeout {#url_http_timeout}
 
-Timeout for the `/url` request to the Selenium server, in ms. Sometimes when opening a link on the server side, a lot of logic is performed in the middlewares, which is why the link takes a long time to open. In order not to raise the timeout for all commands because of this, testplane allows you to set up a separate timeout for the request `/url`.
+Timeout for the `/url` request to the Selenium server, in ms. Sometimes when opening a link on the server side, a lot of logic is performed in the middlewares, which is why the link takes a long time to open. In order not to raise the timeout for all commands because of this, Testplane allows you to set up a separate timeout for the request `/url`.
 
 ### pageLoadTimeout {#page_load_timeout}
 
@@ -408,7 +408,7 @@ The orientation of the browser window that you need to set before running each t
 
 ### waitOrientationChange {#wait_orientation_change}
 
-Wait for a real change of orientation. By default: `true`. When set to `true`, testplane guarantees that the command `setOrientation` will be completed only after the orientation is actually changed to the specified one.
+Wait for a real change of orientation. By default: `true`. When set to `true`, Testplane guarantees that the command `setOrientation` will be completed only after the orientation is actually changed to the specified one.
 
 ### resetCursor {#reset_cursor}
 
@@ -511,7 +511,7 @@ The following options are available for `assertView`:
 <tr><td>ignoreElements</td><td>Array or String</td><td>Elements (set as selectors) to ignore when comparing screenshots. Ignore is implemented by painting the listed elements in black. In the case of a single element, the parameter can be set as a string.</td></tr>
 <tr><td>tolerance</td><td>Number</td><td>Sensitivity to color difference. The value overwrites [browsers.tolerance](#tolerance).</td></tr>
 <tr><td>antialiasingTolerance</td><td>Number</td><td>Sensitivity in antialiasing. The value overwrites [browsers.antialiasingTolerance](#antialiasing_tolerance).</td></tr>
-<tr><td>allowViewportOverflow</td><td>Boolean</td><td>By default, testplane throws an error if the element is outside the boundaries of the viewport. This parameter disables checking for borders, allowing you to take screenshots of elements that do not fit into the viewport. At the same time, only those parts of the element that fit into the viewport will be visible in the screenshot. However, if _compositeImage_ is equal to _true_, then the parts of the element that were below the viewport's _bottom_ border will also be visible in the screenshot. Similarly, if _captureElementFromTop_ is equal to _true_, then the screenshot will also include those parts of the element that were above the viewport's _top_ border.</td></tr>
+<tr><td>allowViewportOverflow</td><td>Boolean</td><td>By default, Testplane throws an error if the element is outside the boundaries of the viewport. This parameter disables checking for borders, allowing you to take screenshots of elements that do not fit into the viewport. At the same time, only those parts of the element that fit into the viewport will be visible in the screenshot. However, if _compositeImage_ is equal to _true_, then the parts of the element that were below the viewport's _bottom_ border will also be visible in the screenshot. Similarly, if _captureElementFromTop_ is equal to _true_, then the screenshot will also include those parts of the element that were above the viewport's _top_ border.</td></tr>
 <tr><td>captureElementFromTop</td><td>Boolean</td><td>Take a screenshot of the element from the very top. If the element is located outside the viewport, then a scroll will be made to it.</td></tr>
 <tr><td>compositeImage</td><td>Boolean</td><td>Allows you to test elements that do not fit into the viewport in height.</td></tr>
 <tr><td>screenshotDelay</td><td>Number</td><td>The delay in milliseconds before taking a screenshot. It can be useful when there are elements on the page that use animation, or a scrollbar that does not disappear immediately and gets to the resulting screenshot.</td></tr>
@@ -604,7 +604,7 @@ Defines whether the SSL certificate should be valid. If `true`, it means that [d
 
 ## Cloud settings {#cloud_settings}
 
-The following settings may be useful if you want to run your testplane tests in cloud service browsers.
+The following settings may be useful if you want to run your Testplane tests in cloud service browsers.
 
 [SauceLabs][sauce-labs] is an example of such a cloud service, which [can provide](https://saucelabs.com/platform/cross-browser-testing) you both desktop and mobile browsers to run tests in them.
 

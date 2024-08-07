@@ -14,7 +14,7 @@ Compression is lossless.
 
 At startup, the plugin subscribes to the `UPDATE_REFERENCE` event, which Testplane sends in the following cases:
 
--   if the user started testplane by passing the `--update-refs` option;
+-   if the user started Testplane by passing the `--update-refs` option;
 -   if the user updates or saves screenshots using the [html-reporter][html-reporter] plugin.
 
 When the `UPDATE_REFERENCE` event is received in the `testplane-image-minifier` plugin, it gets a link to the image itself along with the event. Next, the plugin applies a compression algorithm to the received image with the compression level specified in the config. And saves the new image to the file system. After that, the developer can merge the updated files into the main branch of his project.
@@ -48,10 +48,10 @@ module.exports = {
             compressionLevel: 7, // Maximum compression level, compression will take some time
         },
 
-        // other testplane plugins...
+        // other Testplane plugins...
     },
 
-    // other testplane settings...
+    // other Testplane settings...
 };
 ```
 
@@ -96,7 +96,7 @@ An example of how it will look in the console:
 
 ## Usage {#usage}
 
-After adding the plugin to the project and configuring its parameters, run testplane with the `--update-refs` option:
+After adding the plugin to the project and configuring its parameters, run Testplane with the `--update-refs` option:
 
 ```bash
 npx testplane --update-refs

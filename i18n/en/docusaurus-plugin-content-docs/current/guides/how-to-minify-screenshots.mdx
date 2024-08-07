@@ -4,7 +4,7 @@ import Admonition from "@theme/Admonition";
 
 ## Introduction {#preface}
 
-One of the key features of testplane is the ability to test layouts using screenshots. For this, you can take a screenshot during different states of a web page in your tests and compare it with a reference.
+One of the key features of Testplane is the ability to test layouts using screenshots. For this, you can take a screenshot during different states of a web page in your tests and compare it with a reference.
 
 An example of such a comparison:
 
@@ -13,7 +13,7 @@ An example of such a comparison:
 <Admonition type="info" title="For Beginners">
 **Where do reference screenshots come from?**
 
-You wrote a test using the testplane _assertView_ command. The _assertView_ command compares the actual screenshot with the reference screenshot. An actual screenshot is one that the test takes during its run. It reflects the current state of your web page. On the first run of your test, you don't yet have a reference screenshot. Therefore, the _assertView_ command will fail with a message that the reference screenshot is not found. At the same time, you will have an actual screenshot. If the actual screenshot reflects the state of your web page you expect (consider as reference), then you need to _accept_ the actual screenshot as the reference one. To do this, you need to run testplane with an additional _--update-refs_ option. Alternatively, you can use the GUI mode provided by the _html-reporter_ plugin. With it, you can view the run report in GUI mode, ensure the actual screenshots are as you expect, and accept them using the _Accept_ button.
+You wrote a test using the Testplane _assertView_ command. The _assertView_ command compares the actual screenshot with the reference screenshot. An actual screenshot is one that the test takes during its run. It reflects the current state of your web page. On the first run of your test, you don't yet have a reference screenshot. Therefore, the _assertView_ command will fail with a message that the reference screenshot is not found. At the same time, you will have an actual screenshot. If the actual screenshot reflects the state of your web page you expect (consider as reference), then you need to _accept_ the actual screenshot as the reference one. To do this, you need to run Testplane with an additional _--update-refs_ option. Alternatively, you can use the GUI mode provided by the _html-reporter_ plugin. With it, you can view the run report in GUI mode, ensure the actual screenshots are as you expect, and accept them using the _Accept_ button.
 
 </Admonition>
 
