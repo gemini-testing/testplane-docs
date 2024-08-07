@@ -247,6 +247,7 @@ If the value is not set, a common timeout for all browsers will be used, which i
 <tr><td>[retry](#retry)</td><td>Number</td><td>0</td><td>How many times you need to restart the failing test.</td></tr>
 <tr><td>[shouldRetry](#should_retry)</td><td>Function</td><td>_see description_</td><td>A function that determines whether a retry is needed. By default, a function is set that returns _true_, if _retry > 0,_ and _false_, if _retry == 0_.</td></tr>
 <tr><td>[strictTestsOrder](#strict_test_order)</td><td>Boolean</td><td>false</td><td>Guarantee a strict order of tests. If _true_, then the API function _testplane.readTests_ will always return the same result.</td></tr>
+<tr><td>[passive](#passive)</td><td>Boolean</td><td>false</td><td>Makes the browser "passive". In passive browsers, tests do not run by default. _Available from testplane@8.16.0_.</td></tr>
 
 </tbody>
 </table>
@@ -288,6 +289,17 @@ The argument of this function is an object with the following fields:
 ### strictTestsOrder {#strict_test_order}
 
 This option enables a guarantee of a strict order of reading tests. By default: `false`.
+
+### passive {#passive}
+
+<Admonition type="warning">
+    Available from testplane@8.16.0. Doesn't work with deprecated plugin
+    [hermione-passive-browsers](https://github.com/gemini-testing/testplane-passive-browsers).
+</Admonition>
+
+Makes the browser "passive". In passive browsers, tests do not run by default. You may use the [testplane.also.in][testplane-also-in-helper] helper before a suite or test to run it in corresponding browser.
+
+По умолчанию: `false`.
 
 ## Information about the test and its failure {#info_when_test_fails}
 
