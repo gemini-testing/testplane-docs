@@ -40,16 +40,10 @@ module.exports = {
 
 После этого все последующие запуски будут выполняться в вашем локально установленном Хроме.
 
-Но если вам нужно запустить браузер с поддержкой CDP один раз, то удобнее переопределить эту опцию с помощью переменной окружения:
+Но если вам нужно запустить браузер с поддержкой CDP один раз, то удобнее использовать специальную CLI-опцию:
 
 ```bash
-testplane_browsers_chrome_automation_protocol=devtools npx testplane ...
-```
-
-Или задать её в виде опции CLI:
-
-```bash
-npx testplane ... --browsers-chrome-automation-protocol=devtools
+npx testplane ... --devtools
 ```
 
 ## Удаленное использование {#remote_usage}
