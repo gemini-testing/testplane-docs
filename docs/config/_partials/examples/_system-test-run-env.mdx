@@ -7,11 +7,11 @@ import TabItem from "@theme/TabItem";
         import type { ConfigInput } from "testplane";
 
         export default {
-        // ...
-        system: {
-        testRunEnv: ['browser', { viteConfig: './vite.config.ts' }]
-    },
-    }
+            // ...
+            system: {
+                testRunEnv: ['browser', { viteConfig: './vite.config.ts' }]
+            },
+        }
         ```
     </TabItem>
 
@@ -21,11 +21,11 @@ import TabItem from "@theme/TabItem";
         import viteConfig from './vite.config.ts';
 
         export default {
-        // ...
-        system: {
-        testRunEnv: ['browser', { viteConfig }]
-    },
-    }
+            // ...
+            system: {
+                testRunEnv: ['browser', { viteConfig }]
+            },
+        }
         ```
     </TabItem>
 
@@ -34,15 +34,15 @@ import TabItem from "@theme/TabItem";
         import type { ConfigInput } from "testplane";
 
         export default {
-        // ...
-        system: {
-        testRunEnv: ['browser', {
-        viteConfig: (configEnv) => ({
-        // ...
-    }),
-    }],
-    },
-    }
+            // ...
+            system: {
+                testRunEnv: ['browser', {
+                    viteConfig: (configEnv) => ({
+                        // ...
+                    }),
+                }],
+            },
+        }
         ```
     </TabItem>
 

@@ -5,13 +5,13 @@ import SetsExample from "@site/docs/config/_partials/examples/_sets-example.mdx"
 
 ## Overview {#overview}
 
-You can use sets to bind a set of tests to specific browsers and run them at once with one command.
+You can use sets to bind a set of tests to specific browsers and run them all at once with the command `testplane --set <set-name>`.
 
-For example, it can be convenient to run tests on platforms: `desktop`, `touch-phone`, etc. You can also have a `common` set corresponding to common tests that you will always run in all browsers.
+This can be convenient for running tests by platforms: `desktop`, `touch-phone`, etc. You may also have a `common` set corresponding to common tests that you will always run in all browsers.
 
-Define a set of tests as an array of paths to them or to folders with them on the file system. You can also specify paths to ignore when searching for tests to speed up the process of reading tests by testplane.
+A set of tests is specified as an array of paths to them or to folders containing them on the file system. You can also specify paths to ignore when searching for tests to speed up the Testplane test reading process.
 
-If there are no sets in the config, or you do not specify them when starting Testplane (see the section "[Usage](#usage)"), then all tests from the `testplane` folder will be run in all browsers that were specified in the [browsers][browsers] section of Testplane config.
+If there are no sets in the config, or you do not specify them when running Testplane (see the “[Usage](#usage)” section), then all tests from the `testplane` folder will be run in all browsers specified in the [browsers][browsers] section of the Testplane config.
 
 ## Setup {#setup}
 
@@ -19,68 +19,69 @@ The `sets` section has the following format:
 
 <SetsBasicFormat />
 
-Where `<set-id>` is the name of the set to identify it.
+Where `<set-id>` is the name of the set used for its identification.
 
-### Description of configuration parameters {#setup_description}
+### Sets Section Reference {#setup_description}
 
 <table>
     <thead>
         <tr>
             <td>**Parameter**</td>
             <td>**Type**</td>
-            <td>**Default&nbsp;value**</td>
+            <td>**Default**</td>
             <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>files</td>
-            <td>Array or String</td>
+            <td>`files`</td>
+            <td>`string | string[]`</td>
             <td>_N/A_</td>
             <td>
-                A list of paths to files or folders with tests. In the case of a single path, the
-                parameter can be set as a string. You can also use [masks][fast-glob-patterns].
+                List of paths to files or folders with tests. In the case of a single path, the
+                parameter can be specified as a string. You can also use
+                [patterns][fast-glob-patterns].
             </td>
         </tr>
         <tr>
-            <td>ignoreFiles</td>
-            <td>Array or String</td>
+            <td>`ignoreFiles`</td>
+            <td>`string | string[]`</td>
             <td>`[ ]`</td>
             <td>
-                A list of paths or [masks][fast-glob-patterns] to ignore when searching for test
-                files. This parameter allows you to speed up the reading of tests by testplane.
+                List of paths or [patterns][fast-glob-patterns] to ignore when searching for test
+                files. This parameter allows speeding up the Testplane test reading process.
             </td>
         </tr>
         <tr>
-            <td>browsers</td>
-            <td>Array</td>
+            <td>`browsers`</td>
+            <td>`string[]`</td>
             <td>_all browsers_</td>
             <td>
-                The list of browsers to run the tests in. You can only specify browsers that are in
-                the [browsers][browsers] section of Testplane config. By default: all browsers from
-                the [browsers][browsers] section.
+                List of browsers in which the tests will be run. You can specify only the browsers
+                listed in the [browsers][browsers] section of the Testplane config. Default: all
+                browsers from the [browsers][browsers] section.
             </td>
         </tr>
     </tbody>
 </table>
 
-## Setup example {#setup_example}
+## Setup Example {#setup_example}
 
 <SetsExample />
 
-In this example the **common** set contains all tests in the `common` dir and will be launched in all browsers. The **desktop** set contains tests in `common` and `desktop` directories, but will be launched only in `chrome` and `firefox` browsers.
+In this example, the **common** set contains all tests in the `common` directory and will run in all browsers. The **desktop** set contains all tests in the `common` and `desktop` directories but will only run in `chrome` and `firefox`.
 
 ## Usage {#usage}
 
-Use the `--set` CLI option to specify a set when running tests.
+Use the CLI option `--set` to specify a set when running tests.
 
-Example of how to run tests for a desktop platform in the case of the configuration given [above](#setup_example):
+Example of how to run tests for the desktop platform with the configuration provided [above](#setup_example):
 
 ```bash
 testplane --set desktop
 ```
 
-If there are no sets in the config, or they exist, but the `--set` option was not specified, and the paths were not passed to Testplane via the CLI, then all tests from the `testplane` folder will be run in all [browsers][browsers].
+If there are no sets in the config, or they exist but the `--set` option was not specified, and no paths were passed to testplane via CLI, then all tests from the `testplane` folder will be run in all [browsers][browsers].
 
 [fast-glob-patterns]: https://github.com/mrmlnc/fast-glob#pattern-syntax
 [browsers]: ../browsers

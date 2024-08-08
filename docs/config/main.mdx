@@ -21,7 +21,7 @@ import ConfigExample from "@site/docs/config/_partials/examples/_config-example.
 
 <ConfigExample />
 
-### Справка по конфигурации {#config_sections_description}
+## Справка по конфигурации {#config_sections_description}
 
 Единственным обязательным разделом в настройках Testplane является раздел `browsers`.
 
@@ -75,6 +75,14 @@ import ConfigExample from "@site/docs/config/_partials/examples/_config-example.
                 какие-то параметры конфига.
             </td>
         </tr>
+        <tr>
+            <td>[`devServer`][dev-server]</td>
+            <td>Раздел для настройки автоматического запуска dev сервера перед прогоном тестов.</td>
+        </tr>
+        <tr>
+            <td>[`lastFailed`][last-failed]</td>
+            <td>Раздел для конфигурирования перезапуска только упавших тестов.</td>
+        </tr>
     </tbody>
 </table>
 
@@ -85,5 +93,6 @@ import ConfigExample from "@site/docs/config/_partials/examples/_config-example.
 [system]: ../system
 [plugins]: ../plugins
 [last-failed]: ../last-failed
+[dev-server]: ../dev-server
 [prepare-browser]: ../prepare-browser
 [prepare-environment]: ../prepare-environment
