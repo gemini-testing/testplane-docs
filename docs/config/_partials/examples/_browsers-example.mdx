@@ -1,0 +1,16 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    sessionsPerBrowser: 10,
+    browsers: {
+        chrome: {
+            /* ... */
+        },
+        firefox: {
+            // ...
+            sessionsPerBrowser: 5,
+        },
+    },
+} satisfies ConfigInput;
+```

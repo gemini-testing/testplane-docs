@@ -1,0 +1,26 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    plugins: {
+        "my-cool-plugin": {
+            param: "some-value",
+        },
+    },
+} satisfies ConfigInput;
+```
+
+```typescript title="testplane-my-cool-plugin/index.ts"
+exports = function (testplane, opts) {
+    testplane.on(testplane.events.RUNNER_START, function (runner) {
+        console.info(opts.param); // some-value
+
+        return setUp(testplane.config, opts.param);
+    });
+
+    testplane.on(testplane.events.RUNNER_END, function () {
+        return tearDown();
+    });
+};
+```

@@ -1,0 +1,14 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        "chrome-phone": {
+            // ...
+            sessionEnvFlags: {
+                isMobile: true,
+            },
+        },
+    },
+} satisfies ConfigInput;
+```

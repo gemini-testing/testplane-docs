@@ -1,4 +1,8 @@
 import Admonition from "@theme/Admonition";
+import AddBrowserCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-browser-command.mdx";
+import AddElementCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-element-command.mdx";
+import OverwriteCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-overwrite-command.mdx";
+import AddMultipleCommandsExample from "@site/docs/config/_partials/examples/_prepare-browser-add-multiple-commands.mdx";
 
 # prepareBrowser
 
@@ -12,33 +16,9 @@ import Admonition from "@theme/Admonition";
 
 ### Пример 1: добавляем новую команду для браузера {#example_add_new_command_to_browser}
 
-Для добавления новой команды воспользуемся функцией [browser.addCommand()][add-command] WebDriverIO.
+Для добавления новой команды воспользуемся функцией [browser.addCommand()][add-command].
 
-```javascript
-const querystring = require("querystring");
-
-function toStoryKind(value) {
-    /* here goes some code */
-}
-function toStoryId(value) {
-    /* here goes some code */
-}
-
-module.exports = {
-    prepareBrowser: function (browser) {
-        browser.addCommand("openScenario", function openScenario(rawComponent, rawStory, params) {
-            const component = toStoryKind(rawComponent);
-            const story = toStoryId(rawStory);
-            const queryParams = querystring.stringify(params);
-            const url = `/storybook/iframe.html?id=components-${component}-testplane--${story}&${queryParams}`;
-
-            return this.url(url);
-        });
-    },
-
-    // другие настройки Testplane...
-};
-```
+<AddBrowserCommandExample />
 
 ### Пример 2: добавляем новую команду для элемента {#example_2_add_new_command_to_element}
 
@@ -49,107 +29,31 @@ module.exports = {
     элемента!
 </Admonition>
 
-```javascript
-module.exports = {
-    prepareBrowser: function(browser) {
-        await browser.addCommand(
-            'getCoords',
-            async function () {
-                // внутри функции контекстом является element, не browser!
-                const { x, y } = await this.getLocation();
-                const { width, height } = await this.getSize();
+<AddElementCommandExample />
 
-                return {
-                    left: x,
-                    top: y,
-                    right: x + width,
-                    bottom: y + height
-                };
-            },
-            true // true означает, что мы задаем функцию для элемента, (по умолчанию) false – для браузера
-        );
-    },
-
-    // другие настройки Testplane...
-};
-```
-
-Внутри функции применяются команды [getLocation()][get-location] и [getSize()][get-size], которые доступны для элемента в WebDriverIO.
+Внутри функции применяются команды [getLocation()][get-location] и [getSize()][get-size], которые доступны для элемента.
 
 После добавления команды `getCoords()`, её можно использовать в тестах следующим образом:
 
-```javascript
+```typescript
 const { left, top, right, bottom } = await browser.$(‘.selector’).getCoords();
 ```
 
 ### Пример 3: меняем уже существующую команду {#example_3_overwrite_command}
 
-Чтобы изменить уже существующую команду, воспользуемся командой [browser.overwriteCommand()][overwrite-command] WebDriverIO.
+Чтобы изменить уже существующую команду, воспользуемся командой [browser.overwriteCommand()][overwrite-command].
 
 Например, мы можем захотеть передавать в команду [browser.url()][url] отдельным аргументом объект с query-параметрами:
 
-```javascript
-const { URL } = require("url");
-
-module.exports = {
-    prepareBrowser: function (browser) {
-        browser.overwriteCommand("url", function (origUrlFunction, uri, query) {
-            if (!query) {
-                return origUrlFunction(uri);
-            }
-
-            const parsedUrl = new URL(uri);
-
-            for (const [key, value] of Object.entries(query)) {
-                parsedUrl.searchParams.set(key, value);
-            }
-
-            return origUrlFunction(parsedUrl.href);
-        });
-    },
-
-    // другие настройки Testplane...
-};
-```
+<OverwriteCommandExample />
 
 ### Пример 4: добавляем набор команд из папки {#example_4_add_commands_from_folder}
 
 Если в проекте много своих специфических команд, то их удобно хранить в отдельной папке, а в `prepareBrowser` добавлять все команды сразу унифицированным образом. Например:
 
-```javascript
-const path = require("path");
-const glob = require("fast-glob");
+<AddMultipleCommandsExample />
 
-module.exports = {
-    prepareBrowser: function (browser) {
-        const files = glob.sync(["tests/testplane/commands/*.(js|ts)", "!**/*.d.ts"]);
-
-        files.forEach(file => {
-            const module = require(path.resolve(process.cwd(), file));
-            const name = path.basename(file, path.extname(file));
-
-            browser.addCommand(name, typeof module === "object" ? module[name] : module);
-        });
-    },
-
-    // другие настройки Testplane...
-};
-```
-
-При этом файл с одной из команд может выглядеть так:
-
-```javascript
-// tests/testplane/commands/yaCheckCookie.js
-
-module.exports = async function (cookieName) {
-    // контекстом в функции является browser
-    const cookies = await this.getCookies(cookieName);
-
-    assert.isTrue(cookies[0], `cookie с именем ${cookieName} не установлено`);
-};
-```
-
-Здесь используется команда [browser.getCookies()][get-cookies] WebDriverIO.
+Здесь используется команда [browser.getCookies][get-cookies].
 
 [url]: ../../commands/browser/url
 [add-command]: ../../commands/browser/addCommand

@@ -1,0 +1,27 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+import path from "path";
+import glob from "fast-glob";
+
+export default {
+    // ...
+    prepareBrowser: function (browser) {
+        const files = glob.sync(["tests/testplane/commands/*.(js|ts)", "!**/*.d.ts"]);
+
+        files.forEach(file => {
+            const module = require(path.resolve(process.cwd(), file));
+            const name = path.basename(file, path.extname(file));
+
+            browser.addCommand(name, typeof module === "object" ? module[name] : module);
+        });
+    },
+};
+```
+
+```typescript title="tests/testplane/commands/myCheckCookie.js"
+export default async function (cookieName) {
+    const cookies = await this.getCookies(cookieName);
+
+    assert.isTrue(cookies[0], `cookie с именем ${cookieName} не установлено`);
+}
+```

@@ -2,81 +2,30 @@
 sidebar_class_name: hidden
 ---
 
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
+import MinimalConfig from "@site/docs/config/_partials/examples/_minimal-config.mdx";
+import ConfigExample from "@site/docs/config/_partials/examples/_config-example.mdx";
 
 # Testplane config
 
+By default, Testplane searches for the file `.testplane.conf.ts` or `testplane.config.ts` at startup in the current working folder.
+
+You can use configuration file stored at custom location by passing the `--config` CLI option.
+
 ## Setup {#setup}
 
-To configure Testplane, use the following configuration file format:
+To configure Testplane, you only need to specify at least one browser:
 
-<Tabs>
-<TabItem value="Minimum config" label="Minimum config">
-```javascript
-  module.exports = {
-      browsers: {
-          chrome: {
-              desiredCapabilities: {
-                  browserName: 'chrome',
+<MinimalConfig />
 
-                  // ...
-              },
+As your project grows, you will likely want to customize Testplane more, e.g. add sets, more browsers and plugins. Below is an example configuration with more options to explore:
 
-              // other chrome browser settings...
-          },
+<ConfigExample />
 
-          // other browsers settings...
-      }
+## Config Reference {#config_sections_description}
 
-};
+The only required section in Testplane config is the `browsers` section.
 
-````
-</TabItem>
-
-
-<TabItem value="Maximum config" label="Maximum config">
-```javascript
-module.exports = {
-    // global browser settings...
-
-    browsers: {
-        // browser-specific settings...
-    },
-    sets: {
-        // test group settings...
-        // test groups can be used, for example,
-        // to separate the launch of desktop and mobile tests
-    },
-    system: {
-        // system settings...
-    },
-    plugins: {
-        // external Testplane plugins settings...
-    },
-    lastFailed: {
-        // failed tests rerun settings...
-    },
-    prepareBrowser: function(browser) {
-        // here you can add new commands to the browser object,
-        // where browser is a WebdriverIO session
-    },
-    prepareEnvironment: function () {
-        // here you can set environment variables or
-        // change / add Testplane's config
-    }
-};
-````
-
-</TabItem>
-
-</Tabs>
-
-### Description of configuration sections {#config_sections_description}
-
-The only required section in Testplane settings is the `browsers` section.
-
-In order not to repeat common [settings of each browser][browsers] over and over again, you can take them to the global level.
+In order not to repeat common [settings of each browser][browsers] like timeouts over and over again, you can take them to the top level of the config.
 
 <table>
 <thead>
@@ -93,14 +42,6 @@ In order not to repeat common [settings of each browser][browsers] over and over
 
 </tbody>
 </table>
-
-Follow the link or select the appropriate section in the left navigation menu of the documentation to read more about the relevant settings.
-
-## Usage {#usage}
-
-By default, Testplane searches for the file `.testplane.conf.js` at startup in the current working folder.
-
-You can set your configuration file using the `--config` CLI option, specifying the path to the file relative to the current working folder as the option value.
 
 [browsers]: ../browsers
 [sets]: ../sets

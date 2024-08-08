@@ -1,0 +1,49 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+<Tabs>
+    <TabItem value="String" label="String">
+        ```typescript title="testplane.config.ts"
+        import type { ConfigInput } from "testplane";
+
+        export default {
+        // ...
+        system: {
+        testRunEnv: ['browser', { viteConfig: './vite.config.ts' }]
+    },
+    }
+        ```
+    </TabItem>
+
+    <TabItem value="Object" label="Object">
+        ```typescript title="testplane.config.ts"
+        import type { ConfigInput } from "testplane";
+        import viteConfig from './vite.config.ts';
+
+        export default {
+        // ...
+        system: {
+        testRunEnv: ['browser', { viteConfig }]
+    },
+    }
+        ```
+    </TabItem>
+
+    <TabItem value="Function" label="Function">
+        ```typescript title="testplane.config.ts"
+        import type { ConfigInput } from "testplane";
+
+        export default {
+        // ...
+        system: {
+        testRunEnv: ['browser', {
+        viteConfig: (configEnv) => ({
+        // ...
+    }),
+    }],
+    },
+    }
+        ```
+    </TabItem>
+
+</Tabs>
