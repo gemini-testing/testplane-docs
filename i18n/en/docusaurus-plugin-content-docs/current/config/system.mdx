@@ -66,6 +66,7 @@ module.exports = {
 <tr><td>[testsPerWorker](#tests_per_worker)</td><td>Number</td><td>Infinity</td><td>The maximum number of tests that will be run in a single subprocess before the subprocess is restarted.</td></tr>
 <tr><td>[parallelLimit](#parallel_limit)</td><td>Number</td><td>1</td><td>The maximum number of browsers that can be launched simultaneously.</td></tr>
 <tr><td>[fileExtensions](#file_extensions)</td><td>Array</td><td>`[.js]`</td><td>File extensions in which Testplane will look for tests to run.</td></tr>
+<tr><td>[testRunEnv](#test_run_env)</td><td>"nodejs" or "browser" or Array</td><td>`nodejs`</td><td>Ability to specify in which environment the tests should be run.</td></tr>
 
 </tbody>
 </table>
@@ -160,4 +161,39 @@ By default, Testplane runs all browsers at the same time. Sometimes (for example
 
 File extensions in which Testplane will search on the file system for tests to run. By default: `[.js]`.
 
+### testRunEnv {#test_run_env}
+
+Ability to specify in which environment the tests should be run. There are two available environments:
+
+* `nodejs` – Testplane will run tests in nodejs process. Default value.
+* `browser` – Testplane will run tests inside of the browser.
+
+The `browser` environment has additional options:
+
+* `viteConfig` - ability to specify own [Vite configuration][vite-config]. You can pass relative path to the config file as `string`, object with [UserConfig][vite-user-config] type or function with `(env: ConfigEnv) => UserConfig | Promise<UserConfig>` type.
+
+```typescript
+// .testplane.conf.ts
+import viteConfig from './vite.config.ts';
+
+export const {
+    // ...
+    system: {
+        // ...
+        // as relative path to the config file
+        testRunEnv: ['browser', { viteConfig: './vite.config.ts' }],
+        // or use object with UserConfig type
+        testRunEnv: ['browser', { viteConfig }],
+        // or use function
+        testRunEnv: ['browser', {
+            viteConfig: (configEnv) => ({
+                // ...
+            })
+        }],
+    }
+}
+```
+
 [sauce-labs]: https://saucelabs.com
+[vite-config]: https://vitejs.dev/config/
+[vite-user-config]: https://github.com/vitejs/vite/blob/v5.1.6/packages/vite/src/node/config.ts#L127-L282
