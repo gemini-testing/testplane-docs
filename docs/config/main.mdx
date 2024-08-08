@@ -54,6 +54,9 @@ module.exports = {
     plugins: {
         // подключение внешних плагинов Testplane...
     },
+    lastFailed: {
+        // настройки перезапуска упавших тестов...
+    },
     prepareBrowser: function(browser) {
         // здесь можно добавить новые команды к объекту browser,
         // где browser - это сессия WebdriverIO
@@ -84,6 +87,7 @@ module.exports = {
 <tr><td>[sets][sets]</td><td>Раздел, позволяющий привязать набор тестов к определенным браузерам и запускать их сразу одной командой. Может пригодиться, например, для отдельного запуска десктопных и мобильных тестов.</td></tr>
 <tr><td>[system][system]</td><td>Раздел системных настроек Testplane. Позволяет задать число подпроцессов, в которых будут запускаться тесты, включить режим дебага для WebDriver, и многое другое.</td></tr>
 <tr><td>[plugins][plugins]</td><td>Раздел, с помощью которого можно подключить к testplane внешние плагины.</td></tr>
+<tr><td>[lastFailed][last-failed]</td><td>Раздел, с помощью которого можно настроить перезапуск упавших тестов.</td></tr>
 <tr><td>[prepareBrowser][prepare-browser]</td><td>Функция, в которой можно подготовить браузер до того, как в нем будут запущены тесты. Например, в этой функции можно добавить новые команды для объекта _browser_.</td></tr>
 <tr><td>[prepareEnvironment][prepare-environment]</td><td>Функция, в которой можно задать переменные окружения или, например, дополнить какие-то параметры конфига.</td></tr>
 
@@ -102,5 +106,6 @@ module.exports = {
 [sets]: ../sets
 [system]: ../system
 [plugins]: ../plugins
+[last-failed]: ../last-failed
 [prepare-browser]: ../prepare-browser
 [prepare-environment]: ../prepare-environment

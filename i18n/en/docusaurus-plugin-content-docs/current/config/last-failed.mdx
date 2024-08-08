@@ -1,0 +1,52 @@
+javascript
+import Admonition from "@theme/Admonition";
+
+# lastFailed
+
+## Overview {#overview}
+
+The `lastFailed` section in Testplane settings is optional.
+
+Use it to configure the rerun of failed tests.
+
+## Setup {#setup}
+
+The `lastFailed` section has the following format:
+
+```javascript
+module.exports = {
+    lastFailed: {
+        only: false,
+        input: [".testplane/failed.json"],
+        output: ".testplane/failed.json",
+    },
+
+    // other Testplane settings...
+};
+```
+
+### Description of Configuration Parameters {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[only](#only)</td><td>Boolean</td><td>false</td><td>Enable / disable the mode for rerunning failed tests.</td></tr>
+<tr><td>[input](#input)</td><td>String or Array</td><td>.testplane/failed.json</td><td>Path or list of paths for reading the list of failed tests.</td></tr>
+<tr><td>[output](#input)</td><td>String</td><td>.testplane/failed.json</td><td>Path for saving the list of failed tests.</td></tr>
+
+</tbody>
+</table>
+
+### only {#only}
+
+Enables the mode for rerunning failed tests, in which only the tests from the list specified in input are run if set to true. Default: `false`.
+
+### input {#input}
+
+Path or list of paths for reading the list of failed tests. If a list of file paths is specified, all tests that are found in at least one of them are rerun. Default: `.testplane/failed.json`
+
+### output {#output}
+
+Path for saving the list of failed tests. Always used regardless of the only option. Default: `.testplane/failed.json`
