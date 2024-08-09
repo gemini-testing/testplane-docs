@@ -51,8 +51,8 @@
         "message": "Быстрый старт",
         "description": "The label for the doc item Quickstart in sidebar mainSidebar, linking to the doc quickstart/index"
     },
-    "sidebar.mainSidebar.doc.Command Line Interface": {
-        "message": "Интерфейс командной строки",
+    "sidebar.mainSidebar.doc.CLI": {
+        "message": "CLI",
         "description": "The label for the doc item Command Line in sidebar mainSidebar, linking to the doc command-line/index"
     }
 }

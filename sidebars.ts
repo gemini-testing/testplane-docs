@@ -11,7 +11,7 @@ const sidebars: SidebarsConfig = {
         {
             type: "doc",
             id: "command-line/index",
-            label: "Command Line Interface",
+            label: "CLI",
         },
         {
             type: "category",
