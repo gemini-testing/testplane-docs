@@ -1,0 +1,251 @@
+import Admonition from "@theme/Admonition";
+
+# CLI {#cli}
+
+Testplane позволяет устанавливать параметры через CLI.
+
+## Обзор {#overview}
+
+Доступные опции:
+
+```
+-V, --version                вывести версию инструмента
+-c, --config <path>          путь к конфигурационному файлу
+-b, --browser <browser>      запустить тесты только в указанном браузере
+-s, --set <set>              запустить тесты только в указанном наборе
+-r, --require <module>       добавить модуль
+--reporter <reporter>        установить репортер
+--grep <grep>                запустить только тесты, соответствующие шаблону
+--update-refs                обновить эталоны скриншотов или создать их, если они не существуют (используеося командой "assertView")
+--inspect [inspect]          запустить node.js инспектор
+--inspect-brk [inspect-brk]  запустить nodejs инспектор с точкой останова в начале
+--repl [type]                запустить repl режим, позволяя вызвать `browser.switchToRepl` в коде теста для открытия repl интерфейса (по умолчанию: false)
+--repl-before-test [type]    запустить repl режим перед запуском теста (по умолчанию: false)
+--repl-on-fail [type]        запустить repl режим только в случае падения теста (по умолчанию: false)
+--devtools                   запустить тесты используя протокол автоматизации Chrome Devtools Protocol
+-h, --help                   вывести информацию об использовании
+```
+
+## Переопределение настроек {#overriding-settings}
+
+Все параметры можно переопределить с помощью флагов командной строки или переменных среды согласно следующим приоритетам (в порядке убывания):
+
+-   Опция командной строки;
+
+-   Переменная окружения;
+
+-   Значение в файле конфигурации;
+
+-   Значение по умолчанию.
+
+### Переопределение с помощью опции CLI {#overriding-cli-settings}
+
+Чтобы переопределить параметр конфигурации с помощью опции CLI, преобразуйте полный путь опции в `--kebab-case`.
+
+Например, чтобы переопределить свойство `baseUrl` в конфигурации:
+
+```bash
+testplane path/to/mytest.js --base-url http://example.com
+```
+
+Это также работает для вложенных свойств. Пример переопределения значения `browsers.firefox.sessionsPerBrowser` (предполагается, что Вы описали браузер с идентификатором "firefox"):
+
+```bash
+testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
+```
+
+### Переопределение с помощью переменной окружения {#overriding-env-settings}
+
+Чтобы переопределить настройку с помощью переменной окружения, переведите ее полный путь в `snake_case` и добавьте префикс `testplane_`.
+
+Примеры переопределения тех же значений `baseUrl` и `browsers.firefox.sessionsPerBrowser` с использованием переменных среды вместо опций CLI:
+
+```bash
+testplane_base_url=http://example.com testplane path/to/mytest.js
+testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
+```
+
+Помимо переопределения значений конфигурации, также существуют две дополнительные переменные среды: "TESTPLANE_SKIP_BROWSERS" и "TESTPLANE_SETS":
+
+#### TESTPLANE_SKIP_BROWSERS
+
+Пропустить браузеры, указанные в конфигурации, по их идентификатору. Несколько идентификаторов браузеров должны быть разделены запятой
+(допускаются пробелы после запятых).
+
+```bash
+TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
+```
+
+#### TESTPLANE_SETS
+
+Запускает только указанные наборы (альтернатива опции CLI `--set`).
+
+```bash
+TESTPLANE_SETS=desktop,touch testplane
+```
+
+## Version {#version}
+
+Вывести текущую версию `testplane`.
+
+```bash
+testplane --version
+```
+
+## Config {#config}
+
+Использовать заданный файл конфигурации.
+
+```bash
+testplane --config ./local.testplane.config.ts
+```
+
+## Browser {#browser}
+
+Запустить тесты только в указанном браузере.
+
+```bash
+testplane --browser chrome
+```
+
+## Set {#set}
+
+Запустить тесты только в указанном наборе.
+
+```bash
+testplane --set desktop
+```
+
+## Require {#require}
+
+Загрузить внешние модули, которые локально у вас на машине, перед запуском `testplane`. Это полезно для загрузчиков, таких как ECMAScript модули через [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane --require ./tsconfig-register-paths.js
+```
+
+## Reporter {#reporter}
+
+Может использоваться для установки одного из следующих терминальных отчетов:
+
+-   `flat` - вся информация об ошибках и повторных тестах будет сгруппирована по браузерам в конце отчета;
+-   `plain` - информация об ошибках и повторах будет размещена после каждого теста;
+-   `jsonl` - выводит подробную информацию о каждом результате теста в форме [jsonl](https://jsonlines.org/).
+
+По умолчанию - `flat`.
+
+По умолчанию информация о результатах тестов выводится в командную строку, но есть возможность перенаправить вывод в файл:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}'
+```
+
+Вы также можете создавать несколько отчетов:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --reporter flat
+```
+
+Помимо этих отчетов для терминала, вы можете использовать плагин [html-reporter][html-reporter] для создания html-отчетов.
+
+## Grep {#grep}
+
+Запусть только те тесты, полное название которых соответствует шаблону.
+
+### Пример {#grep-example}
+
+Если у вас есть некоторые тесты:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+То вы можете запустить тесты внутри набора "nested path" без запуска тестов внутри набора "other path" с помощью любого из этих вариантов:
+
+```bash
+testplane --grep "nested path"
+testplane --grep "with nested path"
+testplane --grep "test with nested path"
+```
+
+### Update refs {#update-refs}
+
+Запустить тесты, обновив все ссылки на снимки экрана, созданные командой [assertView][assert-view].
+
+```bash
+testplane --update-refs
+```
+
+<Admonition type="info">
+    Рекомендуемый способ обновления эталонов - использование плагина [html-reporter][html-reporter].
+</Admonition>
+
+## Inspect {#inspect}
+
+Запускает тесты Testplane с использованием [nodejs дебаггера](https://nodejs.org/en/docs/inspector).
+
+```bash
+testplane --inspect
+```
+
+<Admonition type="info">
+    В отладочном режиме запускается только один рабочий процесс, и все тесты выполняются только в
+    нем. Используйте этот режим с опцией `sessionsPerBrowser=1`, чтобы отлаживать тесты по одному.
+</Admonition>
+
+## Inspect break {#inspect-brk}
+
+То же самое, что и [Inspect](#inspect), но с точкой останова в начале.
+
+```bash
+testplane --inspect-brk
+```
+
+## REPL {#repl}
+
+Включает [REPL](https://ru.wikipedia.org/wiki/REPL). Также отключает таймаут продолжительности теста. Может быть включен с помощью указания следующих CLI опций:
+
+-   `--repl` - в этом режиме должен быть запущен только один тест в одном браузере, в противном случае выбрасывается ошибка. REPL интерфейс не запускается автоматически, поэтому вам нужно вызвать команду [switchToRepl][switch-to-repl] в коде теста;
+-   `--repl-before-test` - то же, что и опция `--repl`, за исключением того, что REPL интерфейс открывается автоматически перед запуском теста;
+-   `--repl-on-fail` - то же, что и опция `--repl`, за исключением того, что REPL интерфейс открывается автоматически при ошибке во время выполнения теста.
+
+```bash
+testplane --repl --grep 'my test name' --browser chrome
+```
+
+<Admonition type="info">
+    Больше информации о режиме REPL можно найти в документации команды
+    [switchToRepl][switch-to-repl].
+</Admonition>
+
+## Devtools {#devtools}
+
+Запускает тесты Testplane с использованием [протокола автоматизации devtools][webdriver-vs-cdp].
+
+```bash
+testplane --devtools
+```
+
+## Помощь {#help}
+
+Выводит информацию об опциях и командах. Плагины Testplane могут добавлять свои собственные команды и опции.
+
+Например, [html-reporter][html-reporter] добавляет команду `gui`.
+
+```bash
+testplane --help
+```
+
+[html-reporter]: ../html-reporter/html-reporter-setup
+[assert-view]: ../commands/browser/assertView
+[switch-to-repl]: ../commands/browser/switchToRepl
+[webdriver-vs-cdp]: ../reference/webdriver-vs-cdp

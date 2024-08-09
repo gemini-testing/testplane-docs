@@ -1,0 +1,251 @@
+import Admonition from "@theme/Admonition";
+
+# CLI {#cli}
+
+Testplane allows setting options via command line interface.
+
+## Overview {#overview}
+
+Available options:
+
+```
+-V, --version                output the version number
+-c, --config <path>          path to configuration file
+-b, --browser <browser>      run tests only in specified browser
+-s, --set <set>              run tests only in the specified set
+-r, --require <module>       require module
+--reporter <reporter>        test reporters
+--grep <grep>                run only tests matching the pattern
+--update-refs                update screenshot references or gather them if they do not exist ("assertView" command)
+--inspect [inspect]          nodejs inspector on [=[host:]port]
+--inspect-brk [inspect-brk]  nodejs inspector with break at the start
+--repl [type]                run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
+--repl-before-test [type]    open repl interface before test run (default: false)
+--repl-on-fail [type]        open repl interface on test fail only (default: false)
+--devtools                   switches the browser to the devtools mode with using CDP protocol
+-h, --help                   output usage information
+```
+
+## Overriding settings {#overriding-settings}
+
+All options can be overridden via command-line flags or environment variables with the following priorities, by descending:
+
+-   A command-line option;
+
+-   An environment variable;
+
+-   A config file value;
+
+-   The default value.
+
+### Overriding with CLI option {#overriding-cli-settings}
+
+To override a config setting with a CLI option, convert the full option path to `--kebab-case`.
+
+For example, to override config's `baseUrl` property:
+
+```bash
+testplane path/to/mytest.js --base-url http://example.com
+```
+
+It also works for nested properties. Example of overriding `browsers.firefox.sessionsPerBrowser` value (assuming you have defined browser with id "firefox"):
+
+```bash
+testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
+```
+
+### Overriding with environment variable {#overriding-env-settings}
+
+To override a setting with an environment variable, convert its full path to `snake_case` and add the `testplane_` prefix.
+
+Examples of overriding the same `baseUrl` and `browsers.firefox.sessionsPerBrowser` values using environment variables instead of CLI options:
+
+```bash
+testplane_base_url=http://example.com testplane path/to/mytest.js
+testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
+```
+
+Besides overriding config values, there also two extra environment variables: "TESTPLANE_SKIP_BROWSERS" and "TESTPLANE_SETS":
+
+#### TESTPLANE_SKIP_BROWSERS
+
+Skip the browsers specified in the config by passing the browser IDs. Multiple browser IDs should be separated by commas
+(spaces after commas are allowed).
+
+```bash
+TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
+```
+
+#### TESTPLANE_SETS
+
+Runs only specified sets (CLI option `--set` alternative).
+
+```bash
+TESTPLANE_SETS=desktop,touch testplane
+```
+
+## Version {#version}
+
+Print current `testplane` version.
+
+```bash
+testplane --version
+```
+
+## Config {#config}
+
+Use custom configuration file.
+
+```bash
+testplane --config ./local.testplane.config.ts
+```
+
+## Browser {#browser}
+
+Run tests only in specified browser.
+
+```bash
+testplane --browser chrome
+```
+
+## Set {#set}
+
+Run tests only in the specified set.
+
+```bash
+testplane --set desktop
+```
+
+## Require {#require}
+
+Load external modules, locally existing in your machine, before running `testplane`. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane --require ./tsconfig-register-paths.js
+```
+
+## Reporter {#reporter}
+
+Can be used to set one of the following reporters:
+
+-   `flat` - all information about failed and retried tests would be grouped by browsers at the end of the report;
+-   `plain` - information about fails and retries would be placed after each test;
+-   `jsonl` - displays detailed information about each test result in [jsonl](https://jsonlines.org/) form.
+
+Default is `flat`.
+
+Information about test results is displayed to the command line by default. But there is an ability to redirect the output to a file:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}'
+```
+
+You can also specify multiple reporters:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --reporter flat
+```
+
+Aside these terminal reporters, you can use [html-reporter][html-reporter] plugin in order to generate html reports.
+
+## Grep {#grep}
+
+Run only tests, which full name matches the pattern.
+
+### Example {#grep-example}
+
+If you have some tests:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+You can run tests inside "nested path" suite without running tests inside "other path" suite with any of these variants:
+
+```bash
+testplane --grep "nested path"
+testplane --grep "with nested path"
+testplane --grep "test with nested path"
+```
+
+### Update refs {#update-refs}
+
+Run tests, updating all screenshot references, created by [assertView][assert-view] command.
+
+```bash
+testplane --update-refs
+```
+
+<Admonition type="info">
+    Recommended way to update screenshots is using [html-reporter][html-reporter] plugin.
+</Admonition>
+
+## Inspect {#inspect}
+
+Runs Testplane tests using [nodejs inspector](https://nodejs.org/en/docs/inspector).
+
+```bash
+testplane --inspect
+```
+
+<Admonition type="info">
+    In the debugging mode, only one worker is started and all tests are performed only in it. Use
+    this mode with option `sessionsPerBrowser=1` in order to debug tests one at a time.
+</Admonition>
+
+## Inspect break {#inspect-brk}
+
+The same as [Inspect](#inspect), but with breakpoint at the start.
+
+```bash
+testplane --inspect-brk
+```
+
+## REPL {#repl}
+
+Enables a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). It also disables test duration timeout. Can be used by specifying following CLI options:
+
+-   `--repl` - in this mode, only one test in one browser should be run, otherwise an error is thrown. REPL interface does not start automatically, so you need to call [switchToRepl][switch-to-repl] command in the test code;
+-   `--repl-before-test` - the same as `--repl` option except that REPL interface opens automatically before run test;
+-   `--repl-on-fail` - the same as `--repl` option except that REPL interface opens automatically on test fail.
+
+```bash
+testplane --repl --grep 'my test name' --browser chrome
+```
+
+<Admonition type="info">
+    More information about Testplane REPL mode can be found in [switchToRepl][switch-to-repl]
+    command documentation.
+</Admonition>
+
+## Devtools {#devtools}
+
+Runs Testplane tests using [devtools automation protocol][webdriver-vs-cdp].
+
+```bash
+testplane --devtools
+```
+
+## Help {#help}
+
+Prints out information about options and commands. Testplane Plugins can add their own commands and options.
+
+For example, [html-reporter][html-reporter] adds `gui` command.
+
+```bash
+testplane --help
+```
+
+[html-reporter]: ../html-reporter/html-reporter-setup
+[assert-view]: ../commands/browser/assertView
+[switch-to-repl]: ../commands/browser/switchToRepl
+[webdriver-vs-cdp]: ../reference/webdriver-vs-cdp

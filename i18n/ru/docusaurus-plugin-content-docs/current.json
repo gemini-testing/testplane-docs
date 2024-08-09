@@ -50,5 +50,9 @@
     "sidebar.mainSidebar.doc.Quickstart": {
         "message": "Быстрый старт",
         "description": "The label for the doc item Quickstart in sidebar mainSidebar, linking to the doc quickstart/index"
+    },
+    "sidebar.mainSidebar.doc.CLI": {
+        "message": "CLI",
+        "description": "The label for the doc item Command Line in sidebar mainSidebar, linking to the doc command-line/index"
     }
 }
