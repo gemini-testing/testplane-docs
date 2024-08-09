@@ -1,82 +1,77 @@
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
-
 import Admonition from "@theme/Admonition";
+import PluginsExample from "@site/docs/config/_partials/examples/_plugins-example.mdx";
+import RegisterWorkersExample from "@site/docs/config/_partials/examples/_plugins-register-workers.mdx";
 
 # plugins
 
 ## Overview {#overview}
 
-Use the `plugins` section to mount external plugins to testplane, which will expand the available functionality.
+With the `plugins` section, you can connect external plugins to Testplane, which will expand the available functionality.
 
-For example, plugins [html-reporter][html-reporter] or [testplane-test-repeater][testplane-test-repeater].
+For example, plugins like [html-reporter][html-reporter] or [@testplane/safari-commands](https://github.com/gemini-testing/testplane-safari-commands).
 
-A plugin is a module that exports a single function with the following arguments:
+A plugin is a module that exports a single function, which takes the following arguments:
 
 -   Testplane instance
--   plugin options from Testplane config
+-   Plugin options from the Testplane config
 
-All plugins will be loaded before Testplane runs the tests.
+All plugins will be loaded before Testplane starts running tests.
 
 <Admonition type="tip">
-    When choosing a name for a plugin, add the prefix _testplane-_ to it. Then it will be easier to
-    search for such a plugin.
+    When choosing a name for a plugin, add the prefix _testplane-_ to it. This will make it easier
+    to find such a plugin.
 </Admonition>
 
-If the plugin name starts with the prefix `testplane-`, then you can omit this prefix when adding the plugin to the `plugins` section. If Testplane discovers modules with both names on the file system: _testplane-some-module_ and _some-module_, it will give preference to the module with the prefix `testplane-`.
+If the plugin name starts with the prefix `testplane-`, this prefix can be omitted when adding the plugin to the `plugins` section. If there are modules with both names on the file system: _testplane-some-module_ and _some-module_, preference will be given to the module with the `testplane-` prefix.
 
-## Draft example {#example}
+## Schematic Example {#example}
 
-<Tabs>
-<TabItem value=".testplane.conf.js" label=".testplane.conf.js">
-```javascript
-  module.exports = {
-      plugins: {
-          'my-cool-plugin': {
-              param: 'some-value'
-          },
+<PluginsExample />
 
-          // other Testplane plugins...
-      },
-
-      // other Testplane settings...
-
-};
-
-````
-</TabItem>
-
-
-<TabItem value="testplane-my-cool-plugin/index.js" label="testplane-my-cool-plugin/index.js">
-```javascript
-module.exports = function(testplane, opts) {
-    testplane.on(testplane.events.RUNNER_START, function(runner) {
-        console.info(opts.param); // outputs "some-value", see the plugin config in testplane
-
-        return setUp(testplane.config, opts.param); // config parameters can be changed
-    });
-
-    testplane.on(testplane.events.RUNNER_END, function() {
-        return tearDown();
-    });
-};
-````
-
-</TabItem>
-
-</Tabs>
-
-## Properties of Testplane instance {#testplane_instance}
+## Testplane Instance Properties {#testplane_instance}
 
 <table>
-<thead>
-<tr><td>config</td><td>The config to use in the test runner. Can be changed.</td></tr>
-</thead>
-<tbody>
-<tr><td>events</td><td>A list of events to subscribe to.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>`config`</td>
+            <td>The config used in the test runner. Can be modified.</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`events`</td>
+            <td>List of events that can be subscribed to.</td>
+        </tr>
+    </tbody>
 </table>
+
+You can learn more about events on the [corresponding page](../../reference/testplane-events).
+
+## Parallel Execution of Plugins
+
+The runner has a `registerWorkers` method, which can be used to register custom methods for running in Testplane workers.
+
+The `registerWorkers` method takes 2 arguments:
+
+-   `workerFilepath` — path to the file with functions, a string with an absolute path.
+-   `exportedMethods` — names of exported methods, an array of strings.
+
+The method returns an object with the methods listed in `exportedMethods`, which return promises with results.
+
+Note that the file in `workerFilepath` must export an object with the corresponding methods.
+
+Example:
+
+<RegisterWorkersExample />
+
+## Useful Plugins
+
+The Testplane ecosystem includes dozens of plugins. Here are some of them:
+
+-   [html-reporter](https://github.com/gemini-testing/html-reporter)
+-   [@testplane/safari-commands](https://github.com/gemini-testing/testplane-safari-commands)
+-   [@testplane/headless-chrome](https://github.com/gemini-testing/testplane-headless-chrome)
+-   ...and many others that can be found in [gemini-testing](https://github.com/search?q=topic%3Atestplane-plugin+org%3Agemini-testing&type=Repositories).
 
 [html-reporter]: ../../html-reporter/html-reporter-setup
 [testplane-test-repeater]: ../../plugins/testplane-test-repeater

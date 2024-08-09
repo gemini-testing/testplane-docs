@@ -1,0 +1,21 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    system: {
+        debug: false,
+        mochaOpts: {
+            timeout: 60000,
+        },
+        ctx: {
+            /* ... */
+        },
+        patternsOnReject: [/timeout/i, /timedout/i, /timed out/i],
+        workers: 1,
+        testsPerWorker: Infinity,
+        parallelLimit: 15,
+        fileExtensions: [".js", ".ts"],
+    },
+} satisfies ConfigInput;
+```

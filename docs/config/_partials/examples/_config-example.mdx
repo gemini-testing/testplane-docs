@@ -1,0 +1,32 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    retry: process.env.IS_CI ? 5 : 0,
+
+    httpTimeout: 60_000,
+    sessionsPerBrowser: 5,
+    testsPerSession: 20,
+
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+                automationProtocol: "devtools",
+                headless: true,
+            },
+        },
+    },
+    sets: {
+        desktop: {
+            files: ["testplane-tests/**/*.testplane.(t|j)s"],
+            browsers: ["chrome"],
+        },
+    },
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+        },
+    },
+} satisfies ConfigInput;
+```
