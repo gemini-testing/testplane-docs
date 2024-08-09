@@ -22,6 +22,6 @@ export default {
 export default async function (cookieName) {
     const cookies = await this.getCookies(cookieName);
 
-    assert.isTrue(cookies[0], `cookie с именем ${cookieName} не установлено`);
+    assert.isTrue(cookies[0], `cookie named ${cookieName} is not set`);
 }
 ```
