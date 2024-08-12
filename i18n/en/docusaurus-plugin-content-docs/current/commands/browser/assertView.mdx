@@ -13,7 +13,8 @@ Use the `assertView` command to take a screenshot for a specific test state and 
 
 ## Usage {#usage}
 
-```javascript
+```typescript
+await browser.assertView(state, options);
 await browser.assertView(state, selector, options);
 ```
 
@@ -25,7 +26,7 @@ await browser.assertView(state, selector, options);
 </thead>
 <tbody>
 <tr><td>[state](#state)</td><td>String</td><td>Required parameter. The name of the test state. It must be unique within a single test.</td></tr>
-<tr><td>[selector](#selector)</td><td>String or String[]</td><td>Required parameter. The DOM element selector to capture.</td></tr>
+<tr><td>[selector](#selector)</td><td>String or String[]</td><td>Optional parameter. Can be skipped. The DOM element selector to capture.</td></tr>
 <tr><td>[options](#options)</td><td>Object</td><td>Settings for the _assertView_ command.</td></tr>
 
 </tbody>
@@ -37,7 +38,17 @@ Required parameter. Specifies the name of the test state. The name must be uniqu
 
 ### selector
 
-Required parameter. Specifies the selector of the DOM element to capture.
+Required parameter. Specifies the selector of the DOM element to capture. If not specified or skipped, will be set to `body` and the following options will be automatically added to `options`: 
+```
+{
+    allowViewportOverflow: true,
+    compositeImage: false,
+    captureElementFromTop: false
+}
+``` 
+These additional options will have higher priority than `assertViewOpts` from config, but lower priority than options from `options` parameter passed by user.
+So, assertView without `selector` parameter will take a screenshot of the current viewport.
+
 
 ### options
 
@@ -148,9 +159,9 @@ Specifies the settings for the `assertView` command:
 
 ## Usage Examples {#examples}
 
-**example-1.js**
+**example-1.ts**
 
-```javascript
+```typescript
 it("should assert view", async ({ browser }) => {
     await browser.url("some/url");
     await browser.assertView("plain", ".button");
@@ -160,9 +171,22 @@ it("should assert view", async ({ browser }) => {
 });
 ```
 
-**example-2.js**
+**example-2.ts**
 
-```javascript
+```typescript
+it('should assert viewport without selector', async ({ browser }) => {
+    await browser.url('some/url');
+    await browser.execute(() => window.scrollTo(0, 1000));
+    await browser.assertView('plain'); 
+
+    await browser.$('.button').click();
+    await browser.assertView('clicked', { ignoreDiffPixelCount: 5 }); 
+});
+```
+
+**example-3.ts**
+
+```typescript
 it("should assert view with given options", async ({ browser }) => {
     await browser.url("some/url");
     await browser.assertView("plain", ".form", {
