@@ -25,7 +25,7 @@ await browser.assertView(state, selector, options);
 </thead>
 <tbody>
 <tr><td>[state](#state)</td><td>String</td><td>Обязательный параметр. Название состояния теста. Должно быть уникальным в пределах одного теста.</td></tr>
-<tr><td>[selector](#selector)</td><td>String или String[]</td><td>Необязательный параметр. Может быть пропущен. Селектор DOM-элемента, который необходимо заснять.</td></tr>
+<tr><td>[selector](#selector)</td><td>String или String[]</td><td>Необязательный параметр. Может быть пропущен. Селектор DOM-элемента, который необходимо заснять. При отсутствии команда скриншотит viewport.</td></tr>
 <tr><td>[options](#options)</td><td>Object</td><td>Настройки команды _assertView_.</td></tr>
 
 </tbody>
@@ -156,7 +156,7 @@ await browser.assertView(state, selector, options);
 
 ## Примеры использования {#examples}
 
-**example-1.ts**
+**Визуальная проверка элемента**
 
 ```typescript
 it("should assert view", async ({ browser }) => {
@@ -168,7 +168,7 @@ it("should assert view", async ({ browser }) => {
 });
 ```
 
-**example-2.ts**
+**Визуальная проверка всего вьюпорта**
 
 ```typescript
 it('should assert viewport without selector', async ({ browser }) => {
@@ -181,7 +181,7 @@ it('should assert viewport without selector', async ({ browser }) => {
 });
 ```
 
-**example-3.ts**
+**Визуальная проверка с дополнительными опциями**
 
 ```typescript
 it("should assert view with given options", async ({ browser }) => {
