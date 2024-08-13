@@ -1,0 +1,82 @@
+import Admonition from "@theme/Admonition";
+
+# switchToRepl
+
+## Overview {#overview}
+
+Use the `switchToRepl` command to stop the test execution and open an interactive `REPL` interface in the terminal where you can execute code line by line and observe the results in real-time. This mode allows for convenient debugging of problematic tests both in a locally installed browser and in a remote grid (for example, using [VNC][vnc]).
+
+For more convenient use of the `REPL` mode, it is recommended to use the [VS Code extension][extension].
+
+## Usage {#usage}
+
+```typescript
+await browser.runStep(stepName, stepCb);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`stepName`</td>
+            <td>`string`</td>
+            <td>Step name.</td>
+        </tr>
+        <tr>
+            <td>`context`</td>
+            <td>`Record<string, unknown>`</td>
+            <td>A context with data that will be available in the interactive console.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```typescript
+it("test", async ({ browser }) => {
+    console.log("before open repl");
+
+    await browser.switchToRepl();
+
+    console.log("after open repl");
+});
+```
+
+When executing this test, the text before open repl will first be printed to the console. Then, the test execution will stop, and an interactive `REPL` interface will open in the terminal, waiting for command input.
+For example, you can execute the following command and immediately get the result of its execution:
+
+```bash
+> await browser.getUrl();
+about:blank
+```
+
+After you finish working in the `REPL` (for instance, by pressing `Cmd+D`), the test execution will continue, and the text after open repl will be printed in the terminal console, after which the browser will close.
+
+You can also pass context to the REPL so that a variable is available in the interface. For example:
+
+```
+it("test", async ({browser}) => {
+    const counter = 1;
+
+    await browser.switchToRepl({ counter });
+});
+```
+
+Since we passed the `counter` variable to the context, it will be available in the terminal:
+
+```bash
+npx hermione --repl --grep "test" -b "chrome"
+> console.log("counter:", counter);
+counter: 1
+```
+
+[extension]: https://marketplace.visualstudio.com/items?itemName=gemini-testing.vscode-testplane
+[vnc]: https://novnc.com/info.html

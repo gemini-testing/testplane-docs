@@ -1,0 +1,83 @@
+import Admonition from "@theme/Admonition";
+
+# switchToRepl
+
+## Обзор {#overview}
+
+Используйте команду `switchToRepl`, чтобы остановить выполнение теста и открыть интерактивный интерфейс REPL в терминале, в котором можно выполнять код построчно и наблюдать за результатом выполнения в реальном времени.
+Этот режим позволяет удобно пошабого дебажить проблемные тесты как в локально установленном браузере, так и в удаленном гриде (например, с помощью [VNC][vnc]).
+
+Для более удобного использования REPL-режима рекомендуется использовать [расширение для VS Code][extension].
+
+<Admonition type="warning">
+    Данная команда доступна только при запуске `testplane` с опцией `--repl`. При запуске необходимо
+    явно указать тест и браузер, т.к. в REPL-режиме нельзя запускать сразу несколько тестов.
+</Admonition>
+
+## Использование {#usage}
+
+```typescript
+await browser.switchToRepl(ctx);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`context`</td>
+            <td>`Record<string, unknown>`</td>
+            <td>Контекст с данными, которые будут доступны в интерактивном режиме.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```typescript
+it("test", async ({ browser }) => {
+    console.log("before open repl");
+
+    await browser.switchToRepl();
+
+    console.log("after open repl");
+});
+```
+
+При выполнении данного теста сначала будет выведен текст `before open repl` в консоль. Затем выполнение теста остановится, и в терминале откроется интерактивный интерфейс REPL, ожидающий ввода команд.
+Например, можно выполнить следующую команду и сразу получить результат ее выполнения:
+
+```bash
+> await browser.getUrl();
+about:blank
+```
+
+После того, как вы закончите работу в REPL (например, нажатием `Cmd+D`), выполнение теста продолжится, и в консоли терминала будет выведен текст `after open repl`, а затем браузер закроется.
+
+Также, можно передать контекст в REPL, чтобы переменная была доступна в интерфейсе. Например:
+
+```
+it("test", async ({browser}) => {
+    const counter = 1;
+
+    await browser.switchToRepl({ counter });
+});
+```
+
+Т.к. мы передали в контекст переменную `counter`, то она будет доступна в терминале:
+
+```bash
+npx hermione --repl --grep "test" -b "chrome"
+> console.log("counter:", counter);
+counter: 1
+```
+
+[extension]: https://marketplace.visualstudio.com/items?itemName=gemini-testing.vscode-testplane
+[vnc]: https://novnc.com/info.html
