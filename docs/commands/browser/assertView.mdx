@@ -12,7 +12,8 @@ import Admonition from "@theme/Admonition";
 
 ## Использование {#usage}
 
-```javascript
+```typescript
+await browser.assertView(state, options);
 await browser.assertView(state, selector, options);
 ```
 
@@ -24,7 +25,7 @@ await browser.assertView(state, selector, options);
 </thead>
 <tbody>
 <tr><td>[state](#state)</td><td>String</td><td>Обязательный параметр. Название состояния теста. Должно быть уникальным в пределах одного теста.</td></tr>
-<tr><td>[selector](#selector)</td><td>String или String[]</td><td>Обязательный параметр. Селектор DOM-элемента, который необходимо заснять.</td></tr>
+<tr><td>[selector](#selector)</td><td>String или String[]</td><td>Необязательный параметр. Может быть пропущен. Селектор DOM-элемента, который необходимо заснять. При отсутствии команда скриншотит viewport.</td></tr>
 <tr><td>[options](#options)</td><td>Object</td><td>Настройки команды _assertView_.</td></tr>
 
 </tbody>
@@ -36,7 +37,17 @@ await browser.assertView(state, selector, options);
 
 ### selector
 
-Обязательный параметр. Задает селектор DOM-элемента, который необходимо заснять.
+Необязательный параметр. Может быть пропущен. Задает селектор DOM-элемента, который необходимо заснять. По умолчанию `body`. При его отсутствии `assertView` применяет следующие опции, которые имеют приоритет над `assertViewOpts` из конфига, но не над параметром `options`:
+
+```
+{
+    allowViewportOverflow: true,
+    compositeImage: false,
+    captureElementFromTop: false
+}
+```
+
+Таким образом, по умолчанию без параметра `options` `assertView` скриншотит viewport.
 
 ### options
 
@@ -147,9 +158,9 @@ await browser.assertView(state, selector, options);
 
 ## Примеры использования {#examples}
 
-**example-1.js**
+**Визуальная проверка элемента**
 
-```javascript
+```typescript
 it("should assert view", async ({ browser }) => {
     await browser.url("some/url");
     await browser.assertView("plain", ".button");
@@ -159,9 +170,22 @@ it("should assert view", async ({ browser }) => {
 });
 ```
 
-**example-2.js**
+**Визуальная проверка всего вьюпорта**
 
-```javascript
+```typescript
+it("should assert viewport without selector", async ({ browser }) => {
+    await browser.url("some/url");
+    await browser.execute(() => window.scrollTo(0, 1000));
+    await browser.assertView("plain");
+
+    await browser.$(".button").click();
+    await browser.assertView("clicked", { ignoreDiffPixelCount: 5 });
+});
+```
+
+**Визуальная проверка с дополнительными опциями**
+
+```typescript
 it("should assert view with given options", async ({ browser }) => {
     await browser.url("some/url");
     await browser.assertView("plain", ".form", {
