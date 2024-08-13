@@ -38,13 +38,15 @@ await browser.assertView(state, selector, options);
 ### selector
 
 Необязательный параметр. Может быть пропущен. Задает селектор DOM-элемента, который необходимо заснять. По умолчанию `body`. При его отсутствии `assertView` применяет следующие опции, которые имеют приоритет над `assertViewOpts` из конфига, но не над параметром `options`:
+
 ```
 {
     allowViewportOverflow: true,
     compositeImage: false,
     captureElementFromTop: false
 }
-``` 
+```
+
 Таким образом, по умолчанию без параметра `options` `assertView` скриншотит viewport.
 
 ### options
@@ -171,13 +173,13 @@ it("should assert view", async ({ browser }) => {
 **Визуальная проверка всего вьюпорта**
 
 ```typescript
-it('should assert viewport without selector', async ({ browser }) => {
-    await browser.url('some/url');
+it("should assert viewport without selector", async ({ browser }) => {
+    await browser.url("some/url");
     await browser.execute(() => window.scrollTo(0, 1000));
-    await browser.assertView('plain'); 
+    await browser.assertView("plain");
 
-    await browser.$('.button').click();
-    await browser.assertView('clicked', { ignoreDiffPixelCount: 5 }); 
+    await browser.$(".button").click();
+    await browser.assertView("clicked", { ignoreDiffPixelCount: 5 });
 });
 ```
 

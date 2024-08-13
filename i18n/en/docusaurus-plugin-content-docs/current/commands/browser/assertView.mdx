@@ -38,17 +38,18 @@ Required parameter. Specifies the name of the test state. The name must be uniqu
 
 ### selector
 
-Required parameter. Specifies the selector of the DOM element to capture. If not specified or skipped, will be set to `body` and the following options will be automatically added to `options`: 
+Required parameter. Specifies the selector of the DOM element to capture. If not specified or skipped, will be set to `body` and the following options will be automatically added to `options`:
+
 ```
 {
     allowViewportOverflow: true,
     compositeImage: false,
     captureElementFromTop: false
 }
-``` 
+```
+
 These additional options will have higher priority than `assertViewOpts` from config, but lower priority than options from `options` parameter passed by user.
 So, assertView without `selector` parameter will take a screenshot of the current viewport.
-
 
 ### options
 
@@ -174,13 +175,13 @@ it("should assert view", async ({ browser }) => {
 **Visual check of current viewport**
 
 ```typescript
-it('should assert viewport without selector', async ({ browser }) => {
-    await browser.url('some/url');
+it("should assert viewport without selector", async ({ browser }) => {
+    await browser.url("some/url");
     await browser.execute(() => window.scrollTo(0, 1000));
-    await browser.assertView('plain'); 
+    await browser.assertView("plain");
 
-    await browser.$('.button').click();
-    await browser.assertView('clicked', { ignoreDiffPixelCount: 5 }); 
+    await browser.$(".button").click();
+    await browser.assertView("clicked", { ignoreDiffPixelCount: 5 });
 });
 ```
 
