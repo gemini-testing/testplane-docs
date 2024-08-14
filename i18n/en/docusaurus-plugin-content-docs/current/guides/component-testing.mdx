@@ -1,0 +1,172 @@
+import Admonition from "@theme/Admonition";
+
+# Component Testing (experimental)
+
+## Introduction
+
+Read more about it in our blog post <a href="/en/blog/component-testing-intro">Component Testing</a>.
+
+## Example
+
+```typescript
+import { render } from '@testing-library/react';
+import Component from '../Component';
+
+it('should render react component', async ({browser}) => {
+    // Render component on isolated page
+    render(<Component />);
+
+    // Found button inside component and click on it
+    const button = await browser.$("button");
+    await button.click();
+
+    // Assert that button text has expected value
+    await expect(button).toHaveText("count is 1");
+});
+```
+
+## How to get started?
+
+Let's set up testing of react components written in Typescript.
+
+### Step 1: Install Testplane and the necessary dependencies
+
+```bash
+npm init testplane@latest
+npm i vite @vitejs/plugin-react @testing-library/react --save-dev
+npm i react --save
+```
+
+### Step 2: Create a Vite config and connect react plugin
+
+```typescript title="vite.config.ts"
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+});
+```
+
+### Step 3: Configure tests to run in the browser (using option [testRunEnv][test-run-env-option])
+
+```typescript title=".testplane.conf.ts"
+export const {
+    // ...
+    system: {
+        // ...
+        testRunEnv: ['browser', { viteConfig: './vite.config.ts' }],
+    },
+    sets: {
+        linux: {
+            files: [
+                'src/tests/**/*.testplane.tsx'
+            ],
+            browsers: [
+                'chrome'
+            ]
+        },
+    },
+}
+```
+
+### Step 4: Write a test
+
+To check the correct configuration, we can write the simplest test in which we output the `document` value to the console without using the [browser.execute][browser-execute] command:
+
+```typescript title="src/tests/test.testplane.tsx"
+it("should log document", async () => {
+    console.log(document);
+});
+```
+
+If such a test were performed in a Node.js environment, then it would have fallen with the error: `ReferenceError: document is not defined`. But in our case, it will be executed directly in the browser, where the global variable `document` is available. Therefore, in the browser and terminal log we will see the following:
+
+```
+{
+  location: {
+    ancestorOrigins: {},
+    href: 'http://localhost:56292/run-uuids/23d2af81-4259-425c-8214-c9e770d75ea4',
+    origin: 'http://localhost:56292',
+    protocol: 'http:',
+    host: 'localhost:56292',
+    hostname: 'localhost',
+    port: '56292',
+    pathname: '/run-uuids/23d2af81-4259-425c-8214-c9e770d75ea4',
+    search: '',
+    hash: ''
+  }
+}
+```
+
+Let's write a more complex test with a render of the react component:
+
+```typescript title="src/tests/test.testplane.tsx"
+import { render } from '@testing-library/react';
+import Component from '../Component';
+
+it('should render react component', async ({browser}) => {
+    // Render component on isolated page
+    render(<Component />);
+
+    // Found button inside component and click on it
+    const button = await browser.$("button");
+    await button.click();
+
+    // Assert that button text has expected value
+    await expect(button).toHaveText("count is 1");
+});
+```
+
+And the source code of the component itself:
+
+```typescript title="src/Component.tsx"
+import { useState } from 'react';
+
+// A simple component with a title and a counter button
+function Component() {
+    const [count, setCount] = useState(0);
+
+    return (
+        <div id="root">
+            <h1>Testplane Component Testing</h1>
+            <button onClick={() => setCount((count) => count + 1)}>
+                count is {count}
+            </button>
+        </div>
+    );
+}
+```
+
+A fully working examples can be found [here][testplane-examples-component-testing].
+
+## Temporary restrictions
+
+<Admonition type="warning">
+    * only components written in React in files `.jsx` and `.tsx` are supported. Ability to write
+    tests in `.js` files will be implemented soon. We will also support the Vue framework in the
+    near future; * there is no access to `currentTest` from `it`, `beforeEach` and `afterEach`. It
+    will appear in the near future; * the [@testplane/global-hook][testplane-global-hook] plugin is
+    temporarily not supported.
+</Admonition>
+
+## Additional features
+
+### Hot Module Replacement (HMR)
+
+[HMR][vite-hmr] is supported in Vite. It means if you change the loaded file, either the component will be remounted, or the page will be completely preloaded. If the component is described in a separate file (i.e. not in the same file as the test), a remount will be performed, but the test will not be restarted. And if you change the test file, the page will be reloaded, which will cause Testplane to interrupt the execution of the current test and start it again. Due to this feature, you can quickly develop components in Vite and write tests for them. It is recommended to use it together with the [REPL mode][repl-mode].
+
+### Using the browser and expect instances directly in the browser DevTools
+
+Instances of the `browser` and `expect` are available inside of the browser's global scope. It is quite convenient to use it when debugging the test.
+
+### Logs from the browser console in the terminal
+
+Calling the `log`, `info`, `warn`, `error`, `debug` and `table` commands on the `console` object in the browser causes information to be displayed not only in the browser's DevTools, but also in the terminal from which Testplane was launched. I.e., you can call `console.log` in the test/component and you will be able to see the result of it execution in the terminal. This is especially handy when debugging the test.
+
+[test-run-env-option]: ../config/system.mdx#testrunenv
+[browser-execute]: ../commands/browser/execute.mdx
+[testplane-examples-component-testing]: https://github.com/gemini-testing/testplane/tree/master/examples/component-testing
+[testplane-global-hook]: https://github.com/gemini-testing/testplane-global-hook
+[vite-hmr]: https://vitejs.dev/guide/api-hmr.html
+[repl-mode]: ../command-line/index.mdx#repl

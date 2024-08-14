@@ -40,6 +40,7 @@ Example configuration of the `system` section:
     <tr><td>[`diffColor`](#diff_color)</td><td>`string`</td><td>`"#ff00ff"`</td><td>Color to display the diff in screenshots.</td></tr>
     <tr><td>[`parallelLimit`](#parallel_limit)</td><td>`number`</td><td>`1`</td><td>Maximum number of browsers that can be launched simultaneously.</td></tr>
     <tr><td>[`fileExtensions`](#file_extensions)</td><td>`string[]`</td><td>`[".js", ".mjs", ".ts", ".mts", ".jsx", ".tsx"]`</td><td>File extensions in which Testplane will search for tests to run.</td></tr>
+    <tr><td>[testRunEnv](#testrunenv)</td><td>`nodejs` or `browser` or `Array`</td><td>`nodejs`</td><td>Ability to specify in which environment the tests should be run.</td></tr>
     </tbody>
 </table>
 
@@ -154,10 +155,12 @@ Allows specifying the environment in which tests should be run. The following en
 
 When using the `browser` value, you can specify additional options:
 
--   `viteConfig` — custom [Vite config](https://vitejs.dev/config/). You can specify a string — path to the configuration file, an object — [UserConfig](https://github.com/vitejs/vite/blob/v5.1.6/packages/vite/src/node/config.ts#L127-L282) or a function — with the type `(env: ConfigEnv) => UserConfig | Promise<UserConfig>`.
+-   `viteConfig` — custom [Vite config][vite-config]. You can specify a string — path to the configuration file, an object — [UserConfig][vite-user-config] or a function — with the type `(env: ConfigEnv) => UserConfig | Promise<UserConfig>`.
 
 Usage examples:
 
 <TestRunEnvExample />
 
 [sauce-labs]: https://saucelabs.com
+[vite-config]: https://vitejs.dev/config/
+[vite-user-config]: https://github.com/vitejs/vite/blob/v5.1.6/packages/vite/src/node/config.ts#L127-L282
