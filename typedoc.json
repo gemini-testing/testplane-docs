@@ -1,5 +1,6 @@
 {
     "$schema": "https://typedoc-plugin-markdown.org/schema.json",
+    "basePath": ".testplane/",
     "tsconfig": ".testplane/tsconfig.json",
     "name": "testplane",
     "entryPoints": [".testplane/src/index.ts"],
