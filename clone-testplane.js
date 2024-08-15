@@ -14,8 +14,8 @@ if (fs.existsSync(tempDir)) {
 
 if (LOCAL) {
     // Create a symlink to the local repo
-    fs.symlinkSync(LOCAL_REPO_DIR, tempDir, 'dir');
-    console.log(`Linked local testplane repo from ${LOCAL_REPO_DIR} to ${tempDir}`);
+    execSync(`cp -r ${LOCAL_REPO_DIR}/. ${tempDir}`);
+    console.log(`Copied local testplane repo from ${LOCAL_REPO_DIR} to ${tempDir}`);
 } else {
     fs.mkdirSync(tempDir);
 

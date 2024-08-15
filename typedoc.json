@@ -18,7 +18,7 @@
     "classPropertiesFormat": "htmlTable",
     "excludeProtected": true,
     "fileExtension": ".mdx",
-    "mergeReadme": true,
+    "gitRemote": "origin",
 
     "locales": {
         "ru": {
