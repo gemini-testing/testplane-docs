@@ -1,0 +1,27 @@
+[testplane](../README.mdx) / ConfigInput
+
+# Type Alias: ConfigInput
+
+```ts
+type ConfigInput: Partial<CommonConfig> & {
+  browsers: Record<string, Partial<CommonConfig> & {
+     desiredCapabilities: WebdriverIO.Capabilities;
+    }>;
+  plugins: Record<string, unknown>;
+  prepareEnvironment: () => void | null;
+  sets: Record<string, SetsConfig>;
+};
+```
+
+## Type declaration
+
+| Name | Type | Defined in |
+| ------ | ------ | ------ |
+| `browsers` | `Record`\<`string`, `Partial`\<[`CommonConfig`](../interfaces/CommonConfig.mdx)\> & \{ `desiredCapabilities`: `WebdriverIO.Capabilities`; \}\> | testplane-docs/.testplane/src/config/types.ts:197 |
+| `plugins` | `Record`\<`string`, `unknown`\> | testplane-docs/.testplane/src/config/types.ts:198 |
+| `prepareEnvironment` | () => `void` \| `null` | testplane-docs/.testplane/src/config/types.ts:200 |
+| `sets` | `Record`\<`string`, [`SetsConfig`](../interfaces/SetsConfig.mdx)\> | testplane-docs/.testplane/src/config/types.ts:199 |
+
+## Defined in
+
+testplane-docs/.testplane/src/config/types.ts:196

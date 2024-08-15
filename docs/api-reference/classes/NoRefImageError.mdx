@@ -1,0 +1,144 @@
+[testplane](../README.mdx) / NoRefImageError
+
+# Class: NoRefImageError
+
+## Extends
+
+- `BaseStateError`
+
+## Constructors
+
+### new NoRefImageError()
+
+```ts
+new NoRefImageError(
+   stateName, 
+   currImg, 
+   refImg): NoRefImageError
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `stateName` | `string` |
+| `currImg` | [`ImageInfo`](../interfaces/ImageInfo.mdx) |
+| `refImg` | [`RefImageInfo`](../interfaces/RefImageInfo.mdx) |
+
+#### Returns
+
+[`NoRefImageError`](NoRefImageError.mdx)
+
+#### Overrides
+
+`BaseStateError.constructor`
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser/commands/assert-view/errors/no-ref-image-error.ts:26
+
+## Properties
+
+| Property | Modifier | Type | Description | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ | ------ |
+| `currImg` | `public` | [`ImageInfo`](../interfaces/ImageInfo.mdx) | - | `BaseStateError.currImg` | testplane-docs/.testplane/src/browser/commands/assert-view/errors/base-state-error.ts:4 |
+| `message` | `public` | `string` | - | `BaseStateError.message` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1077 |
+| `name` | `public` | `string` | - | `BaseStateError.name` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1076 |
+| `refImg` | `public` | [`RefImageInfo`](../interfaces/RefImageInfo.mdx) | - | `BaseStateError.refImg` | testplane-docs/.testplane/src/browser/commands/assert-view/errors/base-state-error.ts:4 |
+| `stack?` | `public` | `string` | - | `BaseStateError.stack` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1078 |
+| `stateName` | `public` | `string` | - | `BaseStateError.stateName` | testplane-docs/.testplane/src/browser/commands/assert-view/errors/base-state-error.ts:4 |
+| `prepareStackTrace?` | `static` | (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any` | Optional override for formatting stack traces **See** https://v8.dev/docs/stack-trace-api#customizing-stack-traces | `BaseStateError.prepareStackTrace` | testplane/node\_modules/@types/node/globals.d.ts:27 |
+| `stackTraceLimit` | `static` | `number` | - | `BaseStateError.stackTraceLimit` | testplane/node\_modules/@types/node/globals.d.ts:29 |
+
+## Methods
+
+### captureStackTrace()
+
+```ts
+static captureStackTrace(targetObject, constructorOpt?): void
+```
+
+Create .stack property on a target object
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `targetObject` | `object` |
+| `constructorOpt`? | `Function` |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+`BaseStateError.captureStackTrace`
+
+#### Defined in
+
+testplane/node\_modules/@types/node/globals.d.ts:20
+
+***
+
+### create()
+
+```ts
+static create<T>(
+   this, 
+   stateName, 
+   currImg, 
+   refImg): T
+```
+
+#### Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` *extends* [`NoRefImageError`](NoRefImageError.mdx) |
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `this` | `NoRefImageErrorConstructor`\<`T`\> |
+| `stateName` | `string` |
+| `currImg` | [`ImageInfo`](../interfaces/ImageInfo.mdx) |
+| `refImg` | [`RefImageInfo`](../interfaces/RefImageInfo.mdx) |
+
+#### Returns
+
+`T`
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser/commands/assert-view/errors/no-ref-image-error.ts:13
+
+***
+
+### fromObject()
+
+```ts
+static fromObject<T>(this, data): T
+```
+
+#### Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` *extends* [`NoRefImageError`](NoRefImageError.mdx) |
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `this` | `NoRefImageErrorConstructor`\<`T`\> |
+| `data` | `NoRefImageErrorData` |
+
+#### Returns
+
+`T`
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser/commands/assert-view/errors/no-ref-image-error.ts:22

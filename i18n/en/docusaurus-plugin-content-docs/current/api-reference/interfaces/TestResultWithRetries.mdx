@@ -1,0 +1,467 @@
+[testplane](../README.mdx) / TestResultWithRetries
+
+# Interface: TestResultWithRetries
+
+## Extends
+
+- [`TestResult`](TestResult.mdx)
+
+## Properties
+
+| Property | Modifier | Type | Default value | Description | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| `assertViewResults` | `public` | [`AssertViewResult`](../type-aliases/AssertViewResult.mdx)[] | `undefined` | - | [`TestResult`](TestResult.mdx).`assertViewResults` | testplane-docs/.testplane/src/types/index.ts:135 |
+| `description?` | `public` | `string` | `undefined` | - | [`TestResult`](TestResult.mdx).`description` | testplane-docs/.testplane/src/types/index.ts:136 |
+| `duration` | `public` | `number` | `undefined` | - | [`TestResult`](TestResult.mdx).`duration` | testplane-docs/.testplane/src/types/index.ts:137 |
+| `err?` | `public` | [`TestError`](TestError.mdx) | `undefined` | - | [`TestResult`](TestResult.mdx).`err` | testplane-docs/.testplane/src/types/index.ts:138 |
+| `fn` | `public` | `TestFunction`\<[`TestFunctionCtx`](TestFunctionCtx.mdx)\> | `undefined` | - | [`TestResult`](TestResult.mdx).`fn` | testplane-docs/.testplane/src/test-reader/test-object/test.ts:10 |
+| ~~`hermioneCtx`~~ | `public` | [`ExecutionThreadToolCtx`](ExecutionThreadToolCtx.mdx) | `undefined` | **Deprecated** Use `testplaneCtx` instead | [`TestResult`](TestResult.mdx).`hermioneCtx` | testplane-docs/.testplane/src/types/index.ts:143 |
+| `history` | `public` | [`CommandHistory`](CommandHistory.mdx) | `undefined` | - | [`TestResult`](TestResult.mdx).`history` | testplane-docs/.testplane/src/types/index.ts:144 |
+| `meta` | `public` | \{\} | `undefined` | - | [`TestResult`](TestResult.mdx).`meta` | testplane-docs/.testplane/src/types/index.ts:145 |
+| `parent` | `public` | `null` \| [`Suite`](../classes/Suite.mdx) | `null` | - | [`TestResult`](TestResult.mdx).`parent` | testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:6 |
+| `retriesLeft` | `public` | `number` | `undefined` | - | - | testplane-docs/.testplane/src/types/index.ts:151 |
+| `sessionId` | `public` | `string` | `undefined` | - | [`TestResult`](TestResult.mdx).`sessionId` | testplane-docs/.testplane/src/types/index.ts:146 |
+| `startTime` | `public` | `number` | `undefined` | - | [`TestResult`](TestResult.mdx).`startTime` | testplane-docs/.testplane/src/types/index.ts:147 |
+| `testplaneCtx` | `public` | [`ExecutionThreadToolCtx`](ExecutionThreadToolCtx.mdx) | `undefined` | - | [`TestResult`](TestResult.mdx).`testplaneCtx` | testplane-docs/.testplane/src/types/index.ts:139 |
+
+## Accessors
+
+### browserId
+
+```ts
+get browserId(): string
+```
+
+```ts
+set browserId(id): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `id` | `string` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`browserId`](TestResult.mdx#browserid)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:93
+
+***
+
+### browserVersion
+
+```ts
+get browserVersion(): undefined | string
+```
+
+```ts
+set browserVersion(version): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `version` | `string` |
+
+#### Returns
+
+`undefined` \| `string`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`browserVersion`](TestResult.mdx#browserversion)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:101
+
+***
+
+### disabled
+
+```ts
+get disabled(): boolean
+```
+
+```ts
+set disabled(val): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `val` | `boolean` |
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`disabled`](TestResult.mdx#disabled)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:69
+
+***
+
+### file
+
+```ts
+get file(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`file`](TestResult.mdx#file)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:45
+
+***
+
+### hasBrowserVersionOverwritten
+
+```ts
+get hasBrowserVersionOverwritten(): boolean
+```
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`hasBrowserVersionOverwritten`](TestResult.mdx#hasbrowserversionoverwritten)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:105
+
+***
+
+### id
+
+```ts
+get id(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`id`](TestResult.mdx#id)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:41
+
+***
+
+### pending
+
+```ts
+get pending(): boolean
+```
+
+```ts
+set pending(val): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `val` | `boolean` |
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`pending`](TestResult.mdx#pending)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:53
+
+***
+
+### silentSkip
+
+```ts
+get silentSkip(): boolean
+```
+
+```ts
+set silentSkip(val): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `val` | `boolean` |
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`silentSkip`](TestResult.mdx#silentskip)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:77
+
+***
+
+### skipReason
+
+```ts
+get skipReason(): string
+```
+
+```ts
+set skipReason(reason): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `reason` | `string` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`skipReason`](TestResult.mdx#skipreason)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:61
+
+***
+
+### timeout
+
+```ts
+get timeout(): number
+```
+
+```ts
+set timeout(timeout): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `timeout` | `number` |
+
+#### Returns
+
+`number`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`timeout`](TestResult.mdx#timeout)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:85
+
+***
+
+### title
+
+```ts
+get title(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`title`](TestResult.mdx#title)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:16
+
+## Methods
+
+### assign()
+
+```ts
+assign(src): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `src` | `this` |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`assign`](TestResult.mdx#assign)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:20
+
+***
+
+### clone()
+
+```ts
+clone(): Test
+```
+
+#### Returns
+
+[`Test`](../classes/Test.mdx)
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`clone`](TestResult.mdx#clone)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/test.ts:23
+
+***
+
+### disable()
+
+```ts
+disable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`disable`](TestResult.mdx#disable)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:31
+
+***
+
+### enable()
+
+```ts
+enable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`enable`](TestResult.mdx#enable)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:36
+
+***
+
+### fullTitle()
+
+```ts
+fullTitle(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`fullTitle`](TestResult.mdx#fulltitle)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:30
+
+***
+
+### skip()
+
+```ts
+skip(__namedParameters): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `SkipData` |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`skip`](TestResult.mdx#skip)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:26
+
+***
+
+### titlePath()
+
+```ts
+titlePath(): string[]
+```
+
+#### Returns
+
+`string`[]
+
+#### Inherited from
+
+[`TestResult`](TestResult.mdx).[`titlePath`](TestResult.mdx#titlepath)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:20

@@ -1,0 +1,177 @@
+[testplane](../README.mdx) / ImageDiffError
+
+# Class: ImageDiffError
+
+## Extends
+
+- `BaseStateError`
+
+## Constructors
+
+### new ImageDiffError()
+
+```ts
+new ImageDiffError(__namedParameters): ImageDiffError
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `object` |
+| `__namedParameters.currImg` | [`ImageInfo`](../interfaces/ImageInfo.mdx) |
+| `__namedParameters.diffAreas`? | `DiffAreas` |
+| `__namedParameters.diffBuffer` | `Buffer` |
+| `__namedParameters.diffOpts` | `DiffOptions` |
+| `__namedParameters.diffRatio` | `number` |
+| `__namedParameters.differentPixels` | `number` |
+| `__namedParameters.refImg` | [`RefImageInfo`](../interfaces/RefImageInfo.mdx) |
+| `__namedParameters.stateName` | `string` |
+
+#### Returns
+
+[`ImageDiffError`](ImageDiffError.mdx)
+
+#### Overrides
+
+`BaseStateError.constructor`
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:79
+
+## Properties
+
+| Property | Modifier | Type | Description | Overrides | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| `currImg` | `public` | [`ImageInfo`](../interfaces/ImageInfo.mdx) | - | - | `BaseStateError.currImg` | testplane-docs/.testplane/src/browser/commands/assert-view/errors/base-state-error.ts:4 |
+| `diffBounds?` | `public` | `CoordBounds` | - | - | - | testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:43 |
+| `diffBuffer` | `public` | `Buffer` | - | - | - | testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:45 |
+| `diffClusters?` | `public` | `CoordBounds`[] | - | - | - | testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:44 |
+| `diffOpts` | `public` | `DiffOptions` | - | - | - | testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:42 |
+| `diffRatio` | `public` | `number` | - | - | - | testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:47 |
+| `differentPixels` | `public` | `number` | - | - | - | testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:46 |
+| `message` | `public` | `string` | - | `BaseStateError.message` | - | testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:41 |
+| `name` | `public` | `string` | - | - | `BaseStateError.name` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1076 |
+| `refImg` | `public` | [`RefImageInfo`](../interfaces/RefImageInfo.mdx) | - | - | `BaseStateError.refImg` | testplane-docs/.testplane/src/browser/commands/assert-view/errors/base-state-error.ts:4 |
+| `stack?` | `public` | `string` | - | - | `BaseStateError.stack` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1078 |
+| `stateName` | `public` | `string` | - | - | `BaseStateError.stateName` | testplane-docs/.testplane/src/browser/commands/assert-view/errors/base-state-error.ts:4 |
+| `prepareStackTrace?` | `static` | (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any` | Optional override for formatting stack traces **See** https://v8.dev/docs/stack-trace-api#customizing-stack-traces | - | `BaseStateError.prepareStackTrace` | testplane/node\_modules/@types/node/globals.d.ts:27 |
+| `stackTraceLimit` | `static` | `number` | - | - | `BaseStateError.stackTraceLimit` | testplane/node\_modules/@types/node/globals.d.ts:29 |
+
+## Methods
+
+### saveDiffTo()
+
+```ts
+saveDiffTo(diffPath): Promise<null>
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `diffPath` | `string` |
+
+#### Returns
+
+`Promise`\<`null`\>
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:109
+
+***
+
+### captureStackTrace()
+
+```ts
+static captureStackTrace(targetObject, constructorOpt?): void
+```
+
+Create .stack property on a target object
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `targetObject` | `object` |
+| `constructorOpt`? | `Function` |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+`BaseStateError.captureStackTrace`
+
+#### Defined in
+
+testplane/node\_modules/@types/node/globals.d.ts:20
+
+***
+
+### create()
+
+```ts
+static create<T>(this, __namedParameters): T
+```
+
+#### Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` *extends* [`ImageDiffError`](ImageDiffError.mdx) |
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `this` | `ImageDiffErrorConstructor`\<`T`\> |
+| `__namedParameters` | `object` |
+| `__namedParameters.currImg` | [`ImageInfo`](../interfaces/ImageInfo.mdx) |
+| `__namedParameters.diffAreas`? | `DiffAreas` |
+| `__namedParameters.diffBuffer` | `Buffer` |
+| `__namedParameters.diffOpts` | `DiffOptions` |
+| `__namedParameters.diffRatio` | `number` |
+| `__namedParameters.differentPixels` | `number` |
+| `__namedParameters.refImg` | [`RefImageInfo`](../interfaces/RefImageInfo.mdx) |
+| `__namedParameters.stateName` | `string` |
+
+#### Returns
+
+`T`
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:49
+
+***
+
+### fromObject()
+
+```ts
+static fromObject<T>(this, data): T
+```
+
+#### Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` |
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `this` | `ImageDiffErrorConstructor`\<`T`\> |
+| `data` | `ImageDiffErrorData` |
+
+#### Returns
+
+`T`
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser/commands/assert-view/errors/image-diff-error.ts:74

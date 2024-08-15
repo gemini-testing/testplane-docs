@@ -1,0 +1,66 @@
+[testplane](../README.mdx) / CancelledError
+
+# Class: CancelledError
+
+## Extends
+
+- `Error`
+
+## Constructors
+
+### new CancelledError()
+
+```ts
+new CancelledError(): CancelledError
+```
+
+#### Returns
+
+[`CancelledError`](CancelledError.mdx)
+
+#### Overrides
+
+`Error.constructor`
+
+#### Defined in
+
+testplane-docs/.testplane/src/browser-pool/cancelled-error.ts:5
+
+## Properties
+
+| Property | Modifier | Type | Default value | Description | Overrides | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| `message` | `public` | `string` | `"Browser request was cancelled"` | - | `Error.message` | - | testplane-docs/.testplane/src/browser-pool/cancelled-error.ts:3 |
+| `name` | `public` | `string` | `"CancelledError"` | - | `Error.name` | - | testplane-docs/.testplane/src/browser-pool/cancelled-error.ts:2 |
+| `stack?` | `public` | `string` | `undefined` | - | - | `Error.stack` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1078 |
+| `prepareStackTrace?` | `static` | (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any` | `undefined` | Optional override for formatting stack traces **See** https://v8.dev/docs/stack-trace-api#customizing-stack-traces | - | `Error.prepareStackTrace` | testplane/node\_modules/@types/node/globals.d.ts:27 |
+| `stackTraceLimit` | `static` | `number` | `undefined` | - | - | `Error.stackTraceLimit` | testplane/node\_modules/@types/node/globals.d.ts:29 |
+
+## Methods
+
+### captureStackTrace()
+
+```ts
+static captureStackTrace(targetObject, constructorOpt?): void
+```
+
+Create .stack property on a target object
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `targetObject` | `object` |
+| `constructorOpt`? | `Function` |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+`Error.captureStackTrace`
+
+#### Defined in
+
+testplane/node\_modules/@types/node/globals.d.ts:20

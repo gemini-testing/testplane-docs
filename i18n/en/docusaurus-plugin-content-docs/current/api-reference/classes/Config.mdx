@@ -1,0 +1,307 @@
+[testplane](../README.mdx) / Config
+
+# Class: Config
+
+## Extends
+
+- [`CommonConfig`](../interfaces/CommonConfig.mdx)
+
+## Constructors
+
+### new Config()
+
+```ts
+new Config(config?): Config
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `config`? | `string` \| [`ConfigInput`](../type-aliases/ConfigInput.mdx) |
+
+#### Returns
+
+[`Config`](Config.mdx)
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/index.ts:28
+
+## Properties
+
+| Property | Type | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ |
+| `antialiasingTolerance` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`antialiasingTolerance` | testplane-docs/.testplane/src/config/types.ts:133 |
+| `assertViewOpts` | [`AssertViewOptsConfig`](../interfaces/AssertViewOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).`assertViewOpts` | testplane-docs/.testplane/src/config/types.ts:136 |
+| `automationProtocol` | `"webdriver"` \| `"devtools"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`automationProtocol` | testplane-docs/.testplane/src/config/types.ts:97 |
+| `baseUrl` | `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`baseUrl` | testplane-docs/.testplane/src/config/types.ts:104 |
+| `browsers` | `Record`\<`string`, `BrowserConfig`\> | - | testplane-docs/.testplane/src/config/types.ts:213 |
+| `buildDiffOpts` | [`BuildDiffOptsConfig`](../interfaces/BuildDiffOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).`buildDiffOpts` | testplane-docs/.testplane/src/config/types.ts:135 |
+| `calibrate` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`calibrate` | testplane-docs/.testplane/src/config/types.ts:127 |
+| `compareOpts` | [`CompareOptsConfig`](../interfaces/CompareOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).`compareOpts` | testplane-docs/.testplane/src/config/types.ts:134 |
+| `compositeImage` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`compositeImage` | testplane-docs/.testplane/src/config/types.ts:128 |
+| `configPath` | `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`configPath` | testplane-docs/.testplane/src/config/index.ts:10 |
+| `desiredCapabilities` | `null` \| `Capabilities` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`desiredCapabilities` | testplane-docs/.testplane/src/config/types.ts:98 |
+| `devServer` | \{ `args`: `string`[]; `command`: `null` \| `string`; `cwd`: `null` \| `string`; `env`: `Record`\<`string`, `string`\>; `logs`: `boolean`; `readinessProbe`: `ReadinessProbe`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).`devServer` | testplane-docs/.testplane/src/config/types.ts:170 |
+| `devServer.args` | `string`[] | - | testplane-docs/.testplane/src/config/types.ts:174 |
+| `devServer.command` | `null` \| `string` | - | testplane-docs/.testplane/src/config/types.ts:171 |
+| `devServer.cwd` | `null` \| `string` | - | testplane-docs/.testplane/src/config/types.ts:172 |
+| `devServer.env` | `Record`\<`string`, `string`\> | - | testplane-docs/.testplane/src/config/types.ts:173 |
+| `devServer.logs` | `boolean` | - | testplane-docs/.testplane/src/config/types.ts:175 |
+| `devServer.readinessProbe` | `ReadinessProbe` | - | testplane-docs/.testplane/src/config/types.ts:176 |
+| `expectOpts` | [`ExpectOptsConfig`](../interfaces/ExpectOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).`expectOpts` | testplane-docs/.testplane/src/config/types.ts:137 |
+| `gridUrl` | `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`gridUrl` | testplane-docs/.testplane/src/config/types.ts:103 |
+| `headers` | `null` \| `Record`\<`string`, `string`\> | [`CommonConfig`](../interfaces/CommonConfig.mdx).`headers` | testplane-docs/.testplane/src/config/types.ts:142 |
+| `headless` | `null` \| `boolean` \| `"old"` \| `"new"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`headless` | testplane-docs/.testplane/src/config/types.ts:153 |
+| `httpTimeout` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`httpTimeout` | testplane-docs/.testplane/src/config/types.ts:109 |
+| `isolation` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`isolation` | testplane-docs/.testplane/src/config/types.ts:154 |
+| `key` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`key` | testplane-docs/.testplane/src/config/types.ts:149 |
+| `lastFailed` | \{ `input`: `string` \| `string`[]; `only`: `boolean`; `output`: `string`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).`lastFailed` | testplane-docs/.testplane/src/config/types.ts:156 |
+| `lastFailed.input` | `string` \| `string`[] | - | testplane-docs/.testplane/src/config/types.ts:158 |
+| `lastFailed.only` | `boolean` | - | testplane-docs/.testplane/src/config/types.ts:157 |
+| `lastFailed.output` | `string` | - | testplane-docs/.testplane/src/config/types.ts:159 |
+| `meta` | \{\} | [`CommonConfig`](../interfaces/CommonConfig.mdx).`meta` | testplane-docs/.testplane/src/config/types.ts:138 |
+| `openAndWaitOpts` | \{ `failOnNetworkError`: `boolean`; `ignoreNetworkErrorsPatterns`: (`string` \| `RegExp`)[]; `timeout`: `number`; `waitNetworkIdle`: `boolean`; `waitNetworkIdleTimeout`: `number`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).`openAndWaitOpts` | testplane-docs/.testplane/src/config/types.ts:162 |
+| `openAndWaitOpts.failOnNetworkError` | `boolean` | - | testplane-docs/.testplane/src/config/types.ts:166 |
+| `openAndWaitOpts.ignoreNetworkErrorsPatterns` | (`string` \| `RegExp`)[] | - | testplane-docs/.testplane/src/config/types.ts:167 |
+| `openAndWaitOpts.timeout?` | `number` | - | testplane-docs/.testplane/src/config/types.ts:163 |
+| `openAndWaitOpts.waitNetworkIdle` | `boolean` | - | testplane-docs/.testplane/src/config/types.ts:164 |
+| `openAndWaitOpts.waitNetworkIdleTimeout` | `number` | - | testplane-docs/.testplane/src/config/types.ts:165 |
+| `orientation` | `null` \| `"landscape"` \| `"portrait"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`orientation` | testplane-docs/.testplane/src/config/types.ts:140 |
+| `pageLoadTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`pageLoadTimeout` | testplane-docs/.testplane/src/config/types.ts:111 |
+| `plugins` | `Record`\<`string`, `Record`\<`string`, `unknown`\>\> | - | testplane-docs/.testplane/src/config/types.ts:214 |
+| `prepareEnvironment?` | () => `null` \| `void` | - | testplane-docs/.testplane/src/config/types.ts:216 |
+| `region` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`region` | testplane-docs/.testplane/src/config/types.ts:150 |
+| `resetCursor` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`resetCursor` | testplane-docs/.testplane/src/config/types.ts:141 |
+| `retry` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`retry` | testplane-docs/.testplane/src/config/types.ts:107 |
+| `saveHistoryMode` | `"all"` \| `"none"` \| `"onlyFailed"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`saveHistoryMode` | testplane-docs/.testplane/src/config/types.ts:117 |
+| `screenshotDelay` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`screenshotDelay` | testplane-docs/.testplane/src/config/types.ts:131 |
+| `screenshotMode` | `"auto"` \| `"fullpage"` \| `"viewport"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`screenshotMode` | testplane-docs/.testplane/src/config/types.ts:130 |
+| `screenshotPath` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`screenshotPath` | testplane-docs/.testplane/src/config/types.ts:125 |
+| `sessionEnvFlags` | `Record`\< \| `"isW3C"` \| `"isAndroid"` \| `"isMobile"` \| `"isIOS"` \| `"isSauce"` \| `"isSeleniumStandalone"` \| `"isChrome"`, `boolean`\> | [`CommonConfig`](../interfaces/CommonConfig.mdx).`sessionEnvFlags` | testplane-docs/.testplane/src/config/types.ts:99 |
+| `sessionQuitTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`sessionQuitTimeout` | testplane-docs/.testplane/src/config/types.ts:113 |
+| `sessionRequestTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`sessionRequestTimeout` | testplane-docs/.testplane/src/config/types.ts:112 |
+| `sessionsPerBrowser` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`sessionsPerBrowser` | testplane-docs/.testplane/src/config/types.ts:105 |
+| `sets` | `Record`\<`string`, `SetsConfigParsed`\> | - | testplane-docs/.testplane/src/config/types.ts:215 |
+| `strictSSL` | `null` \| `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`strictSSL` | testplane-docs/.testplane/src/config/types.ts:147 |
+| `strictTestsOrder` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`strictTestsOrder` | testplane-docs/.testplane/src/config/types.ts:129 |
+| `system` | [`SystemConfig`](../interfaces/SystemConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).`system` | testplane-docs/.testplane/src/config/types.ts:152 |
+| `takeScreenshotOnFails` | \{ `assertViewFail`: `boolean`; `testFail`: `boolean`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).`takeScreenshotOnFails` | testplane-docs/.testplane/src/config/types.ts:118 |
+| `takeScreenshotOnFails.assertViewFail` | `boolean` | - | testplane-docs/.testplane/src/config/types.ts:120 |
+| `takeScreenshotOnFails.testFail` | `boolean` | - | testplane-docs/.testplane/src/config/types.ts:119 |
+| `takeScreenshotOnFailsMode` | `"fullpage"` \| `"viewport"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`takeScreenshotOnFailsMode` | testplane-docs/.testplane/src/config/types.ts:123 |
+| `takeScreenshotOnFailsTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`takeScreenshotOnFailsTimeout` | testplane-docs/.testplane/src/config/types.ts:122 |
+| `testTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`testTimeout` | testplane-docs/.testplane/src/config/types.ts:114 |
+| `testsPerSession` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`testsPerSession` | testplane-docs/.testplane/src/config/types.ts:106 |
+| `tolerance` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`tolerance` | testplane-docs/.testplane/src/config/types.ts:132 |
+| `transformRequest` | (`req`: `RequestOptions`) => `RequestOptions` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`transformRequest` | testplane-docs/.testplane/src/config/types.ts:144 |
+| `transformResponse` | (`res`: `Response`, `req`: `RequestOptions`) => `Response` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`transformResponse` | testplane-docs/.testplane/src/config/types.ts:145 |
+| `urlHttpTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`urlHttpTimeout` | testplane-docs/.testplane/src/config/types.ts:110 |
+| `user` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`user` | testplane-docs/.testplane/src/config/types.ts:148 |
+| `waitInterval` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`waitInterval` | testplane-docs/.testplane/src/config/types.ts:116 |
+| `waitTimeout` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).`waitTimeout` | testplane-docs/.testplane/src/config/types.ts:115 |
+| `windowSize` | `null` \| `string` \| \{ `height`: `number`; `width`: `number`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).`windowSize` | testplane-docs/.testplane/src/config/types.ts:139 |
+
+## Methods
+
+### forBrowser()
+
+```ts
+forBrowser(id): BrowserConfig
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `id` | `string` |
+
+#### Returns
+
+`BrowserConfig`
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/index.ts:82
+
+***
+
+### getBrowserIds()
+
+```ts
+getBrowserIds(): string[]
+```
+
+#### Returns
+
+`string`[]
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/index.ts:86
+
+***
+
+### mergeWith()
+
+```ts
+mergeWith(config): void
+```
+
+This method is used in subrocesses to merge a created config
+in a subrocess with a config from the main process
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `config` | [`Config`](Config.mdx) |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/index.ts:100
+
+***
+
+### prepareBrowser()
+
+```ts
+prepareBrowser(browser): null | void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browser` | `Browser` |
+
+#### Returns
+
+`null` \| `void`
+
+#### Inherited from
+
+[`CommonConfig`](../interfaces/CommonConfig.mdx).[`prepareBrowser`](../interfaces/CommonConfig.mdx#preparebrowser)
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/types.ts:124
+
+***
+
+### screenshotsDir()
+
+```ts
+screenshotsDir(test): string
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `test` | [`Test`](Test.mdx) |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`CommonConfig`](../interfaces/CommonConfig.mdx).[`screenshotsDir`](../interfaces/CommonConfig.mdx#screenshotsdir)
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/types.ts:126
+
+***
+
+### serialize()
+
+```ts
+serialize(): Omit<Config, "system">
+```
+
+#### Returns
+
+`Omit`\<[`Config`](Config.mdx), `"system"`\>
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/index.ts:90
+
+***
+
+### shouldRetry()
+
+```ts
+shouldRetry(testInfo): null | boolean
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `testInfo` | `object` |
+| `testInfo.ctx` | [`Test`](Test.mdx) |
+| `testInfo.retriesLeft` | `number` |
+
+#### Returns
+
+`null` \| `boolean`
+
+#### Inherited from
+
+[`CommonConfig`](../interfaces/CommonConfig.mdx).[`shouldRetry`](../interfaces/CommonConfig.mdx#shouldretry)
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/types.ts:108
+
+***
+
+### create()
+
+```ts
+static create(config?): Config
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `config`? | `string` \| [`ConfigInput`](../type-aliases/ConfigInput.mdx) |
+
+#### Returns
+
+[`Config`](Config.mdx)
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/index.ts:12
+
+***
+
+### read()
+
+```ts
+static read(configPath): unknown
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `configPath` | `string` |
+
+#### Returns
+
+`unknown`
+
+#### Defined in
+
+testplane-docs/.testplane/src/config/index.ts:16

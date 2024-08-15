@@ -10,13 +10,13 @@ const config: Config = {
     favicon: "img/favicon.ico",
 
     // Set the production url of your site here
-    url: process.env.DOCUSAURUS_URL ?? "https://testplane.example.com",
+    url: process.env.DOCUSAURUS_URL ?? "https://kabir-ivan.github.io",
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: process.env.DOCUSAURUS_BASE_URL ?? "/",
 
     // GitHub pages deployment config.
-    organizationName: "gemini-testing",
+    // organizationName: "gemini-testing",
     projectName: "testplane-docs",
 
     onBrokenLinks: "throw",

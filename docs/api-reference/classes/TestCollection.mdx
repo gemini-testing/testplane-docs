@@ -1,0 +1,374 @@
+[testplane](../README.mdx) / TestCollection
+
+# Class: TestCollection
+
+## Constructors
+
+### new TestCollection()
+
+```ts
+new TestCollection(specs): TestCollection
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `specs` | `Record`\<`string`, [`Test`](Test.mdx)[]\> |
+
+#### Returns
+
+[`TestCollection`](TestCollection.mdx)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:20
+
+## Methods
+
+### disableAll()
+
+```ts
+disableAll(browserId?): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browserId`? | `string` |
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:122
+
+***
+
+### disableTest()
+
+```ts
+disableTest(fullTitle, browserId?): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `fullTitle` | `string` |
+| `browserId`? | `string` |
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:136
+
+***
+
+### eachRootSuite()
+
+```ts
+eachRootSuite(cb): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `cb` | (`root`, `browserId`) => `void` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:30
+
+***
+
+### eachTest()
+
+#### eachTest(callback)
+
+```ts
+eachTest(callback): void
+```
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `callback` | `TestsCallback`\<`void`\> |
+
+##### Returns
+
+`void`
+
+##### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:87
+
+#### eachTest(browserId, callback)
+
+```ts
+eachTest(browserId, callback): void
+```
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browserId` | `undefined` \| `string` |
+| `callback` | `TestsCallback`\<`void`\> |
+
+##### Returns
+
+`void`
+
+##### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:88
+
+***
+
+### eachTestByVersions()
+
+```ts
+eachTestByVersions(browserId, cb): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browserId` | `string` |
+| `cb` | (`test`, `browserId`, `browserVersion`?) => `void` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:102
+
+***
+
+### enableAll()
+
+```ts
+enableAll(browserId?): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browserId`? | `string` |
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:153
+
+***
+
+### enableTest()
+
+```ts
+enableTest(fullTitle, browserId?): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `fullTitle` | `string` |
+| `browserId`? | `string` |
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:163
+
+***
+
+### getBrowsers()
+
+```ts
+getBrowsers(): string[]
+```
+
+#### Returns
+
+`string`[]
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:43
+
+***
+
+### getRootSuite()
+
+```ts
+getRootSuite(browserId): null | RootSuite
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browserId` | `string` |
+
+#### Returns
+
+`null` \| [`RootSuite`](../interfaces/RootSuite.mdx)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:25
+
+***
+
+### mapTests()
+
+#### mapTests(cb)
+
+```ts
+mapTests<T>(cb): T[]
+```
+
+##### Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` |
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `cb` | `TestsCallback`\<`T`\> |
+
+##### Returns
+
+`T`[]
+
+##### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:47
+
+#### mapTests(browserId, cb)
+
+```ts
+mapTests<T>(browserId, cb): T[]
+```
+
+##### Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` |
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browserId` | `undefined` \| `string` |
+| `cb` | `TestsCallback`\<`T`\> |
+
+##### Returns
+
+`T`[]
+
+##### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:48
+
+***
+
+### sortTests()
+
+#### sortTests(callback)
+
+```ts
+sortTests(callback): this
+```
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `callback` | `SortTestsCallback` |
+
+##### Returns
+
+`this`
+
+##### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:63
+
+#### sortTests(browserId, callback)
+
+```ts
+sortTests(browserId, callback): this
+```
+
+##### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `browserId` | `undefined` \| `string` |
+| `callback` | `SortTestsCallback` |
+
+##### Returns
+
+`this`
+
+##### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:64
+
+***
+
+### create()
+
+```ts
+static create<T>(this, specs): T
+```
+
+#### Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` *extends* [`TestCollection`](TestCollection.mdx) |
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `this` | (`specs`) => `T` |
+| `specs` | `Record`\<`string`, [`Test`](Test.mdx)[]\> |
+
+#### Returns
+
+`T`
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-collection.ts:13

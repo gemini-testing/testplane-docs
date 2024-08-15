@@ -1,0 +1,83 @@
+[testplane](../README.mdx) / WorkerEventHandler
+
+# Type Alias: WorkerEventHandler()\<T\>
+
+```ts
+type WorkerEventHandler<T>: (event, callback) => T(event, callback) => T(event, callback) => T(event, callback) => T(event, callback) => T(event, callback) => T;
+```
+
+## Type Parameters
+
+| Type Parameter |
+| ------ |
+| `T` *extends* `BaseTestplane` |
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `event` | `"init"` |
+| `callback` | () => `void` \| `Promise`\<`void`\> |
+
+## Returns
+
+`T`
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `event` | `"beforeFileRead"` |
+| `callback` | (`data`) => `void` |
+
+## Returns
+
+`T`
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `event` | `"afterFileRead"` |
+| `callback` | (`data`) => `void` |
+
+## Returns
+
+`T`
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `event` | `"afterTestsRead"` |
+| `callback` | (`collection`) => `void` |
+
+## Returns
+
+`T`
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `event` | `"updateReference"` |
+| `callback` | (`data`) => `void` |
+
+## Returns
+
+`T`
+
+## Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `event` | `"newBrowser"` |
+| `callback` | [`SyncSessionEventCallback`](SyncSessionEventCallback.mdx) |
+
+## Returns
+
+`T`
+
+## Defined in
+
+testplane-docs/.testplane/src/types/index.ts:225

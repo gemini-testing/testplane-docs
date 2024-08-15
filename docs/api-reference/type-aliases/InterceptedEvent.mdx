@@ -1,0 +1,19 @@
+[testplane](../README.mdx) / InterceptedEvent
+
+# Type Alias: InterceptedEvent
+
+```ts
+type InterceptedEvent: ValueOf<Pick<typeof RunnerSyncEvents, 
+  | "SUITE_BEGIN"
+  | "SUITE_END"
+  | "TEST_BEGIN"
+  | "TEST_END"
+  | "TEST_PASS"
+  | "TEST_FAIL"
+  | "TEST_PENDING"
+| "RETRY">>;
+```
+
+## Defined in
+
+testplane-docs/.testplane/src/events/index.ts:105

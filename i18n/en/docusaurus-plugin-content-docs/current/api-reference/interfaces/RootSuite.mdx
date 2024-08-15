@@ -1,0 +1,744 @@
+[testplane](../README.mdx) / RootSuite
+
+# Interface: RootSuite
+
+## Extends
+
+- [`Suite`](../classes/Suite.mdx)
+
+## Properties
+
+| Property | Modifier | Type | Default value | Overrides | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| `parent` | `public` | `null` \| [`Suite`](../classes/Suite.mdx) | `null` | - | [`Suite`](../classes/Suite.mdx).`parent` | testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:6 |
+| `root` | `public` | `true` | `undefined` | [`Suite`](../classes/Suite.mdx).[`root`](../classes/Suite.mdx#root) | - | testplane-docs/.testplane/src/types/index.ts:28 |
+
+## Accessors
+
+### afterEachHooks
+
+```ts
+get afterEachHooks(): Hook[]
+```
+
+#### Returns
+
+`Hook`[]
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`afterEachHooks`](../classes/Suite.mdx#aftereachhooks)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:95
+
+***
+
+### beforeEachHooks
+
+```ts
+get beforeEachHooks(): Hook[]
+```
+
+#### Returns
+
+`Hook`[]
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`beforeEachHooks`](../classes/Suite.mdx#beforeeachhooks)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:91
+
+***
+
+### browserId
+
+```ts
+get browserId(): string
+```
+
+```ts
+set browserId(id): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `id` | `string` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`browserId`](../classes/Suite.mdx#browserid)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:93
+
+***
+
+### browserVersion
+
+```ts
+get browserVersion(): undefined | string
+```
+
+```ts
+set browserVersion(version): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `version` | `string` |
+
+#### Returns
+
+`undefined` \| `string`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`browserVersion`](../classes/Suite.mdx#browserversion)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:101
+
+***
+
+### disabled
+
+```ts
+get disabled(): boolean
+```
+
+```ts
+set disabled(val): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `val` | `boolean` |
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`disabled`](../classes/Suite.mdx#disabled)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:69
+
+***
+
+### file
+
+```ts
+get file(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`file`](../classes/Suite.mdx#file)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:45
+
+***
+
+### hasBrowserVersionOverwritten
+
+```ts
+get hasBrowserVersionOverwritten(): boolean
+```
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`hasBrowserVersionOverwritten`](../classes/Suite.mdx#hasbrowserversionoverwritten)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:105
+
+***
+
+### id
+
+```ts
+get id(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`id`](../classes/Suite.mdx#id)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:41
+
+***
+
+### pending
+
+```ts
+get pending(): boolean
+```
+
+```ts
+set pending(val): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `val` | `boolean` |
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`pending`](../classes/Suite.mdx#pending)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:53
+
+***
+
+### silentSkip
+
+```ts
+get silentSkip(): boolean
+```
+
+```ts
+set silentSkip(val): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `val` | `boolean` |
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`silentSkip`](../classes/Suite.mdx#silentskip)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:77
+
+***
+
+### skipReason
+
+```ts
+get skipReason(): string
+```
+
+```ts
+set skipReason(reason): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `reason` | `string` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`skipReason`](../classes/Suite.mdx#skipreason)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:61
+
+***
+
+### suites
+
+```ts
+get suites(): Suite[]
+```
+
+#### Returns
+
+[`Suite`](../classes/Suite.mdx)[]
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`suites`](../classes/Suite.mdx#suites)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:83
+
+***
+
+### tests
+
+```ts
+get tests(): Test[]
+```
+
+#### Returns
+
+[`Test`](../classes/Test.mdx)[]
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`tests`](../classes/Suite.mdx#tests)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:87
+
+***
+
+### timeout
+
+```ts
+get timeout(): number
+```
+
+```ts
+set timeout(timeout): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `timeout` | `number` |
+
+#### Returns
+
+`number`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`timeout`](../classes/Suite.mdx#timeout)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:85
+
+***
+
+### title
+
+```ts
+get title(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`title`](../classes/Suite.mdx#title)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:16
+
+## Methods
+
+### addAfterEachHook()
+
+```ts
+addAfterEachHook(hook): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `hook` | `Hook` |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`addAfterEachHook`](../classes/Suite.mdx#addaftereachhook)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:41
+
+***
+
+### addBeforeEachHook()
+
+```ts
+addBeforeEachHook(hook): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `hook` | `Hook` |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`addBeforeEachHook`](../classes/Suite.mdx#addbeforeeachhook)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:37
+
+***
+
+### addSuite()
+
+```ts
+addSuite(suite): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `suite` | [`Suite`](../classes/Suite.mdx) |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`addSuite`](../classes/Suite.mdx#addsuite)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:29
+
+***
+
+### addTest()
+
+```ts
+addTest(test): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `test` | [`Test`](../classes/Test.mdx) |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`addTest`](../classes/Suite.mdx#addtest)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:33
+
+***
+
+### afterEach()
+
+```ts
+afterEach(fn): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `fn` | `TestFunction`\<[`TestFunctionCtx`](TestFunctionCtx.mdx)\> |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`afterEach`](../classes/Suite.mdx#aftereach)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:49
+
+***
+
+### assign()
+
+```ts
+assign(src): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `src` | `this` |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`assign`](../classes/Suite.mdx#assign)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:20
+
+***
+
+### beforeEach()
+
+```ts
+beforeEach(fn): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `fn` | `TestFunction`\<[`TestFunctionCtx`](TestFunctionCtx.mdx)\> |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`beforeEach`](../classes/Suite.mdx#beforeeach)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:45
+
+***
+
+### disable()
+
+```ts
+disable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`disable`](../classes/Suite.mdx#disable)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:31
+
+***
+
+### eachTest()
+
+```ts
+eachTest(cb): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `cb` | (`test`) => `void` |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`eachTest`](../classes/Suite.mdx#eachtest)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:60
+
+***
+
+### enable()
+
+```ts
+enable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`enable`](../classes/Suite.mdx#enable)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:36
+
+***
+
+### filterTests()
+
+```ts
+filterTests(cb): this
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `cb` | (`test`) => `unknown` |
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`filterTests`](../classes/Suite.mdx#filtertests)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:70
+
+***
+
+### fullTitle()
+
+```ts
+fullTitle(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`fullTitle`](../classes/Suite.mdx#fulltitle)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:30
+
+***
+
+### getTests()
+
+```ts
+getTests(): Test[]
+```
+
+#### Returns
+
+[`Test`](../classes/Test.mdx)[]
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`getTests`](../classes/Suite.mdx#gettests)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/suite.ts:65
+
+***
+
+### skip()
+
+```ts
+skip(__namedParameters): void
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `__namedParameters` | `SkipData` |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`skip`](../classes/Suite.mdx#skip)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/configurable-test-object.ts:26
+
+***
+
+### titlePath()
+
+```ts
+titlePath(): string[]
+```
+
+#### Returns
+
+`string`[]
+
+#### Inherited from
+
+[`Suite`](../classes/Suite.mdx).[`titlePath`](../classes/Suite.mdx#titlepath)
+
+#### Defined in
+
+testplane-docs/.testplane/src/test-reader/test-object/test-object.ts:20

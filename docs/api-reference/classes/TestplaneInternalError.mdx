@@ -1,0 +1,72 @@
+[testplane](../README.mdx) / TestplaneInternalError
+
+# Class: TestplaneInternalError
+
+## Extends
+
+- `Error`
+
+## Constructors
+
+### new TestplaneInternalError()
+
+```ts
+new TestplaneInternalError(message): TestplaneInternalError
+```
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `message` | `string` |
+
+#### Returns
+
+[`TestplaneInternalError`](TestplaneInternalError.mdx)
+
+#### Overrides
+
+`Error.constructor`
+
+#### Defined in
+
+testplane-docs/.testplane/src/errors/testplane-internal-error.ts:2
+
+## Properties
+
+| Property | Modifier | Type | Description | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ | ------ |
+| `message` | `public` | `string` | - | `Error.message` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1077 |
+| `name` | `public` | `string` | - | `Error.name` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1076 |
+| `stack?` | `public` | `string` | - | `Error.stack` | testplane-docs/node\_modules/typescript/lib/lib.es5.d.ts:1078 |
+| `prepareStackTrace?` | `static` | (`err`: `Error`, `stackTraces`: `CallSite`[]) => `any` | Optional override for formatting stack traces **See** https://v8.dev/docs/stack-trace-api#customizing-stack-traces | `Error.prepareStackTrace` | testplane/node\_modules/@types/node/globals.d.ts:27 |
+| `stackTraceLimit` | `static` | `number` | - | `Error.stackTraceLimit` | testplane/node\_modules/@types/node/globals.d.ts:29 |
+
+## Methods
+
+### captureStackTrace()
+
+```ts
+static captureStackTrace(targetObject, constructorOpt?): void
+```
+
+Create .stack property on a target object
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `targetObject` | `object` |
+| `constructorOpt`? | `Function` |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+`Error.captureStackTrace`
+
+#### Defined in
+
+testplane/node\_modules/@types/node/globals.d.ts:20

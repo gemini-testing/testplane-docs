@@ -1,0 +1,25 @@
+[testplane](../README.mdx) / DiffOptions
+
+# Interface: DiffOptions
+
+## Extends
+
+- `LooksSameOptions`
+
+## Properties
+
+| Property | Type | Description | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ |
+| `antialiasingTolerance?` | `number` | Sometimes the antialiasing algorithm can work incorrectly due to some features of the browser rendering engine. Use the option antialiasingTolerance to make the algorithm less strict. With this option you can specify the minimum difference in brightness (zero by default) between the darkest/lightest pixel (which is adjacent to the antialiasing pixel) and theirs adjacent pixels. We recommend that you don't increase this value above 10. If you need to increase more than 10 then this is definitely not antialiasing. | `LooksSameOptions.antialiasingTolerance` | testplane/node\_modules/looks-same/index.d.ts:139 |
+| `clustersSize?` | `number` | Radius for every diff cluster | `LooksSameOptions.clustersSize` | testplane/node\_modules/looks-same/index.d.ts:152 |
+| `createDiffImage?` | `boolean` | If you need both to compare images and create diff image | `LooksSameOptions.createDiffImage` | testplane/node\_modules/looks-same/index.d.ts:156 |
+| `current` | `string` | - | - | testplane-docs/.testplane/src/types/index.ts:72 |
+| `diffColor` | `string` | - | - | testplane-docs/.testplane/src/types/index.ts:74 |
+| `ignoreAntialiasing?` | `boolean` | Some images has difference while comparing because of antialiasing. These diffs will be ignored by default. You can use ignoreAntialiasing option with false value to disable ignoring such diffs. In that way antialiased pixels will be marked as diffs. | `LooksSameOptions.ignoreAntialiasing` | testplane/node\_modules/looks-same/index.d.ts:130 |
+| `ignoreCaret?` | `boolean` | Text caret in text input elements it is a pain for visual regression tasks, because it is always blinks. These diffs will be ignored by default. You can use `ignoreCaret` option with `false` value to disable ignoring such diffs. In that way text caret will be marked as diffs. | `LooksSameOptions.ignoreCaret` | testplane/node\_modules/looks-same/index.d.ts:124 |
+| `pixelRatio?` | `number` | Some devices can have different proportion between physical and logical screen resolutions also known as pixel ratio. Default value for this proportion is 1. This param also affects the comparison result, so it can be set manually with pixelRatio option. | `LooksSameOptions.pixelRatio` | testplane/node\_modules/looks-same/index.d.ts:118 |
+| `reference` | `string` | - | - | testplane-docs/.testplane/src/types/index.ts:73 |
+| `shouldCluster?` | `boolean` | Responsible for diff bounds clustering | `LooksSameOptions.shouldCluster` | testplane/node\_modules/looks-same/index.d.ts:148 |
+| `stopOnFirstFail?` | `boolean` | Responsible for diff area which will be returned when comparing images. Diff bounds will contain the whole diff if stopOnFirstFail is false and only first diff pixel - otherwise. | `LooksSameOptions.stopOnFirstFail` | testplane/node\_modules/looks-same/index.d.ts:144 |
+| `strict?` | `boolean` | By default, it will detect only noticeable differences. If you wish to detect any difference, use strict options. | `LooksSameOptions.strict` | testplane/node\_modules/looks-same/index.d.ts:108 |
+| `tolerance?` | `number` | You can also adjust the ΔE value that will be treated as error in non-strict mode. | `LooksSameOptions.tolerance` | testplane/node\_modules/looks-same/index.d.ts:112 |
