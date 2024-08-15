@@ -13,7 +13,7 @@
     "build-storybook": "storybook build",
     "clone-testplane": "node clone-testplane.js",
     "docs:generate:ru-template": "npx typedoc .testplane/src/ --generate-json exports",
-    "docs:generate:ru": "npx typedoc .testplane/src/ --generate-from-json ./exports --out docs/api-reference --locale ru",
+    "docs:generate:ru": "npx typedoc .testplane/src/ --generate-from-json ./exports --out docs/api-reference",
     "docs:generate:en": "npx typedoc .testplane/src/ --out i18n/en/docusaurus-plugin-content-docs/current/api-reference",
     "docs:generate": "npm run docs:generate:en && npm run docs:generate:ru"
   },
