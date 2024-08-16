@@ -1,0 +1,48 @@
+# ConfigInput
+
+```ts
+type ConfigInput: Partial<CommonConfig> & {
+  browsers: Record<string, Partial<CommonConfig> & {
+     desiredCapabilities: WebdriverIO.Capabilities;
+    }>;
+  plugins: Record<string, unknown>;
+  prepareEnvironment: () => void | null;
+  sets: Record<string, SetsConfig>;
+};
+```
+
+## Type declaration
+
+### browsers
+
+```ts
+browsers: Record<string, Partial<CommonConfig> & {
+  desiredCapabilities: WebdriverIO.Capabilities;
+}>;
+```
+
+### plugins?
+
+```ts
+optional plugins: Record<string, unknown>;
+```
+
+### prepareEnvironment()?
+
+```ts
+optional prepareEnvironment: () => void | null;
+```
+
+#### Returns
+
+`void` \| `null`
+
+### sets?
+
+```ts
+optional sets: Record<string, SetsConfig>;
+```
+
+## Defined in
+
+[src/config/types.ts:193](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L193)

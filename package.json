@@ -12,9 +12,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "clone-testplane": "node clone-testplane.js",
-    "docs:generate:ru-template": "npx typedoc .testplane/src/ --generate-json exports",
-    "docs:generate:ru": "npx typedoc .testplane/src/ --generate-from-json ./exports --out docs/api-reference",
-    "docs:generate:en": "npx typedoc .testplane/src/ --out i18n/en/docusaurus-plugin-content-docs/current/api-reference",
+    "docs:generate:template": "npx typedoc .testplane/src/ --generate-json exports",
+    "docs:generate:ru": "npx typedoc .testplane/src/ --generate-from-json ./exports --out docs/api --lang ru",
+    "docs:generate:en": "npx typedoc .testplane/src/ --out i18n/en/docusaurus-plugin-content-docs/current/api",
     "docs:generate": "npm run docs:generate:en && npm run docs:generate:ru"
   },
   "dependencies": {
@@ -45,6 +45,7 @@
     "@svgr/webpack": "8.1.0",
     "autoprefixer": "10.4.19",
     "docusaurus-plugin-sass": "0.2.5",
+    "docusaurus-plugin-typedoc": "1.0.5",
     "eslint": "8.57.0",
     "eslint-config-gemini-testing": "3.0.0",
     "eslint-config-prettier": "9.1.0",

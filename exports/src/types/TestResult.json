@@ -1,0 +1,33 @@
+{
+    "TestResult": {
+        "properties": {
+            "hermioneCtx": {
+                "comment": {
+                    "blockTags": [
+                        {
+                            "skipRendering": false,
+                            "tag": "@deprecated",
+                            "content": [
+                                {
+                                    "kind": "text",
+                                    "text": "Use "
+                                },
+                                {
+                                    "kind": "code",
+                                    "text": "`testplaneCtx`"
+                                },
+                                {
+                                    "kind": "text",
+                                    "text": " instead"
+                                }
+                            ]
+                        }
+                    ],
+                    "modifierTags": {},
+                    "summary": []
+                }
+            }
+        },
+        "methods": {}
+    }
+}

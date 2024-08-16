@@ -1,0 +1,259 @@
+# AssertViewOpts
+
+## Extends
+
+- `Partial`\<[`AssertViewOptsConfig`](AssertViewOptsConfig.mdx)\>
+
+## Properties
+
+### allowViewportOverflow?
+
+```ts
+optional allowViewportOverflow: boolean;
+```
+
+Disables check that element is outside of the viewport left, top, right or bottom bounds.
+
+#### Remarks
+
+By default Testplane throws an error if element is outside the viewport bounds.
+This option disables check that element is outside of the viewport left, top, right or bottom bounds.
+And in this case if browser option [compositeImage](https://github.com/gemini-testing/testplane#compositeimage) set to `false`, then only visible part of the element will be captured.
+But if [compositeImage](https://github.com/gemini-testing/testplane#compositeimage) set to `true` (default), then in the resulting screenshot will appear the whole element with not visible parts outside of the bottom bounds of viewport.
+
+#### Default Value
+
+`false`
+
+#### Inherited from
+
+`Partial.allowViewportOverflow`
+
+#### Defined in
+
+[src/config/types.ts:45](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L45)
+
+***
+
+### antialiasingTolerance?
+
+```ts
+optional antialiasingTolerance: number;
+```
+
+Minimum difference in brightness (zero by default) between the darkest/lightest pixel (which is adjacent to the antialiasing pixel) and theirs adjacent pixels.
+Overrides config [browsers](https://github.com/gemini-testing/testplane#browsers).[antialiasingTolerance](https://github.com/gemini-testing/testplane#antialiasingTolerance) value.
+
+#### Remarks
+
+Read more about this option in [looks-same](https://github.com/gemini-testing/looks-same#comparing-images-with-ignoring-antialiasing)
+
+#### Default Value
+
+`4`
+
+#### Defined in
+
+[src/browser/commands/types.ts:26](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/browser/commands/types.ts#L26)
+
+***
+
+### captureElementFromTop?
+
+```ts
+optional captureElementFromTop: boolean;
+```
+
+Ability to set capture element from the top area or from current position.
+
+#### Remarks
+
+In the first case viewport will be scrolled to the top of the element.
+
+#### Default Value
+
+`true`
+
+#### Inherited from
+
+`Partial.captureElementFromTop`
+
+#### Defined in
+
+[src/config/types.ts:33](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L33)
+
+***
+
+### compositeImage?
+
+```ts
+optional compositeImage: boolean;
+```
+
+Allows testing of regions which bottom bounds are outside of a viewport height.
+Overrides config [browsers](https://github.com/gemini-testing/testplane#browsers).[compositeImage](https://github.com/gemini-testing/testplane#compositeImage) value.
+
+#### Remarks
+
+In the resulting screenshot the area which fits the viewport bounds will be joined with the area which is outside of the viewport height.
+
+#### Default Value
+
+`true`
+
+#### Defined in
+
+[src/browser/commands/types.ts:36](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/browser/commands/types.ts#L36)
+
+***
+
+### disableAnimation?
+
+```ts
+optional disableAnimation: boolean;
+```
+
+Ability to disable animations and transitions while making a screenshot
+
+#### Remarks
+
+Usefull when you capture screenshot of a page, having animations and transitions.
+Iframe animations are only disabled when using webdriver protocol.
+
+#### Default Value
+
+`true`
+
+#### Defined in
+
+[src/browser/commands/types.ts:67](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/browser/commands/types.ts#L67)
+
+***
+
+### ignoreDiffPixelCount?
+
+```ts
+optional ignoreDiffPixelCount: number | `${number}%`;
+```
+
+Ability to ignore a small amount of different pixels to classify screenshots as being "identical"
+
+#### Examples
+
+```ts
+5
+```
+
+```ts
+'1.5%'
+```
+
+#### Remarks
+
+Useful when you encounter a few pixels difference that cannot be eliminated using the tolerance and antialiasingTolerance settings.
+
+#### Note
+
+This should be considered a last resort and only used in small number of cases where necessary.
+
+#### Default Value
+
+`0`
+
+#### Defined in
+
+[src/browser/commands/types.ts:82](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/browser/commands/types.ts#L82)
+
+***
+
+### ignoreElements?
+
+```ts
+optional ignoreElements: string | string[];
+```
+
+DOM-node selectors which will be ignored (painted with a black rectangle) when comparing images.
+
+#### Default Value
+
+`[]`
+
+#### Inherited from
+
+`Partial.ignoreElements`
+
+#### Defined in
+
+[src/config/types.ts:24](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L24)
+
+***
+
+### screenshotDelay?
+
+```ts
+optional screenshotDelay: number;
+```
+
+Allows to specify a delay (in milliseconds) before making any screenshot.
+Overrides config [browsers](https://github.com/gemini-testing/testplane#browsers).[screenshotDelay](https://github.com/gemini-testing/testplane#screenshotDelay) value.
+
+#### Remarks
+
+This is useful when the page has elements which are animated or if you do not want to screen a scrollbar.
+
+#### Default Value
+
+`0`
+
+#### Defined in
+
+[src/browser/commands/types.ts:46](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/browser/commands/types.ts#L46)
+
+***
+
+### selectorToScroll?
+
+```ts
+optional selectorToScroll: string;
+```
+
+Ability to set DOM-node selector which should be scroll when the captured element does not completely fit on the screen.
+
+#### Remarks
+
+Useful when you capture the modal (popup). In this case a duplicate of the modal appears on the screenshot.
+That happens because we scroll the page using `window` selector, which scroll only the background of the modal, and the modal itself remains in place.
+Default value is `undefined` (it means scroll relative to `window`). Works only when `compositeImage` is `true` (default).
+
+#### Default Value
+
+`undefined`
+
+#### Defined in
+
+[src/browser/commands/types.ts:57](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/browser/commands/types.ts#L57)
+
+***
+
+### tolerance?
+
+```ts
+optional tolerance: number;
+```
+
+Maximum allowed difference between colors.
+Overrides config [browsers](https://github.com/gemini-testing/testplane#browsers).[tolerance](https://github.com/gemini-testing/testplane#tolerance) value.
+
+#### Remarks
+
+Indicates maximum allowed CIEDE2000 difference between colors. Used only in non-strict mode.
+Increasing global default is not recommended, prefer changing tolerance for particular suites or states instead.
+By default it's 2.3 which should be enough for the most cases.
+
+#### Default Value
+
+`2.3`
+
+#### Defined in
+
+[src/browser/commands/types.ts:16](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/browser/commands/types.ts#L16)

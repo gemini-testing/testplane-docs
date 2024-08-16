@@ -10,13 +10,13 @@ const config: Config = {
     favicon: "img/favicon.ico",
 
     // Set the production url of your site here
-    url: process.env.DOCUSAURUS_URL ?? "https://kabir-ivan.github.io",
+    url: process.env.DOCUSAURUS_URL ?? "https://testplane.example.com",
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: process.env.DOCUSAURUS_BASE_URL ?? "/",
 
     // GitHub pages deployment config.
-    // organizationName: "gemini-testing",
+    organizationName: "gemini-testing",
     projectName: "testplane-docs",
 
     onBrokenLinks: "throw",
@@ -78,6 +78,7 @@ const config: Config = {
                     label: "Docs",
                 },
                 { to: "/blog", label: "Blog", position: "left" },
+                { to: "/docs/v8/api", label: "API reference", position: "left" },
                 {
                     type: "docsVersionDropdown",
                     position: "right",
@@ -190,6 +191,22 @@ const config: Config = {
                 counterID: "97719088",
                 webvisor: true,
                 trackHash: true,
+            },
+        ],
+        // [
+        //     'docusaurus-plugin-typedoc',
+        //     {
+        //         id: "ru",
+        //         lang: "ru",
+        //         out: "docs/api"
+        //     },
+        // ],        
+        [
+            'docusaurus-plugin-typedoc',
+            {
+                id: "en",
+                lang: "en",
+                out: "i18n/en/docusaurus-plugin-content-docs/current/api"
             },
         ],
     ],

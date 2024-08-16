@@ -2,7 +2,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const LOCAL = process.env.LOCAL ?? false;
+const LOCAL = process.env.USE_LOCAL ?? false;
 const LOCAL_REPO_DIR = process.env.LOCAL_REPO_DIR;
 const REPO_PATH = process.env.REPO_PATH ?? "https://github.com/gemini-testing/testplane";
 

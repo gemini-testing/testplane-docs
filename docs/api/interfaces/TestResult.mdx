@@ -1,0 +1,595 @@
+[testplane](../README.mdx) / TestResult
+
+# TestResult
+
+## Extends
+
+- [`Test`](../classes/Test.mdx)
+
+## Свойства
+
+### assertViewResults
+
+```ts
+assertViewResults: AssertViewResult[];
+```
+
+#### Defined in
+
+[src/types/index.ts:135](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L135)
+
+***
+
+### description?
+
+```ts
+optional description: string;
+```
+
+#### Defined in
+
+[src/types/index.ts:136](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L136)
+
+***
+
+### duration
+
+```ts
+duration: number;
+```
+
+#### Defined in
+
+[src/types/index.ts:137](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L137)
+
+***
+
+### err?
+
+```ts
+optional err: TestError;
+```
+
+#### Overrides
+
+[`Test`](../classes/Test.mdx).[`err`](../classes/Test.mdx#err)
+
+#### Defined in
+
+[src/types/index.ts:138](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L138)
+
+***
+
+### fn
+
+```ts
+fn: TestFunction<TestFunctionCtx>;
+```
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`fn`](../classes/Test.mdx#fn)
+
+#### Defined in
+
+[src/test-reader/test-object/test.ts:10](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test.ts#L10)
+
+***
+
+### ~~hermioneCtx~~
+
+```ts
+hermioneCtx: ExecutionThreadToolCtx;
+```
+
+#### Deprecated
+
+Use `testplaneCtx` instead
+
+#### Defined in
+
+[src/types/index.ts:143](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L143)
+
+***
+
+### history
+
+```ts
+history: CommandHistory;
+```
+
+#### Defined in
+
+[src/types/index.ts:144](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L144)
+
+***
+
+### meta
+
+```ts
+meta: {};
+```
+
+#### Index Signature
+
+ \[`name`: `string`\]: `unknown`
+
+#### Defined in
+
+[src/types/index.ts:145](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L145)
+
+***
+
+### parent
+
+```ts
+parent: null | Suite = null;
+```
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`parent`](../classes/Test.mdx#parent)
+
+#### Defined in
+
+[src/test-reader/test-object/test-object.ts:6](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L6)
+
+***
+
+### sessionId
+
+```ts
+sessionId: string;
+```
+
+#### Defined in
+
+[src/types/index.ts:146](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L146)
+
+***
+
+### startTime
+
+```ts
+startTime: number;
+```
+
+#### Defined in
+
+[src/types/index.ts:147](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L147)
+
+***
+
+### testplaneCtx
+
+```ts
+testplaneCtx: ExecutionThreadToolCtx;
+```
+
+#### Defined in
+
+[src/types/index.ts:139](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/types/index.ts#L139)
+
+## Accessors
+
+### browserId
+
+```ts
+get browserId(): string
+```
+
+```ts
+set browserId(id): void
+```
+
+#### Parameters
+
+• **id**: `string`
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`browserId`](../classes/Test.mdx#browserid)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:93](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L93)
+
+***
+
+### browserVersion
+
+```ts
+get browserVersion(): undefined | string
+```
+
+```ts
+set browserVersion(version): void
+```
+
+#### Parameters
+
+• **version**: `string`
+
+#### Returns
+
+`undefined` \| `string`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`browserVersion`](../classes/Test.mdx#browserversion)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:101](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L101)
+
+***
+
+### disabled
+
+```ts
+get disabled(): boolean
+```
+
+```ts
+set disabled(val): void
+```
+
+#### Parameters
+
+• **val**: `boolean`
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`disabled`](../classes/Test.mdx#disabled)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:69](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L69)
+
+***
+
+### file
+
+```ts
+get file(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`file`](../classes/Test.mdx#file)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:45](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L45)
+
+***
+
+### hasBrowserVersionOverwritten
+
+```ts
+get hasBrowserVersionOverwritten(): boolean
+```
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`hasBrowserVersionOverwritten`](../classes/Test.mdx#hasbrowserversionoverwritten)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:105](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L105)
+
+***
+
+### id
+
+```ts
+get id(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`id`](../classes/Test.mdx#id)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:41](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L41)
+
+***
+
+### pending
+
+```ts
+get pending(): boolean
+```
+
+```ts
+set pending(val): void
+```
+
+#### Parameters
+
+• **val**: `boolean`
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`pending`](../classes/Test.mdx#pending)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:53](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L53)
+
+***
+
+### silentSkip
+
+```ts
+get silentSkip(): boolean
+```
+
+```ts
+set silentSkip(val): void
+```
+
+#### Parameters
+
+• **val**: `boolean`
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`silentSkip`](../classes/Test.mdx#silentskip)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:77](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L77)
+
+***
+
+### skipReason
+
+```ts
+get skipReason(): string
+```
+
+```ts
+set skipReason(reason): void
+```
+
+#### Parameters
+
+• **reason**: `string`
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`skipReason`](../classes/Test.mdx#skipreason)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:61](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L61)
+
+***
+
+### timeout
+
+```ts
+get timeout(): number
+```
+
+```ts
+set timeout(timeout): void
+```
+
+#### Parameters
+
+• **timeout**: `number`
+
+#### Returns
+
+`number`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`timeout`](../classes/Test.mdx#timeout)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:85](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L85)
+
+***
+
+### title
+
+```ts
+get title(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`title`](../classes/Test.mdx#title)
+
+#### Defined in
+
+[src/test-reader/test-object/test-object.ts:16](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L16)
+
+## Методы
+
+### assign()
+
+```ts
+assign(src): this
+```
+
+#### Parameters
+
+• **src**: `this`
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`assign`](../classes/Test.mdx#assign)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:20](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L20)
+
+***
+
+### clone()
+
+```ts
+clone(): Test
+```
+
+#### Returns
+
+[`Test`](../classes/Test.mdx)
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`clone`](../classes/Test.mdx#clone)
+
+#### Defined in
+
+[src/test-reader/test-object/test.ts:23](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test.ts#L23)
+
+***
+
+### disable()
+
+```ts
+disable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`disable`](../classes/Test.mdx#disable)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:31](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L31)
+
+***
+
+### enable()
+
+```ts
+enable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`enable`](../classes/Test.mdx#enable)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:36](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L36)
+
+***
+
+### fullTitle()
+
+```ts
+fullTitle(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`fullTitle`](../classes/Test.mdx#fulltitle)
+
+#### Defined in
+
+[src/test-reader/test-object/test-object.ts:30](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L30)
+
+***
+
+### skip()
+
+```ts
+skip(__namedParameters): void
+```
+
+#### Parameters
+
+• **\_\_namedParameters**: `SkipData`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`skip`](../classes/Test.mdx#skip)
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:26](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L26)
+
+***
+
+### titlePath()
+
+```ts
+titlePath(): string[]
+```
+
+#### Returns
+
+`string`[]
+
+#### Inherited from
+
+[`Test`](../classes/Test.mdx).[`titlePath`](../classes/Test.mdx#titlepath)
+
+#### Defined in
+
+[src/test-reader/test-object/test-object.ts:20](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L20)
