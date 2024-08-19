@@ -17,14 +17,31 @@ await browser.$(selector).moveTo({ xOffset, yOffset });
 ## Command Parameters {#parameters}
 
 <table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>xOffset</td><td>Number</td><td>The X-axis offset relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.</td></tr>
-<tr><td>yOffset</td><td>Number</td><td>The Y-axis offset relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>xOffset</td>
+            <td>Number</td>
+            <td>
+                The X-axis offset relative to the middle of the element. If not specified, the mouse
+                will move to the middle of the element.
+            </td>
+        </tr>
+        <tr>
+            <td>yOffset</td>
+            <td>Number</td>
+            <td>
+                The Y-axis offset relative to the middle of the element. If not specified, the mouse
+                will move to the middle of the element.
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ## References
