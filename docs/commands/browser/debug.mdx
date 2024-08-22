@@ -1,27 +1,31 @@
 # debug
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `debug`, чтобы остановить выполнение теста в браузере.
+Use the `debug` command to pause the execution of a test in the browser.
 
-Остановив работу теста, вы можете перейти в браузер, открыть _DevTools_ и в реальном времени проинспектировать web-страницу. Это может быть полезно для отладки теста.
+By pausing the test, you can switch to the browser, open _DevTools_, and inspect the web page in real-time. This can be useful for debugging the test.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.debug();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should demonstrate the debug command", async ({ browser }) => {
     await browser.$("#input").setValue("FOO");
 
-    await browser.debug(); // перейдите в браузер и измените значение #input на "BAR"
+    await browser.debug(); // switch to the browser and change the value of #input to "BAR"
 
     const value = await browser.$("#input").getValue();
 
-    console.log(value); // выведет: "BAR"
+    console.log(value); // outputs: "BAR"
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/debug), from which we drew some information while writing our version.

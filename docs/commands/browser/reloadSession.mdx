@@ -1,25 +1,29 @@
 # reloadSession
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `reloadSession`, чтобы создать новую Selenium-сессию с текущими _capabilities_.
+Use the `reloadSession` command to create a new Selenium session with the current capabilities.
 
-Эта команда может пригодиться, если вы тестируете приложение с большим количеством состояний, и вам нужно очистить сессию браузера между отдельными тестами в одном файле, чтобы избежать создания сотен отдельных тестовых файлов с помощью WDIO. Однако будьте осторожны, эта команда сильно влияет на время тестирования, поскольку создание новых сессий Selenium отнимает много времени, особенно при использовании облачных сервисов.
+This command can be useful if you are testing an application with many states and need to clear the browser session between individual tests in a single file, to avoid creating hundreds of separate test files with WDIO. However, be cautious, as this command significantly impacts testing time since creating new Selenium sessions is time-consuming, especially when using cloud services.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.reloadSession();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should reload my session with current capabilities", async ({ browser }) => {
-    console.log(browser.sessionId); // выведет: e042b3f3cd5a479da4e171825e96e655
+    console.log(browser.sessionId); // outputs: e042b3f3cd5a479da4e171825e96e655
 
     await browser.reloadSession();
 
-    console.log(browser.sessionId); // выведет: 9a0d9bf9d4864160aa982c50cf18a573
+    console.log(browser.sessionId); // outputs: 9a0d9bf9d4864160aa982c50cf18a573
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/reloadSession), from which we drew some information while writing our version.

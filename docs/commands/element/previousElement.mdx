@@ -1,20 +1,20 @@
 # previousElement
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `previousElement`, чтобы получить предыдущий дочерний элемент выбранного DOM-элемента.
+Use the `previousElement` command to get the previous sibling element of the selected DOM element.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).previousElement();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
+```html
 <div class="parent">
     <p>Sibling One</p>
     <p>Sibling Two</p>
@@ -29,11 +29,15 @@ it("should get text from previous sibling element", async ({ browser }) => {
     const elem = await browser.$$("p");
     const previousElement = await elem[1].previousElement();
 
-    console.log(await previousElement.getText()); // выведет: "Sibling One"
+    console.log(await previousElement.getText()); // outputs: "Sibling One"
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [parentElement](../parentElement)
 -   [nextElement](../nextElement)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/previousElement), from which we drew some information while writing our version.

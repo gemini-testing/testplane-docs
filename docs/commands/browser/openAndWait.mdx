@@ -1,12 +1,12 @@
 # openAndWait
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `openAndWait` для открытия страницы и ожидания ее загрузки (по комбинации указанных факторов).
+Use the `openAndWait` command to open a page and wait for it to load (based on a combination of specified factors).
 
-Функции ожидания неактивности сети и падения по сетевым ошибкам доступны только при использовании браузеров с поддержкой _Chrome DevTools Protocol (CDP)_.
+Functions for waiting for network idle and failing on network errors are only available when using browsers that support _Chrome DevTools Protocol (CDP)_.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.openAndWait("some/url", {
@@ -20,15 +20,15 @@ await browser.openAndWait("some/url", {
 });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>url</td><td>String</td><td>Адрес страницы.</td></tr>
-<tr><td>WaitOpts</td><td>Object</td><td>Параметры ожидания страницы. Опционален, как и все его поля.</td></tr>
+<tr><td>url</td><td>String</td><td>The page URL.</td></tr>
+<tr><td>WaitOpts</td><td>Object</td><td>Page waiting parameters. Optional, as are all its fields.</td></tr>
 
 </tbody>
 </table>
@@ -37,26 +37,26 @@ await browser.openAndWait("some/url", {
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>selector</td><td>String\|String[]</td><td>Селектор (/селекторы) элемента (/элементов), которые должны существовать на загруженной странице.</td></tr>
-<tr><td>predicate</td><td>() => Promise&lt;bool&gt; \| bool</td><td>Предикат, возвращающий `true`, если страница загружена. Выполняется в браузерном контексте: [waitUntil](https://webdriver.io/docs/api/element/waitUntil).</td></tr>
-<tr><td>waitNetworkIdle</td><td>Boolean</td><td>Если `true`, ожидает окончания выполнения всех сетевых запросов. По умолчанию `true`. Работает только в CDP браузерах, игнорируется для остальных.</td></tr>
-<tr><td>waitNetworkIdleTimeout</td><td>Number</td><td>Время (в миллисекундах) после окончания всех сетевых запросов, чтобы считать сеть простаивающей. По умолчанию 500.</td></tr>
-<tr><td>failOnNetworkError</td><td>Boolean</td><td>Нужно ли бросать ошибку при сетевых ошибках. По умолчанию `true`. Работает только в CDP браузерах, игнорируется для остальных</td></tr>
-<tr><td>shouldThrowError</td><td>(match) => Boolean</td><td>Предикат, который должен вернуть `true` по [Match](https://webdriver.io/docs/api/mock#match), если сетевая ошибка считается критической для корректной загрузки страницы. По умолчанию, возвращает `true` для картинок, стилей и шрифтов.</td></tr>
-<tr><td>ignoreNetworkErrorsPatterns</td><td>Array&lt;String \| RegExp&gt;</td><td>Паттерны адресов ресурсов, для которых игнорируется проверка успешности загрузки. Имеет приоритет над `shouldThrowError`.</td></tr>
-<tr><td>timeout</td><td>Number</td><td>Таймаут открытия страницы. По умолчанию, используется значение `pageLoadTimeout`. Выбрасывается исключение, если по истечени времени селекторы все еще не существуют, или предикат все еще резолвит `false`</td></tr>
+<tr><td>selector</td><td>String\|String[]</td><td>Selector(s) of element(s) that must exist on the loaded page.</td></tr>
+<tr><td>predicate</td><td>() => Promise&lt;bool> \| bool</td><td>Predicate that returns `true` if the page is loaded. Executed in the browser context: [waitUntil](https://webdriver.io/docs/api/element/waitUntil).</td></tr>
+<tr><td>waitNetworkIdle</td><td>Boolean</td><td>If `true`, waits for the completion of all network requests. Default is `true`. Only works in CDP browsers; ignored for others.</td></tr>
+<tr><td>waitNetworkIdleTimeout</td><td>Number</td><td>Time (in milliseconds) after the completion of all network requests to consider the network idle. Default is 500.</td></tr>
+<tr><td>failOnNetworkError</td><td>Boolean</td><td>Whether to throw an error on network errors. Default is `true`. Only works in CDP browsers; ignored for others.</td></tr>
+<tr><td>shouldThrowError</td><td>(match) => Boolean</td><td>Predicate that should return `true` by [Match](https://webdriver.io/docs/api/mock#match) if the network error is considered critical for proper page loading. By default, returns `true` for images, styles, and fonts.</td></tr>
+<tr><td>ignoreNetworkErrorsPatterns</td><td>Array&lt;String \| RegExp></td><td>Patterns of resource URLs for which load success checks are ignored. Takes precedence over `shouldThrowError`.</td></tr>
+<tr><td>timeout</td><td>Number</td><td>Page load timeout. By default, the `pageLoadTimeout` value is used. An exception is thrown if selectors still do not exist or the predicate still resolves to `false` after the time has elapsed.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("some test", async ({ browser }) => {
-    // С `waitNetworkIdle` также ожидаем загрузки картинок, шрифтов, стилей, игнорируя ошибки метрики
+    // With `waitNetworkIdle` also wait for loading images, fonts, styles, ignoring metric errors
     await browser.openAndWait("some/url", {
         selector: [".selector"],
         predicate: () => document.isReady,

@@ -2,21 +2,21 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
 
 # devServer
 
-С помощью секции `devServer` можно запускать сервер, на который будут ходить тесты. Запуск происходит во время инициализации Testplane на событие INIT.
+With the `devServer` section, you can run a server that tests will interact with. The server starts during the initialization of Testplane on the INIT event.
 
-## Пример использования {#example}
+## Example Usage {#example}
 
 <DevServerExample />
 
-## Справка по секции devServer
+## devServer Section Reference
 
 <table>
     <thead>
     <tr>
-        <td>**Параметр**</td>
-        <td>**Тип**</td>
-        <td>**По&nbsp;умолчанию**</td>
-        <td>**Описание**</td>
+        <td>**Parameter**</td>
+        <td>**Type**</td>
+        <td>**Default**</td>
+        <td>**Description**</td>
     </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
         <td>`string`</td>
         <td>_N/A_</td>
         <td>
-            Команда для запуска dev сервера. Если не указана, dev сервер не будет запущен.
+            Command to start the dev server. If not specified, the dev server will not be started.
         </td>
     </tr>
     <tr>
@@ -33,7 +33,7 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
         <td>`Record<string, string>`</td>
         <td>`{}`</td>
         <td>
-            Переменные окружения, которые должны быть переданы процессу с dev сервером, в дополнение к `process.env` основного процесса.
+            Environment variables to be passed to the dev server process, in addition to the main process's `process.env`.
         </td>
     </tr>
     <tr>
@@ -41,15 +41,15 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
         <td>`string[]`</td>
         <td>`[]`</td>
         <td>
-            Аргументы, которые должны быть переданы процессу с dev сервером.
+            Arguments to be passed to the dev server process.
         </td>
     </tr>
     <tr>
         <td>[`cwd`](#cwd)</td>
         <td>`string`</td>
-        <td>_Ближайшая директория с package.json относительно конфига Testplane_</td>
+        <td>_The nearest directory with package.json relative to the Testplane config_</td>
         <td>
-            Рабочая директория dev сервера.
+            Working directory of the dev server.
         </td>
     </tr>
     <tr>
@@ -57,7 +57,7 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
         <td>`boolean`</td>
         <td>`true`</td>
         <td>
-            Включает стриминг логов dev сервера в консоль с префиксом `[dev server]`.
+            Enables streaming of dev server logs to the console with the prefix `[dev server]`.
         </td>
     </tr>
     <tr>
@@ -65,7 +65,7 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
         <td>`(devServer: ChildProcess) => Promise<void/> | ReadinessProbeOpts`</td>
         <td>`null`</td>
         <td>
-            Проверка, что сервер готов принимать запросы. Если не указана, проверка отключена.
+            Check that the server is ready to accept requests. If not specified, the check is disabled.
         </td>
     </tr>
     </tbody>
@@ -73,43 +73,43 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
 
 ### command {#command}
 
-Команда для запуска dev сервера. Если не указана, dev сервер не будет запущен.
+Command to start the dev server. If not specified, the dev server will not be started.
 
 ### env {#env}
 
-Переменные окружения, которые должны быть переданы процессу с dev сервером, в дополнение к `process.env` основного процесса.
+Environment variables to be passed to the dev server process, in addition to the main process's `process.env`.
 
 ### args {#args}
 
-Аргументы, которые должны быть переданы процессу с dev сервером.
+Arguments to be passed to the dev server process.
 
 ### cwd {#cwd}
 
-Рабочая директория dev сервера.
+Working directory of the dev server.
 
 ### logs {#logs}
 
-Включает стриминг логов dev сервера в консоль с префиксом `[dev server]`
+Enables streaming of dev server logs to the console with the prefix `[dev server]`.
 
 ### readinessProbe {#readiness-probe}
 
-Проверка, что сервер готов принимать запросы. Если не указана, проверка отключена.
+Check that the server is ready to accept requests. If not specified, the check is disabled.
 
-Если передана асинхронная функция, Testplane дождется, пока результирующий промис будет отрезолвлен. Тип функции:
+If an asynchronous function is provided, Testplane will wait until the resulting promise is resolved. The function type:
 
 ```typescript
 type readinessProbeFn = (devServer: ChildProcess) => Promise<void>;
 ```
 
-Может быть передан объект `ReadinessProbeOpts`:
+An object of type `ReadinessProbeOpts` can also be provided:
 
 <table>
     <thead>
     <tr>
-        <td>**Параметр**</td>
-        <td>**Тип**</td>
-        <td>**По&nbsp;умолчанию**</td>
-        <td>**Описание**</td>
+        <td>**Parameter**</td>
+        <td>**Type**</td>
+        <td>**Default**</td>
+        <td>**Description**</td>
     </tr>
     </thead>
     <tbody>
@@ -118,25 +118,25 @@ type readinessProbeFn = (devServer: ChildProcess) => Promise<void>;
         <td>`string`</td>
         <td>_N/A_</td>
         <td>
-            URL, по которому Testplane может проверить, что сервер готов принимать запросы. Проверка отключается, если он не указан.
+            URL that Testplane can check to ensure the server is ready to accept requests. The check is disabled if not specified.
         </td>
     </tr>
     <tr>
         <td>`isReady`</td>
         <td>`(fetchResponse => bool | Promise<bool>)`</td>
-        <td>_Функция, которая возвращает `true`, если статус ответа сервера 2xx_</td>
+        <td>_Function that returns `true` if the server response status is 2xx_</td>
         <td>
-            Предикат, определяющий готовность сервера по ответу на запрос к `url`.
+            Predicate that determines the server's readiness based on the response to the `url` request.
         </td>
     </tr>
     <tr>
         <td>`timeouts`</td>
         <td>`ReadinessProbeTimeouts`</td>
-        <td>_см. описание_</td>
+        <td>_see description_</td>
         <td>
-            - `waitServerTimeout` — таймаут на ожидание готовности сервера в мс. По умолчанию: `60_000`.
-            - `probeRequestTimeout` — таймаут одного запроса на проверку готовности в мс. По умолчанию: `10_000`.
-            - `probeRequestInterval` — интервал между проверками в мс. По умолчанию: `1_000`.
+            - `waitServerTimeout` — timeout for waiting for the server to be ready in ms. Default: `60_000`.
+            - `probeRequestTimeout` — timeout for a single readiness check request in ms. Default: `10_000`.
+            - `probeRequestInterval` — interval between checks in ms. Default: `1_000`.
         </td>
     </tr>
     </tbody>

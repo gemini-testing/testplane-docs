@@ -1,25 +1,25 @@
 # isEnabled
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `isEnabled`, чтобы определить включен ли заданный DOM-элемент.
+Use the `isEnabled` command to determine whether a given DOM element is enabled.
 
-Команда возвращает `true`, если DOM-элемент включен _(enabled)_, иначе возвращает `false`.
+The command returns `true` if the DOM element is enabled; otherwise, it returns `false`.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).isEnabled();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
-<input type="text" name="inputField" class="input1">
-<input type="text" name="inputField" class="input2" disabled>
-<input type="text" name="inputField" class="input3" disabled="disabled">
+```html
+<input type="text" name="inputField" class="input1" />
+<input type="text" name="inputField" class="input2" disabled />
+<input type="text" name="inputField" class="input3" disabled="disabled" />
 ```
 
 **isEnabled.js**
@@ -28,14 +28,18 @@ await browser.$(selector).isEnabled();
 it("should detect if an element is enabled", async ({ browser }) => {
     let elem = await browser.$(".input1");
     let isEnabled = await elem.isEnabled();
-    console.log(isEnabled); // выведет: true
+    console.log(isEnabled); // outputs: true
 
     elem = await browser.$(".input2");
     isEnabled = await elem.isEnabled();
-    console.log(isEnabled2); // выведет: false
+    console.log(isEnabled); // outputs: false
 
     elem = await browser.$(".input3");
     isEnabled = await elem.isEnabled();
-    console.log(isEnabled3); // выведет: false
+    console.log(isEnabled); // outputs: false
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/isEnabled), from which we drew some information while writing our version.

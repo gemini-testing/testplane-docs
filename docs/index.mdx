@@ -1,93 +1,95 @@
-# Обзор
+---
+sidebar_position: 1
+---
 
-## О Testplane
+# Overview
 
-**Testplane** — это инструмент для автоматизации тестирования пользовательских сценариев в web-интерфейсах.
+**Testplane** — a tool for automating testing of user scenarios in web interfaces.
 
-С помощью неё вы можете протестировать функциональность своего сайта или проекта, а также проверить, что ваша верстка при любых обстоятельствах соответствует эталонной. В вашем распоряжении — весь [спектр команд][commands], которые предоставляет [WebDriverIO v8][webdriverio-api] и [все возможности протокола Chrome DevTools][how-to-use-cdp]. А ещё — привычный синтаксис [Mocha][mocha].
+With Testplane, you can test the functionality of your site or project and ensure that your layout consistently matches what's expected under any circumstances. At your disposal, you have the full range of [commands][commands] provided by [WebDriverIO v8][webdriverio-api] and [all the capabilities of the Chrome DevTools protocol][how-to-use-cdp]. Additionally, you have the familiar [Mocha][mocha] syntax.
 
-В вашем проекте становится всё больше и больше тестов? — Testplane позволит вам легко масштабировать их прогон, не теряя в юзабилити. Она умеет не только запускать тесты параллельно, в разных браузерах, на разных платформах, но и собирать все результаты прогонов в единый html-отчет, с возможностями гибкого просмотра, группировки и фильтрации тестов.
+Is your testing workload growing as your project evolves? — Testplane allows you to easily scale your test runs without losing usability. It not only runs tests in parallel, across different browsers and platforms, but also gathers all the test results into a single HTML report with flexible viewing, grouping, and filtering capabilities.
 
-Вам не хватает какой-то функциональности? — Не проблема! Вы можете написать свой плагин и решить свою задачу с максимальной эффективностью. Или найти уже готовый плагин и добавить его к своему проекту.
+Lacking some functionality? — Not an issue! You can write your own plugin to address your needs with maximum efficiency. Or find an existing plugin and add it to your project.
 
-И это не всё.
+And that’s not all.
 
-## Почему именно Testplane? {#why-testplane}
+## Why Testplane? {#why-testplane}
 
--   [Легкая настройка и большие возможности](#easystart_great_features)
--   [Быстрое выполнение тестов](#fast)
--   [Гибкий запуск тестов](#flexible)
--   [Умное поведение при ошибках](#smart)
--   [Подробный отчет о прогоне тестов](#user_friendly)
--   [Интерактивный запуск тестов](#interactive)
--   [Богатые возможности для отладки](#debuggable)
--   [Расширяемость](#extendable)
+-   [Easy Setup and Great Features](#easystart_great_features)
+-   [Fast Test Execution](#fast)
+-   [Flexible Test Running](#flexible)
+-   [Smart Error Handling](#smart)
+-   [Detailed Test Run Report](#user_friendly)
+-   [Interactive Test Running](#interactive)
+-   [Rich Debugging Capabilities](#debuggable)
+-   [Extensibility](#extendable)
 
-### Легкая настройка и большие возможности {#easystart_great_features}
+### Easy Setup and Great Features {#easystart_great_features}
 
--   быстрое создание проекта с помощью [create-testplane][create-testplane];
--   все ключевые параметры имеют [оптимальные дефолты][defaults];
--   легко писать тесты, так как в основе [Mocha][mocha];
--   большой [спектр команд][commands], «под капотом» — [WebdriverIO v8][webdriverio-api];
--   своя мощная команда [assertView][assert-view] для снятия и сравнения скриншотов;
--   при сравнении скриншотов [можно гибко управлять параметрами][assert-view-opts] для отдельных тестов;
--   при снятии скриншотов можно указать какие области игнорировать;
--   автоматическая склейка больших изображений, выходящих за пределы вьюпорта.
+-   quickly create a project using [create-testplane][create-testplane];
+-   all key parameters have [optimal defaults][defaults];
+-   easy to write tests based on [Mocha][mocha];
+-   a wide [range of commands][commands], powered by [WebdriverIO v8][webdriverio-api];
+-   a robust [assertView][assert-view] command for taking and comparing screenshots;
+-   flexible [parameters management][assert-view-opts] for individual tests when comparing screenshots;
+-   specify areas to ignore when taking screenshots;
+-   automatic stitching of large images that exceed the viewport.
 
-### Быстрое выполнение тестов {#fast}
+### Fast Test Execution {#fast}
 
--   за счет [параллельности внутри Testplane][testplane-workers];
--   масштабирование с помощью [testplane-chunks][testplane-chunks];
--   [повторное реиспользование сессий][sessions-reuse];
--   кэширование сессий с браузерами;
--   20000 тестов за 10 минут — легко!
+-   thanks to [parallelism within Testplane][testplane-workers];
+-   scale using [testplane-chunks][testplane-chunks];
+-   [reusing sessions][sessions-reuse];
+-   session caching with browsers;
+-   20,000 tests in 10 minutes.
 
-### Гибкий запуск тестов {#flexible}
+### Flexible Test Running {#flexible}
 
--   в конкретном браузере;
--   [по платформам (sets)][testplane-sets] — на десктопных и мобильных браузерах;
--   [по совпадению с маской][testplane-option-grep];
--   [из конкретного файла][how-to-run-test-in-file];
--   [заданное количество раз для проверки стабильности][how-to-check-test-stability];
--   [хелперы only.in, only.notIn, skip.in, skip.notIn, also.in][how-to-skip-tests].
+-   in a specific browser;
+-   [across platforms (sets)][testplane-sets] — on desktop and mobile browsers;
+-   [by matching patterns][testplane-option-grep];
+-   [from a specific file][how-to-run-test-in-file];
+-   [a set number of times to check stability][how-to-check-test-stability];
+-   [helpers only.in, only.notIn, skip.in, skip.notIn, also.in][how-to-skip-tests].
 
-### Умное поведение при ошибках {#smart}
+### Smart Error Handling {#smart}
 
--   [отказ от сессий, упавших с заданными паттернами ошибок][patterns-on-reject];
--   [ретраи с ограничением по времени и количеству ретраев][retry-limiter];
--   [ретраи инфраструктурных ошибок][retry-progressive].
+-   [reject sessions that fail with specific error patterns][patterns-on-reject];
+-   [retries with time and count limits][retry-limiter];
+-   [retries for infrastructure errors][retry-progressive].
 
-### Подробный отчет о прогоне тестов {#user_friendly}
+### Detailed Test Run Report {#user_friendly}
 
--   способен отображать [результаты прогона десятков тысяч тестов одновременно][html-reporter];
--   не тормозит при любых объемах;
--   предоставляет полную информацию о прогоне тестов: ретраи, мета-информация, скриншоты, логи и т. д.;
--   дифф в скриншотах [можно смотреть в 6 режимах][html-reporter-diff], включая _switch, swipe_ и _onion skin;_
--   доступна история выполненных команд в тесте;
--   в случае падения теста сохраняется сообщение об ошибке и её стектрейс;
--   [гибкие возможности просмотра, группировки и фильтрации тестов][html-reporter-gui].
+-   can display [results of tens of thousands of tests simultaneously][html-reporter];
+-   stays responsive regardless of volume;
+-   provides complete information about the test run: retries, meta-information, screenshots, logs, etc.;
+-   screenshot diff viewing in [6 modes][html-reporter-diff], including _switch, swipe_, and _onion skin_;
+-   history of commands executed during the test is available;
+-   if a test fails, the error message and stack trace are saved;
+-   [flexible viewing, grouping, and filtering options][html-reporter-gui].
 
-### Интерактивный запуск тестов {#interactive}
+### Interactive Test Running {#interactive}
 
--   запуск тестов прямо из отчета в [режиме GUI][html-reporter-gui];
--   доступны все возможности отчета, перечисленные в разделе выше;
--   [возможность интеграции дополнительных элементов управления][html-reporter-plugins] для режима GUI из других плагинов;
--   обновление скриншотов в ускоренном режиме;
+-   run tests directly from the report in [GUI mode][html-reporter-gui];
+-   all reporting features listed above are available;
+-   [ability to integrate additional controls][html-reporter-plugins] for GUI mode from other plugins;
+-   accelerated screenshot updating;
 
-### Богатые возможности для отладки {#debuggable}
+### Rich Debugging Capabilities {#debuggable}
 
--   [DevTools в CDP-режиме][how-to-use-cdp];
--   [профайлинг Testplane][testplane-profiler];
--   [профайлинг плагинов][testplane-plugins-profiler].
+-   [DevTools in CDP mode][how-to-use-cdp];
+-   [Testplane profiling][testplane-profiler];
+-   [plugin profiling][testplane-plugins-profiler].
 
-### Расширяемость {#extendable}
+### Extensibility {#extendable}
 
--   [легко добавить свои собственные команды][prepare-browser];
--   в наличии [десятки готовых плагинов][plugins];
--   можно написать свой плагин для реализации любой функциональности;
--   [свыше 20 событий, на которые можно подписаться][testplane-events];
--   доступны [точки расширения][html-reporter-extension-points] в отчете testplane;
--   можно [расширять CLI Testplane из своего плагина][testplane-cli], добавляя новые команды и опции.
+-   [easily add your own commands][prepare-browser];
+-   dozens of [ready-made plugins][plugins];
+-   write your own plugin to implement any functionality;
+-   [over 20 events you can subscribe to][testplane-events];
+-   available [extension points][html-reporter-extension-points] in the Testplane report;
+-   [extend the Testplane CLI from your plugin][testplane-cli], adding new commands and options.
 
 [create-testplane]: https://github.com/gemini-testing/create-testplane
 [webdriverio-api]: https://webdriver.io/docs/api

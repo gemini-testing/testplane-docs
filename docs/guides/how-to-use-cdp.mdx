@@ -1,23 +1,23 @@
 import Admonition from "@theme/Admonition";
 
-# Как использовать Chrome DevTools Protocol в testplane
+# How to Use Chrome DevTools Protocol in Testplane
 
-## Введение {#preface}
+## Introduction {#preface}
 
 <Admonition type="warning">
-    Установите в своем проекте testplane 4-й версии и выше, чтобы использовать _Chrome DevTools
-    Protocol (CDP)_ в testplane-тестах.
+    Install Hermione (Testplane) version 4 or higher in your project to use _Chrome DevTools
+    Protocol (CDP)_ in Testplane tests.
 </Admonition>
 
-Протокол `WebDriver` используется в testplane уже давно, а вот возможность использования [CDP][CDP] появилась только после переезда на _[WebdriverIO@7](https://webdriver.io/versions)_ в testplane 4-й версии.
+The `WebDriver` protocol has been used in Testplane for a long time, but the possibility of using [CDP][CDP] appeared only after migrating to _[WebdriverIO@7](https://webdriver.io/versions)_ in Hermione version 4.
 
-Поддержка CDP в _WebdriverIO@7_ реализована с помощью [puppeteer][puppeteer]. Который, в свою очередь, является оберткой с удобным API над CDP.
+CDP support in _WebdriverIO@7_ is implemented using [puppeteer][puppeteer], which is a wrapper with a convenient API over CDP.
 
-Про сравнение протоколов _WebDriver_ и _CDP_ читайте в разделе Справочника «[WebDriver vs CDP][webdriver-vs-cdp]».
+For a comparison of the _WebDriver_ and _CDP_ protocols, see the "WebDriver vs CDP" section in the Reference Manual.
 
-## Локальное использование {#local_usage}
+## Local Usage {#local_usage}
 
-Для работы с браузером по CDP локально — добавьте опцию `automationProtocol: 'devtools'` к настройкам браузера в конфиге testplane:
+To work with the browser via CDP locally, add the `automationProtocol: 'devtools'` option to the browser settings in the Testplane config:
 
 ```javascript
 // .testplane.conf.js
@@ -31,33 +31,39 @@ module.exports = {
             },
         },
 
-        // настройки других браузеров...
+        // other browser settings...
     },
 
-    // другие настройки testplane...
+    // other Testplane settings...
 };
 ```
 
-После этого все последующие запуски будут выполняться в вашем локально установленном Хроме.
+After this, all subsequent runs will be performed in your locally installed Chrome.
 
-Но если вам нужно запустить браузер с поддержкой CDP один раз, то удобнее использовать специальную CLI-опцию:
+But if you need to run a browser with CDP support just once, it's more convenient to override this option using an environment variable:
 
 ```bash
-npx testplane ... --devtools
+testplane_browsers_chrome_automation_protocol=devtools npx testplane ...
 ```
 
-## Удаленное использование {#remote_usage}
+Or set it as a CLI option:
 
-При использовании CDP на удаленной машине (например, в гриде) testplane сначала поднимет браузер с использованием WebDriver-протокола и только потом, по запросу пользователя (т. е. при вызове CDP-команды), перейдет на подключение по CDP. Таким образом, с удаленным браузером в одном тестовом сценарии мы будем общаться сразу по двум протоколам.
+```bash
+npx testplane ... --browsers-chrome-automation-protocol=devtools
+```
 
-Выглядит это примерно так:
+## Remote Usage {#remote_usage}
 
-![Схема удаленного использования CDP](/img/docs/guides/how-to-use-cdp.remote-scheme.png)
+When using CDP on a remote machine (e.g., in a grid), Testplane will first start the browser using the WebDriver protocol and then, upon user request (i.e., when calling a CDP command), switch to CDP connection. Thus, in a single test scenario with a remote browser, we will interact using both protocols.
 
-Чтобы подключиться по CDP к удаленному браузеру необходимо:
+It looks something like this:
 
--   использовать `automationProtocol: webdriver` (значение по умолчанию);
--   в `desiredCapabilities` браузера добавить вендорное поле `selenoid:options`: данная опция необходима, чтобы _webdriverio_ понял, что нужно подключиться именно к удаленной машине, а не к локальному браузеру.
+![Remote CDP Usage Diagram](/img/docs/guides/how-to-use-cdp.remote-scheme.png)
+
+To connect to a remote browser via CDP, you need to:
+
+-   use `automationProtocol: webdriver` (default value);
+-   add the vendor-specific field `selenoid:options` in the browser’s `desiredCapabilities`: this option is necessary for _webdriverio_ to understand that it needs to connect to a remote machine instead of a local browser.
 
 ```javascript
 // .testplane.conf.js
@@ -70,36 +76,36 @@ module.exports = {
                 // ...
             },
 
-            // другие настройки браузера...
+            // other browser settings...
         },
 
-        // настройки других браузеров...
+        // other browser settings...
     },
 
-    // другие настройки testplane...
+    // other Testplane settings...
 };
 ```
 
-<Admonition type="warning" title="Ограничения">
-    Полноценно использовать CDP можно только начиная с **Chrome@77** и выше. Это связано с
-    внутренней реализацией в _webdriverio._
+<Admonition type="warning" title="Limitations">
+    Full CDP usage is only supported from **Chrome@77** and higher. This is due to the internal
+    implementation in _webdriverio._
 </Admonition>
 
-## Какие возможности открывает CDP {#what_does_cdp_give}
+## What Capabilities Does CDP Provide {#what_does_cdp_give}
 
-С помощью CDP вы можете:
+With CDP, you can:
 
--   [отслеживать и перехватывать сетевые запросы и ответы][how-to-intercept-requests-and-responses]
--   [тестировать доступность (accessibility) страницы][how-to-check-accessibility]
--   [управлять пропускной способностью сети][how-to-manage-network-bandwidth]
--   [управлять быстродействием процессора][how-to-manage-cpu-performance]
--   [скрывать скроллбары][how-to-hide-scrollbars-by-cdp]
+-   [track and intercept network requests and responses][how-to-intercept-requests-and-responses]
+-   [test page accessibility][how-to-check-accessibility]
+-   [manage network bandwidth][how-to-manage-network-bandwidth]
+-   [control CPU performance][how-to-manage-cpu-performance]
+-   [hide scrollbars][how-to-hide-scrollbars-by-cdp]
 
-## Полезные ссылки {#useful_links}
+## Useful Links {#useful_links}
 
 -   [WebDriver vs CDP][webdriver-vs-cdp]
 -   [Web Performance Recipes With Puppeteer](https://addyosmani.com/blog/puppeteer-recipes/)
--   [Про Chrome DevTools Protocol][CDP]
+-   [About Chrome DevTools Protocol][CDP]
 -   [puppeteer][puppeteer]
 
 [CDP]: https://chromedevtools.github.io/devtools-protocol/

@@ -1,0 +1,59 @@
+# url
+
+## Обзор {#overview}
+
+Используйте команду `url`, чтобы перейти по заданному URL-адресу в браузере.
+
+Если в конфигурации указан [baseUrl][base-url], то он будет добавлен к параметру `url` с помощью метода Node.JS [url.resolve()][url-resolve].
+
+Вызов `browser.url()` с тем же URL-адресом, что и в прошлый раз, вызовет перезагрузку страницы.
+
+## Использование {#usage}
+
+```javascript
+await browser.url(url);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>url</td><td>String</td><td>URL, который надо открыть.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**url.js**
+
+```javascript
+// переходим на URL
+await browser.url("https://webdriver.io");
+
+// получаем url
+console.log(await browser.getUrl()); // выведет: "https://webdriver.io"
+```
+
+**baseUrlResolutions.js**
+
+```javascript
+// Пусть baseUrl = http://example.com/site
+
+// При указании полного URL-адреса итоговый URL будет https://webdriver.io
+await browser.url("https://webdriver.io");
+
+// При указании URL-адреса без начального слэша
+// итоговый URL формируется относительно всего baseUrl: http://example.com/site/relative
+await browser.url("relative");
+
+// При указании URL-адреса с начальным слэшом
+// итоговый URL формируется относительно корня baseUrl: http://example.com/rootRelative
+await browser.url("/rootRelative");
+```
+
+[base-url]: ../../../config/browsers#base_url
+[url-resolve]: https://nodejs.org/api/url.html#urlresolvefrom-to

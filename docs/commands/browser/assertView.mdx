@@ -2,42 +2,43 @@ import Admonition from "@theme/Admonition";
 
 # assertView
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `assertView`, чтобы снять скриншот для определенного состояния теста и сравнить его с эталонным.
+Use the `assertView` command to take a screenshot for a specific test state and compare it with a reference.
 
 <Admonition type="info">
-    Эта команда реализована внутри Testplane, в [API WebDriverIO][webdriverio-api] её нет.
+    This command is implemented within Testplane, it's not available in the [API
+    WebDriverIO][webdriverio-api].
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```typescript
 await browser.assertView(state, options);
 await browser.assertView(state, selector, options);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>[state](#state)</td><td>String</td><td>Обязательный параметр. Название состояния теста. Должно быть уникальным в пределах одного теста.</td></tr>
-<tr><td>[selector](#selector)</td><td>String или String[]</td><td>Необязательный параметр. Может быть пропущен. Селектор DOM-элемента, который необходимо заснять. При отсутствии команда скриншотит viewport.</td></tr>
-<tr><td>[options](#options)</td><td>Object</td><td>Настройки команды _assertView_.</td></tr>
+<tr><td>[state](#state)</td><td>String</td><td>Required parameter. The name of the test state. It must be unique within a single test.</td></tr>
+<tr><td>[selector](#selector)</td><td>String or String[]</td><td>Optional parameter. Can be skipped. The DOM element selector to capture. If skipped, current viewport is captured.</td></tr>
+<tr><td>[options](#options)</td><td>Object</td><td>Settings for the _assertView_ command.</td></tr>
 
 </tbody>
 </table>
 
 ### state
 
-Обязательный параметр. Задает название состояния теста. Название должно быть уникальным в пределах одного теста.
+Required parameter. Specifies the name of the test state. The name must be unique within a single test.
 
 ### selector
 
-Необязательный параметр. Может быть пропущен. Задает селектор DOM-элемента, который необходимо заснять. По умолчанию `body`. При его отсутствии `assertView` применяет следующие опции, которые имеют приоритет над `assertViewOpts` из конфига, но не над параметром `options`:
+Required parameter. Specifies the selector of the DOM element to capture. If not specified or skipped, will be set to `body` and the following options will be automatically added to `options`:
 
 ```
 {
@@ -47,35 +48,36 @@ await browser.assertView(state, selector, options);
 }
 ```
 
-Таким образом, по умолчанию без параметра `options` `assertView` скриншотит viewport.
+These additional options will have higher priority than `assertViewOpts` from config, but lower priority than options from `options` parameter passed by user.
+So, assertView without `selector` parameter will take a screenshot of the current viewport.
 
 ### options
 
-Задает настройки команды `assertView`:
+Specifies the settings for the `assertView` command:
 
 <table>
     <thead>
         <tr>
-            <td>**Опция**</td>
-            <td>**Тип**</td>
-            <td>**Описание**</td>
+            <td>**Option**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>ignoreElements</td>
-            <td>Array или String</td>
+            <td>Array or String</td>
             <td>
-                Элементы (задаются как селекторы), которые будут проигнорированы при сравнении
-                скриншотов. Игнор реализуется с помощью закраски перечисленных элементов черным
-                цветом. В случае одного элемента параметр можно задавать как строку.
+                Elements (specified as selectors) that will be ignored when comparing screenshots.
+                Ignoring is implemented by painting the listed elements black. For a single element,
+                the parameter can be set as a string.
             </td>
         </tr>
         <tr>
             <td>tolerance</td>
             <td>Number</td>
             <td>
-                Чувствительность к разнице в цветам. Значение перетирает
+                Sensitivity to color differences. The value overrides
                 [browsers.tolerance][browsers-tolerance].
             </td>
         </tr>
@@ -83,7 +85,7 @@ await browser.assertView(state, selector, options);
             <td>antialiasingTolerance</td>
             <td>Number</td>
             <td>
-                Чувствительность в антиалиасинге. Значение перетирает
+                Sensitivity to anti-aliasing. The value overrides
                 [browsers.antialiasingTolerance][browsers-antialiasing-tolerance].
             </td>
         </tr>
@@ -91,74 +93,74 @@ await browser.assertView(state, selector, options);
             <td>allowViewportOverflow</td>
             <td>Boolean</td>
             <td>
-                По умолчанию Testplane выдает ошибку, если элемент находится за пределами границ
-                вьюпорта. Этот параметр отключает проверку на границы, позволяя снимать скриншоты
-                элементов, не влезающих во вьюпорт. При этом на скриншоте будут видны только те
-                части элемента, которые влезли во вьюпорт. Однако если _compositeImage_ равен
-                _true_, то части элемента, которые оказались за _нижней_ границей вьюпорта, тоже
-                будут видны на скриншоте. Аналогично если _captureElementFromTop_ равен _true_, то
-                на скриншот попадут и те части элемента, которые оказались за пределами _верхней_
-                границы вьюпорта.
+                By default, Testplane throws an error if the element is outside the viewport
+                boundaries. This parameter disables boundary checks, allowing screenshots of
+                elements that don't fully fit in the viewport. On the screenshot, only the parts of
+                the element that fit into the viewport will be visible. However, if _compositeImage_
+                is set to _true_, the parts of the element that are below the viewport boundary will
+                also be visible in the screenshot. Similarly, if _captureElementFromTop_ is set to
+                _true_, the parts of the element that are above the viewport boundary will also be
+                captured in the screenshot.
             </td>
         </tr>
         <tr>
             <td>captureElementFromTop</td>
             <td>Boolean</td>
             <td>
-                Снимать скриншот элемента с самого верха. Если элемент находится за пределами
-                вьюпорта, то к нему будет выполнен подскролл.
+                Capture the screenshot of the element from the very top. If the element is outside
+                the viewport, it will be scrolled into view.
             </td>
         </tr>
         <tr>
             <td>compositeImage</td>
             <td>Boolean</td>
             <td>
-                Если элемент не влазит во вьюпорт, то при включении этой опции поочередно будет
-                сделано несколько скриншотов разных частей элемента, после чего скриншоты будут
-                склеены в один, чтобы отобразить элемент полностью.
+                If the element does not fit into the viewport, multiple screenshots of different
+                parts of the element will be taken sequentially, and then stitched together into one
+                to display the entire element.
             </td>
         </tr>
         <tr>
             <td>screenshotDelay</td>
             <td>Number</td>
             <td>
-                Задержка в миллисекундах перед снятием скриншота. Может пригодиться, когда на
-                странице есть элементы, использующие анимацию, или скроллбар, который исчезает не
-                сразу и попадает на результирующий скриншот.
+                Delay in milliseconds before taking a screenshot. Useful when there are elements
+                with animations on the page, or a scrollbar that does not disappear immediately and
+                appears in the resulting screenshot.
             </td>
         </tr>
         <tr>
             <td>selectorToScroll</td>
             <td>String</td>
             <td>
-                Селектор, который нужно скроллировать. Может пригодиться, когда надо сделать
-                скриншот модального окна, которое не помещается на экране. Иначе без указания
-                селектора скролл будет применяться к объекту _window_, и скроллироваться будет
-                задний фон, оставляя попап-окно на месте.
+                Selector to scroll. Useful when you need to take a screenshot of a modal window that
+                doesn’t fit on the screen. Otherwise, without specifying a selector, the scroll will
+                be applied to the _window_ object, scrolling the background while keeping the popup
+                window in place.
             </td>
         </tr>
         <tr>
             <td>disableAnimation</td>
             <td>Boolean</td>
             <td>
-                Отключение анимаций и переходов при снятии скриншота. По умолчанию `true` начиная с
-                версии `8.0.0`.
+                Disable animations and transitions when taking a screenshot. Default is `true`
+                starting from version `8.0.0`.
             </td>
         </tr>
         <tr>
             <td>ignoreDiffPixelCount</td>
-            <td>`` `${number}%` `` или Number</td>
+            <td>`` `${number}%` `` or Number</td>
             <td>
-                Процент пикселей, которые нужно игнорировать при диффе. Удобно для игнорирования
-                очень маленьких диффов. По умолчанию `0`. Доступен начиная с версии `8.2.0`.
+                The percentage of pixels to ignore during the diff. Useful to ignore very small
+                differences. Default is `0`. Available starting from version `8.2.0`.
             </td>
         </tr>
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
-**Визуальная проверка элемента**
+**Visual check of certain element**
 
 ```typescript
 it("should assert view", async ({ browser }) => {
@@ -170,7 +172,7 @@ it("should assert view", async ({ browser }) => {
 });
 ```
 
-**Визуальная проверка всего вьюпорта**
+**Visual check of current viewport**
 
 ```typescript
 it("should assert viewport without selector", async ({ browser }) => {
@@ -183,7 +185,7 @@ it("should assert viewport without selector", async ({ browser }) => {
 });
 ```
 
-**Визуальная проверка с дополнительными опциями**
+**Visual check with additional options**
 
 ```typescript
 it("should assert view with given options", async ({ browser }) => {
@@ -201,7 +203,7 @@ it("should assert view with given options", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [element.assertView](../../element/assertView)
 -   [browser.saveRecordingScreen](../saveRecordingScreen)

@@ -1,10 +1,10 @@
-# expect для элементов
+# expect for elements
 
 ## toBeDisplayed
 
-Вызывает [isDisplayed](../../element/isDisplayed) на заданном элементе.
+Calls [isDisplayed](../../element/isDisplayed) on the given element.
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#someElem");
@@ -13,9 +13,9 @@ await expect(elem).toBeDisplayed();
 
 ## toExist
 
-Вызывает [isExisting](../../element/isExisting) на заданном элементе.
+Calls [isExisting](../../element/isExisting) on the given element.
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#someElem");
@@ -24,9 +24,9 @@ await expect(elem).toExist();
 
 ## toBePresent
 
-То же, что и [toExist](#toexist).
+Same as [toExist](#toexist).
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#someElem");
@@ -35,9 +35,9 @@ await expect(elem).toBePresent();
 
 ## toBeExisting
 
-То же, что и [toExist](#toexist).
+Same as [toExist](#toexist).
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#someElem");
@@ -46,9 +46,9 @@ await expect(elem).toBeExisting();
 
 ## toBeFocused
 
-Проверяет, есть ли фокус на элементе. Это утверждение работает только в веб-контексте.
+Checks if the element has focus. This assertion works only in the web context.
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#someElem");
@@ -57,9 +57,9 @@ await expect(elem).toBeFocused();
 
 ## toHaveAttribute
 
-Проверяет, есть ли у элемента атрибут с заданным значением.
+Checks if the element has the given attribute with the specified value.
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -68,9 +68,9 @@ await expect(myInput).toHaveAttribute("class", "form-control");
 
 ## toHaveAttr
 
-То же, что и [toHaveAttribute](#tohaveattribute).
+Same as [toHaveAttribute](#tohaveattribute).
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -79,9 +79,9 @@ await expect(myInput).toHaveAttr("class", "form-control");
 
 ## toHaveAttributeContaining
 
-Проверяет, есть ли заданная подстрока в значении указанного атрибута элемента.
+Checks if the given substring is contained in the specified attribute's value of the element.
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -90,9 +90,9 @@ await expect(myInput).toHaveAttributeContaining("class", "form");
 
 ## toHaveAttrContaining
 
-То же, что и [toHaveAttributeContaining](#tohaveattrcontaining).
+Same as [toHaveAttributeContaining](#tohaveattrcontaining).
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -101,9 +101,9 @@ await expect(myInput).toHaveAttrContaining("class", "form");
 
 ## toHaveElementClass
 
-Проверяет, есть ли у элемента заданное имя класса.
+Checks if the element has the specified class name.
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -112,9 +112,9 @@ await expect(myInput).toHaveElementClass("form-control", { message: "Not a form 
 
 ## toHaveElementClassContaining
 
-Проверяет, есть ли у элемент имя класса, которое содержит в качестве подстроки заданное значение.
+Checks if the element's class name contains the specified substring.
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -123,9 +123,9 @@ await expect(myInput).toHaveElementClassContaining("form");
 
 ## toHaveElementProperty
 
-Проверяет, есть ли у элемента указанное свойство с заданным значением.
+Checks if the element has the specified property with the given value.
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
@@ -135,9 +135,9 @@ await expect(elem).not.toHaveElementProperty("height", 0);
 
 ## toHaveValue
 
-Проверяет, имеет ли input-элемент заданное значение.
+Checks if an input element has the given value.
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -146,9 +146,9 @@ await expect(myInput).toHaveValue("user", { ignoreCase: true });
 
 ## toHaveValueContaining
 
-Проверяет, есть ли заданная подстрока в значении указанного input-элемента.
+Checks if the given substring is contained in the specified input element's value.
 
-Например:
+For example:
 
 ```javascript
 const myInput = await browser.$("input");
@@ -157,9 +157,9 @@ await expect(myInput).toHaveValueContaining("us");
 
 ## toBeClickable
 
-Проверяет, можно ли щелкнуть по элементу с помощью вызова [isClickable](../../element/isClickable).
+Checks if the element is clickable by calling [isClickable](../../element/isClickable).
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
@@ -168,35 +168,35 @@ await expect(elem).toBeClickable();
 
 ## toBeDisabled
 
-Проверяет, отключен ли элемент с помощью вызова [isEnabled](../../element/isEnabled).
+Checks if the element is disabled by calling [isEnabled](../../element/isEnabled).
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
 await expect(elem).toBeDisabled();
-// или, что то же самое:
+// or, equivalently:
 await expect(elem).not.toBeEnabled();
 ```
 
 ## toBeEnabled
 
-Проверяет, включен ли элемент с помощью вызова [isEnabled](../../element/isEnabled).
+Checks if the element is enabled by calling [isEnabled](../../element/isEnabled).
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
 await expect(elem).toBeEnabled();
-// или, что то же самое:
+// or, equivalently:
 await expect(elem).not.toBeDisabled();
 ```
 
 ## toBeSelected
 
-Проверяет, выбран ли элемент с помощью вызова [isSelected](../../element/isSelected).
+Checks if the element is selected by calling [isSelected](../../element/isSelected).
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
@@ -205,9 +205,9 @@ await expect(elem).toBeSelected();
 
 ## toBeChecked
 
-То же, что и [toBeSelected](#tobeselected).
+Same as [toBeSelected](#tobeselected).
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
@@ -216,9 +216,9 @@ await expect(elem).toBeChecked();
 
 ## toHaveHref
 
-Проверяет, есть ли заданный адрес у ссылки элемента.
+Checks if the element link has the specified URL.
 
-Например:
+For example:
 
 ```javascript
 const link = await browser.$("a");
@@ -227,9 +227,9 @@ await expect(link).toHaveHref("https://webdriver.io");
 
 ## toHaveLink
 
-То же, что и [toHaveHref](#tohavehref).
+Same as [toHaveHref](#tohavehref).
 
-Например:
+For example:
 
 ```javascript
 const link = await browser.$("a");
@@ -238,9 +238,9 @@ await expect(link).toHaveLink("https://webdriver.io");
 
 ## toHaveHrefContaining
 
-Проверяет, есть ли заданная подстрока в адресе у ссылки элемента.
+Checks if the given substring is contained in the element link's URL.
 
-Например:
+For example:
 
 ```javascript
 const link = await browser.$("a");
@@ -249,9 +249,9 @@ await expect(link).toHaveHrefContaining("webdriver.io");
 
 ## toHaveLinkContaining
 
-То же, что и [toHaveHrefContaining](#tohavehrefcontaining).
+Same as [toHaveHrefContaining](#tohavehrefcontaining).
 
-Например:
+For example:
 
 ```javascript
 const link = await browser.$("a");
@@ -260,9 +260,9 @@ await expect(link).toHaveLinkContaining("webdriver.io");
 
 ## toHaveId
 
-Проверяет, есть ли у элемента заданный ID.
+Checks if the element has the given ID.
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
@@ -271,11 +271,11 @@ await expect(elem).toHaveId("elem");
 
 ## toHaveText
 
-Проверяет, совпадает ли текст элемента с заданным значением.
+Checks if the element's text matches the specified value.
 
-Также может быть вызван с массивом в качестве параметра в случае, когда элемент может иметь разные тексты.
+It can also be called with an array as a parameter in case the element can have different texts.
 
-Например:
+For example:
 
 ```javascript
 await browser.url("https://webdriver.io/");
@@ -289,11 +289,11 @@ await expect(elem).toHaveText([
 
 ## toHaveTextContaining
 
-Проверяет, содержит ли текст элемента заданное значение в качестве подтекста.
+Checks if the element's text contains the specified substring.
 
-Также может быть вызван с массивом в качестве параметра в случае, когда элемент может иметь разные тексты.
+It can also be called with an array as a parameter in case the element can have different texts.
 
-Например:
+For example:
 
 ```javascript
 await browser.url("https://webdriver.io/");
@@ -307,9 +307,9 @@ await expect(elem).toHaveTextContaining([
 
 ## toBeDisplayedInViewport
 
-Проверяет, находится ли элемент в пределах области просмотра _(viewport)_, используя команду [isDisplayedInViewport](../../element/isDisplayedInViewport).
+Checks if the element is within the viewport using the [isDisplayedInViewport](../../element/isDisplayedInViewport) command.
 
-Например:
+For example:
 
 ```javascript
 const elem = await browser.$("#elem");
@@ -318,36 +318,40 @@ await expect(elem).toBeDisplayedInViewport();
 
 ## toHaveChildren
 
-Проверяет количество дочерних элементов заданного элемента, используя команду [element.$('./\*')](../../element/_dollar).
+Checks the number of child elements of the given element using the [element.$('./\*')](../../element/_dollar) command.
 
-Например:
+For example:
 
 ```javascript
 const list = await browser.$("ul");
-await expect(list).toHaveChildren(); // в списке есть как минимум 1 элемент
-// или, что то же самое:
+await expect(list).toHaveChildren(); // list has at least 1 element
+// or, equivalently:
 await expect(list).toHaveChildren({ gte: 1 });
 ```
 
 ```javascript
-await expect(list).toHaveChildren(3); // в списке есть 3 элемента
-// или, что то же самое:
+await expect(list).toHaveChildren(3); // list has 3 elements
+// or, equivalently:
 await expect(list).toHaveChildren({ eq: 3 });
 ```
 
 ## toBeElementsArrayOfSize
 
-Проверяет количество полученных элементов с помощью команды [$$](../../element/_dollardollar).
+Checks the number of elements obtained using the [$$](../../element/_dollardollar) command.
 
-Например:
+For example:
 
 ```javascript
 const listItems = await browser.$$("ul>li");
-await expect(listItems).toBeElementsArrayOfSize(5); // 5 элементов в списке
+await expect(listItems).toBeElementsArrayOfSize(5); // 5 items in the list
 ```
 
 ```javascript
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 });
-// или, что то же самое:
+// or, equivalently:
 assert.ok(listItems.length <= 10);
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/expect-webdriverio), from which we drew some information while writing our version.

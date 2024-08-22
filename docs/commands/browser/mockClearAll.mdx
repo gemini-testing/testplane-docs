@@ -1,16 +1,16 @@
 # mockClearAll
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `mockClearAll`, чтобы сбросить всю сохраненную информацию в зарегистрированных имитациях. Имитации регистрируются с помощью команды [mock][mock].
+Use the `mockClearAll` command to reset all stored information in registered mocks. Mocks are registered using the [mock][mock] command.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```typescript
 await browser.mockClearAll();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```typescript
 it("should clear all mocks", async ({ browser }) => {
@@ -32,9 +32,13 @@ it("should clear all mocks", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [mock][mock]
 -   [mockRestoreAll](../mockRestoreAll)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/mockClearAll), from which we drew some information while writing our version.
 
 [mock]: ../mock

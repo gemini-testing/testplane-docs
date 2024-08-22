@@ -1,0 +1,124 @@
+# Обзор
+
+## О Testplane
+
+**Testplane** — это инструмент для автоматизации тестирования пользовательских сценариев в web-интерфейсах.
+
+С помощью неё вы можете протестировать функциональность своего сайта или проекта, а также проверить, что ваша верстка при любых обстоятельствах соответствует эталонной. В вашем распоряжении — весь [спектр команд][commands], которые предоставляет [WebDriverIO v8][webdriverio-api] и [все возможности протокола Chrome DevTools][how-to-use-cdp]. А ещё — привычный синтаксис [Mocha][mocha].
+
+В вашем проекте становится всё больше и больше тестов? — Testplane позволит вам легко масштабировать их прогон, не теряя в юзабилити. Она умеет не только запускать тесты параллельно, в разных браузерах, на разных платформах, но и собирать все результаты прогонов в единый html-отчет, с возможностями гибкого просмотра, группировки и фильтрации тестов.
+
+Вам не хватает какой-то функциональности? — Не проблема! Вы можете написать свой плагин и решить свою задачу с максимальной эффективностью. Или найти уже готовый плагин и добавить его к своему проекту.
+
+И это не всё.
+
+## Почему именно Testplane? {#why-testplane}
+
+-   [Легкая настройка и большие возможности](#easystart_great_features)
+-   [Быстрое выполнение тестов](#fast)
+-   [Гибкий запуск тестов](#flexible)
+-   [Умное поведение при ошибках](#smart)
+-   [Подробный отчет о прогоне тестов](#user_friendly)
+-   [Интерактивный запуск тестов](#interactive)
+-   [Богатые возможности для отладки](#debuggable)
+-   [Расширяемость](#extendable)
+
+### Легкая настройка и большие возможности {#easystart_great_features}
+
+-   быстрое создание проекта с помощью [create-testplane][create-testplane];
+-   все ключевые параметры имеют [оптимальные дефолты][defaults];
+-   легко писать тесты, так как в основе [Mocha][mocha];
+-   большой [спектр команд][commands], «под капотом» — [WebdriverIO v8][webdriverio-api];
+-   своя мощная команда [assertView][assert-view] для снятия и сравнения скриншотов;
+-   при сравнении скриншотов [можно гибко управлять параметрами][assert-view-opts] для отдельных тестов;
+-   при снятии скриншотов можно указать какие области игнорировать;
+-   автоматическая склейка больших изображений, выходящих за пределы вьюпорта.
+
+### Быстрое выполнение тестов {#fast}
+
+-   за счет [параллельности внутри Testplane][testplane-workers];
+-   масштабирование с помощью [testplane-chunks][testplane-chunks];
+-   [повторное реиспользование сессий][sessions-reuse];
+-   кэширование сессий с браузерами;
+-   20000 тестов за 10 минут — легко!
+
+### Гибкий запуск тестов {#flexible}
+
+-   в конкретном браузере;
+-   [по платформам (sets)][testplane-sets] — на десктопных и мобильных браузерах;
+-   [по совпадению с маской][testplane-option-grep];
+-   [из конкретного файла][how-to-run-test-in-file];
+-   [заданное количество раз для проверки стабильности][how-to-check-test-stability];
+-   [хелперы only.in, only.notIn, skip.in, skip.notIn, also.in][how-to-skip-tests].
+
+### Умное поведение при ошибках {#smart}
+
+-   [отказ от сессий, упавших с заданными паттернами ошибок][patterns-on-reject];
+-   [ретраи с ограничением по времени и количеству ретраев][retry-limiter];
+-   [ретраи инфраструктурных ошибок][retry-progressive].
+
+### Подробный отчет о прогоне тестов {#user_friendly}
+
+-   способен отображать [результаты прогона десятков тысяч тестов одновременно][html-reporter];
+-   не тормозит при любых объемах;
+-   предоставляет полную информацию о прогоне тестов: ретраи, мета-информация, скриншоты, логи и т. д.;
+-   дифф в скриншотах [можно смотреть в 6 режимах][html-reporter-diff], включая _switch, swipe_ и _onion skin;_
+-   доступна история выполненных команд в тесте;
+-   в случае падения теста сохраняется сообщение об ошибке и её стектрейс;
+-   [гибкие возможности просмотра, группировки и фильтрации тестов][html-reporter-gui].
+
+### Интерактивный запуск тестов {#interactive}
+
+-   запуск тестов прямо из отчета в [режиме GUI][html-reporter-gui];
+-   доступны все возможности отчета, перечисленные в разделе выше;
+-   [возможность интеграции дополнительных элементов управления][html-reporter-plugins] для режима GUI из других плагинов;
+-   обновление скриншотов в ускоренном режиме;
+
+### Богатые возможности для отладки {#debuggable}
+
+-   [DevTools в CDP-режиме][how-to-use-cdp];
+-   [профайлинг Testplane][testplane-profiler];
+-   [профайлинг плагинов][testplane-plugins-profiler].
+
+### Расширяемость {#extendable}
+
+-   [легко добавить свои собственные команды][prepare-browser];
+-   в наличии [десятки готовых плагинов][plugins];
+-   можно написать свой плагин для реализации любой функциональности;
+-   [свыше 20 событий, на которые можно подписаться][testplane-events];
+-   доступны [точки расширения][html-reporter-extension-points] в отчете testplane;
+-   можно [расширять CLI Testplane из своего плагина][testplane-cli], добавляя новые команды и опции.
+
+[create-testplane]: https://github.com/gemini-testing/create-testplane
+[webdriverio-api]: https://webdriver.io/docs/api
+[mocha]: https://mochajs.org
+[testplane-chunks]: ./plugins/testplane-chunks
+[testplane-option-grep]: ./guides/how-to-run-specified-test#solution_2
+[how-to-run-test-in-file]: ./guides/how-to-run-specified-test#solution_1
+[how-to-skip-tests]: ./guides/how-to-skip-test-in-browsers
+[how-to-check-test-stability]: ./guides/how-to-check-test-stability
+[testplane-sets]: ./config/sets
+[retry-limiter]: ./plugins/retry-limiter
+[retry-progressive]: ./plugins/testplane-retry-progressive
+[sharp]: https://github.com/lovell/sharp
+[sessions-reuse]: ./config/browsers#tests_per_session
+[patterns-on-reject]: ./config/system#patterns_on_reject
+[assert-view-opts]: ./config/browsers#assert_view_opts
+[assert-view]: ./commands/browser/assertView
+[how-to-use-cdp]: ./guides/how-to-use-cdp
+[testplane-profiler]: https://github.com/gemini-testing/testplane-profiler
+[testplane-plugins-profiler]: https://github.com/gemini-testing/testplane-plugins-profiler
+[how-to-test-layout-under-login]: ./guides/how-to-test-layout-under-login
+[how-to-read-browser-logs]: ./guides/how-to-read-browser-logs
+[prepare-browser]: ./config/prepare-browser
+[defaults]: ./config/browsers#timeouts
+[commands]: ./commands/overview
+[html-reporter]: ./html-reporter/html-reporter-setup
+[html-reporter-diff]: ./html-reporter/html-reporter-setup#diffmode
+[html-reporter-gui]: ./html-reporter/html-reporter-commands#gui
+[plugins]: https://github.com/gemini-testing/
+[testplane-events]: ./reference/testplane-events
+[html-reporter-extension-points]: ./html-reporter/html-reporter-plugins#extension_points
+[testplane-cli]: ./reference/testplane-events#cli
+[html-reporter-plugins]: ./html-reporter/html-reporter-plugins
+[testplane-workers]: ./config/system#workers

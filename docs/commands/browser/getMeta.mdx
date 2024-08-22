@@ -2,44 +2,45 @@ import Admonition from "@theme/Admonition";
 
 # getMeta
 
-## Обзор
+## Overview
 
-Используйте команду `getMeta`, чтобы получить мета-информацию о тесте.
+Use the `getMeta` command to retrieve metadata about the test.
 
-Если указать ключ, то команда возвращает значение для конкретного ключа.
-Если ключ не указан, команда вернет объект со всей мета-информацией теста.
+If a key is specified, the command returns the value for that specific key.
+If the key is not specified, the command will return an object with all the metadata for the test.
 
-Для установки значений в мета-информации используйте команду [setMeta](../setMeta).
+To set values in the metadata, use the [setMeta](../setMeta) command.
 
 <Admonition type="info">
-    Эта команда реализована внутри testplane, в [API WebDriverIO][webdriverio-api] её нет.
+    This command is implemented within Testplane and is not available in the [API
+    WebDriverIO][webdriverio-api].
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.getMeta();
 ```
 
-или
+or
 
 ```javascript
 await browser.getMeta(key);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>key</td><td>String</td><td>Необязательный параметр. Ключ, значение которого нужно получить из мета-информации теста.</td></tr>
+<tr><td>key</td><td>String</td><td>Optional parameter. The key whose value needs to be retrieved from the test metadata.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should get meta info of test", async ({ browser }) => {
@@ -47,17 +48,17 @@ it("should get meta info of test", async ({ browser }) => {
     await browser.url("/foo/bar?baz=qux");
 
     const val = await browser.getMeta("foo");
-    console.log(val); // выведет: bar
+    console.log(val); // outputs: bar
 
     const url = await browser.getMeta("url");
-    console.log(url); // выведет: /foo/bar?baz=qux
+    console.log(url); // outputs: /foo/bar?baz=qux
 
     const meta = await browser.getMeta();
-    console.log(meta); // выведет: {foo: 'bar', url: '/foo/bar?baz=qux'}
+    console.log(meta); // outputs: {foo: 'bar', url: '/foo/bar?baz=qux'}
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [setMeta](../setMeta)
 

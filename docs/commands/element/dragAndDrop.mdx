@@ -1,39 +1,43 @@
 # dragAndDrop
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `dragAndDrop`, чтобы перетащить элемент в указанный элемент назначения или позицию.
+Use the `dragAndDrop` command to drag an element to a specified target element or position.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).dragAndDrop(target, { duration });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>target</td><td>Element или DragAndDropCoordinate</td><td>Элемент назначения или объект с координатами _x_ и _y_.</td></tr>
-<tr><td>duration</td><td>Number</td><td>Таймаут для перетаскивания элемента _(операции drag)_.</td></tr>
+<tr><td>target</td><td>Element or DragAndDropCoordinate</td><td>Target element or an object with _x_ and _y_ coordinates.</td></tr>
+<tr><td>duration</td><td>Number</td><td>Timeout for dragging the element _(drag operation)_.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should demonstrate the dragAndDrop command", async ({ browser }) => {
     const elem = await browser.$("#someElem");
     const target = await browser.$("#someTarget");
 
-    // выполнить drag and drop в другой элемент
+    // perform drag and drop to another element
     await elem.dragAndDrop(target);
 
-    // выполнить drag and drop относительно текущей позиции
+    // perform drag and drop relative to the current position
     await elem.dragAndDrop({ x: 100, y: 200 });
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/dragAndDrop), from which we drew some information while writing our version.

@@ -1,32 +1,32 @@
 # selectByVisibleText
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `selectByVisibleText`, чтобы выбрать опцию с заданным отображаемым текстом.
+Use the `selectByVisibleText` command to select an option by its displayed text.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).selectByVisibleText(text);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>text</td><td>String или Number</td><td>Текст (опции), по которому нужно выбрать опцию.</td></tr>
+<tr><td>text</td><td>String or Number</td><td>The text (of the option) by which to select the option.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **example.html**
 
-```javascript
+```html
 <select id="selectbox">
     <option value="someValue0">uno</option>
     <option value="someValue1">dos</option>
@@ -40,16 +40,20 @@ await browser.$(selector).selectByVisibleText(text);
 **selectByVisibleText.js**
 
 ```javascript
-it("demonstrate the selectByVisibleText command", async ({ browser }) => {
+it("should demonstrate the selectByVisibleText command", async ({ browser }) => {
     const selectBox = await browser.$("#selectbox");
-    console.log(await selectBox.getText("option:checked")); // выведет: "uno"
+    console.log(await selectBox.getText("option:checked")); // outputs: "uno"
 
     await selectBox.selectByVisibleText("cuatro");
-    console.log(await selectBox.getText("option:checked")); // выведет: "cuatro"
+    console.log(await selectBox.getText("option:checked")); // outputs: "cuatro"
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [selectByAttribute](../selectByAttribute)
 -   [selectByIndex](../selectByIndex)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/selectByVisibleText), from which we drew some information while writing our version.

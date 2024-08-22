@@ -1,0 +1,23 @@
+# getComputedLabel
+
+## Обзор {#overview}
+
+Используйте команду `getComputedLabel`, чтобы получить вычисленную [WAI-ARIA][wai-aria] метку элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getComputedLabel();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the getComputedLabel command", async ({ browser }) => {
+    await browser.url("https://www.google.com/ncr");
+    const elem = await browser.$('*[name="q"]');
+    console.log(await elem.getComputedLabel()); // выведет: "Search"
+});
+```
+
+[wai-aria]: https://ru.wikipedia.org/wiki/WAI-ARIA

@@ -1,95 +1,95 @@
 <table>
     <thead>
         <tr>
-            <td>**Опция**</td>
-            <td>**Тип**</td>
-            <td>**Описание**</td>
+            <td>**Option**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>ignoreElements</td>
-            <td>Array или String</td>
+            <td>Array or String</td>
             <td>
-                Элементы (задаются как селекторы), которые будут проигнорированы при сравнении
-                скриншотов. Игнор реализуется с помощью закраски перечисленных элементов черным
-                цветом. В случае одного элемента параметр можно задавать как строку.
+                Elements (specified as selectors) that will be ignored when comparing screenshots.
+                Ignoring is implemented by painting the listed elements black. In the case of a
+                single element, the parameter can be specified as a string.
             </td>
         </tr>
         <tr>
             <td>tolerance</td>
             <td>Number</td>
-            <td>Чувствительность к разнице в цветам.</td>
+            <td>Sensitivity to color differences.</td>
         </tr>
         <tr>
             <td>antialiasingTolerance</td>
             <td>Number</td>
-            <td>Чувствительность в антиалиасинге.</td>
+            <td>Sensitivity to antialiasing.</td>
         </tr>
         <tr>
             <td>allowViewportOverflow</td>
             <td>Boolean</td>
             <td>
-                По умолчанию Testplane выдает ошибку, если элемент находится за пределами границ
-                вьюпорта. Этот параметр отключает проверку на границы, позволяя снимать скриншоты
-                элементов, не влезающих во вьюпорт. При этом на скриншоте будут видны только те
-                части элемента, которые влезли во вьюпорт. Однако если _compositeImage_ равен
-                _true_, то части элемента, которые оказались за _нижней_ границей вьюпорта, тоже
-                будут видны на скриншоте. Аналогично если _captureElementFromTop_ равен _true_, то
-                на скриншот попадут и те части элемента, которые оказались за пределами _верхней_
-                границы вьюпорта.
+                By default, Testplane throws an error if an element is outside the viewport
+                boundaries. This parameter disables boundary checking, allowing screenshots of
+                elements that do not fit within the viewport. Only the parts of the element that fit
+                within the viewport will be visible in the screenshot. However, if _compositeImage_
+                is set to _true_, parts of the element that are below the viewport will also be
+                visible in the screenshot. Similarly, if _captureElementFromTop_ is set to _true_,
+                parts of the element that are above the viewport will also be included in the
+                screenshot.
             </td>
         </tr>
         <tr>
             <td>captureElementFromTop</td>
             <td>Boolean</td>
             <td>
-                Снимать скриншот элемента с самого верха. Если элемент находится за пределами
-                вьюпорта, то к нему будет выполнен подскролл.
+                Capture a screenshot of the element from the very top. If the element is outside the
+                viewport, it will be scrolled into view.
             </td>
         </tr>
         <tr>
             <td>compositeImage</td>
             <td>Boolean</td>
             <td>
-                Если элемент не влазит во вьюпорт, то при включении этой опции поочередно будет
-                сделано несколько скриншотов разных частей элемента, после чего скриншоты будут
-                склеены в один, чтобы отобразить элемент полностью.
+                If the element does not fit within the viewport, enabling this option will take
+                multiple screenshots of different parts of the element sequentially, and then stitch
+                them together into one image to display the entire element.
             </td>
         </tr>
         <tr>
             <td>screenshotDelay</td>
             <td>Number</td>
             <td>
-                Задержка в миллисекундах перед снятием скриншота. Может пригодиться, когда на
-                странице есть элементы, использующие анимацию, или скроллбар, который исчезает не
-                сразу и попадает на результирующий скриншот.
+                Delay in milliseconds before taking a screenshot. This can be useful when there are
+                elements on the page that use animation, or a scrollbar that does not disappear
+                immediately and ends up in the resulting screenshot.
             </td>
         </tr>
         <tr>
             <td>selectorToScroll</td>
             <td>String</td>
             <td>
-                Селектор, который нужно скроллировать. Может пригодиться, когда надо сделать
-                скриншот модального окна, которое не помещается на экране. Иначе без указания
-                селектора скролл будет применяться к объекту _window_, и скроллироваться будет
-                задний фон, оставляя попап-окно на месте.
+                Selector to scroll. This can be useful when you need to take a screenshot of a modal
+                window that does not fit on the screen. Otherwise, without specifying the selector,
+                the scroll will be applied to the _window_ object, and the background will scroll,
+                leaving the popup window in place.
             </td>
         </tr>
         <tr>
             <td>disableAnimation</td>
             <td>Boolean</td>
             <td>
-                Отключение анимаций и переходов при снятии скриншота. По умолчанию `true` начиная с
-                версии `8.0.0`
+                Disable animations and transitions when taking a screenshot. Default is `true`
+                starting from version `8.0.0`.
             </td>
         </tr>
         <tr>
             <td>ignoreDiffPixelCount</td>
-            <td>`` `${number}%` `` или Number</td>
+            <td>`` `${number}%` `` or Number</td>
             <td>
-                Процент пикселей, которые нужно игнорировать при диффе. Удобно для игнорирования
-                очень маленьких диффов. По умолчанию `0`. Доступен начиная с версии `8.2.0`
+                Percentage of pixels to ignore in the diff. Useful for ignoring very small diffs.
+                Default is `0`. Available starting from version `8.2.0`.
             </td>
         </tr>
     </tbody>

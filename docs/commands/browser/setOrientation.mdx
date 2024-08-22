@@ -1,36 +1,39 @@
 # setOrientation
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `setOrientation`, чтобы изменить ориентацию браузера. Эта команда гарантирует, что последующие команды не начнут выполнение раньше, чем произойдет смена ориентации.
-Если устройство не поддерживает такую возможность, то команда будет проигнорирована.
+Use the `setOrientation` command to change the browser orientation. This command ensures that subsequent commands will not start executing until the orientation change occurs.
+If the device does not support this feature, the command will be ignored.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```typescript
 await browser.setOrientation(orientation);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
     <thead>
         <tr>
-            <td>**Имя**</td>
-            <td>**Тип**</td>
-            <td>**Описание**</td>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>`orientation`</td>
             <td>`"landscape" | "portrait"`</td>
-            <td>The orientation to set.</td>
+            <td>
+                The path to the screenshot relative to the execution directory (the _.png_ extension
+                is mandatory).
+            </td>
         </tr>
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```typescript
 it("test", async ({ browser }) => {

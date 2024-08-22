@@ -2,34 +2,34 @@ import Admonition from "@theme/Admonition";
 
 # saveRecordingScreen
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `saveRecordingScreen`, чтобы сохранить в файл видео, съемка которого была начата командой [startRecordingScreen][start-recording-screen].
+Use the `saveRecordingScreen` command to save a video to a file that was started with the [startRecordingScreen][start-recording-screen] command.
 
 <Admonition type="warning">
-    Команда _saveRecordingScreen_ поддерживается только для мобильных сессий, которые используют
+    The _saveRecordingScreen_ command is only supported for mobile sessions that use
     [Appium][appium].
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.saveRecordingScreen(filepath);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>filepath</td><td>String</td><td>Полный или относительный к исполняемому каталогу путь к видео.</td></tr>
+<tr><td>filepath</td><td>String</td><td>Full or relative path to the video file from the execution directory.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should save a video", async ({ browser }) => {
@@ -39,10 +39,14 @@ it("should save a video", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [savePDF](../savePDF)
 -   [saveScreenshot](../saveScreenshot)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/saveRecordingScreen), from which we drew some information while writing our version.
 
 [start-recording-screen]: https://webdriver.io/docs/api/appium/#startrecordingscreen
 [appium]: http://appium.io/docs/en/commands/device/recording-screen/start-recording-screen/

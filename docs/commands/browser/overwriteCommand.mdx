@@ -2,38 +2,38 @@ import Admonition from "@theme/Admonition";
 
 # overwriteCommand
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `overwriteCommand`, чтобы переопределить уже существующие команды браузера _(browser)_ или элемента _(element)_.
+Use the `overwriteCommand` command to override existing commands of the browser or an element.
 
 <Admonition type="info">
-    Читайте также рецепт «[Как добавить свои команды][how-to-add-custom-commands]».
+    Also see the recipe "[How to add custom commands][how-to-add-custom-commands]".
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.overwriteCommand(name, callback, elementScope);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>name</td><td>String</td><td>Имя кастомной команды.</td></tr>
-<tr><td>callback</td><td>Function</td><td>Функция-реализация команды.</td></tr>
-<tr><td>elementScope</td><td>Boolean</td><td>Если значение _true_, то добавить команду к элементу, а не к браузеру. По умолчанию: _false_.</td></tr>
+<tr><td>name</td><td>String</td><td>The name of the custom command.</td></tr>
+<tr><td>callback</td><td>Function</td><td>The function implementation of the command.</td></tr>
+<tr><td>elementScope</td><td>Boolean</td><td>If the value is _true_, add the command to the element instead of the browser. Default: _false_.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
-// вывести время паузы в мс перед самой паузой и вернуть потом это значение
+// log the pause duration in ms before the pause and then return the value
 await browser.overwriteCommand("pause", function (origPauseFunction, ms) {
     console.log(`Sleeping for ${ms}`);
 
@@ -42,16 +42,20 @@ await browser.overwriteCommand("pause", function (origPauseFunction, ms) {
     return ms;
 });
 
-// используем переопределенную команду паузы
+// use the overwritten pause command
 it("should use my overwrite command", async ({ browser }) => {
     await browser.url("https://webdriver.io");
 
-    await browser.pause(1000); // выведет: "Sleeping for 1000"
+    await browser.pause(1000); // outputs: "Sleeping for 1000"
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [addCommand](../addCommand)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/overwriteCommand), from which we drew some information while writing our version.
 
 [how-to-add-custom-commands]: https://webdriver.io/docs/customcommands/#adding-custom-commands

@@ -2,29 +2,29 @@ import LastFailedExample from "@site/docs/config/_partials/examples/_last-failed
 
 # lastFailed
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Testplane умеет перезапускать упавшие в последнем прогоне тесты. Для этого он сохраняет json с информацией об упавших тестах после каждого запуска.
+Testplane can rerun tests that failed in the last run. To do this, it saves a JSON file with information about the failed tests after each run.
 
-С помощью секции `lastFailed` вы можете настроить расположение этого файла и другие опции.
+With the `lastFailed` section, you can configure the location of this file and other options.
 
-Чтобы запустить только упавшие тесты из CLI используйте опцию `--last-failed-only` или переменную окружения `testplane_last_failed_only=true`.
+To run only the failed tests from the CLI, use the `--last-failed-only` option or the environment variable `testplane_last_failed_only=true`.
 
-## Настройка {#setup}
+## Setup {#setup}
 
-Раздел `lastFailed` имеет следующий формат:
+The `lastFailed` section has the following format:
 
 <LastFailedExample />
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Configuration Parameter Descriptions {#setup_description}
 
 <table>
     <thead>
         <tr>
-            <td>**Параметр**</td>
-            <td>**Тип**</td>
-            <td>**По&nbsp;умолчанию**</td>
-            <td>**Описание**</td>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
@@ -32,37 +32,37 @@ Testplane умеет перезапускать упавшие в последн
             <td>[`only`](#only)</td>
             <td>`boolean`</td>
             <td>`false`</td>
-            <td>Включить / отключить режим перезапуска упавших тестов.</td>
+            <td>Enable / disable the rerun mode for failed tests.</td>
         </tr>
         <tr>
             <td>[`input`](#input)</td>
             <td>`string | string[]`</td>
             <td>`".testplane/failed.json"`</td>
-            <td>Путь или список путей для чтения списка упавших тестов.</td>
+            <td>Path or list of paths to read the list of failed tests.</td>
         </tr>
         <tr>
             <td>[`output`](#output)</td>
             <td>`string`</td>
             <td>`".testplane/failed.json"`</td>
-            <td>Путь для сохранения списка упавших тестов.</td>
+            <td>Path to save the list of failed tests.</td>
         </tr>
     </tbody>
 </table>
 
 ### only {#only}
 
-Включает режим перезапуска упавших тестов. В этом режиме запускаются только тесты из списка, путь к которому указан в input, если установить значение в `true`.
+Enables the rerun mode for failed tests. In this mode, only tests from the list specified in `input` are run if set to `true`.
 
-По умолчанию: `false`.
+Default: `false`.
 
 ### input {#input}
 
-Путь или список путей для чтения списка упавших тестов. Если указан список путей к файлам, то перезапускаются все тесты, которые встречаются хотя бы в одном из них.
+Path or list of paths to read the list of failed tests. If a list of file paths is specified, all tests that appear in at least one of them are rerun.
 
-По умолчанию: `.testplane/failed.json`.
+Default: `.testplane/failed.json`.
 
 ### output {#output}
 
-Путь для сохранения списка упавших тестов. Используется всегда, независимо от опции `only`.
+Path to save the list of failed tests. Always used, regardless of the `only` option.
 
-По умолчанию: `.testplane/failed.json`.
+Default: `.testplane/failed.json`.

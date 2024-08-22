@@ -2,41 +2,41 @@ import Admonition from "@theme/Admonition";
 
 # respondOnce
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `respondOnce`, чтобы ответить один раз заданной перезаписью.
+Use the `respondOnce` command to respond once with the specified overwrite.
 
-Вы можете вызвать `respondOnce` несколько раз подряд, тогда при запросах ответы будут использоваться в том же порядке, как были вызваны команды `respondOnce`.
+You can call `respondOnce` multiple times in succession. The responses will be used in the same order the `respondOnce` commands were called.
 
-Если вы используете только `respondOnce` и обратитесь к ресурсу большее количество раз, чем вызывали `respondOnce`, то после исчерпания поддельных данных, запрос начнет возвращать оригинальный ответ от ресурса.
+If you use only `respondOnce` and access the resource more times than `respondOnce` was called, then after exhausting the fake data, the request will start returning the original response from the resource.
 
 <Admonition type="info">
-    Читайте также рецепт «[Как отслеживать и перехватывать сетевые запросы и
-    ответы][how-to-intercept-requests-and-responses]».
+    Also read the recipe "[How to Track and Intercept Network Requests and
+    Responses][how-to-intercept-requests-and-responses]".
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ для перезаписи ответа.</td></tr>
-<tr><td>header</td><td>Object</td><td>Перезаписать определенные заголовки.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Перезаписать код состояния ответа.</td></tr>
-<tr><td>fetchResponse</td><td>Boolean</td><td>Получить реальный ответ, прежде чем отвечать с помощью поддельных данных.</td></tr>
+<tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ to overwrite the response.</td></tr>
+<tr><td>header</td><td>Object</td><td>Overwrite specific headers.</td></tr>
+<tr><td>statusCode</td><td>Number</td><td>Overwrite the response status code.</td></tr>
+<tr><td>fetchResponse</td><td>Boolean</td><td>Fetch the actual response before replying with fake data.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 async function getToDos(browser) {
@@ -82,27 +82,31 @@ it("should demonstrate the respondOnce command", async ({ browser }) => {
     await browser.url(
         "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
     );
-    console.log(await getToDos(browser)); // выведет: [ '3', '2', '1' ]
+    console.log(await getToDos(browser)); // outputs: [ '3', '2', '1' ]
 
     await browser.url(
         "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
     );
-    console.log(await getToDos(browser)); // выведет: [ '2', '1' ]
+    console.log(await getToDos(browser)); // outputs: [ '2', '1' ]
 
     await browser.url(
         "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
     );
-    console.log(await getToDos(browser)); // выведет: [ '1' ]
+    console.log(await getToDos(browser)); // outputs: [ '1' ]
 
     await browser.url(
         "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
     );
-    console.log(await getToDos(browser)); // выведет: настоящий ответ ресурса
+    console.log(await getToDos(browser)); // outputs: the actual resource response
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [respond](../respond)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/respondOnce), from which we drew some information while writing our version.
 
 [how-to-intercept-requests-and-responses]: ../../../guides/how-to-intercept-requests-and-responses

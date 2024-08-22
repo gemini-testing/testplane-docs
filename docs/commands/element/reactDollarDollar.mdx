@@ -2,38 +2,38 @@ import Admonition from "@theme/Admonition";
 
 # react$$
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `react$$`, чтобы найти на странице множество React-компонентов по их настоящему имени, одновременно фильтруя их по props'ам и состоянию.
+Use the `react$$` command to find multiple React components on the page by their actual name, while filtering them by props and state.
 
 <Admonition type="warning">
-Команда _react$_ работает только в приложениях, которые используют _React v16.x._
+The _react$_ command only works in applications that use _React v16.x._
 
-Читайте больше о React-селекторах в рецепте «[Как использовать селекторы][how-to-use-selectors]».
+Read more about React selectors in the recipe "[How to use selectors][how-to-use-selectors]".
 
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.react$$(reactComponentSelector, { props, state });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>reactComponentSelector</td><td>String</td><td>Селектор React-компонента.</td></tr>
-<tr><td>props</td><td>Object</td><td>React-свойства, которые должен иметь компонент.</td></tr>
-<tr><td>state</td><td>Any или Any[]</td><td>React-состояние, в котором должен находиться компонент.</td></tr>
+<tr><td>reactComponentSelector</td><td>String</td><td>The React component selector.</td></tr>
+<tr><td>props</td><td>Object</td><td>React properties the component should have.</td></tr>
+<tr><td>state</td><td>Any or Any[]</td><td>React state the component should be in.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should calculate 7 * 6", async ({ browser }) => {
@@ -45,14 +45,18 @@ it("should calculate 7 * 6", async ({ browser }) => {
     });
 
     console.log(await Promise.all(orangeButtons.map(btn => btn.getText())));
-    // выведет: "[ '÷', 'x', '-', '+', '=' ]"
+    // outputs: "[ '÷', 'x', '-', '+', '=' ]"
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [browser.react$](../../browser/reactDollar)
 -   [browser.react$$](../../browser/reactDollarDollar)
 -   [element.react$](../reactDollar)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/react$$), from which we drew some information while writing our version.
 
 [how-to-use-selectors]: https://webdriver.io/docs/selectors

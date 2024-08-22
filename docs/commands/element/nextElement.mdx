@@ -1,20 +1,20 @@
 # nextElement
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `nextElement`, чтобы получить следующий дочерний элемент выбранного DOM-элемента.
+Use the `nextElement` command to get the next sibling element of the selected DOM element.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).nextElement();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
+```html
 <div class="parent">
     <p>Sibling One</p>
     <p>Sibling Two</p>
@@ -29,11 +29,15 @@ it("should get text from next sibling element", async ({ browser }) => {
     const elem = await browser.$$("p");
     const nextElement = await elem[1].nextElement();
 
-    console.log(await nextElement.getText()); // выведет: "Sibling Three"
+    console.log(await nextElement.getText()); // outputs: "Sibling Three"
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [parentElement](../parentElement)
 -   [previousElement](../previousElement)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/nextElement), from which we drew some information while writing our version.

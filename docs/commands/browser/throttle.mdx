@@ -2,13 +2,13 @@ import Admonition from "@theme/Admonition";
 
 # throttle
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `throttle`, чтобы эмулировать разные типы сетевого соединения у пользователя.
+Use the `throttle` command to simulate different types of network connections for the user.
 
-Эта команда позволяет промоделировать поведение сайта или веб-приложения при различной пропускной способности канала связи у пользователя.
+This command allows you to model the behavior of a website or web application under various network bandwidth conditions.
 
-Существует также множество пресетов с готовыми настройками конфигурации сети. Например:
+There are also many presets with ready-made network configuration settings. For example:
 
 -   offline | online
 -   GPRS
@@ -19,43 +19,43 @@ import Admonition from "@theme/Admonition";
 -   WiFi
 
 <Admonition type="warning">
-Команда _throttle_ работает только при использовании _Chrome DevTools Protocol (CDP)_.
+The _throttle_ command only works when using the _Chrome DevTools Protocol (CDP)_.
 
-Читайте подробности в разделе «[Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp]».
+Read more in the section "[How to use Chrome DevTools Protocol in testplane][how-to-use-cdp]".
 
-А также читайте рецепт «[Как управлять пропускной способностью сети][how-to-manage-network-bandwidth]».
+Also, see the recipe "[How to manage network bandwidth][how-to-manage-network-bandwidth]".
 
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>offline</td><td>Boolean</td><td>Включить эмуляцию потери соединения.</td></tr>
-<tr><td>latency</td><td>Number</td><td>Минимальная задержка от отправленного запроса до полученных заголовков ответа, в миллисекундах.</td></tr>
-<tr><td>downloadThroughput</td><td>Number</td><td>Максимальная совокупная пропускная способность загрузки (байт/сек). _-1_ отключает регулирование загрузки.</td></tr>
-<tr><td>uploadThroughput</td><td>Number</td><td>Максимальная совокупная пропускная способность аплоада (байт/сек). _-1_ отключает регулирование аплоада.</td></tr>
+<tr><td>offline</td><td>Boolean</td><td>Enable emulation of a loss of connection.</td></tr>
+<tr><td>latency</td><td>Number</td><td>Minimum latency from the sent request to received response headers, in milliseconds.</td></tr>
+<tr><td>downloadThroughput</td><td>Number</td><td>Maximum total download throughput (bytes/sec). _-1_ disables download throttling.</td></tr>
+<tr><td>uploadThroughput</td><td>Number</td><td>Maximum total upload throughput (bytes/sec). _-1_ disables upload throttling.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should throttle the network", async ({ browser }) => {
-    // используем готовый пресет
+    // use a preset
     await browser.throttle("Regular 3G");
 
-    // а здесь настраиваем конфигурацию сети сами
+    // configure the network settings manually
     await browser.throttle({
         offline: false,
         downloadThroughput: (200 * 1024) / 8,
@@ -64,6 +64,10 @@ it("should throttle the network", async ({ browser }) => {
     });
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/throttle), from which we drew some information while writing our version.
 
 [how-to-use-cdp]: ../../../guides/how-to-use-cdp
 [how-to-manage-network-bandwidth]: ../../../guides/how-to-manage-network-bandwidth

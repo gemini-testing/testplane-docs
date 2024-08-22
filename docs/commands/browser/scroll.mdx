@@ -1,29 +1,29 @@
 # scroll
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `scroll`, чтобы проскроллить вьюпорт браузера. Обратите внимание, что координаты `x` и `y` относятся к текущей позиции прокрутки вьюпорта.
+Use the `scroll` command to scroll the browser viewport. Note that the `x` and `y` coordinates refer to the current scrolling position of the viewport.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```typescript
 await browser.scroll(x, y);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>x</td><td>Number</td><td>Необязательный параметр. Координата x, куда нужно проскроллить. По умолчанию: _0_.</td></tr>
-<tr><td>y</td><td>Number</td><td>Необязательный параметр. Координата y, куда нужно проскроллить. По умолчанию: _0_.</td></tr>
+<tr><td>x</td><td>Number</td><td>Optional parameter. The x-coordinate to scroll to. Default: _0_.</td></tr>
+<tr><td>y</td><td>Number</td><td>Optional parameter. The y-coordinate to scroll to. Default: _0_.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```typescript
 it("should demonstrate the scroll command", async ({ browser }) => {
@@ -35,6 +35,10 @@ it("should demonstrate the scroll command", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [element.scrollIntoView](../../element/scrollIntoView)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/scroll), from which we drew some information while writing our version.

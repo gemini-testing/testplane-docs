@@ -1,41 +1,45 @@
 # switchWindow
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `switchWindow`, чтобы перевести фокус на конкретную вкладку или конкретное окно.
+Use the `switchWindow` command to focus on a specific tab or window.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.switchWindow(urlOrTitleToMatch);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>urlOrTitleToMatch</td><td>String или RegExp</td><td>Строка или регулярное выражение, соответствующее заголовку или URL-адресу страницы.</td></tr>
+<tr><td>urlOrTitleToMatch</td><td>String or RegExp</td><td>A string or regular expression matching the page's title or URL.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should switch to another window", async ({ browser }) => {
-    // открываем url
+    // open URL
     await browser.url("https://google.com");
 
-    // создаем новое окно
+    // create a new window
     await browser.newWindow("https://webdriver.io");
 
-    // переключаемся назад через соответствие заданному урлу
+    // switch back by matching the URL
     await browser.switchWindow("google.com");
 
-    // снова переключаемся через соответствие заданному заголовку страницы
+    // switch again by matching the page title
     await browser.switchWindow("Next-gen browser and mobile automation test framework for Node.js");
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/switchWindow), from which we drew some information while writing our version.

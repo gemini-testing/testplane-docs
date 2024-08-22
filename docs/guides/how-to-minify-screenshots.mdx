@@ -1,35 +1,35 @@
 import Admonition from "@theme/Admonition";
 
-# Как уменьшить вес скриншотов
+# How to Reduce Screenshot Size
 
-## Введение {#preface}
+## Introduction {#preface}
 
-Одна из ключевых функций testplane — это возможность тестировать верстку с помощью скриншотов. Для этого в тестах, при разных состояниях веб-страницы, можно снять скриншот и сравнить его с эталонным.
+One of the key features of Testplane is the ability to test layouts using screenshots. For this, you can take a screenshot during different states of a web page in your tests and compare it with a reference.
 
-Пример такого сравнения:
+An example of such a comparison:
 
-![Сравнение скриншотов](/img/docs/guides/how-to-minify-screenshots.diff-in-screenshot.png)
+![Screenshot Comparison](/img/docs/guides/how-to-minify-screenshots.diff-in-screenshot.png)
 
-<Admonition type="info" title="Для новичков">
-**Откуда берутся эталонные скриншоты?**
+<Admonition type="info" title="For Beginners">
+**Where do reference screenshots come from?**
 
-Вы написали тест с использованием команды testplane _assertView_. Команда _assertView_ сравнивает актуальный скриншот с эталонным. Актуальный скриншот — это скриншот, который тест делает во время своего прогона. Он отражает текущее состояние вашей веб-страницы. При первом прогоне вашего теста эталонного скриншота у вас ещё нет. А значит команда _assertView_ упадет с сообщением, что эталонный скриншот не найден. При этом у вас будет актуальный скриншот. Если актуальный скриншот отражает то состояние вашей веб-страницы, которое вы ожидаете (считаете эталонным), то вам нужно _принять (accept)_ актуальный скриншот в качестве эталонного. Чтобы это сделать нужно запускать testplane с дополнительной опцией _--update-refs_. Или же воспользоваться режимом GUI, который предоставляет плагин _html-reporter_. С помощью него вы можете просматривать отчет о прогоне в GUI-режиме, убеждаться, что актуальные скриншоты именно такие, как вы ожидаете, и принимать их с помощью кнопки _Accept_.
+You wrote a test using the Testplane _assertView_ command. The _assertView_ command compares the actual screenshot with the reference screenshot. An actual screenshot is one that the test takes during its run. It reflects the current state of your web page. On the first run of your test, you don't yet have a reference screenshot. Therefore, the _assertView_ command will fail with a message that the reference screenshot is not found. At the same time, you will have an actual screenshot. If the actual screenshot reflects the state of your web page you expect (consider as reference), then you need to _accept_ the actual screenshot as the reference one. To do this, you need to run Testplane with an additional _--update-refs_ option. Alternatively, you can use the GUI mode provided by the _html-reporter_ plugin. With it, you can view the run report in GUI mode, ensure the actual screenshots are as you expect, and accept them using the _Accept_ button.
 
 </Admonition>
 
-## Проблема {#problem}
+## Problem {#problem}
 
-Если в вашем проекте много тестов, в которых используется валидация верстки с помощью скриншотов, то значит, в вашем проекте будет много скриншотов. Иногда эти скриншоты — довольно большие и могут занимать много места на файловой системе.
+If your project has many tests that use layout validation via screenshots, then your project will have many screenshots. Sometimes these screenshots are quite large and can take up a lot of space on the file system.
 
-Если в проекте идет активная разработка, то на каждый пулл-реквест будет формироваться свой отчет о прогоне тестов, в котором будут содержаться сотни (или тысячи) эталонных скриншотов. Чем больше вес скриншотов, тем больше будут весить ваши отчеты. А значит — дольше скачиваться, занимать больше места на диске и т. д.
+If the project is actively developed, each pull request will generate its own test run report, containing hundreds (or thousands) of reference screenshots. The larger the screenshots, the larger your reports will be. This means they will take longer to download, occupy more disk space, and so on.
 
-## Решение: testplane-image-minifier {#solution}
+## Solution: testplane-image-minifier {#solution}
 
-Чтобы уменьшить место, которое скриншоты занимают на диске, подключите в своем проекте плагин [testplane-image-minifier][testplane-image-minifier]. Данный плагин поддерживает 8 степеней сжатия изображений без потерь.
+To reduce the space screenshots occupy on disk, add the [testplane-image-minifier][testplane-image-minifier] plugin to your project. This plugin supports 8 levels of lossless image compression.
 
-Как подключить и настроить плагин читайте в [документации][testplane-image-minifier] плагина.
+How to add and configure the plugin is detailed in the [plugin documentation][testplane-image-minifier].
 
-## Ключевые слова {#keywords}
+## Keywords {#keywords}
 
 -   testplane-image-minifier
 

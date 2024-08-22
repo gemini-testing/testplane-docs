@@ -1,50 +1,50 @@
-# Как запустить конкретные тесты
+# How to Run Specific Tests
 
-## Проблема {#problem}
+## Problem {#problem}
 
-Иногда вам может потребоваться запустить конкретные тесты, а не весь набор тестов, которые есть в вашем проекте.
+Sometimes you may need to run specific tests rather than the entire set of tests in your project.
 
-Например, вы разработали какую-либу фичу и покрыли ее функциональными тестами. И хотите в первую очередь проверить корректность выполнения новых тестов.
+For example, you developed a feature and covered it with functional tests. You might want to first check the correctness of the new tests.
 
-Или вы чините плавающий тест, нашли в нем баги, исправили их и хотите проверить, что теперь тест корректно проходит.
+Or you are fixing a flaky test, found bugs, fixed them, and want to verify that the test now passes correctly.
 
-## Решение 1: запуск конкретного файла {#solution_1}
+## Solution 1: Running a Specific File {#solution_1}
 
-Если вы хотите запустить всю группу тестов, которые находятся в конкретном файле, то укажите путь к этому файлу в качестве входного параметра для testplane:
+If you want to run a whole group of tests located in a specific file, specify the path to this file as an input parameter for testplane:
 
 ```bash
 testplane src/features/Reviews/Reviews.test/MyReview/MyReview.a11y@touch-phone.testplane.js
 ```
 
-## Решение 2: опция --grep {#solution_2}
+## Solution 2: --grep Option {#solution_2}
 
-Если же вы хотите запустить конкретный тест, то воспользуйтесь опцией `--grep`, указав в качестве ее значения полное имя теста:
+If you want to run a specific test, use the `--grep` option by providing the full name of the test as its value:
 
 ```bash
-testplane --grep "Доступность Оставление отзыва"
+testplane --grep "Accessibility Leaving a review"
 ```
 
-## Решение 3: директива .only {#solution_3}
+## Solution 3: .only Directive {#solution_3}
 
-Ещё вы можете воспользоваться директивой `.only` для набора тестов `describe` и конкретного теста `it`, аналогично тому как это реализовано в `mocha` (см. раздел [exlusive tests](https://mochajs.org/#exclusive-tests)):
+You can also use the `.only` directive for a suite of tests (`describe`) or a specific test (`it`), similar to what is implemented in `mocha` (see the [exclusive tests](https://mochajs.org/#exclusive-tests) section):
 
-Например:
+For example:
 
 ```javascript
-describe.only("Доступность", function () {
-    // набор тестов...
+describe.only("Accessibility", function () {
+    // Test suite...
 });
 ```
 
-или
+or
 
 ```javascript
-it.only("Оставление отзыва", async function () {
-    // код теста...
+it.only("Leaving a review", async function () {
+    // Test code...
 });
 ```
 
-## Ключевые слова {#keywords}
+## Keywords {#keywords}
 
 -   grep
 -   describe.only

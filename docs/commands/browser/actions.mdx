@@ -1,16 +1,16 @@
 # actions
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `actions`, чтобы выполнить несколько действий ввода в одном из виртуализируемых устройств в веб-браузере. Например для имитации масштабирования страницы. Больше подробной информации представлено в описании команды [action][action].
+Use the `actions` command to perform multiple input actions on one of the virtualizable devices in the web browser, for example, to simulate page zooming. More detailed information is provided in the description of the [action][action] command.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```typescript
 await browser.actions([action1, action2, ...]);
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```typescript
 it("run multiple actions at once for a pinch zoom", async ({ browser }) => {
@@ -21,8 +21,12 @@ it("run multiple actions at once for a pinch zoom", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [action](../action)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/actions), from which we drew some information while writing our version.
 
 [action]: ../action

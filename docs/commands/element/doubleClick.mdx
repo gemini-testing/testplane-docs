@@ -1,16 +1,16 @@
 # doubleClick
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `doubleClick`, чтобы выполнить двойной клик по элементу.
+Use the `doubleClick` command to perform a double-click on an element.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).doubleClick();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **example.html**
 
@@ -30,3 +30,7 @@ it("should demonstrate the doubleClick command", async ({ browser }) => {
     assert.equal(value, "I was dblclicked"); // true
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/doubleClick), from which we drew some information while writing our version.

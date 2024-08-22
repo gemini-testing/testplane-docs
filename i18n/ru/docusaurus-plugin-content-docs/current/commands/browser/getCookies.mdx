@@ -1,0 +1,56 @@
+# getCookies
+
+## Обзор {#overview}
+
+Используйте команду `getCookies`, чтобы получить все или конкретные _cookies_ на текущей странице.
+
+Чтобы получить конкретные куки, нужно указать имя _cookie_ в виде строки или список имен _cookies_ в виде массива строк.
+
+## Использование {#usage}
+
+```javascript
+await browser.getCookies(names);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>names</td><td>String или String[]</td><td>Необязательный параметр. Имя _cookie_ или список имен _cookies_, которые необходимо получить. При отсутствии параметра будут возвращены все _cookies_ для текущей страницы.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should return a cookie for me", async ({ browser }) => {
+    await browser.setCookies([
+        { name: "test", value: "123" },
+        { name: "test2", value: "456" },
+    ]);
+
+    const testCookie = await browser.getCookies(["test"]);
+    console.log(testCookie);
+    // выведет:
+    // [
+    //    { name: 'test', value: '123' }
+    // ]
+
+    const allCookies = await browser.getCookies();
+    console.log(allCookies);
+    // выведет:
+    // [
+    //    { name: 'test', value: '123' },
+    //    { name: 'test2', value: '456' }
+    // ]
+});
+```
+
+## Связанные команды {#related}
+
+-   [setCookies](../setCookies)
+-   [deleteCookies](../deleteCookies)

@@ -2,36 +2,35 @@ import Admonition from "@theme/Admonition";
 
 # uploadFile
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `uploadFile`, чтобы загрузить файл на _[Selenium Standalone][selenium-file]_ сервер или в браузер через его драйвер (например, [Chromedriver][chromedriver]).
+Use the `uploadFile` command to upload a file to a _[Selenium Standalone][selenium-file]_ server or to the browser via its driver (e.g., [Chromedriver][chromedriver]).
 
 <Admonition type="warning">
-    Команда _uploadFile_ поддерживается только в том случае, если вы используете [Selenium
-    Grid][selenium-grid] или [Chromedriver][chromedriver]. Это связано с тем, что она использует
-    неофициальную особенность протокола, которая реализована в данный момент только в _Chrome_ и при
-    запуске в [Selenium Grid][selenium-grid].
+    The _uploadFile_ command is only supported when using [Selenium Grid][selenium-grid] or
+    [Chromedriver][chromedriver]. This is because it uses an unofficial protocol feature that is
+    currently implemented only in _Chrome_ and when running on [Selenium Grid][selenium-grid].
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.uploadFile(localPath);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>localPath</td><td>String</td><td>Путь к локальному файлу.</td></tr>
+<tr><td>localPath</td><td>String</td><td>The path to the local file.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 const path = require("path");
@@ -46,6 +45,10 @@ it("should upload a file", async ({ browser }) => {
     await browser.$("#file-submit").click();
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/uploadFile), from which we drew some information while writing our version.
 
 [selenium-grid]: https://www.selenium.dev/documentation/grid/
 [selenium-file]: https://webdriver.io/docs/api/selenium/#file

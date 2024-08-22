@@ -1,0 +1,39 @@
+# dragAndDrop
+
+## Обзор {#overview}
+
+Используйте команду `dragAndDrop`, чтобы перетащить элемент в указанный элемент назначения или позицию.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).dragAndDrop(target, { duration });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>target</td><td>Element или DragAndDropCoordinate</td><td>Элемент назначения или объект с координатами _x_ и _y_.</td></tr>
+<tr><td>duration</td><td>Number</td><td>Таймаут для перетаскивания элемента _(операции drag)_.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the dragAndDrop command", async ({ browser }) => {
+    const elem = await browser.$("#someElem");
+    const target = await browser.$("#someTarget");
+
+    // выполнить drag and drop в другой элемент
+    await elem.dragAndDrop(target);
+
+    // выполнить drag and drop относительно текущей позиции
+    await elem.dragAndDrop({ x: 100, y: 200 });
+});
+```

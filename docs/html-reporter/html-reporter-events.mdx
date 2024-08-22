@@ -1,32 +1,32 @@
-# События плагина
+# Html-Reporter Events
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Плагин `html-reporter` добавляет в интерфейс Testplane специальный объект _htmlReporter_, через который, в том числе, можно подписаться на события отчета. Для этого `testplane.htmlReporter` предоставляет свойство `events` со списком событий, на которые можно подписаться:
+The `html-reporter` plugin adds a special _htmlReporter_ object to Testplane's interface, through which, among other things, you can subscribe to report events. To do this, `testplane.htmlReporter` provides the `events` property with a list of events to subscribe to:
 
--   [DATABASE_CREATED](#database_created) — событие, которое триггерится сразу после создания sqlite базы данных;
--   [TEST_SCREENSHOTS_SAVED](#test_screenshots_saved) — событие, которое триггерится после сохранения скриншотов теста;
--   [REPORT_SAVED](#report_saved) — событие, которое триггерится после сохранения всех файлов отчета.
+-   [DATABASE_CREATED](#database_created)—an event that is triggered immediately after the sqlite database is created;
+-   [TEST_SCREENSHOTS_SAVED](#test_screenshots_saved)—the event that is triggered after saving screenshots of the test;
+-   [REPORT_SAVED](#report_saved)—the event that is triggered after saving all the report files.
 
 ## DATABASE_CREATED
 
 **sync | master**
 
-Событие `DATABASE_CREATED` триггерится сразу после создания sqlite базы данных. Обработчик события выполняется синхронно.
+The `DATABASE_CREATED` event is triggered immediately after the sqlite database is created. The event handler is executed synchronously.
 
-### Подписка на событие {#database_created_subscription}
+### Event subscription {#database_created_subscription}
 
 ```javascript
 testplane.htmlReporter.on(testplane.htmlReporter.events.DATABASE_CREATED, db => {
-    console.info(`Выполняется обработка события DATABASE_CREATED...`);
+    console.info(`DATABASE_CREATED event processing is in progress...`);
 });
 ```
 
-#### Параметры обработчика {#database_created_handler_params}
+#### Handler parameters {#database_created_handler_params}
 
-В обработчик события передается инстанс базы данных.
+A database instance is passed to the event handler.
 
-### Пример использования {#database_created_example}
+### Usage example {#database_created_example}
 
 ```javascript
 const parseConfig = require("./config");
@@ -35,12 +35,12 @@ module.exports = (testplane, opts) => {
     const pluginConfig = parseConfig(opts);
 
     if (!pluginConfig.enabled || testplane.isWorker()) {
-        // или плагин отключен, или мы находимся в контексте воркера – уходим
+        // either the plugin is disabled, or we are in the context of a worker – we leave
         return;
     }
 
-    // свойство "htmlreporter" гарантированно есть в объекте "testplane"
-    // в момент срабатывания события INIT
+    // the "htmlReporter" property is guaranteed to be in the "testplane" object
+    // at the time the INIT event is triggered
     testplane.on(testplane.events.INIT, () => {
         testplane.htmlReporter.on(testplane.htmlReporter.events.DATABASE_CREATED, db => {
             db.prepare(`CREATE TABLE IF NOT EXISTS testTable (foo TEXT, bar TEXT)`).run();
@@ -53,9 +53,9 @@ module.exports = (testplane, opts) => {
 
 **async | master**
 
-Событие `TEST_SCREENSHOTS_SAVED` триггерится после сохранения скриншотов очередного теста. Обработчик события может быть асинхронным.
+The `TEST_SCREENSHOTS_SAVED` event is triggered after saving screenshots of the next test. The event handler can be asynchronous.
 
-### Подписка на событие {#test_screenshots_saved_subscription}
+### Event subscription {#test_screenshots_saved_subscription}
 
 ```javascript
 testplane.htmlReporter.on(
@@ -85,15 +85,15 @@ testplane.htmlReporter.on(
 );
 ```
 
-#### Параметры обработчика {#test_screenshots_saved_handler_params}
+#### Handler parameters {#test_screenshots_saved_handler_params}
 
-В обработчик события передается объект с информацией о тесте следующего вида:
+An object with information about the test of the following type is passed to the event handler:
 
 ```javascript
 {
-    testId, // идентификатор теста вида "<test full title>.<browser id>"
-        attempt, // номер попытки выполнения теста
-        imagesInfo; // информация о скриншотах (см. выше пример подписки на событие)
+    testId, // id of the test: "<test full title>.<browser id>"
+        attempt, // test execution attempt number
+        imagesInfo; // information about screenshots (see above example of event subscription)
 }
 ```
 
@@ -101,24 +101,24 @@ testplane.htmlReporter.on(
 
 **async | master**
 
-Событие `REPORT_SAVED` триггерится после сохранения всех файлов отчета. Обработчик события может быть асинхронным.
+The `REPORT_SAVED` event is triggered after saving all the report files. The event handler can be asynchronous.
 
-### Подписка на событие {#report_saved_subscription}
+### Event subscription {#report_saved_subscription}
 
 ```javascript
 testplane.htmlReporter.on(testplane.htmlReporter.events.REPORT_SAVED, async ({ reportPath }) => {
-    console.info(`Выполняется обработка события REPORT_SAVED, report path = ${reportPath}...`);
+    console.info(`REPORT_SAVED event processing is in progress, report path = ${reportPath}...`);
 });
 ```
 
-#### Параметры обработчика {#report_saved_handler_params}
+#### Handler parameters {#report_saved_handler_params}
 
-В обработчик передается объект с ключом `reportPath`, в значении которого хранится путь к сохраненному отчету.
+An object with the key `reportPath` is passed to the handler, the value of which stores the path to the saved report.
 
-### Пример использования {#report_saved_example}
+### Usage example {#report_saved_example}
 
 ```javascript
 testplane.htmlReporter.on(testplane.htmlReporter.events.REPORT_SAVED, async ({ reportPath }) => {
-    await uploadDirToS3(reportPath); // загружаем отчет в хранилище S3
+    await uploadDirToS3(reportPath); // uploading the report to S3 storage
 });
 ```

@@ -1,8 +1,8 @@
 # API testplane
 
-С помощью API testplane вы можете использовать её в своих скриптах или сборочных инструментах.
+With the Testplane API, you can use it in your scripts or build tools.
 
-Для этого вы должны подключить модуль testplane и создать её инстанс:
+To do this, you must include the testplane module and create its instance:
 
 ```javascript
 const Testplane = require("testplane");
@@ -12,47 +12,47 @@ const config = require("./testplane.conf.js");
 const testplane = new Testplane(config);
 ```
 
-Далее вам будут доступны следующие параметры и методы:
+Then you will have access to the following parameters and methods:
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>[config](#testplane_config)</td><td>Object или String</td><td>Объект с конфигом testplane или путь к конфигурационному файлу, относительно рабочей папки.</td></tr>
-<tr><td>[events](#testplane_events)</td><td>Object</td><td>[События testplane][testplane-events], на которые можно подписаться.</td></tr>
-<tr><td>[errors](#testplane_errors)</td><td>Object</td><td>Ошибки, которые может возвращать testplane.</td></tr>
-<tr><td>[intercept](#testplane_intercept)</td><td>Function</td><td>Функция, с помощью которой можно подписаться на [перехват событий][testplane-events-interception] testplane.</td></tr>
-<tr><td>[init](#testplane_init)</td><td>Method</td><td>Инициализирует инстанс testplane, загружает все плагины и т. д.</td></tr>
-<tr><td>[run](#testplane_run)</td><td>Method</td><td>Запускает прогон тестов, расположенных по указанным путям.</td></tr>
-<tr><td>[addTestToRun](#testplane_add_test_to_run)</td><td>Method</td><td>Добавляет тест к текущему запуску.</td></tr>
-<tr><td>[readTests](#testplane_read_tests)</td><td>Method</td><td>Возвращает объект типа [TestCollection](#test_collection).</td></tr>
-<tr><td>[isFailed](#testplane_is_failed)</td><td>Method</td><td>Возвращает `true` или `false` в зависимости от того, была ли ошибка или падение теста при запуске тестов.</td></tr>
-<tr><td>[isWorker](#testplane_is_worker)</td><td>Method</td><td>Возвращает `true`, если метод был вызван из воркера testplane.</td></tr>
-<tr><td>[halt](#testplane_halt)</td><td>Method</td><td>Аварийно завершает прогон тестов в случае критической ошибки.</td></tr>
+<tr><td>[config](#testplane_config)</td><td>Object or String</td><td>A testplane config object or a path to the configuration file, relative to the working folder.</td></tr>
+<tr><td>[events](#testplane_events)</td><td>Object</td><td>[testplane Events][testplane-events] that you can subscribe to.</td></tr>
+<tr><td>[errors](#testplane_errors)</td><td>Object</td><td>Errors that testplane can return.</td></tr>
+<tr><td>[intercept](#testplane_intercept)</td><td>Function</td><td>A function that allows you to subscribe to testplane [event interception][testplane-events-interception].</td></tr>
+<tr><td>[init](#testplane_init)</td><td>Method</td><td>Initializes the testplane instance, loads all plugins, etc.</td></tr>
+<tr><td>[run](#testplane_run)</td><td>Method</td><td>Runs tests located at the specified paths.</td></tr>
+<tr><td>[addTestToRun](#testplane_add_test_to_run)</td><td>Method</td><td>Adds a test to the current run.</td></tr>
+<tr><td>[readTests](#testplane_read_tests)</td><td>Method</td><td>Returns an object of type [TestCollection](#test_collection).</td></tr>
+<tr><td>[isFailed](#testplane_is_failed)</td><td>Method</td><td>Returns `true` or `false` depending on whether there was an error or test failure during the test run.</td></tr>
+<tr><td>[isWorker](#testplane_is_worker)</td><td>Method</td><td>Returns `true` if the method was called from a testplane worker.</td></tr>
+<tr><td>[halt](#testplane_halt)</td><td>Method</td><td>Forcibly terminates the test run in case of a critical error.</td></tr>
 
 </tbody>
 </table>
 
 ## config {#testplane_config}
 
-Объект с конфигом testplane или путь к конфигурационному файлу, относительно рабочей папки: `process.cwd()`.
+A testplane config object or a path to the configuration file, relative to the working folder: `process.cwd()`.
 
 ## events {#testplane_events}
 
-[События testplane][testplane-events], на которые можно подписаться.
+[testplane Events][testplane-events] that you can subscribe to.
 
-Пример использования объекта `testplane.events` в плагине testplane:
+Example of using the `testplane.events` object in a testplane plugin:
 
 ```javascript
 testplane.on(testplane.events.INIT, async () => {
-    console.info("Выполняется обработка события INIT...");
+    console.info("Processing INIT event...");
 });
 ```
 
 ## errors {#testplane_errors}
 
-Testplane может возвращать ошибки следующего типа:
+Testplane can return errors of the following types:
 
 -   [CoreError](#testplane_errors_core_error)
 -   [CancelledError](#testplane_errors_cancelled_error)
@@ -65,9 +65,9 @@ Testplane может возвращать ошибки следующего ти
 
 ### CoreError {#testplane_errors_core_error}
 
-Ошибка `CoreError` возвращается в случае неудачной калибровки пустой страницы (`about:blank`) в браузере.
+The `CoreError` is returned in the case of a failed calibration of an empty page (`about:blank`) in the browser.
 
-Ошибка при этом содержит следующее сообщение:
+The error includes the following message:
 
 ```
 Could not calibrate. This could be due to calibration page has failed to open properly
@@ -75,9 +75,9 @@ Could not calibrate. This could be due to calibration page has failed to open pr
 
 ### CancelledError {#testplane_errors_cancelled_error}
 
-Ошибка `CancelledEror` возвращается в случае аварийного завершения по команде [halt](#testplane_halt).
+The `CancelledError` is returned in case of emergency termination by the [halt](#testplane_halt) command.
 
-Ошибка при этом содержит следующее сообщение:
+The error includes the following message:
 
 ```
 Browser request was cancelled
@@ -85,9 +85,9 @@ Browser request was cancelled
 
 ### ClientBridgeError {#testplane_errors_client_bridge_error}
 
-Ошибка `ClientBridgeError` возвращается в случае неудачной инъекции кода JavaScript на стороне клиента (браузера). Testplane осуществляет инъекцию кода с помощью команды [execute][wdio-execute] WebDriverIO.
+The `ClientBridgeError` is returned in case of a failed JavaScript code injection on the client side (browser). Testplane performs code injection using the [execute][wdio-execute] command of WebDriverIO.
 
-Ошибка при этом содержит следующее сообщение:
+The error includes the following message:
 
 ```
 Unable to inject client script
@@ -95,9 +95,9 @@ Unable to inject client script
 
 ### HeightViewportError {#testplane_errors_height_viewport_error}
 
-Ошибка `HeightViewportError` возвращается при попытке снять скриншот для области, чья нижняя граница не влезает в область вьюпорта.
+The `HeightViewportError` is returned when trying to capture a screenshot of an area whose bottom bound does not fit into the viewport.
 
-Ошибка при этом содержит следующее сообщение:
+The error includes the following message:
 
 ```
 Can not capture the specified region of the viewport.
@@ -108,13 +108,13 @@ Element position: <cropArea.left>, <cropArea.top>; size: <cropArea.width>, <crop
 Viewport size: <viewport.width>, <viewport.height>.
 ```
 
-При этом сообщение подсказывает пользователю testplane, какие настройки нужно установить в конфиге testplane, чтобы иметь возможность снять скриншот для указанной области.
+The message advises the testplane user on what settings to configure in testplane to be able to capture the screenshot of the specified area.
 
 ### OffsetViewportError {#testplane_errors_offset_viewport_error}
 
-Ошибка `OffsetViewportError` возвращается при попытке снять скриншот для области, чьи границы слева, справа или наверху выходят за пределы вьюпорта.
+The `OffsetViewportError` is returned when trying to capture a screenshot of an area whose left, right, or top bounds go beyond the viewport.
 
-Ошибка при этом содержит следующее сообщение:
+The error includes the following message:
 
 ```
 Can not capture the specified region of the viewport.
@@ -128,13 +128,13 @@ But if viewport overflow is expected behavior then you can use
 option "allowViewportOverflow" in "assertView" command.
 ```
 
-При этом сообщение подсказывает пользователю testplane, какие настройки нужно установить в конфиге testplane, чтобы иметь возможность снять скриншот для указанной области.
+The message advises the testplane user on what settings to configure in testplane to be able to capture the screenshot of the specified area.
 
 ### AssertViewError {#testplane_errors_assert_view_error}
 
-Ошибка `AssertViewError` возвращается при неудачной попытке снять скриншот.
+The `AssertViewError` is returned in case of a failed attempt to capture a screenshot.
 
-Ошибка при этом может содержать одно из следующих сообщений, в зависимости от причины падения:
+The error can contain one of the following messages, depending on the cause of the failure:
 
 ```
 duplicate name for "<state>" state
@@ -150,32 +150,32 @@ element ("<this.selector>") still not existing after <this.options.waitforTimeou
 
 ### ImageDiffError {#testplane_errors_image_diff_error}
 
-Ошибка `ImageDiffError` возвращается из команды `assertView`, если при снятии и сравнении скриншота с эталонным скриншотом обнаруживается дифф (разница в изображениях).
+The `ImageDiffError` is returned from the `assertView` command if a difference (diff) is found when capturing and comparing the screenshot with the reference screenshot.
 
-Ошибка при этом содержит следующее сообщение:
+The error includes the following message:
 
 ```
 images are different for "<stateName>" state
 ```
 
-Кроме этого, ошибка `ImageDiffError` содержит следующие данные:
+Additionally, the `ImageDiffError` contains the following data:
 
 <table>
 <thead>
-<tr><td>**Свойство**</td><td>**Описание**</td></tr>
+<tr><td>**Property**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>stateName</td><td>имя состояния, для которого делался скриншот</td></tr>
-<tr><td>currImg</td><td>ссылка на актуальное изображение</td></tr>
-<tr><td>refImg</td><td>ссылка на эталонное изображение</td></tr>
-<tr><td>diffOpts</td><td>настройки определения диффа</td></tr>
-<tr><td>diffBounds</td><td>границы областей с диффами на изображении</td></tr>
-<tr><td>diffClusters</td><td>кластеры с диффами на изображении</td></tr>
+<tr><td>stateName</td><td>the name of the state for which the screenshot was taken</td></tr>
+<tr><td>currImg</td><td>link to the actual image</td></tr>
+<tr><td>refImg</td><td>link to the reference image</td></tr>
+<tr><td>diffOpts</td><td>settings for detecting the diff</td></tr>
+<tr><td>diffBounds</td><td>bounds of areas with diffs on the image</td></tr>
+<tr><td>diffClusters</td><td>clusters with diffs on the image</td></tr>
 
 </tbody>
 </table>
 
-Подробнее про [diffBounds][diff-bounds] и [diffClusters][diff-clusters] читайте в документации пакета [looks-same][looks-same].
+Read more about [diffBounds][diff-bounds] and [diffClusters][diff-clusters] in the [looks-same][looks-same] package documentation.
 
 ```
 exports.handleImageDiff = (currImg, refImg, state, opts) => {
@@ -194,35 +194,35 @@ exports.handleImageDiff = (currImg, refImg, state, opts) => {
 
 ### NoRefImageError {#testplane_errors_no_ref_image_error}
 
-Ошибка `NoRefImageError` возвращается из команды `assertView`, если при снятии и сравнении скриншота testplane не находит эталонный скриншот на файловой системе.
+The `NoRefImageError` is returned from the `assertView` command if testplane does not find the reference screenshot on the filesystem when capturing and comparing the screenshot.
 
-Ошибка при этом содержит следующее сообщение:
+The error includes the following message:
 
 ```
 can not find reference image at <refImg.path> for "<stateName>" state
 ```
 
-Кроме этого, ошибка `NoRefImageError` содержит следующие данные:
+Additionally, the `NoRefImageError` contains the following data:
 
 <table>
 <thead>
-<tr><td>**Свойство**</td><td>**Описание**</td></tr>
+<tr><td>**Property**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>stateName</td><td>имя состояния, для которого делался скриншот</td></tr>
-<tr><td>currImg</td><td>ссылка на актуальное изображение</td></tr>
-<tr><td>refImg</td><td>ссылка на эталонное изображение</td></tr>
+<tr><td>stateName</td><td>the name of the state for which the screenshot was taken</td></tr>
+<tr><td>currImg</td><td>link to the actual image</td></tr>
+<tr><td>refImg</td><td>link to the reference image</td></tr>
 
 </tbody>
 </table>
 
 ## intercept {#testplane_intercept}
 
-Функция, с помощью которой можно подписаться на [перехват событий][testplane-events-interception] testplane.
+A function that allows you to subscribe to testplane [event interception][testplane-events-interception].
 
-Первым аргументом функция принимает событие, которое нужно перехватывать, а вторым — обработчик события.
+The first argument is the event to intercept, and the second is the event handler.
 
-Например:
+For example:
 
 ```javascript
 testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
@@ -230,13 +230,13 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 });
 ```
 
-Подробнее о перехвате событий читайте в разделе «[Про перехват событий][testplane-events-interception]».
+Read more about event interception in the section "[About Event Interception][testplane-events-interception]".
 
 ## init {#testplane_init}
 
-Инициализирует инстанс testplane, загружает все плагины и т. д.
+Initializes the testplane instance, loads all plugins, etc.
 
-### Пример вызова
+### Example Call
 
 ```javascript
 await testplane.init();
@@ -244,93 +244,93 @@ await testplane.init();
 
 ## run {#testplane_run}
 
-Запускает прогон тестов, расположенных по заданным путям.
+Runs tests located at the specified paths.
 
-Возвращает `true`, если прогон тестов завершился успешно, и `false` — если не успешно.
+Returns `true` if the test run was successful and `false` if it was not.
 
-### Пример вызова
+### Example Call
 
 ```javascript
 const success = await testplane.run(testPaths, options);
 ```
 
-### Параметры вызова
+### Call Parameters
 
-Все параметры метода `testplane.run()` являются необязательными.
+All parameters of the `testplane.run()` method are optional.
 
 <table>
 <thead>
-<tr><td>**Имя&nbsp;параметра**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>testPaths</td><td>String[] или TestCollection</td><td>Пути к тестам относительно рабочей папки _(process.cwd())_ или объект типа _TestCollection_, который возвращается методом _readTests_. Если пути не указаны, то будут запущены все тесты.</td></tr>
-<tr><td>options</td><td>Object</td><td>Объект с опциями запуска.</td></tr>
-<tr><td>options.reporters</td><td>String[]</td><td>Репортеры для результатов прогона тестов.</td></tr>
-<tr><td>options.browsers</td><td>String[]</td><td>Браузеры, в которых нужно запустить тесты.</td></tr>
-<tr><td>options.sets</td><td>String[]</td><td>Сеты, в которых нужно запустить тесты.</td></tr>
-<tr><td>options.grep</td><td>RegExp</td><td>Шаблон регулярного выражения, который задает тесты для запуска.</td></tr>
+<tr><td>testPaths</td><td>String[] or TestCollection</td><td>Paths to tests relative to the working folder _(process.cwd())_ or an object of type _TestCollection_ returned by the _readTests_ method. If paths are not specified, all tests will be run.</td></tr>
+<tr><td>options</td><td>Object</td><td>Object with run options.</td></tr>
+<tr><td>options.reporters</td><td>String[]</td><td>Reporters for the test run results.</td></tr>
+<tr><td>options.browsers</td><td>String[]</td><td>Browsers in which to run the tests.</td></tr>
+<tr><td>options.sets</td><td>String[]</td><td>Sets in which to run the tests.</td></tr>
+<tr><td>options.grep</td><td>RegExp</td><td>A regular expression pattern that specifies tests to run.</td></tr>
 
 </tbody>
 </table>
 
 ## addTestToRun {#testplane_add_test_to_run}
 
-Добавляет тест к текущему запуску. Возвращает `false`, если текущий запуск уже закончился или был отменен. Иначе возвращает `true`.
+Adds a test to the current run. Returns `false` if the current run is already finished or cancelled. Otherwise, returns `true`.
 
-### Пример вызова
+### Example Call
 
 ```javascript
 const success = testplane.addTestToRun(test, browser);
 ```
 
-### Параметры вызова
+### Call Parameters
 
-Все параметры являются обязательными.
+All parameters are required.
 
 <table>
 <thead>
-<tr><td>**Имя&nbsp;параметра**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>test</td><td>Test</td><td>Тест для запуска.</td></tr>
-<tr><td>browserId</td><td>String</td><td>Браузер, в котором нужно запустить тест.</td></tr>
+<tr><td>test</td><td>Test</td><td>The test to run.</td></tr>
+<tr><td>browserId</td><td>String</td><td>The browser in which to run the test.</td></tr>
 
 </tbody>
 </table>
 
 ## readTests {#testplane_read_tests}
 
-Асинхронный метод. Возвращает объект типа [TestCollection](#test_collection).
+An asynchronous method that returns an object of type [TestCollection](#test_collection).
 
-### Пример вызова
+### Example Call
 
 ```javascript
 await testplane.readTests(testPaths, options);
 ```
 
-### Параметры вызова
+### Call Parameters
 
 <table>
 <thead>
-<tr><td>**Имя&nbsp;параметра**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>testPaths</td><td>String[]</td><td>Пути к тестам относительно рабочей папки _(process.cwd())_.</td></tr>
-<tr><td>options</td><td>Object</td><td>Объект с настройками режима чтения тестов.</td></tr>
-<tr><td>options.browsers</td><td>String[]</td><td>Прочитать тесты только для указанных браузеров.</td></tr>
-<tr><td>options.silent</td><td>Boolean</td><td>Отключить генерацию событий во время чтения тестов. По умолчанию: _false_.</td></tr>
-<tr><td>options.ignore</td><td>String или Glob или String[] или Glob[]</td><td>Шаблоны, указывающие какие пути на файловой системе надо исключить при поиске тестов.</td></tr>
-<tr><td>options.sets</td><td>String[]</td><td>Сеты, в которых нужно прочитать тесты.</td></tr>
-<tr><td>options.grep</td><td>RegExp</td><td>Шаблон регулярного выражения, который задает тесты для чтения.</td></tr>
+<tr><td>testPaths</td><td>String[]</td><td>Paths to tests relative to the working folder _(process.cwd())_.</td></tr>
+<tr><td>options</td><td>Object</td><td>Object with test reading mode settings.</td></tr>
+<tr><td>options.browsers</td><td>String[]</td><td>Read tests only for the specified browsers.</td></tr>
+<tr><td>options.silent</td><td>Boolean</td><td>Disable event generation while reading tests. Default: _false_.</td></tr>
+<tr><td>options.ignore</td><td>String or Glob or String[] or Glob[]</td><td>Patterns specifying paths on the filesystem to exclude when searching for tests.</td></tr>
+<tr><td>options.sets</td><td>String[]</td><td>Sets in which to read tests.</td></tr>
+<tr><td>options.grep</td><td>RegExp</td><td>A regular expression pattern that specifies tests to read.</td></tr>
 
 </tbody>
 </table>
 
 ## isFailed {#testplane_is_failed}
 
-Возвращает `true` или `false` в зависимости от того, была ли ошибка или падение теста при запуске тестов. Может пригодиться в плагинах для того, чтобы определить текущий статус testplane.
+Returns `true` or `false` depending on whether there was an error or test failure during the test run. Might be useful in plugins to determine the current status of testplane.
 
-### Пример вызова
+### Example Call
 
 ```javascript
 const failed = testplane.isFailed();
@@ -338,56 +338,56 @@ const failed = testplane.isFailed();
 
 ## isWorker {#testplane_is_worker}
 
-Возвращает `true`, если метод был вызван из воркера testplane.
-Возвращает `false`, если метод был вызван из мастер-процесса testplane.
+Returns `true` if the method was called from a testplane worker.
+Returns `false` if the method was called from the testplane master process.
 
-Может пригодиться в плагинах для того, чтобы различать контекст выполнения кода.
+Might be useful in plugins to distinguish the execution context.
 
-### Пример вызова
+### Example Call
 
 ```javascript
-// реализация какого-либо плагина
+// Implementation of some plugin
 module.exports = testplane => {
     if (testplane.isWorker()) {
-        // этот код будет выполняться только в воркерах testplane
+        // This code will be executed only in testplane workers
     } else {
-        // этот код будет выполняться только в мастер-процессе testplane
+        // This code will be executed only in the testplane master process
     }
 };
 ```
 
 ## halt {#testplane_halt}
 
-Аварийно завершает прогон тестов в случае критической ошибки. Если процессу не удается корректно завершить работу за заданное контрольное время _(timeout)_, то он будет принудительно завершен, кроме случаев, когда _timeout_ явно установлен в `0`.
+Forcibly terminates the test run in case of a critical error. If the process cannot gracefully shut down within the specified timeout, it will be forcibly terminated unless the timeout is explicitly set to `0`.
 
-### Пример вызова
+### Example Call
 
 ```javascript
 testplane.halt(error, [timeout=60000ms]);
 ```
 
-### Параметры вызова
+### Call Parameters
 
 <table>
 <thead>
-<tr><td>**Имя&nbsp;параметра**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>error</td><td>Error</td><td>Возникшая критическая ошибка, из-за которой приходится останавливать testplane.</td></tr>
-<tr><td>timeout</td><td>Number</td><td>Необязательный параметр. Контрольное время завершения процесса testplane. По умолчанию: _60000 мс_.</td></tr>
+<tr><td>error</td><td>Error</td><td>The critical error that requires stopping testplane.</td></tr>
+<tr><td>timeout</td><td>Number</td><td>Optional parameter. Timeout for shutting down the testplane process. Default: _60000 ms_.</td></tr>
 
 </tbody>
 </table>
 
 ## Test Collection {#test_collection}
 
-Объект типа `TestCollection` возвращается методом [testplane.readTests](#testplane_read_tests), а также передается в качестве аргумента в обработчик события [AFTER_TESTS_READ][after-tests-read].
+An object of type `TestCollection` is returned by the [testplane.readTests](#testplane_read_tests) method and is also passed as an argument to the handler of the [AFTER_TESTS_READ][after-tests-read] event.
 
 ### getBrowsers {#test_collection_get_browsers}
 
-Возвращает список браузеров, для которых в коллекции есть тесты.
+Returns a list of browsers for which tests are available in the collection.
 
-#### Пример вызова
+#### Example Call
 
 ```javascript
 const browsers = testCollection.getBrowsers();
@@ -395,9 +395,9 @@ const browsers = testCollection.getBrowsers();
 
 ### mapTests {#test_collection_map_tests}
 
-Строит отображение тестов для заданного браузера.
+Builds a mapping of tests for the specified browser.
 
-#### Пример вызова
+#### Example Call
 
 ```javascript
 const tests = testCollection.mapTests(browserId, (test, browserId) => {
@@ -405,13 +405,13 @@ const tests = testCollection.mapTests(browserId, (test, browserId) => {
 });
 ```
 
-Если браузер не задан (то есть первым аргументом передан обратный вызов), то будет строиться отображение тестов для всех браузеров.
+If the browser is not specified (i.e., a callback is passed as the first argument), the mapping will be built for all browsers.
 
 ### sortTests {#test_collection_sort_tests}
 
-Сортирует тесты для заданного браузера.
+Sorts tests for the specified browser.
 
-#### Пример вызова
+#### Example Call
 
 ```javascript
 testCollection.sortTests(browserId, (currentTest, nextTest) => {
@@ -419,13 +419,13 @@ testCollection.sortTests(browserId, (currentTest, nextTest) => {
 });
 ```
 
-Если браузер не задан (то есть первым аргументом передан обратный вызов), то сортировка будет применена ко всем браузерам.
+If the browser is not specified (i.e., a callback is passed as the first argument), the sorting will be applied to all browsers.
 
 ### eachTest {#test_collection_each_test}
 
-Выполняет итерацию по тестам для заданного браузера.
+Iterates through the tests for the specified browser.
 
-#### Пример вызова
+#### Example Call
 
 ```javascript
 testCollection.eachTest(browserId, (test, browserId) => {
@@ -433,15 +433,15 @@ testCollection.eachTest(browserId, (test, browserId) => {
 });
 ```
 
-Если браузер не задан (то есть первым аргументом передан обратный вызов), то итерация будет происходить по тестам для всех браузеров.
+If the browser is not specified (i.e., a callback is passed as the first argument), the iteration will occur for tests in all browsers.
 
 ### eachTestByVersions {#test_collection_each_test_by_versions}
 
-Выполняет итерацию по тестам и версиям браузера для заданного браузера.
+Iterates through the tests and browser versions for the specified browser.
 
-Использует наличие у каждого теста свойства `browserVersion`.
+Utilizes the presence of the `browserVersion` property for each test.
 
-#### Пример вызова
+#### Example Call
 
 ```javascript
 testCollection.eachTestByVersions(browserId, (test, browserId, browserVersion) => {
@@ -451,69 +451,67 @@ testCollection.eachTestByVersions(browserId, (test, browserId, browserVersion) =
 
 ### disableAll {#test_collection_disable_all}
 
-Отключает все тесты или тесты для заданного браузера. Возвращает ссылку на инстанс коллекции тестов.
+Disables all tests or tests for the specified browser. Returns a reference to the test collection instance.
 
-#### Примеры вызова
+#### Example Calls
 
 ```javascript
 disableAll();
 ```
 
-или
+or
 
 ```javascript
 disableAll(browserId);
 ```
 
-Если браузер не задан, то будут отключены все тесты.
+If the browser is not specified, all tests will be disabled.
 
 ### enableAll {#test_collection_enable_all}
 
-Включает все тесты или тесты для заданного браузера. Возвращает ссылку на инстанс коллекции тестов.
+Enables all tests or tests for the specified browser. Returns a reference to the test collection instance.
 
-#### Примеры вызова
+#### Example Calls
 
 ```javascript
 enableAll();
 ```
 
-или
+or
 
 ```javascript
 enableAll(browserId);
 ```
 
-Если браузер не задан, то будут включены все тесты.
+If the browser is not specified, all tests will be enabled.
 
 ### disableTest {#test_collection_disable_test}
 
-Отключает указанный тест во всех браузерах или только в заданном браузере. Возвращает ссылку на инстанс коллекции тестов.
+Disables the specified test in all browsers or only in the specified browser. Returns a reference to the test collection instance.
 
-#### Примеры вызова
+#### Example Calls
 
 ```javascript
 disableTest(fullTitle);
 ```
 
-или
+or
 
 ```javascript
 disableTest(fullTitle, browserId);
 ```
 
-Идентификатором теста является его полное название: `fullTitle`.
+The test is identified by its full title: `fullTitle`.
 
 ### enableTest {#test_collection_enable_test}
 
-Включает указанный тест во всех браузерах или только в заданном браузере. Возвращает ссылку на инстанс коллекции тестов.
-
-#### Примеры вызова
+Enables the specified test in all browsers or only in the specified browser.
 
 ```javascript
 enableTest(fullTitle);
 ```
 
-или
+or
 
 ```javascript
 enableTest(fullTitle, browserId);
@@ -521,9 +519,9 @@ enableTest(fullTitle, browserId);
 
 ### getRootSuite {#test_collection_get_root_suite}
 
-Возвращает корневой suite для заданного браузера. Возвращает `undefined`, если в коллекции нет тестов для указанного браузера.
+Returns the root suite for the specified browser. Returns undefined if there are no tests for the specified browser in the collection.
 
-#### Пример вызова
+#### Example Call
 
 ```javascript
 const rootSuite = getRootSuite(browserId);
@@ -531,9 +529,9 @@ const rootSuite = getRootSuite(browserId);
 
 ### eachRootSuite {#test_collection_each_root_suite}
 
-Выполняет итерацию по всем корневым suite в коллекции, в которых есть тесты.
+Iterates through all root suites in the collection that have tests.
 
-#### Пример вызова
+#### Example Call
 
 ```javascript
 eachRootSuite((root, browserId) => {

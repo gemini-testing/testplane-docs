@@ -2,37 +2,37 @@ import Admonition from "@theme/Admonition";
 
 # waitForClickable
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `waitForClickable`, чтобы подождать, пока элемент в течение указанного количества миллисекунд не станет кликабельным или не кликабельным.
+Use the `waitForClickable` command to wait until an element becomes clickable or unclickable within a specified number of milliseconds.
 
 <Admonition type="warning">
-    В отличие от других команд элемента, testplane не будет дожидаться существования элемента, чтобы
-    выполнить эту команду.
+    Unlike other element commands, Testplane will not wait for the element to exist before executing
+    this command.
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).waitForClickable({ timeout, reverse, timeoutMsg, interval });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Default**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>timeout</td><td>Number</td><td>500</td><td>Таймаут в миллисекундах.</td></tr>
-<tr><td>reverse</td><td>Boolean</td><td>false</td><td>Если значение _true_, то команда будет ждать противоположного условия: что элемент не кликабельный.</td></tr>
-<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Сообщение об ошибке, которое нужно бросить при таймауте.</td></tr>
-<tr><td>interval</td><td>Number</td><td>[waitforInterval][wait-for-interval]</td><td>Интервал в миллисекундах между проверками условия.</td></tr>
+<tr><td>timeout</td><td>Number</td><td>500</td><td>Timeout in milliseconds.</td></tr>
+<tr><td>reverse</td><td>Boolean</td><td>false</td><td>If _true_, the command will wait for the opposite condition: the element becomes unclickable.</td></tr>
+<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Error message to throw when the timeout is reached.</td></tr>
+<tr><td>interval</td><td>Number</td><td>[waitforInterval][wait-for-interval]</td><td>Interval in milliseconds between condition checks.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should detect when element is clickable", async ({ browser }) => {
@@ -45,5 +45,9 @@ it("should detect when element is no longer clickable", async ({ browser }) => {
     await elem.waitForClickable({ reverse: true });
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/waitForClickable), from which we drew some information while writing our version.
 
 [wait-for-interval]: ../../../config/browsers#wait_interval

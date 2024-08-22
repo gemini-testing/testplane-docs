@@ -1,42 +1,53 @@
 # keys
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `keys`, чтобы отправить последовательность нажатий клавиш в активный элемент.
+Use the `keys` command to send a sequence of key presses to the active element.
 
-Вы можете также использовать символы «Левая стрелка» или «Правая стрелка». Они будут автоматически преобразованы в соответствующие unicode-символы. Все поддерживаемые символы вы можете посмотреть [здесь][keyboard-actions].
+You can also use symbols like “Left Arrow” or “Right Arrow”. They will be automatically transformed to the corresponding unicode characters. You can see all supported characters [here][keyboard-actions].
 
-Модификаторы типа `Ctrl`, `Shift`, `Alt` и `Meta` остаются нажатыми, пока вы сами не освободите их повторным вызовом. Однако модификация клика требует использования метода [performActions][perform-actions] из _WebDriver Actions API_.
+Modifiers such as `Ctrl`, `Shift`, `Alt`, and `Meta` remain pressed until you release them by calling the function again. However, modifying clicks requires using the [performActions][perform-actions] method from the WebDriver Actions API.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.keys(value);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>value</td><td>String или String[]</td><td>Последовательность клавиш, которые нужно напечатать.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>value</td>
+            <td>String or String[]</td>
+            <td>The sequence of keys to type.</td>
+        </tr>
+    </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("copies text out of active element", async ({ browser }) => {
-    // копируем текст из элемента ввода
+    // copy text from input element
     await browser.$("#username").setValue("anonymous");
 
     await browser.keys(["Meta", "a"]);
     await browser.keys(["Meta", "c"]);
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/keys), from which we drew some information while writing our version.
 
 [keyboard-actions]: https://w3c.github.io/webdriver/#keyboard-actions
 [perform-actions]: https://webdriver.io/docs/api/webdriver#performactions

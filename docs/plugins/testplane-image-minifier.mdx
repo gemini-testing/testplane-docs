@@ -2,113 +2,113 @@ import Admonition from "@theme/Admonition";
 
 # testplane-image-minifier
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте плагин [testplane-image-minifier][testplane-image-minifier], чтобы сжимать изображения (скриншоты) в своих тестах.
+Use the `testplane-image-minifier` plugin to compress images (screenshots) in your tests.
 
-Плагин поддерживает 8 степеней сжатия: от 0 (не применять сжатие) до 7 (максимальная степень сжатия).
+The plugin supports 8 compression levels: from 0 (do not apply compression) to 7 (maximum compression level).
 
-Сжатие происходит без потерь.
+Compression is lossless.
 
-### Как это работает? {#how_does_it_work}
+### How does it work? {#how_does_it_work}
 
-При запуске плагин подписывается на событие `UPDATE_REFERENCE`, которое testplane посылает в случаях:
+At startup, the plugin subscribes to the `UPDATE_REFERENCE` event, which Testplane sends in the following cases:
 
--   если пользователь запустил testplane, передав ей опцию `--update-refs`;
--   если пользователь обновляет или сохраняет скриншоты с помощью плагина [html-reporter][html-reporter].
+-   if the user started Testplane by passing the `--update-refs` option;
+-   if the user updates or saves screenshots using the [html-reporter][html-reporter] plugin.
 
-Когда в плагин `testplane-image-minifier` прилетает событие `UPDATE_REFERENCE`, он получает вместе с событием ссылку на само изображение. Далее плагин применяет к полученному изображению алгоритм сжатия с указанной в конфиге степенью сжатия. И сохраняет новое изображение на файловую систему. После этого разработчик может влить обновленные файлы в главную ветку своего проекта.
+When the `UPDATE_REFERENCE` event is received in the `testplane-image-minifier` plugin, it gets a link to the image itself along with the event. Next, the plugin applies a compression algorithm to the received image with the compression level specified in the config. And saves the new image to the file system. After that, the developer can merge the updated files into the main branch of his project.
 
-Для сжатия изображений плагин `testplane-image-minifier` использует пакет [optipng-bin][optipng-bin].
+To compress images, the `testplane-image-minifier` plugin uses the [optipng-bin][optipng-bin] package.
 
 <Admonition type="info">
-    Выбирая степень сжатия для изображений в своем проекте, помните, что вы выбираете между
-    скоростью и местом, которое будут занимать ваши изображения на диске. Чем выше степень сжатия,
-    тем меньше места будут занимать ваши изображения на диске, но дольше будут выполняться сами
-    тесты. Так как перед тем как сравнивать изображения в тестах система должна будет их
-    распаковать. Поэтому, чтобы получить приемлемое время прогона тестов, соизмеряйте выбираемую
-    степень сжатия с мощностью серверов, на которых эти тесты будут выполняться.
+    When choosing the compression level for images in your project, remember that you are choosing
+    between the speed and the space that your images will occupy on disk. The higher the compression
+    ratio, the less space your images will occupy on disk, but the tests themselves will take
+    longer. Since before comparing the images in the tests, the system will have to unpack them.
+    Therefore, in order to get an acceptable test run time, match the selected compression ratio
+    with the capacity of the servers on which these tests will be running.
 </Admonition>
 
-## Установка {#install}
+## Install {#install}
 
 ```bash
 npm install -D testplane-image-minifier
 ```
 
-## Настройка {#setup}
+## Setup {#setup}
 
-Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+Add the plugin to the `plugins` section of the `testplane` config:
 
 ```javascript
 module.exports = {
     plugins: {
         "testplane-image-minifier": {
-            enabled: true, // Включить плагин.
-            compressionLevel: 7, // Максимальный уровень компрессии, сжатие займет какое-то время
+            enabled: true, // Enable the plugin.
+            compressionLevel: 7, // Maximum compression level, compression will take some time
         },
 
-        // другие плагины testplane...
+        // other Testplane plugins...
     },
 
-    // другие настройки testplane...
+    // other Testplane settings...
 };
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Description of configuration parameters {#setup_description}
 
 <table>
 <thead>
-<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default value**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
-<tr><td>compressionLevel</td><td>Number</td><td>2</td><td>Степень сжатия изображения: от 0 до 7 (максимальная степень сжатия).</td></tr>
+<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>compressionLevel</td><td>Number</td><td>2</td><td>Image compression level: from 0 to 7 (maximum compression level).</td></tr>
 
 </tbody>
 </table>
 
-### Передача параметров через CLI {#setup_by_cli}
+### Passing parameters via the CLI {#setup_by_cli}
 
-Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--image-minifier-` для опций командной строки и `testplane_image_minifier_` — для переменных окружения. Например:
+All plugin parameters that can be defined in the config can also be passed as command-line options or through environment variables during the launch of Testplane. Use the prefix `--image-minifier-` for command line options and `testplane_image_minifier_` for environment variables. For example:
 
 ```bash
-npx testplane --image-minifier-compression-level 5 ...
+npx testplane --image-minifier-compression-level 5
 ```
 
 ```bash
-testplane_image_minifier_compression_level = 5 npx testplane ...
+testplane_image_minifier_compression_level = 5 npx testplane
 ```
 
-## Отладка {#debugging}
+## Debugging {#debugging}
 
-Установите переменную окружения `DEBUG=testplane:image-minifier`, чтобы видеть сообщения о применении алгоритма сжатия для изображений в тестах.
+Set the environment variable `DEBUG=testplane:image-minifier` to see messages in the console about the application of the compression algorithm for images in tests.
 
 ```bash
 DEBUG=testplane:image-minifier npx testplane --update-refs
 ```
 
-Пример, как это будет выглядеть в консоли:
+An example of how it will look in the console:
 
 ```bash
 /path/to/reference/image.png compressed by 30%
 ```
 
-## Использование {#usage}
+## Usage {#usage}
 
-После добавления плагина в проект и настройки его параметров запустите testplane с опцией `--update-refs`:
+After adding the plugin to the project and configuring its parameters, run Testplane with the `--update-refs` option:
 
 ```bash
 npx testplane --update-refs
 ```
 
-Изображения на файловой системе будут обновлены.
+The images on the file system will be updated.
 
-## Полезные ссылки {#useful_links}
+## Useful links {#useful_links}
 
--   [Исходники плагина testplane-image-minifier][testplane-image-minifier]
--   [Пакет для сжатия изображений optipng-bin][optipng-bin]
+-   [testplane-image-minifier plugin sources][testplane-image-minifier]
+-   [optipng-bin package to compress images][optipng-bin]
 
 [testplane-image-minifier]: https://github.com/gemini-testing/testplane-image-minifier/
-[html-reporter]: ../../plugins/html-reporter
+[html-reporter]: ../html-reporter
 [optipng-bin]: https://www.npmjs.com/package/optipng-bin

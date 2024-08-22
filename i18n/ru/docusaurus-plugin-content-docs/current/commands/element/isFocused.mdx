@@ -1,0 +1,36 @@
+# isFocused
+
+## Обзор {#overview}
+
+Используйте команду `isFocused`, чтобы определить, есть ли фокус на заданном DOM-элементе.
+
+Команда возвращает `true`, если выбранный элемент находится в фокусе, иначе возвращает `false`.
+
+Если под селектор попадает множество элементов, то команда возвращает `true`, если хотя бы один из элементов находится в фокусе.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).isFocused();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<input name="login" autofocus="" />
+```
+
+**isFocused.js**
+
+```javascript
+it("should detect the focus of an element", async ({ browser }) => {
+    await browser.url("/");
+    const loginInput = await browser.$('[name="login"]');
+    console.log(await loginInput.isFocused()); // выведет: false
+
+    await loginInput.click();
+    console.log(await loginInput.isFocused()); // выведет: true
+});
+```

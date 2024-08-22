@@ -1,59 +1,63 @@
 # url
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `url`, чтобы перейти по заданному URL-адресу в браузере.
+Use the `url` command to navigate to the specified URL in the browser.
 
-Если в конфигурации указан [baseUrl][base-url], то он будет добавлен к параметру `url` с помощью метода Node.JS [url.resolve()][url-resolve].
+If [baseUrl][base-url] is specified in the configuration, it will be added to the `url` parameter using the Node.js method [url.resolve()][url-resolve].
 
-Вызов `browser.url()` с тем же URL-адресом, что и в прошлый раз, вызовет перезагрузку страницы.
+Calling `browser.url()` with the same URL as before will reload the page.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.url(url);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>url</td><td>String</td><td>URL, который надо открыть.</td></tr>
+<tr><td>url</td><td>String</td><td>The URL to open.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **url.js**
 
 ```javascript
-// переходим на URL
+// navigate to URL
 await browser.url("https://webdriver.io");
 
-// получаем url
-console.log(await browser.getUrl()); // выведет: "https://webdriver.io"
+// get the URL
+console.log(await browser.getUrl()); // outputs: "https://webdriver.io"
 ```
 
 **baseUrlResolutions.js**
 
 ```javascript
-// Пусть baseUrl = http://example.com/site
+// Let baseUrl = http://example.com/site
 
-// При указании полного URL-адреса итоговый URL будет https://webdriver.io
+// Specifying a full URL results in https://webdriver.io
 await browser.url("https://webdriver.io");
 
-// При указании URL-адреса без начального слэша
-// итоговый URL формируется относительно всего baseUrl: http://example.com/site/relative
+// Specifying a URL without a leading slash
+// results in the URL relative to the baseUrl: http://example.com/site/relative
 await browser.url("relative");
 
-// При указании URL-адреса с начальным слэшом
-// итоговый URL формируется относительно корня baseUrl: http://example.com/rootRelative
+// Specifying a URL with a leading slash
+// results in the URL relative to the root of baseUrl: http://example.com/rootRelative
 await browser.url("/rootRelative");
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/url), from which we drew some information while writing our version.
 
 [base-url]: ../../../config/browsers#base_url
 [url-resolve]: https://nodejs.org/api/url.html#urlresolvefrom-to

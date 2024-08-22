@@ -1,40 +1,40 @@
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 
-# Быстрый старт
+# Quick Start
 
-## Установка {#install}
+## Installation {#install}
 
-Запустите установщик testplane с помощью `npm`.
+Run the Testplane installer using `npm`.
 
 ```bash
 npm init testplane@latest YOUR_PROJECT_PATH
 ```
 
-Если вы не хотите использовать дефолты при инициализации проекта, а настроить его с помощью визарда, укажите опцию `-v`.
+If you do not want to use the defaults when initializing the project and want to configure it using a wizard, specify the `-v` option.
 
-## Настройка {#setup}
+## Setup {#setup}
 
-После выполнения команды, указанной выше, в корне проекта сгенерится файл `.testplane.conf.js` с базовой настройкой. В зависимости от того, каким протоколом вы хотите воспользоваться, есть 2 варианта настройки (по умолчанию для браузера будет указан протокол CDP).
+After executing the command mentioned above, a `.testplane.conf.js` file with basic settings will be generated at the root of the project. Depending on which protocol you want to use, there are 2 configuration options (by default, the CDP protocol will be specified for the browser).
 
 <Tabs>
 <TabItem value="Chrome Devtools Protocol" label="Chrome Devtools Protocol">
 ```javascript
-  module.exports = {
-      sets: {
-          desktop: {
-              files: 'tests/desktop'
-          }
-      },
+module.exports = {
+    sets: {
+        desktop: {
+            files: 'tests/desktop'
+        }
+    },
 
-      browsers: {
-          chrome: {
-              automationProtocol: 'devtools',
-              desiredCapabilities: {
-                  browserName: 'chrome'
-              }
-          }
-      }
+    browsers: {
+        chrome: {
+            automationProtocol: 'devtools',
+            desiredCapabilities: {
+                browserName: 'chrome'
+            }
+        }
+    }
 
 };
 
@@ -68,9 +68,9 @@ module.exports = {
 
 </Tabs>
 
-## Создание теста {#test_creation}
+## Creating a Test {#test_creation}
 
-Перейдите в файл `tests/example.testplane.js` с тестом. В нем вы можете посмотреть пример теста или написать свой. Например,
+Navigate to the `tests/example.testplane.js` file with a test. Here you can see a test example or write your own. For example,
 
 ```javascript
 describe("github", async function () {
@@ -83,21 +83,21 @@ describe("github", async function () {
 });
 ```
 
-## Запуск теста {#test_running}
+## Running a Test {#test_running}
 
-Теперь вы можете запустить тесты:
+Now you can run the tests:
 
 ```bash
 npx testplane
 ```
 
-или запустить gui-режим и запустить тест через интерфейс в браузере
+or launch the GUI mode and run the test through the browser interface
 
 ```bash
 npx testplane gui
 ```
 
-Если при настройке конфига вы выбрали `WebDriver protocol`, то перед запуском тестов у вас должен быть запущен (в отдельной вкладке) `selenium-standalone`:
+If you chose the `WebDriver protocol` during the config setup, you should have `selenium-standalone` running (in a separate tab) before running the tests:
 
 ```bash
 selenium-standalone start

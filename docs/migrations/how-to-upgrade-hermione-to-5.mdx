@@ -1,61 +1,61 @@
 import Admonition from "@theme/Admonition";
 
-# Как обновить hermione до версии 5.x
+# How to Upgrade hermione to Version 5.x
 
 <Admonition type="warning">
-Если в вашем проекте hermione младше 4-й версии, то прочтите «[Как обновить hermione до версии 4.x][how-to-upgrade-hermione-to-4]», прежде чем обновлять hermione до 5-й версии.
+If your project uses hermione version earlier than 4.x, please read “How to Upgrade hermione to Version 4.x” before upgrading to version 5.x.
 
-Мы рекомендуем вам обновлять hermione поэтапно, убеждаясь на каждом этапе, что все тесты проекта корректно выполняются.
+We recommend upgrading hermione in stages, ensuring at each stage that all project tests run correctly.
 
 </Admonition>
 
-## Что изменилось? {#what_is_new}
+## What Has Changed? {#what_is_new}
 
-### Новые дефолты в конфиге {#changes_in_config_options}
+### New Default Configurations {#changes_in_config_options}
 
-Первое, на что стоит обратить внимание при переезде, — это изменение дефолтных значений некоторых опций в конфиге. Все изменения направлены на то, чтобы при базовой настройке hermione тесты проходили быстрее, а после прогона оставалось больше информации о тестах.
+The first thing to note during the upgrade is the change in default values for some configuration options. All changes aim to speed up test execution with basic hermione setup and provide more information about tests after execution.
 
 <table>
 <thead>
-<tr><td>**Параметр**</td><td>**Было**</td><td>**Стало**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter**</td><td>**Old**</td><td>**New**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>[antialiasingTolerance][antialiasing-tolerance]</td><td>0</td><td>4</td><td>Задает чувствительность определения антиалиасинга, который будет игнорироваться при сравнении скриншотов.</td></tr>
-<tr><td>[compositeImage][composite-image]</td><td>false</td><td>true</td><td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td></tr>
-<tr><td>[saveHistory][save-history]</td><td>false</td><td>true</td><td>Сохранять историю всех выполненных команд.</td></tr>
-<tr><td>[takeScreenshotOnFails.assertViewFail][take-screenshot-on-fails-assert-view-fail]</td><td>false</td><td>true</td><td>Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении теста, а также при падении команды _assertView_.</td></tr>
-<tr><td>[takeScreenshotOnFailsMode][take-screenshot-on-fails-mode]</td><td>"viewport"</td><td>"fullpage"</td><td>Режим снятия скриншота при падении теста. Доступные значения: _viewport_ и _fullpage_.</td></tr>
-<tr><td>[takeScreenshotOnFailsTimeout][take-screenshot-on-fails-timeout]</td><td>90000</td><td>5000</td><td>Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении теста, в мс.</td></tr>
-<tr><td>[httpTimeout][http-timeout]</td><td>90000</td><td>30000</td><td>Таймаут для любых запросов к Selenium-серверу, в мс.</td></tr>
-<tr><td>[pageLoadTimeout][page-load-timeout]</td><td>300000</td><td>20000</td><td>Таймаут для полной загрузки страницы, в мс.</td></tr>
-<tr><td>[sessionQuitTimeout][session-quit-timeout]</td><td>90000</td><td>5000</td><td>Таймаут для завершения сессии, в мс.</td></tr>
+<tr><td>[antialiasingTolerance][antialiasing-tolerance]</td><td>0</td><td>4</td><td>Sets the sensitivity for detecting antialiasing, which will be ignored when comparing screenshots.</td></tr>
+<tr><td>[compositeImage][composite-image]</td><td>false</td><td>true</td><td>Allows testing elements that do not fit into the viewport height.</td></tr>
+<tr><td>[saveHistory][save-history]</td><td>false</td><td>true</td><td>Save the history of all executed commands.</td></tr>
+<tr><td>[takeScreenshotOnFails.assertViewFail][take-screenshot-on-fails-assert-view-fail]</td><td>false</td><td>true</td><td>Determines whether to take a page screenshot on test failure, including on _assertView_ command failure.</td></tr>
+<tr><td>[takeScreenshotOnFailsMode][take-screenshot-on-fails-mode]</td><td>"viewport"</td><td>"fullpage"</td><td>Screenshot mode on test failure. Available values: _viewport_ and _fullpage_.</td></tr>
+<tr><td>[takeScreenshotOnFailsTimeout][take-screenshot-on-fails-timeout]</td><td>90000</td><td>5000</td><td>Timeout for taking a page screenshot on test failure, in ms.</td></tr>
+<tr><td>[httpTimeout][http-timeout]</td><td>90000</td><td>30000</td><td>Timeout for any requests to the Selenium server, in ms.</td></tr>
+<tr><td>[pageLoadTimeout][page-load-timeout]</td><td>300000</td><td>20000</td><td>Timeout for full page loading, in ms.</td></tr>
+<tr><td>[sessionQuitTimeout][session-quit-timeout]</td><td>90000</td><td>5000</td><td>Timeout for session termination, in ms.</td></tr>
 
 </tbody>
 </table>
 
-Кроме этого, удалены опции `screenshotOnReject` и `screenshotOnRejectTimeout`, которые ранее были объявлены как устаревшие _(deprecated)_.
+Additionally, the `screenshotOnReject` and `screenshotOnRejectTimeout` options, previously marked as deprecated, have been removed.
 
-Подробнее про все эти опции можно почитать [здесь][config-browsers]. Если новые значения вас устраивают и нет явных причин их переопределять, то этот пункт при миграции можно пропустить.
+You can read more about these options [here][config-browsers]. If the new values suit you and there are no apparent reasons to override them, you can skip this section during the migration.
 
-### Отчеты в CLI {#changes_in_reporters}
+### CLI Reporters {#changes_in_reporters}
 
-В данном разделе речь идет не про html-отчет, а про CLI-репортеры, которые поставляются из коробки.
+This section discusses CLI reporters that come out of the box and not the html-reporter.
 
--   Удален teamcity-репортер, т. к. в самой hermione он смотрелся чужеродно. Если вы всё же используете такой отчет, то можно использовать плагин [hermione-teamcity-reporter][hermione-teamcity-reporter].
--   Опция `-r`, с помощью которой раньше можно было указать тип репортера, теперь этим не занимается. Чаще всего такое сокращение имени используется для опции `--require`. Многие путались в этом месте и мы решили это поправить. Сам репортер вы всё еще можете указать при помощи опции `--reporter`.
--   Если вы захотите добавить свой репортер, то в его реализации обязательно должен быть метод `create` для инициализации.
+-   The teamcity reporter has been removed, as it seemed out of place within hermione. If you still use such a report, you can use the [hermione-teamcity-reporter][hermione-teamcity-reporter] plugin.
+-   The `-r` option, which previously allowed specifying the reporter type, no longer does this. It is more often used for the `--require` option. Many users found this confusing, so we decided to fix it. You can still specify the reporter using the `--reporter` option.
+-   If you want to add your own reporter, it must have a `create` method for initialization.
 
-Итого, если вы не использовали teamcity-репортер или не писали свои новые, то этот пункт при миграции можно пропустить.
+So, if you did not use the teamcity reporter or did not write new reporters, you can skip this section during migration.
 
 ### testParserAPI {#changes_in_test_parser_api}
 
-Теперь объект [testParser][test-parser], который можно было получить, подписавшись на событие [BEFORE_FILE_READ][before-file-read], не является инстансом `EventEmitter`. Это значит, что теперь нельзя с помощью него подписаться на события [SUITE_BEGIN][event-suite-begin] и [TEST_BEGIN][event-test-begin].
+The [testParser][test-parser] object, which could be obtained by subscribing to the [BEFORE_FILE_READ][before-file-read] event, is no longer an instance of `EventEmitter`. This means that you can no longer use it to subscribe to the [SUITE_BEGIN][event-suite-begin] and [TEST_BEGIN][event-test-begin] events.
 
-Справедливости ради, оно изначально работало неправильно и никто это не использовал. Поэтому, эта возможность была удалена. Про все доступные события можно почитать [здесь][hermione-events].
+To be fair, this initially did not work correctly, and no one used it. Therefore, this functionality was removed. You can read about all available events [here][hermione-events].
 
-## Поддержка {#support}
+## Support {#support}
 
-Если при переезде на новую версию вы столкнетесь с проблемами, или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] — и мы обязательно вам поможем!
+If you encounter any issues during the migration to the new version or have any questions, visit [github issues][gh-issues] — we will definitely help you!
 
 [how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
 [config-browsers]: ../../config/browsers
@@ -74,4 +74,4 @@ import Admonition from "@theme/Admonition";
 [page-load-timeout]: ../../config/browsers#page_load_timeout
 [session-quit-timeout]: ../../config/browsers#session_quit_timeout
 [save-history]: ../../config/browsers#save_history
-[gh-issues]: https://github.com/gemini-testing/testplane/issues/
+[gh-issues]: https://github.com/gemini-testing/testplane/issues

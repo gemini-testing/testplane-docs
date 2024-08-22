@@ -3,33 +3,33 @@ import TabItem from "@theme/TabItem";
 
 import Admonition from "@theme/Admonition";
 
-# Как обновлять браузеры в больших проектах
+# How to Update Browsers in Large Projects
 
-## Проблема
+## Problem
 
-В большом проекте, над которым работают несколько команд, как правило, много тестов. И тогда обновление браузеров в проекте превращается в настоящую головную боль. Ведь изменение версии браузера часто требует переснятия скриншотов, так как в браузере могут меняться механизмы рендеринга, анимации, антиалиасинга и пр. Достаточно малейшего изменения во внутренней реализации рендеринга в браузере, чтобы это привело к появлению диффов между эталонными и актуальными скриншотами в тестах.
+In a large project, handled by multiple teams, there are usually a lot of tests. Updating browsers in such a project can become a real headache. Changing the browser version often requires retaking screenshots because the browser's rendering, animation, and antialiasing mechanisms might change. Even the slightest changes in the internal rendering implementation of a browser can lead to diffs between reference and actual screenshots in tests.
 
-Пересняв тысячи скриншотов, разработчик создает пулл-реквест, который ему надо влить в главную ветку проекта. И влитие такого пулл-реквеста становится крайне сложной задачей из-за постоянно возникающих мерж-конфликтов. Так как разработка не стоит на месте, и какие-то команды в это время меняют тесты: переснимают эталонные скриншоты, чтобы учесть внедрение новой функциональности, или удаляют неактуальные тесты, и, соответственно, их скриншоты. А значит, пулл-реквест с большим количеством измененных файлов будет быстро устаревать и требовать постоянного ребейза относительно главной ветки проекта. При чем этот ребейз требует целого ряда действий: нужно не только обновить кодовую базу, но и заново запустить соответствующие тесты, чтобы переснять скриншоты. Так как простым выбором «правильной» стороны мерж-конфликта между скриншотами здесь не обойтись. Оба скриншота при мерж-конфликте будут неправильными: один — устаревшим, а другой — не соответствующим новой версии браузера.
+After retaking thousands of screenshots, a developer creates a pull request that needs to be merged into the main branch of the project. Merging such a pull request becomes extremely challenging due to the constantly occurring merge conflicts. Development doesn’t stop, and teams might change tests, retake reference screenshots to account for new functionality, or delete outdated tests and their screenshots. This means a pull request with a large number of changed files quickly becomes outdated and requires constant rebasing relative to the main branch. Moreover, this rebase involves a series of actions: not only updating the codebase but also rerunning the tests to retake the screenshots. Simply resolving the merge conflict between screenshots will not work. Both conflicting screenshots will be incorrect: one outdated and the other not corresponding to the new browser version.
 
-Таким образом, если какая-либо команда хочет обновить версию браузера, в котором прогоняются её тесты, она вынуждена обновлять тесты для всего проекта и сталкиваться во всеми описанными выше трудностями.
+Thus, if a team wants to update the version of the browser in which their tests are run, they are forced to update the tests for the entire project and face the difficulties described above.
 
-Есть 3 варианта решения данной проблемы.
+There are three ways to solve this problem.
 
-## Решение 1: testplane.browser().version()
+## Solution 1: testplane.browser().version()
 
-Testplane позволяет переопределить версию браузера для конкретного теста или набора тестов с помощью специального хелпера `testplane.browser().version()`.
+Testplane allows you to override the browser version for a specific test or set of tests using the `testplane.browser().version()` helper.
 
-Например:
+For example:
 
 ```javascript
-// Переопределяем версию браузера chrome-desktop на 70.3 для всего набора тестов
+// Override the browser version for chrome-desktop to 70.3 for the entire test suite
 testplane.browser("chrome-desktop").version("70.3");
 describe("suite", function () {
     it("test 1", function () {
         // ...
     });
 
-    // Переопределяем версию браузера chrome-desktop на 70.1 для конкретного теста
+    // Override the browser version for chrome-desktop to 70.1 for a specific test
     testplane.browser("chrome-desktop").version("70.1");
     it("test 2", function () {
         // ...
@@ -37,13 +37,13 @@ describe("suite", function () {
 });
 ```
 
-Недостаток такого подхода заключается в том, что нужно вручную изменять файлы самих тестов. При большом количестве файлов это может занять довольно длительное время.
+The drawback of this approach is that you need to manually change the test files themselves. With many files, this can take quite a long time.
 
-## Решение 2: Browser Version Changer
+## Solution 2: Browser Version Changer
 
-Можно воспользоваться плагином [hermione-browser-version-changer][hermione-browser-version-changer], который позволяет определять версию браузера для конкретного теста на основе специального словаря _(store)_ и предикатов для всех доступных в проекте версий браузеров.
+You can use the [hermione-browser-version-changer][hermione-browser-version-changer] plugin, which allows you to define the browser version for a specific test based on a special dictionary _(store)_ and predicates for all available browser versions in the project.
 
-Пример использования плагина:
+Example usage of the plugin:
 
 ```javascript
 module.exports = {
@@ -51,7 +51,7 @@ module.exports = {
         "hermione-browser-version-changer": {
             enabled: true,
             initStore: async () => {
-                // Подготавливаем словарь с произвольными признаками для разметки
+                // Prepare a dictionary with arbitrary tags for labeling
                 return {
                     "title-test1": "tag1",
                     "title-test2": "tag1",
@@ -60,14 +60,14 @@ module.exports = {
             },
             browsers: {
                 "chrome-desktop": {
-                    // Ключ "70.1" – версия браузера, значение – предикат
-                    // Если функция вернет истинное значение, для браузера установится данная версия
+                    // Key "70.1" – browser version, value – predicate
+                    // If the function returns a true value, this version will be set for the browser
                     70.1: (test, version, store) => {
-                        // test – текущий тест
-                        // version – предлагаемая версия "70.1"
-                        // store – словарь, который был подготовлен в методе initStore
+                        // test – current test
+                        // version – proposed version "70.1"
+                        // store – dictionary prepared in the initStore method
 
-                        // Установить версию браузера 70.1, если тест относится к "tag1"
+                        // Set browser version 70.1 if the test belongs to "tag1"
                         return store[test.title] === "tag1";
                     },
                     80: (test, version, store) => {
@@ -77,14 +77,14 @@ module.exports = {
             },
         },
 
-        // другие плагины testplane...
+        // other Testplane plugins...
     },
 
-    // другие настройки testplane...
+    // other Testplane settings...
 };
 ```
 
-Приведенный пример — очень условный и, вполне возможно, что в вашем проекте вам даже не понадобится использовать _store_, а хватит проверки соответствия теста заданному паттерну регулярного выражения.
+The provided example is very conditional, and it is possible that in your project you won’t even need to use a _store_, and checking the test against a given regex pattern will be sufficient.
 
 [hermione-browser-version-changer]: ../../plugins/hermione-browser-version-changer
 [testplane]: https://github.com/gemini-testing/testplane

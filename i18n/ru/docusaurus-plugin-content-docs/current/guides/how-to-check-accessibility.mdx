@@ -1,0 +1,84 @@
+import Admonition from "@theme/Admonition";
+
+# Как протестировать доступность (accessibility) страницы
+
+## Обзор {#overview}
+
+<Admonition type="warning">
+Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
+
+Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]»
+
+</Admonition>
+
+[Accessibility tree][accessibility-tree] — это дерево доступности, которое содержит иерархическую структуру доступных объектов. В отличие от DOM-дерева, которое предназначено для браузеров, accessibility-дерево предназначено для [скрин-ридеров][screen-reader] и других инструментов, помогающих взаимодействовать с сайтами людям с ограниченными возможностями.
+
+Для получения такого дерева в _puppeteer_ есть специальный [класс Accessibility][puppeteer-accessibility].
+
+## Пример {#example}
+
+Вот пример, как его можно использовать:
+
+```javascript
+it("should get accessibility tree of yandex.ru", async function () {
+    // Получаем инстанс puppeteer'а
+    const puppeteer = await this.browser.getPuppeteer();
+
+    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
+    const [page] = await puppeteer.pages();
+
+    await this.browser.url("https://yandex.ru");
+
+    // Получаем текущее состояние accessibility дерева
+    const snapshot = await page.accessibility.snapshot();
+    console.log("snapshot:", JSON.stringify(snapshot, null, 4));
+});
+```
+
+## Accessibility-дерево {#accessibility_tree}
+
+А вот как выглядит получаемое accessibility-дерево:
+
+```json
+{
+    "role": "WebArea",
+    "name": "Яндекс",
+    "children": [
+        {
+            "role": "link",
+            "name": "Войти"
+        },
+        {
+            "role": "link",
+            "name": "Почта"
+        },
+        {
+            "role": "link",
+            "name": "Диск"
+        },
+        {
+            "role": "link",
+            "name": "Попробовать Плюс"
+        },
+
+        // пропустим для краткости...
+
+        {
+            "role": "link",
+            "name": "финансы"
+        },
+        {
+            "role": "link",
+            "name": "политика"
+        }
+    ]
+}
+}
+```
+
+Используя полученное дерево мы можем проверить, что все необходимые узлы содержатся в дереве и имеют правильную структуру.
+
+[how-to-use-cdp]: ../how-to-use-cdp
+[accessibility-tree]: https://web.dev/the-accessibility-tree/
+[screen-reader]: https://ru.wikipedia.org/wiki/Экранное_считывающее_устройство
+[puppeteer-accessibility]: https://pptr.dev/api/puppeteer.accessibility

@@ -1,18 +1,18 @@
-# Как пропустить тест в заданном браузере
+# How to Skip a Test in a Specific Browser
 
-## Проблема {#problem}
+## Problem {#problem}
 
-Иногда вам нужно пропустить запуск теста только в определенном браузере, а не во всех браузерах. То есть вы не хотели бы отключать или удалять весь тест, а хотели бы только ограничить количество браузеров, на которых он будет запускаться.
+Sometimes you need to skip running a test in a specific browser, rather than in all browsers. That is, you don't want to disable or delete the entire test, but only want to limit the number of browsers in which it will run.
 
-Например, это может быть связано с ограниченной функциональностью соответствующего браузера: отсутствием в нем необходимых возможностей, которые используются на веб-странице и проверяются тестом.
+For example, this could be due to the limited functionality of the respective browser: the absence of necessary features that are used on the web page and checked by the test.
 
-Ещё такая необходимость может возникнуть при нестабильной работе теста в каком-либо браузере, из-за неучета каких-то особенностей реализации в браузере.
+Another reason could be the unstable behavior of the test in a particular browser due to certain implementation nuances in the browser.
 
-В testplane вы можете сделать это с помощью специальных хелперов (директив) `skip` и `only`.
+In testplane, you can do this using special helpers (directives) `skip` and `only`.
 
-## Решение 1: директива .skip.in {#solution_1}
+## Solution 1: .skip.in Directive {#solution_1}
 
-Например, если вы не хотите запускать тест в браузере `IE8`:
+For example, if you don't want to run the test in `IE8`:
 
 ```javascript
 describe("feature", function () {
@@ -23,17 +23,17 @@ describe("feature", function () {
 });
 ```
 
-При использовании директивы `testplane.skip.in` вы увидите в отчете сообщение о том, что запуск в соответствующем браузере был пропущен.
+When using the `testplane.skip.in` directive, you will see a message in the report indicating that the run was skipped in the respective browser.
 
-Чтобы пропустить запуск тестов без уведомлений в отчете, вы можете передать хелперу специальный флаг `silent` в качестве третьего аргумента:
+To skip the test runs without notifications in the report, you can pass a special flag `silent` to the helper as the third argument:
 
 ```javascript
 testplane.skip.in("ie8", "skipReason", { silent: true });
 ```
 
-## Решение 2: директива .skip.notIn {#solution_2}
+## Solution 2: .skip.notIn Directive {#solution_2}
 
-Также вы можете захотеть запускать тест только в конкретном браузере, например, в `Chrome`:
+You might also want to run the test only in a specific browser, for example, in `Chrome`:
 
 ```javascript
 describe("feature", function () {
@@ -44,33 +44,33 @@ describe("feature", function () {
 });
 ```
 
-Аналогично, чтобы избавиться от уведомлений в отчете, вы можете передать хелперу специальный флаг `silent` в качестве третьего аргумента:
+Similarly, to avoid notifications in the report, you can pass a special flag `silent` to the helper as the third argument:
 
 ```javascript
 testplane.skip.notIn("chrome", "skipReason", { silent: true });
 ```
 
-## Решение 3: директивы .only.in и .only.notIn {#solution_3}
+## Solution 3: .only.in and .only.notIn Directives {#solution_3}
 
-Ещё вы можете воспользоваться хелперами `only.in` и `only.notIn`, логика которых противоположна хелперам `skip.in` и `.skip.notIn`. Плюс эти хелперы по умолчанию не выводят никаких уведомлений в отчете:
+You can also use the helpers `only.in` and `only.notIn`, whose logic is the opposite of the helpers `skip.in` and `.skip.notIn`. Additionally, these helpers do not, by default, produce any notifications in the report:
 
 ```javascript
-testplane.only.in("chrome"); // запустить тест только в chrome
+testplane.only.in("chrome"); // run the test only in Chrome
 ```
 
 ```javascript
-testplane.only.notIn("ie8"); // запустить тест во всех браузерах, кроме ie8
+testplane.only.notIn("ie8"); // run the test in all browsers except IE8
 ```
 
-## Решение 4: директива .also.in и браузерная опция passive {#solution_4}
+## Solution 4: .also.in Directive and Passive Browser Option {#solution_4}
 
-В случае если вы внедряете новый браузер и вам необходимо его запускать только в нескольких тестах, а у вас их тысячи, то использовать хелпер `.skip.in` неудобно. Для решения этой проблемы можно воспользоваться браузерной опцией [passive][passive-option] и хелпером `.also.in`:
+If you are introducing a new browser and need to run it only in a few tests while having thousands of them, using the `.skip.in` helper may be inconvenient. To solve this problem, you can use the [passive][passive-option] browser option and the helper `.also.in`:
 
 ```javascript
-testplane.also.in("ie8"); // запустить тест в пассивном браузере ie8
+testplane.also.in("ie8"); // run the test in the passive browser IE8
 ```
 
-## Ключевые слова {#keywords}
+## Keywords {#keywords}
 
 -   testplane.skip.in
 -   testplane.skip.notIn

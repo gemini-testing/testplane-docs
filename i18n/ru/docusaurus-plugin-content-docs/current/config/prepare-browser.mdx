@@ -1,0 +1,63 @@
+import Admonition from "@theme/Admonition";
+import AddBrowserCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-browser-command.mdx";
+import AddElementCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-element-command.mdx";
+import OverwriteCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-overwrite-command.mdx";
+import AddMultipleCommandsExample from "@site/docs/config/_partials/examples/_prepare-browser-add-multiple-commands.mdx";
+
+# prepareBrowser
+
+## Обзор {#overview}
+
+Данный параметр является хуком. Функция, заданная для данного параметра, будет автоматически вызвана перед тем, как запустить в браузере тесты. В качестве аргумента функция получает ссылку на сессию браузера.
+
+Обычно внутри данной функции к браузеру добавляют новые команды, или расширяют поведение уже существующих команд.
+
+## Примеры использования {#example}
+
+### Пример 1: добавляем новую команду для браузера {#example_add_new_command_to_browser}
+
+Для добавления новой команды воспользуемся функцией [browser.addCommand()][add-command].
+
+<AddBrowserCommandExample />
+
+### Пример 2: добавляем новую команду для элемента {#example_2_add_new_command_to_element}
+
+Можно добавить команду не для браузера, а для элемента. Тогда третьим аргументом функции [browser.addCommand()][add-command] надо указать `true`.
+
+<Admonition type="warning">
+    Если добавляется команда для элемента, а не для браузера, то функция выполняется в контексте
+    элемента!
+</Admonition>
+
+<AddElementCommandExample />
+
+Внутри функции применяются команды [getLocation()][get-location] и [getSize()][get-size], которые доступны для элемента.
+
+После добавления команды `getCoords()`, её можно использовать в тестах следующим образом:
+
+```typescript
+const { left, top, right, bottom } = await browser.$(‘.selector’).getCoords();
+```
+
+### Пример 3: меняем уже существующую команду {#example_3_overwrite_command}
+
+Чтобы изменить уже существующую команду, воспользуемся командой [browser.overwriteCommand()][overwrite-command].
+
+Например, мы можем захотеть передавать в команду [browser.url()][url] отдельным аргументом объект с query-параметрами:
+
+<OverwriteCommandExample />
+
+### Пример 4: добавляем набор команд из папки {#example_4_add_commands_from_folder}
+
+Если в проекте много своих специфических команд, то их удобно хранить в отдельной папке, а в `prepareBrowser` добавлять все команды сразу унифицированным образом. Например:
+
+<AddMultipleCommandsExample />
+
+Здесь используется команда [browser.getCookies][get-cookies].
+
+[url]: ../../commands/browser/url
+[add-command]: ../../commands/browser/addCommand
+[overwrite-command]: ../../commands/browser/overwriteCommand
+[get-cookies]: ../../commands/browser/getCookies
+[get-location]: ../../commands/element/getLocation
+[get-size]: ../../commands/element/getSize

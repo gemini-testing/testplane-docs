@@ -1,10 +1,10 @@
 # abort
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `abort`, чтобы прервать запрос с заданной ошибкой.
+Use the `abort` command to abort a request with a specified error.
 
-Запрос можно прервать с одной из следующих ошибок:
+A request can be aborted with one of the following errors:
 
 -   Failed
 -   Aborted
@@ -16,25 +16,25 @@
 -   AddressUnreachable
 -   BlockedByClient | BlockedByResponse
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 mock.abort(errorCode);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>errorCode</td><td>ErrorCode</td><td>Код ошибки ответа. Возможные значения см. [выше](#overview).</td></tr>
+<tr><td>errorCode</td><td>ErrorCode</td><td>The response error code. Possible values are listed [above](#overview).</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should block Google Analytics from page", async ({ browser }) => {
@@ -43,6 +43,10 @@ it("should block Google Analytics from page", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [abortOnce](../abortOnce)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/abort), from which we drew some information while writing our version.

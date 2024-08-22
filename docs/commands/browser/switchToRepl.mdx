@@ -2,44 +2,43 @@ import Admonition from "@theme/Admonition";
 
 # switchToRepl
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `switchToRepl`, чтобы остановить выполнение теста и открыть интерактивный интерфейс REPL в терминале, в котором можно выполнять код построчно и наблюдать за результатом выполнения в реальном времени.
-Этот режим позволяет удобно пошабого дебажить проблемные тесты как в локально установленном браузере, так и в удаленном гриде (например, с помощью [VNC][vnc]).
+Use the `switchToRepl` command to stop the test execution and open an interactive `REPL` interface in the terminal where you can execute code line by line and observe the results in real-time. This mode allows for convenient debugging of problematic tests both in a locally installed browser and in a remote grid (for example, using [VNC][vnc]).
 
-Для более удобного использования REPL-режима рекомендуется использовать [расширение для VS Code][extension].
+For more convenient use of the `REPL` mode, it is recommended to use the [VS Code extension][extension].
 
-<Admonition type="warning">
-    Данная команда доступна только при запуске `testplane` с опцией `--repl`. При запуске необходимо
-    явно указать тест и браузер, т.к. в REPL-режиме нельзя запускать сразу несколько тестов.
-</Admonition>
-
-## Использование {#usage}
+## Usage {#usage}
 
 ```typescript
-await browser.switchToRepl(ctx);
+await browser.runStep(stepName, stepCb);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
     <thead>
         <tr>
-            <td>**Имя**</td>
-            <td>**Тип**</td>
-            <td>**Описание**</td>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td>`stepName`</td>
+            <td>`string`</td>
+            <td>Step name.</td>
+        </tr>
+        <tr>
             <td>`context`</td>
             <td>`Record<string, unknown>`</td>
-            <td>Контекст с данными, которые будут доступны в интерактивном режиме.</td>
+            <td>A context with data that will be available in the interactive console.</td>
         </tr>
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```typescript
 it("test", async ({ browser }) => {
@@ -51,17 +50,17 @@ it("test", async ({ browser }) => {
 });
 ```
 
-При выполнении данного теста сначала будет выведен текст `before open repl` в консоль. Затем выполнение теста остановится, и в терминале откроется интерактивный интерфейс REPL, ожидающий ввода команд.
-Например, можно выполнить следующую команду и сразу получить результат ее выполнения:
+When executing this test, the text before open repl will first be printed to the console. Then, the test execution will stop, and an interactive `REPL` interface will open in the terminal, waiting for command input.
+For example, you can execute the following command and immediately get the result of its execution:
 
 ```bash
 > await browser.getUrl();
 about:blank
 ```
 
-После того, как вы закончите работу в REPL (например, нажатием `Cmd+D`), выполнение теста продолжится, и в консоли терминала будет выведен текст `after open repl`, а затем браузер закроется.
+After you finish working in the `REPL` (for instance, by pressing `Cmd+D`), the test execution will continue, and the text after open repl will be printed in the terminal console, after which the browser will close.
 
-Также, можно передать контекст в REPL, чтобы переменная была доступна в интерфейсе. Например:
+You can also pass context to the REPL so that a variable is available in the interface. For example:
 
 ```
 it("test", async ({browser}) => {
@@ -71,7 +70,7 @@ it("test", async ({browser}) => {
 });
 ```
 
-Т.к. мы передали в контекст переменную `counter`, то она будет доступна в терминале:
+Since we passed the `counter` variable to the context, it will be available in the terminal:
 
 ```bash
 npx hermione --repl --grep "test" -b "chrome"

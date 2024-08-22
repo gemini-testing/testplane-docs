@@ -1,10 +1,10 @@
-# expect для браузера
+# expect for the browser
 
 ## toHaveUrl
 
-Проверяет, находится ли браузер на заданной странице.
+Checks if the browser is on the specified page.
 
-Например:
+For example:
 
 ```javascript
 await browser.url("https://webdriver.io/");
@@ -13,9 +13,9 @@ await expect(browser).toHaveUrl("https://webdriver.io");
 
 ## toHaveUrlContaining
 
-Проверяет, есть ли заданная подстрока в URL-адресе страницы, на которой находится браузер.
+Checks if the specified substring is contained in the URL of the page the browser is on.
 
-Например:
+For example:
 
 ```javascript
 await browser.url("https://webdriver.io/");
@@ -24,9 +24,9 @@ await expect(browser).toHaveUrlContaining("webdriver");
 
 ## toHaveTitle
 
-Проверяет, есть ли у веб-сайта заданный заголовок.
+Checks if the website has the specified title.
 
-Например:
+For example:
 
 ```javascript
 await browser.url("https://webdriver.io/");
@@ -37,11 +37,15 @@ await expect(browser).toHaveTitle(
 
 ## toHaveTitleContaining
 
-Проверяет, есть ли заданная подстрока в заголовке веб-сайта.
+Checks if the specified substring is contained in the website's title.
 
-Например:
+For example:
 
 ```javascript
 await browser.url("https://webdriver.io/");
 await expect(browser).toHaveTitleContaining("WebdriverIO");
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/expect-webdriverio), from which we drew some information while writing our version.

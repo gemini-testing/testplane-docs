@@ -1,19 +1,19 @@
 import Admonition from "@theme/Admonition";
 
-# Как управлять пропускной способностью сети
+# How to Manage Network Bandwidth
 
-## Обзор {#overview}
+## Overview {#overview}
 
 <Admonition type="warning">
-Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
+This recipe only works when using _Chrome DevTools Protocol (CDP)_.
 
-Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]».
+Read details in the section “[How to use CDP in Testplane][how-to-use-cdp]”.
 
 </Admonition>
 
-Огромное количество пользователей пользуются сервисами с мобильных устройств, на которых скорость интернета бывает довольно медленной или совсем пропадает на время. В _webdriverio_ мы можем ограничить пропускную способность сети с помощью метода [throttle][throttle] и таким образом протестировать поведение сайта в сетях с разной пропускной способностью.
+A large number of users access services from mobile devices where internet speed can be quite slow or may even drop out intermittently. In _webdriverio_, we can limit network bandwidth using the [throttle][throttle] method, thereby testing the website's behavior under various network conditions.
 
-Помимо индивидуальных настроек метод [throttle][throttle] поддерживает следующие готовые пресеты:
+Besides custom settings, the [throttle][throttle] method supports the following ready-made presets:
 
 -   offline | online
 -   GPRS
@@ -23,31 +23,31 @@ import Admonition from "@theme/Admonition";
 -   DSL
 -   WiFi
 
-## Пример 1: эмуляция 2G-соединения {#example_1}
+## Example 1: Emulating a 2G Connection {#example_1}
 
-Сэмулируем 2G-соединение и откроем yandex.ru в Хроме с эмуляцией телефона:
+Let's emulate a 2G connection and open yandex.ru in Chrome with phone emulation:
 
 ```javascript
 it("should open yandex.ru with emulation of 2G-connection", async function () {
-    // Имитируем 2G-соединение
+    // Emulate a 2G connection
     await this.browser.throttle("Good2G");
 
     await this.browser.url("https://yandex.ru");
 });
 ```
 
-## Пример 2: эмуляция сети с заданными характеристиками {#example_2}
+## Example 2: Emulating a Network with Given Characteristics {#example_2}
 
-Также мы можем сэмулировать соединение с конкретными характеристиками:
+We can also emulate a connection with specific characteristics:
 
 ```javascript
 it("should open yandex.ru with emulation of custom connection", async function () {
-    // Имитируем соединение в сети с заданными характеристиками
+    // Emulate a network connection with specified characteristics
     await this.browser.throttle({
-        offline: false, // имитация отключения от интернета
-        downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (byte/sec)
-        uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (byte/sec)
-        latency: 10, // минимальная задержка от отправки запроса до получения заголовков ответа
+        offline: false, // emulate offline state
+        downloadThroughput: (10 * 1024) / 8, // max download bandwidth (byte/sec)
+        uploadThroughput: (10 * 1024) / 8, // max upload bandwidth (byte/sec)
+        latency: 10, // min latency from sending the request to receiving the response headers
     });
 
     await this.browser.url("https://yandex.ru");

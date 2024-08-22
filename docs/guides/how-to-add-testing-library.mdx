@@ -1,20 +1,20 @@
-# Как подключить testing-library в testplane
+# How to Connect testing-library in testplane
 
-## Введение {#preface}
+## Introduction {#preface}
 
-[Testing-library][testing-library] - это коллекция инструментов для тестирования пользовательского интерфейса веб-приложений, ориентированная на создание надежных и поддерживаемых тестов, сосредотачиваясь на пользовательском поведении. Основное преимущество `testing-library` заключается в фокусе на взаимодействии с элементами интерфейса. И в testplane можно пользоваться способами поиска элемента, представленными самой библиотекой `testing-library`.
+[Testing-library][testing-library] is a collection of tools for testing web application user interfaces, focused on creating reliable and maintainable tests by emphasizing user behavior. The main advantage of `testing-library` is its focus on interaction with interface elements. And in testplane, you can use the element search methods provided by the `testing-library` itself.
 
-## Подключение
+## Connection
 
-Для того чтобы появилась возможность использования [запросов (queries)][queries] из `testing-library` в testplane-тестах, необходимо выполнить всего несколько шагов.
+To be able to use [queries][queries] from `testing-library` in Testplane tests, you only need to follow a few steps.
 
-1. Установите npm-пакет `'@testing-library/webdriverio'`
+1. Install the npm package `'@testing-library/webdriverio'`
 
 ```bash
 npm i -D @testing-library/webdriverio
 ```
 
-2. Подключите реализацию в конфиге testplane в секции `prepareBrowser`
+2. Include it in the Testplane config in the `prepareBrowser` section:
 
 ```javascript
 // .testplane.conf.js
@@ -25,13 +25,13 @@ module.exports = {
         setupBrowser(browser);
     },
 
-    // другие настройки testplane...
+    // other Testplane settings...
 };
 ```
 
-## Использование
+## Usage
 
-После подключения вы сможете использовать в тестах поиск по селекторам из `testing-library`, описанные в [официальной документации](https://testing-library.com/docs/queries/about/). Например, поиск элемента по его тексту
+After configuring, you will be able to use the search by selectors from `testing-library`, as described in the [official documentation](https://testing-library.com/docs/queries/about/). For example, searching for an element by its text:
 
 ```javascript
 it("example", async ({ browser }) => {
@@ -43,7 +43,7 @@ it("example", async ({ browser }) => {
 });
 ```
 
-В контексте найденных элементов эта возможность также будет доступна:
+This feature will also be available in the context of found elements:
 
 ```javascript
 it("example", async ({ browser }) => {
@@ -56,9 +56,9 @@ it("example", async ({ browser }) => {
 });
 ```
 
-Полный пример использования можно найти [здесь](https://github.com/gemini-testing/testplane/tree/master/examples/).
+For a complete usage example, visit [this link](https://github.com/gemini-testing/testplane/tree/master/examples/).
 
-## Полезные ссылки {#useful_links}
+## Useful Links {#useful_links}
 
 -   [Testing-library][testing-library]
 -   [WebdriverIO Testing Library](https://testing-library.com/docs/webdriverio-testing-library/intro)

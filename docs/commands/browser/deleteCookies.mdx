@@ -1,30 +1,30 @@
 # deleteCookies
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `deleteCookies`, чтобы удалить все или конкретные _cookies_ для текущей страницы.
+Use the `deleteCookies` command to delete all or specific cookies for the current page.
 
-Чтобы удалить конкретные _cookies_, нужно указать имя _cookie_ в виде строки или список имен _cookies_ в виде массива строк.
+To delete specific cookies, you need to specify the cookie name as a string or a list of cookie names as an array of strings.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.deleteCookies(names);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>names</td><td>String или String[]</td><td>Необязательный параметр. Имя _cookie_ или список имен _cookies_, которые необходимо удалить. При отсутствии параметра будут удалены все _cookies_ для текущей страницы.</td></tr>
+<tr><td>names</td><td>String or String[]</td><td>Optional parameter. The cookie name or list of cookie names to delete. If the parameter is missing, all cookies for the current page will be deleted.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should delete cookies", async ({ browser }) => {
@@ -36,10 +36,10 @@ it("should delete cookies", async ({ browser }) => {
 
     let cookies = await browser.getCookies();
     console.log(cookies);
-    // выведет:
+    // outputs:
     // [
     //     { name: 'test', value: '123' },
-    //     { name: 'test2', value: '456' }
+    //     { name: 'test2', value: '456' },
     //     { name: 'test3', value: '789' }
     // ]
 
@@ -47,7 +47,7 @@ it("should delete cookies", async ({ browser }) => {
 
     cookies = await browser.getCookies();
     console.log(cookies);
-    // выведет:
+    // outputs:
     // [
     //     { name: 'test', value: '123' },
     //     { name: 'test2', value: '456' }
@@ -55,11 +55,15 @@ it("should delete cookies", async ({ browser }) => {
 
     await browser.deleteCookies();
     cookies = await browser.getCookies();
-    console.log(cookies); // выведет: []
+    console.log(cookies); // outputs: []
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [getCookies](../getCookies)
 -   [setCookies](../setCookies)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/deleteCookies), from which we drew some information while writing our version.

@@ -6,54 +6,54 @@ import AddMultipleCommandsExample from "@site/docs/config/_partials/examples/_pr
 
 # prepareBrowser
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Данный параметр является хуком. Функция, заданная для данного параметра, будет автоматически вызвана перед тем, как запустить в браузере тесты. В качестве аргумента функция получает ссылку на сессию браузера.
+This parameter is a hook. The function specified for this parameter will be automatically called before running tests in the browser. The function receives a reference to the browser session as an argument.
 
-Обычно внутри данной функции к браузеру добавляют новые команды, или расширяют поведение уже существующих команд.
+Typically, new commands are added to the browser or the behavior of existing commands is extended within this function.
 
-## Примеры использования {#example}
+## Usage Examples {#example}
 
-### Пример 1: добавляем новую команду для браузера {#example_add_new_command_to_browser}
+### Example 1: Adding a new command to the browser {#example_add_new_command_to_browser}
 
-Для добавления новой команды воспользуемся функцией [browser.addCommand()][add-command].
+To add a new command, use the [browser.addCommand()][add-command] function.
 
 <AddBrowserCommandExample />
 
-### Пример 2: добавляем новую команду для элемента {#example_2_add_new_command_to_element}
+### Example 2: Adding a new command to an element {#example_2_add_new_command_to_element}
 
-Можно добавить команду не для браузера, а для элемента. Тогда третьим аргументом функции [browser.addCommand()][add-command] надо указать `true`.
+You can add a command not to the browser, but to an element. In this case, the third argument of the [browser.addCommand()][add-command] function should be set to `true`.
 
 <Admonition type="warning">
-    Если добавляется команда для элемента, а не для браузера, то функция выполняется в контексте
-    элемента!
+    If a command is added to an element, not to the browser, the function is executed in the context
+    of the element!
 </Admonition>
 
 <AddElementCommandExample />
 
-Внутри функции применяются команды [getLocation()][get-location] и [getSize()][get-size], которые доступны для элемента.
+Inside the function, the commands [getLocation()][get-location] and [getSize()][get-size], which are available for the element, are used.
 
-После добавления команды `getCoords()`, её можно использовать в тестах следующим образом:
+After adding the `getCoords()` command, it can be used in tests as follows:
 
 ```typescript
-const { left, top, right, bottom } = await browser.$(‘.selector’).getCoords();
+const { left, top, right, bottom } = await browser.$(".selector").getCoords();
 ```
 
-### Пример 3: меняем уже существующую команду {#example_3_overwrite_command}
+### Example 3: Overwriting an existing command {#example_3_overwrite_command}
 
-Чтобы изменить уже существующую команду, воспользуемся командой [browser.overwriteCommand()][overwrite-command].
+To change an existing command, use the [browser.overwriteCommand()][overwrite-command] command.
 
-Например, мы можем захотеть передавать в команду [browser.url()][url] отдельным аргументом объект с query-параметрами:
+For example, we might want to pass an object with query parameters as a separate argument to the [browser.url()][url] command:
 
 <OverwriteCommandExample />
 
-### Пример 4: добавляем набор команд из папки {#example_4_add_commands_from_folder}
+### Example 4: Adding a set of commands from a folder {#example_4_add_commands_from_folder}
 
-Если в проекте много своих специфических команд, то их удобно хранить в отдельной папке, а в `prepareBrowser` добавлять все команды сразу унифицированным образом. Например:
+If the project has many specific commands, it is convenient to store them in a separate folder, and add all commands at once in a unified manner in `prepareBrowser`. For example:
 
 <AddMultipleCommandsExample />
 
-Здесь используется команда [browser.getCookies][get-cookies].
+Here, the [browser.getCookies][get-cookies] command is used.
 
 [url]: ../../commands/browser/url
 [add-command]: ../../commands/browser/addCommand

@@ -1,0 +1,45 @@
+import Admonition from "@theme/Admonition";
+
+# pause
+
+## Обзор {#overview}
+
+Используйте команду `pause`, чтобы приостановить выполнение теста на заданный промежуток времени.
+
+<Admonition type="warning">
+    Не рекомендуется использовать эту команду для ожидания отображения элемента. Чтобы избежать
+    ложных результатов тестирования, лучше использовать такие команды, как
+    [waitForExist][wait-for-exist] или другие команды _waitFor*_.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.pause(milliseconds);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>milliseconds</td><td>Number</td><td>Время в миллисекундах.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should pause the execution", async ({ browser }) => {
+    const starttime = new Date().getTime();
+    await browser.pause(3000);
+    const endtime = new Date().getTime();
+
+    console.log(endtime - starttime); // выведет: 3000
+});
+```
+
+[wait-for-exist]: ../../element/waitForExist

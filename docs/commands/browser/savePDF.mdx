@@ -1,10 +1,10 @@
 # savePDF
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `savePDF`, чтобы сохранить в pdf-файл текущий контекст в браузере.
+Use the `savePDF` command to save the current browser context to a PDF file.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.savePDF(filepath, {
@@ -22,30 +22,30 @@ await browser.savePDF(filepath, {
 });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>filepath</td><td>String</td><td>Путь к pdf-файлу относительно каталога выполнения (расширение _.pdf_ — обязательно).</td></tr>
-<tr><td>orientation</td><td>String</td><td>Ориентация pdf-страницы.</td></tr>
-<tr><td>scale</td><td>Number</td><td>Масштаб pdf-страницы.</td></tr>
-<tr><td>background</td><td>Boolean</td><td>Включить фон pdf-страницы.</td></tr>
-<tr><td>width</td><td>Number</td><td>Ширина pdf-страницы.</td></tr>
-<tr><td>height</td><td>Number</td><td>Высота pdf-страницы.</td></tr>
-<tr><td>top</td><td>Number</td><td>Верхний отступ pdf-страницы.</td></tr>
-<tr><td>bottom</td><td>Number</td><td>Нижний отступ pdf-страницы.</td></tr>
-<tr><td>left</td><td>Number</td><td>Левый отступ pdf-страницы.</td></tr>
-<tr><td>right</td><td>Number</td><td>Правый отступ pdf-страницы.</td></tr>
-<tr><td>shrinkToFit</td><td>Number</td><td>Уменьшить страницу, чтобы она соответствовала размеру pdf-страницы.</td></tr>
-<tr><td>pageRanges</td><td>Object[]</td><td>Диапазон страниц для включения в PDF.</td></tr>
+<tr><td>filepath</td><td>String</td><td>Path to the PDF file relative to the execution directory (the _.pdf_ extension is mandatory).</td></tr>
+<tr><td>orientation</td><td>String</td><td>Orientation of the PDF page.</td></tr>
+<tr><td>scale</td><td>Number</td><td>Scale of the PDF page.</td></tr>
+<tr><td>background</td><td>Boolean</td><td>Include the background in the PDF.</td></tr>
+<tr><td>width</td><td>Number</td><td>Width of the PDF page.</td></tr>
+<tr><td>height</td><td>Number</td><td>Height of the PDF page.</td></tr>
+<tr><td>top</td><td>Number</td><td>Top margin of the PDF page.</td></tr>
+<tr><td>bottom</td><td>Number</td><td>Bottom margin of the PDF page.</td></tr>
+<tr><td>left</td><td>Number</td><td>Left margin of the PDF page.</td></tr>
+<tr><td>right</td><td>Number</td><td>Right margin of the PDF page.</td></tr>
+<tr><td>shrinkToFit</td><td>Number</td><td>Shrink the page to fit the PDF page size.</td></tr>
+<tr><td>pageRanges</td><td>Object[]</td><td>Range of pages to include in the PDF.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should save a PDF screenshot of the browser view", async ({ browser }) => {
@@ -53,7 +53,11 @@ it("should save a PDF screenshot of the browser view", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [saveRecordingScreen](../saveRecordingScreen)
 -   [saveScreenshot](../saveScreenshot)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/savePDF), from which we drew some information while writing our version.

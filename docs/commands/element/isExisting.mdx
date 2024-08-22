@@ -2,28 +2,28 @@ import Admonition from "@theme/Admonition";
 
 # isExisting
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `isExisting`, чтобы определить, существует ли заданный DOM-элемент.
+Use the `isExisting` command to determine whether a given DOM element exists.
 
-Команда возвращает `true`, если выбранный элемент существует, иначе возвращает `false`.
+The command returns `true` if the selected element exists, otherwise it returns `false`.
 
 <Admonition type="warning">
-    В отличие от других команд элемента, testplane не будет дожидаться существования элемента, чтобы
-    выполнить эту команду.
+    Unlike other element commands, Testplane will not wait for the element to exist before executing
+    this command.
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).isExisting();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
+```html
 <div id="notDisplayed" style="display: none"></div>
 <div id="notVisible" style="visibility: hidden"></div>
 <div id="notInViewport" style="position:absolute; left: 9999999"></div>
@@ -36,22 +36,26 @@ await browser.$(selector).isExisting();
 it("should detect if elements are existing", async ({ browser }) => {
     let elem = await browser.$("#someRandomNonExistingElement");
     let isExisting = await elem.isExisting();
-    console.log(isExisting); // выведет: false
+    console.log(isExisting); // outputs: false
 
     elem = await browser.$("#notDisplayed");
     isExisting = await elem.isExisting();
-    console.log(isExisting); // выведет: true
+    console.log(isExisting); // outputs: true
 
     elem = await browser.$("#notVisible");
     isExisting = await elem.isExisting();
-    console.log(isExisting); // выведет: true
+    console.log(isExisting); // outputs: true
 
     elem = await browser.$("#notInViewport");
     isExisting = await elem.isExisting();
-    console.log(isExisting); // выведет: true
+    console.log(isExisting); // outputs: true
 
     elem = await browser.$("#zeroOpacity");
     isExisting = await elem.isExisting();
-    console.log(isExisting); // выведет: true
+    console.log(isExisting); // outputs: true
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/isExisting), from which we drew some information while writing our version.

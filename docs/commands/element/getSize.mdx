@@ -1,41 +1,45 @@
 # getSize
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `getSize`, чтобы получить ширину и высоту DOM-элемента.
+Use the `getSize` command to get the width and height of a DOM element.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).getSize(prop);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>prop</td><td>String</td><td>Необязательный параметр. Размер, который нужно получить: "width" или "height". Если параметр не указан, то команда вернет объект вида _\{ width, height }_.</td></tr>
+<tr><td>prop</td><td>String</td><td>Optional parameter. The size to retrieve: "width" or "height". If not specified, the command will return an object of the form _\{ width, height }_.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
-it('should demonstrate the getSize command', async ({ browser }) => {
-    await browser.url('http://github.com');
-    const logo = await browser.$('.octicon-mark-github');
+it("should demonstrate the getSize command", async ({ browser }) => {
+    await browser.url("http://github.com");
+    const logo = await browser.$(".octicon-mark-github");
 
     const size = await logo.getSize();
-    console.log(size); // выведет: { width: 32, height: 32 }
+    console.log(size); // outputs: { width: 32, height: 32 }
 
-    const width = await logo.getSize('width');
-    console.log(width); // выведет: 32
+    const width = await logo.getSize("width");
+    console.log(width); // outputs: 32
 
-    const height = await logo.getSize('height';)
-    console.log(height); // выведет: 32
-})
+    const height = await logo.getSize("height");
+    console.log(height); // outputs: 32
+});
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getSize), from which we drew some information while writing our version.

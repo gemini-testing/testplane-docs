@@ -3,33 +3,33 @@ import SetsExample from "@site/docs/config/_partials/examples/_sets-example.mdx"
 
 # sets
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Вы можете использовать сеты _(sets)_, чтобы привязать набор тестов к определенным браузерам и запускать их сразу одной командой — `testplane --set <set-name>`.
+You can use sets to bind a set of tests to specific browsers and run them all at once with the command `testplane --set <set-name>`.
 
-Это может быть удобно для запуска тестов по платформам: `desktop`, `touch-phone` и т. п. Также у вас может быть `common` сет, соответствующий общим тестам, которые вы будете запускать всегда во всех браузерах.
+This can be convenient for running tests by platforms: `desktop`, `touch-phone`, etc. You may also have a `common` set corresponding to common tests that you will always run in all browsers.
 
-Набор тестов задается как массив путей к ним или к папкам с ними на файловой системе. Также вы можете задать пути, которые нужно игнорировать при поиске тестов, чтобы ускорить процесс чтения тестов Testplane.
+A set of tests is specified as an array of paths to them or to folders containing them on the file system. You can also specify paths to ignore when searching for tests to speed up the Testplane test reading process.
 
-Если сетов в конфиге не будет, или вы не укажете их при запуске Testplane (см. раздел «[Использование](#usage)»), то будут запущены все тесты из папки `testplane` во всех браузерах, которые были указаны в разделе [browsers][browsers] конфига Testplane.
+If there are no sets in the config, or you do not specify them when running Testplane (see the “[Usage](#usage)” section), then all tests from the `testplane` folder will be run in all browsers specified in the [browsers][browsers] section of the Testplane config.
 
-## Настройка {#setup}
+## Setup {#setup}
 
-Раздел `sets` имеет следующий формат:
+The `sets` section has the following format:
 
 <SetsBasicFormat />
 
-Где `<set-id>` — это имя сета, которое используется для его идентификации.
+Where `<set-id>` is the name of the set used for its identification.
 
-### Справка по секции sets {#setup_description}
+### Sets Section Reference {#setup_description}
 
 <table>
     <thead>
         <tr>
-            <td>**Параметр**</td>
-            <td>**Тип**</td>
-            <td>**По&nbsp;умолчанию**</td>
-            <td>**Описание**</td>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
@@ -38,8 +38,9 @@ import SetsExample from "@site/docs/config/_partials/examples/_sets-example.mdx"
             <td>`string | string[]`</td>
             <td>_N/A_</td>
             <td>
-                Список путей к файлам или папкам с тестами. В случае одного пути параметр можно
-                задавать как строку. Также можно использовать [маски][fast-glob-patterns].
+                List of paths to files or folders with tests. In the case of a single path, the
+                parameter can be specified as a string. You can also use
+                [patterns][fast-glob-patterns].
             </td>
         </tr>
         <tr>
@@ -47,40 +48,40 @@ import SetsExample from "@site/docs/config/_partials/examples/_sets-example.mdx"
             <td>`string | string[]`</td>
             <td>`[ ]`</td>
             <td>
-                Список путей или [масок][fast-glob-patterns], которые нужно игнорировать при поиске
-                файлов с тестами. Данный параметр позволяет ускорить чтение тестов Testplane.
+                List of paths or [patterns][fast-glob-patterns] to ignore when searching for test
+                files. This parameter allows speeding up the Testplane test reading process.
             </td>
         </tr>
         <tr>
             <td>`browsers`</td>
             <td>`string[]`</td>
-            <td>_все браузеры_</td>
+            <td>_all browsers_</td>
             <td>
-                Список браузеров, в которых будут запускаться тесты. Можно указывать только
-                браузеры, которые есть в разделе [browsers][browsers] конфига Testplane. По
-                умолчанию: все браузеры из раздела [browsers][browsers].
+                List of browsers in which the tests will be run. You can specify only the browsers
+                listed in the [browsers][browsers] section of the Testplane config. Default: all
+                browsers from the [browsers][browsers] section.
             </td>
         </tr>
     </tbody>
 </table>
 
-## Пример настройки {#setup_example}
+## Setup Example {#setup_example}
 
 <SetsExample />
 
-В данном примере сет **common** содержит все тесты в директории `common` и будет запускаться во всех браузерах. Сет **desktop** содержит все тесты в директория `common` и `desktop`, но будет запускаться только в `chrome` и `firefox`.
+In this example, the **common** set contains all tests in the `common` directory and will run in all browsers. The **desktop** set contains all tests in the `common` and `desktop` directories but will only run in `chrome` and `firefox`.
 
-## Использование {#usage}
+## Usage {#usage}
 
-Используйте CLI-опцию `--set`, чтобы указать сет при запуске тестов.
+Use the CLI option `--set` to specify a set when running tests.
 
-Пример как запустить тесты для desktop-платформы в случае конфигурации, приведенной [выше](#setup_example):
+Example of how to run tests for the desktop platform with the configuration provided [above](#setup_example):
 
 ```bash
 testplane --set desktop
 ```
 
-Если в конфиге нет сетов, или они есть, но опция `--set` не была указана, и testplane не были переданы пути через CLI, то будут запущены все тесты из папки `testplane` во всех [браузерах][browsers].
+If there are no sets in the config, or they exist but the `--set` option was not specified, and no paths were passed to testplane via CLI, then all tests from the `testplane` folder will be run in all [browsers][browsers].
 
 [fast-glob-patterns]: https://github.com/mrmlnc/fast-glob#pattern-syntax
 [browsers]: ../browsers

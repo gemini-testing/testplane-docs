@@ -1,26 +1,25 @@
-# Команды плагина
+# Html-Reporter Commands
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Плагин `html-reporter` добавляет к Testplane следующие команды:
+The `html-reporter` plugin adds the following commands to Testplane:
 
--   [gui](#gui) — чтобы запускать Testplane в GUI-режиме;
--   [remove-unused-screens](#remove-unused-screens) — чтобы удалять неиспользуемые в тестах эталонные скриншоты;
--   [merge-reports](#merge-reports) — чтобы объединять отдельные отчеты Testplane в один общий отчет.
+-   [gui](#gui)—to run Testplane in GUI mode;
+-   [remove-unused-screens](#remove-unused-screens)—to remove reference screenshots that are not used in tests;
+-   [merge-reports](#merge-reports)—to merge Testplane's separate reports into one general report.
 
 ## gui
 
-Используйте команду `gui`, чтобы запустить Testplane в GUI-режиме.
+Use the `gui` command to launch Testplane in GUI mode.
 
-GUI-режим позволяет:
+GUI mode allows you to:
 
--   интерактивно запускать тесты;
--   переключать режимы работы с дампами прямо из отчета без перезапуска testplane;
--   обновлять скриншоты — визуально отсматривая их и принимая только нужные диффы;
--   переиспользовать отчеты из CI;
--   фильтровать результаты прогона по ошибкам, ключам из меты, и пр.
+-   run tests interactively;
+-   update screenshots—visually viewing them and taking only the necessary diffs;
+-   reuse reports from CI;
+-   filter the results of the run by errors, keys from meta, etc.
 
-### Использование {#gui_usage}
+### Usage {#gui_usage}
 
 ```bash
 npx testplane gui
@@ -28,57 +27,57 @@ npx testplane gui
 
 ## remove-unused-screens
 
-Используйте команду `remove-unused-screens`, чтобы удалить неиспользуемые в тестах эталонные скриншоты.
+Use the `remove-unused-screens` command to remove the reference screenshots that are not used in tests.
 
-### Как это работает?
+### How does it work?
 
-Сначала команда ищет скриншоты, для которых на файловой системе нет тестов.
+First, the command looks for screenshots for which there are no tests on the file system.
 
-Далее команда ищет скриншоты, которые не были использованы в успешном тестировании (результат тестов берется из базы данных SQLite). Для этого html-отчет должен существовать на файловой системе и содержать результаты прогона тестов. Это означает, что вы должны до запуска команды `remove-unused-screens` запустить тесты локально или загрузить отчет из CI.
+Next, the command searches for screenshots that were not used in successful testing (the test result is taken from the SQLite database). To do this, the html-report must exist on the file system and contain the results of the tests run. This means that you must run the tests locally or download the report from CI before running the `remove-unused-screens` command.
 
-### Использование {#remove_unused_screens_usage}
+### Usage {#remove_unused_screens_usage}
 
-Команда `remove-unused-screens` поддерживает несколько опций:
+The `remove-unused-screens` command supports several options:
 
 <table>
 <thead>
-<tr><td>**Опция**</td><td>**Описание**</td></tr>
+<tr><td>**Option**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>-p, --pattern &lt;pattern></td><td>Шаблон для поиска скриншотов на файловой системе.</td></tr>
-<tr><td>--skip-questions</td><td>Не задавать вопросов во время выполнения (использовать значения по умолчанию).</td></tr>
-<tr><td>-h, --help</td><td>Вывести справочную информацию по команде в терминал.</td></tr>
+<tr><td>-p, --pattern &lt;pattern></td><td>A pattern for finding screenshots on the file system.</td></tr>
+<tr><td>--skip-questions</td><td>Do not ask questions during execution (use default values).</td></tr>
+<tr><td>-h, --help</td><td>Output the reference information on the command to the terminal.</td></tr>
 
 </tbody>
 </table>
 
-#### Примеры использования {#usage_examples}
+#### Usage examples {#usage_examples}
 
-Указываем папку, в которой надо искать неиспользуемые скриншоты:
+Specifying the folder in which to search for unused screenshots:
 
 ```bash
 npx testplane remove-unused-screens -p 'testplane-screens-folder'
 ```
 
-Задаем маску, по которой будем искать скриншоты:
+Setting the pattern by which to search for screenshots:
 
 ```bash
 npx testplane remove-unused-screens -p 'screens/**/*.png'
 ```
 
-Задаем несколько масок для поиска скриншотов:
+Setting several patterns by which to search for screenshots:
 
 ```bash
 npx testplane remove-unused-screens -p 'screens/**/chrome/*.png' -p 'screens/**/firefox/*.png'
 ```
 
-Задаем папку для поиска скриншотов и просим не задавать вопросов:
+Specifying the folder in which to search for unused screenshots and setting _do-not-ask-questions_ option:
 
 ```bash
 npx testplane remove-unused-screens -p 'testplane-screens-folder' --skip-questions
 ```
 
-Выводим справочную информацию о команде:
+Getting the reference information about the command:
 
 ```bash
 npx testplane remove-unused-screens --help
@@ -86,25 +85,25 @@ npx testplane remove-unused-screens --help
 
 ## merge-reports
 
-Используйте команду `merge-reports`, чтобы объединить отдельные отчеты testplane в один общий отчет.
+Use the `merge-reports` command to merge Testplane's separate reports into one general report.
 
-Команда принимает пути к файлам баз данных или к файлам `databaseUrls.json` из других html-отчетов. Она создает новый html-отчет в папке назначения с общим файлом `databaseUrls.json`, который будет содержать ссылку на файл базы данных или на файлы `databaseUrls.json` из входных параметров. Файлы баз данных в папку назначения не копируются при этом.
+The command accepts paths to database files or to `databaseUrls.json` files from other html-reports. It creates a new html-report in the destination folder with a single file `databaseUrls.json`, which will contain a link to the database file or to the files `databaseUrls.json` from the input parameters. Database files are not copied to the destination folder at the same time.
 
-### Использование {#merge_reports_usage}
+### Usage {#merge_reports_usage}
 
-Команда `merge-reports` поддерживает следующую обязательную опцию:
+The `merge-reports` command supports the following required option:
 
 <table>
 <thead>
-<tr><td>**Опция**</td><td>**Описание**</td></tr>
+<tr><td>**Option**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>-d, --destination &lt;folder></td><td>Путь к папке, в которую нужно сохранить итоговый отчет.</td></tr>
+<tr><td>-d, --destination &lt;folder></td><td>The path to the folder where you want to save the final report.</td></tr>
 
 </tbody>
 </table>
 
-Пример использования:
+Usage example:
 
 ```bash
 npx testplane merge-reports path-to-database.db path-to-databaseUrls.json -d dest-report

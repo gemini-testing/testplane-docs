@@ -1,23 +1,27 @@
 # getComputedRole
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `getComputedRole`, чтобы получить вычисленную [WAI-ARIA][wai-aria] роль элемента.
+Use the `getComputedRole` command to get the computed [WAI-ARIA][wai-aria] role of an element.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).getComputedRole();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should demonstrate the getComputedRole command", async ({ browser }) => {
     await browser.url("https://www.google.com/ncr");
     const elem = await browser.$('*[name="q"]');
-    console.log(await elem.getComputedRole()); // выведет: "combobox"
+    console.log(await elem.getComputedRole()); // outputs: "combobox"
 });
 ```
 
-[wai-aria]: https://ru.wikipedia.org/wiki/WAI-ARIA
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getComputedRole), from which we drew some information while writing our version.
+
+[wai-aria]: https://en.wikipedia.org/wiki/WAI-ARIA

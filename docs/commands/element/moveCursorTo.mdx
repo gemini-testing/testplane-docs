@@ -2,31 +2,30 @@ import Admonition from "@theme/Admonition";
 
 # moveCursorTo
 
-## Обзор {#overview}
-
 <Admonition type="info">
-    Эта команда является временной и будет удалена в следующей мажорной версии (`testplane@9.x`).
-    Отличается от стандартной `moveTo` тем, что перемещает курсор относительно верхнего левого угла
-    элемента (как это было в `hermione@7`).
+    This command is temporary and will be removed in the next major (`testplane@9.x`). Differs from
+    the standard `moveTo` in that it moves the cursor relative to the top-left corner of the element
+    (like it was in `hermione@7`).
 </Admonition>
 
-Используйте команду `moveCursorTo`, чтобы переместить курсор мыши на смещение относительно указанного элемента.
-Если смещение не указано, то курсор мыши будет перемещен в верхний левый угол элемента.
+Use the `moveCursorTo` command to move the mouse by specified offsets along the X and Y axes relative to the specified element.
 
-## Использование {#usage}
+If offset is not specified then mouse will be moved to the top-left corder of the element.
+
+## Usage {#usage}
 
 ```typescript
 await browser.$(selector).moveCursorTo({ xOffset, yOffset });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
     <thead>
         <tr>
-            <td>**Имя**</td>
-            <td>**Тип**</td>
-            <td>**Описание**</td>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
@@ -34,16 +33,16 @@ await browser.$(selector).moveCursorTo({ xOffset, yOffset });
             <td>`xOffset`</td>
             <td>`number`</td>
             <td>
-                Смещение по оси X. Задается относительно верхнего левого угла элемента. Если не
-                указано, мышь переместится в левый верхний угол элемента.
+                The X-axis offset relative to the top-left corner of the element. If not specified,
+                the mouse will move to the top-left corner of the element.
             </td>
         </tr>
         <tr>
             <td>`yOffset`</td>
             <td>`number`</td>
             <td>
-                Смещение по оси Y. Задается относительно верхнего левого угла элемента. Если не
-                указано, мышь переместится в левый верхний угол элемента.
+                The Y-axis offset relative to the top-left corner of the element. If not specified,
+                the mouse will move to the top-left corner of the element.
             </td>
         </tr>
     </tbody>

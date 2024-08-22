@@ -4,74 +4,74 @@ import RegisterWorkersExample from "@site/docs/config/_partials/examples/_plugin
 
 # plugins
 
-## Обзор {#overview}
+## Overview {#overview}
 
-С помощью раздела `plugins` вы можете подключить к Testplane внешние плагины, которые расширят доступную функциональность.
+With the `plugins` section, you can connect external plugins to Testplane, which will expand the available functionality.
 
-Например, плагины [html-reporter][html-reporter] или [@testplane/safari-commands](https://github.com/gemini-testing/testplane-safari-commands).
+For example, plugins like [html-reporter][html-reporter] or [@testplane/safari-commands](https://github.com/gemini-testing/testplane-safari-commands).
 
-Плагин — это модуль, который экспортирует одну функцию, принимающую следующие аргументы:
+A plugin is a module that exports a single function, which takes the following arguments:
 
--   инстанс Testplane
--   опции плагина из конфига Testplane
+-   Testplane instance
+-   Plugin options from the Testplane config
 
-Все плагины будут загружены до того, как Testplane запустит тесты.
+All plugins will be loaded before Testplane starts running tests.
 
 <Admonition type="tip">
-    Выбирая название для плагина, добавьте к нему префикс _testplane-_. Тогда такой плагин будет
-    проще искать.
+    When choosing a name for a plugin, add the prefix _testplane-_ to it. This will make it easier
+    to find such a plugin.
 </Admonition>
 
-Если имя плагина начинается с префикса `testplane-`, то этот префикс можно опустить при добавлении плагина в раздел `plugins`. Если на файловой системе будут находиться модули с обоими именами: _testplane-some-module_ и _some-module_, то предпочтение будет отдано модулю с префиксом `testplane-`.
+If the plugin name starts with the prefix `testplane-`, this prefix can be omitted when adding the plugin to the `plugins` section. If there are modules with both names on the file system: _testplane-some-module_ and _some-module_, preference will be given to the module with the `testplane-` prefix.
 
-## Схематичный пример {#example}
+## Schematic Example {#example}
 
 <PluginsExample />
 
-## Свойства инстанса testplane {#testplane_instance}
+## Testplane Instance Properties {#testplane_instance}
 
 <table>
     <thead>
         <tr>
             <td>`config`</td>
-            <td>Конфиг, который используется в test runner'е. Может быть изменен.</td>
+            <td>The config used in the test runner. Can be modified.</td>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>`events`</td>
-            <td>Список событий, на которые можно подписаться.</td>
+            <td>List of events that can be subscribed to.</td>
         </tr>
     </tbody>
 </table>
 
-Детальнее о событиях можно узнать на [соответствующей странице](../../reference/testplane-events).
+You can learn more about events on the [corresponding page](../../reference/testplane-events).
 
-## Параллельное исполнение плагинов
+## Parallel Execution of Plugins
 
-У раннера есть метод `registerWorkers`, с помощью которого можно зарегистрировать кастомные методы для запуска в воркерах Testplane.
+The runner has a `registerWorkers` method, which can be used to register custom methods for running in Testplane workers.
 
-Метод `registerWorkers` принимает 2 аргумента:
+The `registerWorkers` method takes 2 arguments:
 
--   `workerFilepath` — путь к файлу с функциями, строка с абсолютным путем.
--   `exportedMethods` — имена экспортируемых методов, массив строк.
+-   `workerFilepath` — path to the file with functions, a string with an absolute path.
+-   `exportedMethods` — names of exported methods, an array of strings.
 
-Метод возвращает объект с методами, перечисленными в `exportedMethods`, которые возвращают промисы с результатами.
+The method returns an object with the methods listed in `exportedMethods`, which return promises with results.
 
-Обратите внимание, что файл в `workerFilepath` должен экспортировать объект с соответствующими методами.
+Note that the file in `workerFilepath` must export an object with the corresponding methods.
 
-Пример:
+Example:
 
 <RegisterWorkersExample />
 
-## Полезные плагины
+## Useful Plugins
 
-Экосистема Testplane насчитывает десятки плагинов. Вот некоторые из них:
+The Testplane ecosystem includes dozens of plugins. Here are some of them:
 
 -   [html-reporter](https://github.com/gemini-testing/html-reporter)
 -   [@testplane/safari-commands](https://github.com/gemini-testing/testplane-safari-commands)
 -   [@testplane/headless-chrome](https://github.com/gemini-testing/testplane-headless-chrome)
--   ...и многие другие, которые можно найти в [gemini-testing](https://github.com/search?q=topic%3Atestplane-plugin+org%3Agemini-testing&type=Repositories).
+-   ...and many others that can be found in [gemini-testing](https://github.com/search?q=topic%3Atestplane-plugin+org%3Agemini-testing&type=Repositories).
 
 [html-reporter]: ../../html-reporter/html-reporter-setup
 [testplane-test-repeater]: ../../plugins/testplane-test-repeater

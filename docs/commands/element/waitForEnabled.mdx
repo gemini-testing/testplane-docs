@@ -2,45 +2,45 @@ import Admonition from "@theme/Admonition";
 
 # waitForEnabled
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `waitForEnabled`, чтобы подождать, пока элемент в течение указанного количества миллисекунд не станет включенным _(enabled)_ или отключенным _(disabled)_.
+Use the `waitForEnabled` command to wait until an element becomes enabled or disabled within a specified number of milliseconds.
 
 <Admonition type="warning">
-    В отличие от других команд элемента, testplane не будет дожидаться существования элемента, чтобы
-    выполнить эту команду.
+    Unlike other element commands, Testplane will not wait for the element to exist before executing
+    this command.
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).waitForEnabled({ timeout, reverse, timeoutMsg, interval });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Default**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>timeout</td><td>Number</td><td>500</td><td>Таймаут в миллисекундах.</td></tr>
-<tr><td>reverse</td><td>Boolean</td><td>false</td><td>Если значение _true_, то команда будет ждать противоположного условия: что элемент отключен _(disabled)_.</td></tr>
-<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Сообщение об ошибке, которое нужно бросить при таймауте.</td></tr>
-<tr><td>interval</td><td>Number</td><td>[waitforInterval][wait-for-interval]</td><td>Интервал в миллисекундах между проверками условия.</td></tr>
+<tr><td>timeout</td><td>Number</td><td>500</td><td>Timeout in milliseconds.</td></tr>
+<tr><td>reverse</td><td>Boolean</td><td>false</td><td>If _true_, the command will wait for the opposite condition: the element becomes disabled.</td></tr>
+<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Error message to throw when the timeout is reached.</td></tr>
+<tr><td>interval</td><td>Number</td><td>[waitforInterval][wait-for-interval]</td><td>Interval in milliseconds between condition checks.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
+```html
 <div id="elem" style="visibility: hidden;">Hello World!</div>
 <script type="text/javascript">
     setTimeout(() => {
-        document.getElementById('elem').style.visibility = 'visible';
+        document.getElementById("elem").style.visibility = "visible";
     }, 2000);
 </script>
 ```
@@ -58,5 +58,9 @@ it("should detect when element is no longer visible", async ({ browser }) => {
     await elem.waitForDisplayed({ reverse: true });
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/waitForEnabled), from which we drew some information while writing our version.
 
 [wait-for-interval]: ../../../config/browsers#wait_interval

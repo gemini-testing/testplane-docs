@@ -1,0 +1,39 @@
+# isSelected
+
+## Обзор {#overview}
+
+Используйте команду `isSelected`, чтобы определить, выбрана ли заданная опция `<option>` или `<input>` типа `checkbox` или `radio`.
+
+Команда возвращает `true`, если элемент выбран, иначе возвращает `false`.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).isSelected();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<select name="selectbox" id="selectbox">
+    <option value="John Doe">John Doe</option>
+    <option value="Layla Terry" selected="selected">
+        Layla Terry
+    </option>
+    <option value="Bill Gilbert">Bill Gilbert"</option>
+</select>
+```
+
+**isSelected.js**
+
+```javascript
+it("should detect if an element is selected", async ({ browser }) => {
+    let element = await browser.$('[value="Layla Terry"]');
+    console.log(await element.isSelected()); // выведет: true
+
+    element = await browser.$('[value="Bill Gilbert"]');
+    console.log(await element.isSelected()); // выведет: false
+});
+```

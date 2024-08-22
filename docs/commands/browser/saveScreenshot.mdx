@@ -1,30 +1,30 @@
 # saveScreenshot
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `saveScreenshot`, чтобы сохранить скриншот текущего контекста в браузере в png-файл.
+Use the `saveScreenshot` command to save a screenshot of the current browser context to a PNG file.
 
-Имейте в виду, что некоторые драйверы браузеров делают скриншоты всего документа (например, драйвер [Gecko][gecko] для Firefox), тогда как другие — только текущего окна просмотра (например, [Chromedriver][chromedriver] для Chrome).
+Keep in mind that some browser drivers capture screenshots of the entire document (e.g., the [Gecko driver][gecko] for Firefox), while others capture only the current viewport (e.g., [Chromedriver][chromedriver] for Chrome).
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.saveScreenshot(filepath);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>filepath</td><td>String</td><td>Путь к скриншоту относительно каталога выполнения (расширение _.png_ — обязательно).</td></tr>
+<tr><td>filepath</td><td>String</td><td>The path to the screenshot relative to the execution directory (the _.png_ extension is mandatory).</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should save a screenshot of the browser view", async ({ browser }) => {
@@ -32,11 +32,15 @@ it("should save a screenshot of the browser view", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [browser.savePDF](../savePDF)
 -   [browser.saveRecordingScreen](../saveRecordingScreen)
 -   [element.saveScreenshot](../../element/saveScreenshot)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/saveScreenshot), from which we drew some information while writing our version.
 
 [gecko]: https://github.com/mozilla/geckodriver
 [chromedriver]: https://chromedriver.chromium.org/
