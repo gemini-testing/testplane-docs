@@ -2,41 +2,41 @@ import Admonition from "@theme/Admonition";
 
 # getCSSProperty
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `getCSSProperty`, чтобы получить свойство CSS из DOM-элемента, выбранного заданным селектором.
+Use the `getCSSProperty` command to get a CSS property from a DOM element selected by a given selector.
 
-Возвращаемое значение отформатировано так, чтобы его можно было проверить:
+The returned value is formatted for easy verification:
 
--   цвета преобразуются с помощью [rgb2hex][rgb-to-hex];
--   все остальные свойства преобразуются с помощью [css-value][css-value].
+-   Colors are converted using [rgb2hex][rgb-to-hex];
+-   All other properties are converted using [css-value][css-value].
 
 <Admonition type="warning">
-    Обратите внимание, что сокращенные свойства CSS (например, _background, font, border, margin,
-    padding, list-style, outline, pause, cue)_ будут расширены для извлечения всех «длинных»
-    свойств, что приведет к нескольким вызовам _WebDriver_. Если вас интересует конкретное «длинное»
-    свойство, рекомендуется вместо этого запросить его.
+    Note that CSS shorthand properties (e.g., _background, font, border, margin, padding,
+    list-style, outline, pause, cue_) will be expanded to retrieve all the longhand properties,
+    leading to multiple _WebDriver_ calls. If you are interested in a specific longhand property, it
+    is recommended to request that instead.
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).getCSSProperty(cssProperty);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>cssProperty</td><td>String</td><td>Имя свойства CSS.</td></tr>
+<tr><td>cssProperty</td><td>String</td><td>The name of the CSS property.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **example.html**
 
@@ -44,7 +44,7 @@ await browser.$(selector).getCSSProperty(cssProperty);
 <label
     id="myLabel"
     for="input"
-    style="color: #0088cc; font-family: helvetica, arial, freesans, clean, sans-serif, width: 100px"
+    style="color: #0088cc; font-family: helvetica, arial, freesans, clean, sans-serif; width: 100px"
 >
     Some Label
 </label>
@@ -57,7 +57,7 @@ it("should demonstrate the getCSSProperty command", async ({ browser }) => {
     const elem = await browser.$("#myLabel");
     const color = await elem.getCSSProperty("color");
     console.log(color);
-    // выведет следующее:
+    // outputs:
     // {
     //     property: 'color',
     //     value: 'rgba(0, 136, 204, 1)',
@@ -71,7 +71,7 @@ it("should demonstrate the getCSSProperty command", async ({ browser }) => {
 
     const font = await elem.getCSSProperty("font-family");
     console.log(font);
-    // выведет следующее:
+    // outputs:
     // {
     //      property: 'font-family',
     //      value: 'helvetica',
@@ -84,7 +84,7 @@ it("should demonstrate the getCSSProperty command", async ({ browser }) => {
 
     var width = await elem.getCSSProperty("width");
     console.log(width);
-    // выведет следующее:
+    // outputs:
     // {
     //     property: 'width',
     //     value: '100px',
@@ -97,6 +97,10 @@ it("should demonstrate the getCSSProperty command", async ({ browser }) => {
     // }
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getCSSProperty), from which we drew some information while writing our version.
 
 [rgb-to-hex]: https://github.com/christian-bromann/rgb2hex
 [css-value]: https://github.com/reworkcss/css-value

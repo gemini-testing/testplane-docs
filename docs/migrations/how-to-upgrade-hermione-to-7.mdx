@@ -1,27 +1,27 @@
 import Admonition from "@theme/Admonition";
 
-# Как обновить hermione до версии 7.x
+# How to Upgrade hermione to Version 7.x
 
 <Admonition type="warning">
-Если в вашем проекте hermione младше 4-й версии, то прочтите сначала «[Как обновить hermione до версии 4.x][how-to-upgrade-hermione-to-4]», «[Как обновить hermione до версии 5.x][how-to-upgrade-hermione-to-5]» и «[Как обновить hermione до версии 6.x][how-to-upgrade-hermione-to-6]».
+If your project is using a hermione version earlier than 4.x, first read "How to Upgrade hermione to Version 4.x," "How to Upgrade hermione to Version 5.x," and "How to Upgrade hermione to Version 6.x."
 
-Мы рекомендуем вам обновлять hermione поэтапно, убеждаясь на каждом этапе, что все тесты проекта корректно выполняются.
+We recommend upgrading hermione in stages, ensuring each step that all project tests run correctly.
 
 </Admonition>
 
-## Что изменилось? {#what_is_new}
+## What Has Changed? {#what_is_new}
 
-### Мажорные изменения {#major_changes}
+### Major Changes {#major_changes}
 
-#### Отказ от поддержки Node.JS < 16.x {#dropped_nodejs_less_than_16x}
+#### Dropped Support for Node.JS < 16.x {#dropped_nodejs_less_than_16x}
 
-В этом мажоре hermione перестала поддерживать версии _Node.JS < 16.x_.
+In this major version, hermione no longer supports versions _Node.JS < 16.x_.
 
-#### Обработка unhandled rejection {#handle_unhandled_rejection}
+#### Handling Unhandled Rejections {#handle_unhandled_rejection}
 
-При возникновении ошибки `Unhandled rejection` в мастере или воркерах hermione теперь выполняем _graceful shutdown_. Это означает, что все последующие тесты в очереди завершаются с ошибкой `Browser request was cancelled` и сама hermione завершается с `exit code 1`.
+When an `Unhandled rejection` error occurs in the master or workers, hermione now performs a graceful shutdown. This means all subsequent tests in the queue will end with the error `Browser request was cancelled`, and hermione itself will terminate with `exit code 1`.
 
-Данное изменение необходимо, чтобы защитить пользователей от написания некорректных тестов. Пример теста с ошибкой:
+This change is necessary to protect users from writing incorrect tests. Example of a test with an error:
 
 ```typescript
 it("test", async ({ browser }) => {
@@ -30,7 +30,7 @@ it("test", async ({ browser }) => {
 });
 ```
 
-Внимательный читатель заметит, что я забыл указать `await` перед вызовом `expect`. В этом случае тест сразу после перехода по урлу завершится успешно. И только потом вылетит ошибка с `Unhandled rejection`, которую hermione@6 проглатывает. А hermione@7 перехватит и экстренно завершит запуск тестов. К сожалению, определить из какого теста вылетела ошибка `Unhandled rejection` невозможно. Так как тест может быть написан, например, так:
+A keen observer will notice that I forgot to add `await` before calling `expect`. In this case, the test will immediately pass after navigating to the URL. Only then will an `Unhandled rejection` error appear, which hermione@6 would swallow. But hermione@7 will catch and immediately terminate the test run. Unfortunately, it is impossible to determine from which test the `Unhandled rejection` error originated. For example, a test could be written like this:
 
 ```typescript
 it("test2", async () => {
@@ -42,9 +42,9 @@ it("test2", async () => {
 });
 ```
 
-Т.е. данный тест сразу же выполнится успешно и только через 30 секунд (с учетом того, что в очереди еще есть тесты на запуск) вылетит `Unhandled rejection`.
+This test will immediately pass, and only after 30 seconds (assuming there are still tests in the queue to run) will an `Unhandled rejection` error appear.
 
-Соответственно, для поиска проблемного теста нужно будет посмотреть в лог выполнения и найти последние выполнившиеся тесты перед информацией об ошибке. Ошибка будет выглядеть примерно так:
+Therefore, to find the problematic test, you will need to look at the execution log and find the last completed tests before the error information. The error will look something like this:
 
 ```bash
 [13:48:57 GMT+3] Unhandled Rejection in hermione:worker:10830:
@@ -55,35 +55,35 @@ Promise: {}
 Reason: Something goes wrong
 ```
 
-#### test.id и suite.id теперь свойства {#test_id_and_suite_id_are_properties}
+#### test.id and suite.id Are Now Properties {#test_id_and_suite_id_are_properties}
 
-`id` для теста и сьюта теперь является свойством, а не методом, и, соответственно, необходимо его использовать как `test.id` или `suite.id`. Вызов `test.id` обычно используется в конфиге hermione для определения опции [screenshotsDir][screenshots-dir].
+The `id` for a test and suite is now a property, not a method, and should be used as `test.id` or `suite.id`. The `test.id` call is usually used in the hermione config to define the [screenshotsDir][screenshots-dir] option.
 
-#### Удалена опция saveHistory из конфига {#removed_save_history_option_from_config}
+#### Removed the saveHistory Option from the Config {#removed_save_history_option_from_config}
 
-Удалена опция [saveHistory][save_history] из конфига. Теперь необходимо использовать [saveHistoryMode][save_history_mode] с доступными значениями: `all`, `none`, `onlyFailed`. По умолчанию используется `all`, т.е. история сохраняется для всех тестов. Соответственно, можно данную опцию не выставлять явно.
+The [saveHistory][save_history] option has been removed from the config. You now need to use [saveHistoryMode][save_history_mode] with available values: `all`, `none`, `onlyFailed`. The default is `all`, meaning history is saved for all tests. So, you can skip explicitly setting this option.
 
-### Минорные изменения {#minor_changes}
+### Minor Changes {#minor_changes}
 
--   переехали с [webdriverio@7][webdriverio@7] на [webdriverio@8][webdriverio@8];
--   ускорили время чтения тестов примерно в 3 раза, теперь тесты читаются один раз в мастере (раньше читались для каждого браузера отдельно);
--   поддержали возможность писать конфиг на TS. Т.е. можно создать `.hermione.conf.ts` и hermione его сама скомпилирует и прочитает (если пользователь имеет в своем проекте пакет `ts-node`);
--   добавили временных меток в логи hermione. Выглядят так:
+-   Upgraded from [webdriverio@7][webdriverio@7] to [webdriverio@8][webdriverio@8];
+-   Increased test reading speed by about 3 times: tests are now read once in the master (previously read separately for each browser);
+-   Added the ability to write the config in TS. You can create `.hermione.conf.ts`, and hermione will compile and read it (assuming your project includes `ts-node`);
+-   Added timestamps to hermione logs, looking like:
 
     ```bash
     [13:48:09 GMT+3] ✓ suite test2 [chrome-desktop:SESSION_ID] - 875ms
     ```
 
-### Патчевые изменения {#patch_changes}
+### Patch Changes {#patch_changes}
 
--   поддержали корректное снятие скриншотов в девайсах, имеющих дробный `pixelRatio` (например, `google pixel`). Ранее скриншоты в таких девайсах снимались некорректно;
--   отвод курсора с помощью опции `resetCursor: true` теперь не ругается, если левый верхний угол элемента `body` имеет отрицательные координаты.
+-   Properly supported taking screenshots on devices with fractional `pixelRatio` (e.g., `Google Pixel`). Previously, screenshots on such devices were incorrect;
+-   Moving the cursor away using the `resetCursor: true` option no longer triggers an error if the top-left corner of the `body` element has negative coordinates.
 
-## Как переехать? {#how_to_move}
+## How to Migrate? {#how_to_move}
 
-### 1. Обновить hermione до 7+ и плагины до последних версий {#update_hermione_and_plugins}
+### 1. Update hermione to 7+ and Plugins to the Latest Versions {#update_hermione_and_plugins}
 
-А именно:
+Specifically:
 
 -   [hermione][hermione]
 -   [html-reporter][html-reporter]
@@ -93,19 +93,19 @@ Reason: Something goes wrong
 -   [json-reporter][json-reporter]
 -   [hermione-passive-browsers][hermione-passive-browsers]
 
-Если какой-то из плагинов не используется, то устанавливать его не нужно.
+If you are not using any of these plugins, you do not need to install them.
 
-### 2. В конфиге hermione заменить test.id() на test.id {#replace_test_id_method_on_test_id_property}
+### 2. Replace test.id() with test.id in the hermione Config {#replace_test_id_method_on_test_id_property}
 
-Если `test.id()` не используется, то ничего делать не нужно.
+If you are not using `test.id()`, there is nothing to do.
 
-### 3. В конфиге hermione заменить опцию saveHistory на saveHistoryMode {#replace_save_history_on_save_history_mode}
+### 3. Replace the saveHistory Option with saveHistoryMode in the hermione Config {#replace_save_history_on_save_history_mode}
 
-Если [saveHistory][save_history] не используется, то ничего делать не нужно.
+If you are not using [saveHistory][save_history], there is nothing to do.
 
-### 4. Заменить использование кастомного моковского интерфейса {#replace_custom_mocha_interface}
+### 4. Replace the Usage of a Custom Mocha Interface {#replace_custom_mocha_interface}
 
-Если используется кастомный моковский интерфейс, то необходимо заменить его на интерфейс моки из зависимостей hermione:
+If you are using a custom mocha interface, replace it with the mocha interface from hermione dependencies:
 
 ```javascript
 - const baseBdd = require('@gemini-testing/mocha/lib/interfaces/bdd');
@@ -115,9 +115,9 @@ Reason: Something goes wrong
 + const { interfaces: { bdd: baseBdd } } = require(mochaModule);
 ```
 
-## Поддержка {#support}
+## Support {#support}
 
-Если при переезде на новую версию вы столкнетесь с проблемами, или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] — и мы обязательно вам поможем!
+If you encounter issues during the migration to the new version or have any questions, visit [github issues][gh-issues] — we will definitely help you!
 
 [how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
 [how-to-upgrade-hermione-to-5]: ../../migrations/how-to-upgrade-hermione-to-5

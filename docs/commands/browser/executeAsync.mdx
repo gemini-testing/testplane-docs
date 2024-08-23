@@ -1,35 +1,35 @@
 # executeAsync
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `executeAsync`, чтобы выполнить _асинхронно_ указанный JavaScript-код на странице текущего выбранного фрейма.
+Use the `executeAsync` command to _asynchronously_ execute the specified JavaScript code in the context of the currently selected frame.
 
-Последним аргументом команды должен быть колбэк, который будет вызван, как только скрипт завершит свою работу. В качестве входного параметра команда передает в колбэк результат выполнения скрипта.
+The last argument of the command must be a callback that will be called as soon as the script completes its execution. The command passes the script result to the callback as an input parameter.
 
-Аргумент `script` определяет сценарий для выполнения в виде тела функции. Функция будет вызвана с предоставленным массивом `args`, и доступ к значениям может быть получен через объект `arguments` в указанном порядке. Последним аргументом всегда должна быть колбэк-функция, которая будет вызвана после того, как скрипт будет выполнен.
+The `script` argument defines the script to be executed as the body of a function. The function will be invoked with the provided array of `args`, and access to the values can be obtained through the `arguments` object in the specified order. The last argument must always be a callback function, which will be called once the script has been executed.
 
-Аргументами могут быть любые JSON-примитивы, массивы или объекты JSON. Объекты JSON, которые определяют ссылку на _WebElement,_ будут преобразованы в соответствующий элемент DOM. Аналогично, любые _WebElements_ в результате скрипта будут возвращены клиенту в виде объектов _WebElement JSON_.
+Arguments can be any JSON primitives, arrays, or JSON objects. JSON objects that define a reference to a _WebElement_ will be converted to the corresponding DOM element. Similarly, any _WebElements_ in the script result will be returned to the client as _WebElement JSON_ objects.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.executeAsync(script, arguments);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>script</td><td>String или Function</td><td>Скрипт, который необходимо выполнить.</td></tr>
-<tr><td>arguments</td><td>Any</td><td>Аргументы для скрипта. Последним аргументом должна быть колбэк-функция, которая будет вызвана после того, как скрипт будет выполнен.</td></tr>
+<tr><td>script</td><td>String or Function</td><td>The script to be executed.</td></tr>
+<tr><td>arguments</td><td>Any</td><td>Arguments for the script. The last argument must be a callback function, which will be called once the script has been executed.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should execute async JavaScript on the page", async ({ browser }) => {
@@ -37,7 +37,7 @@ it("should execute async JavaScript on the page", async ({ browser }) => {
 
     const result = await browser.executeAsync(
         function (a, b, c, d, done) {
-            // здесь мы в browser-контексте: доступа к консоли и к клиенту у нас нет
+            // here we are in the browser context: no access to console or client
             setTimeout(() => {
                 done(a + b + c + d);
             }, 3000);
@@ -48,12 +48,16 @@ it("should execute async JavaScript on the page", async ({ browser }) => {
         4,
     );
 
-    // здесь мы в node.js-контексте: доступ к консоли и к клиенту у нас есть
-    console.log(result); // выведет: 10
+    // here we are in the node.js context: access to console and client is available
+    console.log(result); // outputs: 10
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [execute](../execute)
 -   [setTimeout](../setTimeout)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/executeAsync), from which we drew some information while writing our version.

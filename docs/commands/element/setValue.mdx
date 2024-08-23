@@ -2,36 +2,36 @@ import Admonition from "@theme/Admonition";
 
 # setValue
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `setValue`, чтобы отправить последовательность нажатий клавиш элементу после того, как поле ввода было предварительно очищено.
+Use the `setValue` command to send a sequence of key presses to an element after first clearing the input field.
 
-Если элемент не нужно сначала очищать, используйте команду [addValue][add-value].
+If the element does not need to be cleared first, use the [addValue][add-value] command.
 
 <Admonition type="info">
-    Если вы хотите использовать специальные символы, например, для копирования и вставки значения из
-    одного ввода в другой, используйте команду [keys][keys].
+    If you want to use special characters, for example, to copy and paste a value from one input to
+    another, use the [keys][keys] command.
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).setValue(value);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>value</td><td>String или Number</td><td>Значение, которое нужно установить.</td></tr>
+<tr><td>value</td><td>String or Number</td><td>The value to set.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should set value for a certain element", async ({ browser }) => {
@@ -39,15 +39,19 @@ it("should set value for a certain element", async ({ browser }) => {
     await input.setValue("test");
     await input.setValue(123);
 
-    console.log(await input.getValue()); // выведет: '123'
+    console.log(await input.getValue()); // outputs: '123'
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [element.addValue][add-value]
 -   [element.clearValue](../clearValue)
 -   [browser.keys][keys]
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/setValue), from which we drew some information while writing our version.
 
 [add-value]: ../addValue
 [keys]: ../../browser/keys

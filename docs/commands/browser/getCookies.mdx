@@ -1,30 +1,30 @@
 # getCookies
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `getCookies`, чтобы получить все или конкретные _cookies_ на текущей странице.
+Use the `getCookies` command to get all or specific cookies on the current page.
 
-Чтобы получить конкретные куки, нужно указать имя _cookie_ в виде строки или список имен _cookies_ в виде массива строк.
+To get specific cookies, you need to specify the cookie name as a string or a list of cookie names as an array of strings.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.getCookies(names);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>names</td><td>String или String[]</td><td>Необязательный параметр. Имя _cookie_ или список имен _cookies_, которые необходимо получить. При отсутствии параметра будут возвращены все _cookies_ для текущей страницы.</td></tr>
+<tr><td>names</td><td>String or String[]</td><td>Optional parameter. The name of the cookie or list of cookie names to get. If the parameter is missing, all cookies for the current page will be returned.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should return a cookie for me", async ({ browser }) => {
@@ -35,14 +35,14 @@ it("should return a cookie for me", async ({ browser }) => {
 
     const testCookie = await browser.getCookies(["test"]);
     console.log(testCookie);
-    // выведет:
+    // outputs:
     // [
     //    { name: 'test', value: '123' }
     // ]
 
     const allCookies = await browser.getCookies();
     console.log(allCookies);
-    // выведет:
+    // outputs:
     // [
     //    { name: 'test', value: '123' },
     //    { name: 'test2', value: '456' }
@@ -50,7 +50,11 @@ it("should return a cookie for me", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [setCookies](../setCookies)
 -   [deleteCookies](../deleteCookies)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/getCookies), from which we drew some information while writing our version.

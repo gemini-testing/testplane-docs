@@ -1,28 +1,32 @@
 # clear
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `clear`, чтобы сбросить всю информацию, хранящуюся в массиве `mock.calls`.
+Use the `clear` command to reset all information stored in the `mock.calls` array.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 mock.clear();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should clear mock", async ({ browser }) => {
     const mock = await browser.mock("https://google.com/");
     await browser.url("https://google.com");
 
-    console.log(mock.calls.length); // выведет: 1
+    console.log(mock.calls.length); // outputs: 1
     mock.clear();
-    console.log(mock.calls.length); // выведет: 0
+    console.log(mock.calls.length); // outputs: 0
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [restore](../restore)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/clear), from which we drew some information while writing our version.

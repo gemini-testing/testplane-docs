@@ -1,22 +1,22 @@
-# Как избавиться от дублирования в тестах
+# How to Eliminate Duplication in Tests
 
-## Проблема {#problem}
+## Problem {#problem}
 
-Часто, перед тем как запустить очередной testplane-тест, нужно выполнить определенную подготовительную работу, например:
+Often, before running the next Testplane test, certain preparatory work needs to be done, such as:
 
--   очистить все cookies;
--   почистить localStorage;
--   инициализировать какую-либо переменную теста.
+-   clearing all cookies;
+-   cleaning localStorage;
+-   initializing some test variable.
 
-Аналогично, после завершения основных проверок в testplane-тесте, вы можете захотеть всегда проверять наличие ошибок в клиентском коде, срабатывание нужных метрик и т. п.
+Similarly, after completing the main checks in a Testplane test, you may always want to check for errors in the client code, the triggering of required metrics, etc.
 
-## Решение: testplane-global-hook {#solution}
+## Solution: testplane-global-hook {#solution}
 
-Чтобы не повторять эти действия каждый раз в своих тестах, подключите плагин [testplane-global-hook][testplane-global-hook] и опишите их в настройках плагина в виде функций для хуков `beforeEach` и `afterEach`.
+To avoid repeating these actions each time in your tests, add the [testplane-global-hook][testplane-global-hook] plugin and describe them in the plugin settings as functions for the `beforeEach` and `afterEach` hooks.
 
-Подробнее о том, как подключить и настроить плагин, читайте в [документации][testplane-global-hook] плагина.
+Learn more about how to add and configure the plugin in the [plugin documentation][testplane-global-hook].
 
-## Ключевые слова {#keywords}
+## Keywords {#keywords}
 
 -   testplane-global-hook
 

@@ -1,34 +1,51 @@
-# Как получить отчет о прогоне тестов
+# How to Get a Test Run Report
 
-## Отчет testplane {#testplane_report}
+## Testplane Report {#testplane_report}
 
-После завершения прогона всех тестов testplane пишет в консоль результат прогона в виде строки следующего вида:
+After completing all test runs, Testplane writes the result to the console in the form of a string like this:
 
 ```bash
 Total: 1812 Passed: 1792 Failed: 0 Skipped: 20 Retries: 47
 ```
 
-Где:
+Where:
 
 <table>
-<thead>
-<tr><td>Статус</td><td>Описание</td></tr>
-</thead>
-<tbody>
-<tr><td>Total</td><td>Общее количество тестов, которые testplane прочитала с файловой системы при запуске.</td></tr>
-<tr><td>Passed</td><td>Число тестов, которые успешно прошли.</td></tr>
-<tr><td>Failed</td><td>Число тестов, которые упали.</td></tr>
-<tr><td>Skipped</td><td>Количество тестов, которые были пропущены (заскипаны) при запуске.</td></tr>
-<tr><td>Retries</td><td>Суммарное количество ретраев тестов, которые произошли во время прогона.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>Status</td>
+            <td>Description</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Total</td>
+            <td>Total number of tests that Testplane read from the file system during launch.</td>
+        </tr>
+        <tr>
+            <td>Passed</td>
+            <td>Number of tests that passed successfully.</td>
+        </tr>
+        <tr>
+            <td>Failed</td>
+            <td>Number of tests that failed.</td>
+        </tr>
+        <tr>
+            <td>Skipped</td>
+            <td>Number of tests that were skipped during the run.</td>
+        </tr>
+        <tr>
+            <td>Retries</td>
+            <td>Total number of test retries that occurred during the run.</td>
+        </tr>
+    </tbody>
 </table>
 
-Однако этой информации может быть недостаточно, поэтому вы можете добавить в свой проект плагин [stat-reporter][stat-reporter].
+However, this information may not be sufficient, so you can add the [stat-reporter][stat-reporter] plugin to your project.
 
-## Отчет плагина stat-reporter {#stat_reporter_report}
+## stat-reporter Plugin Report {#stat_reporter_report}
 
-Если вы добавите в свой проект плагин [stat-reporter][stat-reporter], то тогда после завершения прогона всех тестов вы получите в консоли более подробный отчет о результатах прогона. Например:
+If you add the [stat-reporter][stat-reporter] plugin to your project, you will get a more detailed report of the run results in the console after completing all the tests. For example:
 
 ```bash
 ┌──────────────────────┬────────┬───────┬────────┬────────┬─────────┬─────────┬──────────┐
@@ -62,37 +79,37 @@ Total: 1812 Passed: 1792 Failed: 0 Skipped: 20 Retries: 47
 └──────────────────────┴────────┴───────┴────────┴────────┴─────────┴─────────┴──────────┘
 ```
 
-В отличие от простого отчета testplane, в отчете плагина `stat-reporter` результаты прогонов разбиты по браузерам. Также выводятся максимальное время выполнения _(Duration)_ в минутах и секундах и результат прогона тестов _(Status)_ в каждом браузере.
+Unlike the simple Testplane report, the `stat-reporter` plugin report breaks down the results by browser. It also displays the maximum execution time _(Duration)_ in minutes and seconds and the test run result _(Status)_ in each browser.
 
-Такой отчет позволяет лучше понять в каких браузерах возникли проблемы, а именно: не проходит больше всего тестов или время выполнения резко возросло.
+Such a report allows for a better understanding of which browsers encountered problems, specifically: where the most tests failed or the execution time sharply increased.
 
-Плагин `stat-reporter` также позволяет формировать отчеты в виде html- или json-файлов. См. подробности в [описании плагина][stat-reporter].
+The `stat-reporter` plugin also allows generating reports in HTML or JSON formats. See details in the [plugin description][stat-reporter].
 
-Однако по своим возможностям плагин [stat-reporter][stat-reporter] значительно уступает плагину [html-reporter][html-reporter], который предоставляет разработчику гораздо более продвинутые способы работы с тестами и результатами их прогона.
+However, in terms of capabilities, the [stat-reporter][stat-reporter] plugin is significantly inferior to the [html-reporter][html-reporter] plugin, which provides much more advanced ways to work with tests and their run results.
 
-## Отчет плагина html-reporter {#html_reporter_report}
+## html-reporter Plugin Report {#html_reporter_report}
 
-Добавьте в свой проект плагин [html-reporter][html-reporter], чтобы получить графический html-отчет с результатами прогонов всех тестов. Также в полученном отчете вы сможете:
+Add the [html-reporter][html-reporter] plugin to your project to get a graphical HTML report with the results of all test runs. Additionally, in the generated report, you will be able to:
 
--   отфильтровать тесты по статусам завершения;
--   сгруппировать тесты по ошибкам или любому параметру из мета-информации теста;
--   посмотреть диффы в скриншотах 6 разными способами;
--   посмотреть отдельно все ретраи или ошибки в тестах.
+-   filter tests by completion status;
+-   group tests by errors or any parameter from the test metadata;
+-   view screenshot differences in 6 different ways;
+-   view all retries or errors in tests separately.
 
 ![html-reporter](/img/docs/guides/how-to-get-report.html-reporter.png)
 
-Кроме того, [html-reporter][html-reporter] позволяет запускать testplane в специальном GUI-режиме. В этом режиме вы можете запускать и перезапускать тесты, переснимать скриншоты, использовать специальные режимы отладки и многое другое.
+Moreover, the [html-reporter][html-reporter] allows running Testplane in a special GUI mode. In this mode, you can run and rerun tests, reshoot screenshots, use special debugging modes, and much more.
 
-## Ключевые слова {#keywords}
+## Keywords {#keywords}
 
 -   stat-reporter
 -   html-reporter
 -   gui
 
-## Полезные ссылки {#useful_links}
+## Useful Links {#useful_links}
 
--   [Плагин stat-reporter][stat-reporter]
--   [Плагин html-reporter][html-reporter]
+-   [stat-reporter Plugin][stat-reporter]
+-   [html-reporter Plugin][html-reporter]
 
 [stat-reporter]: ../../plugins/stat-reporter
 [html-reporter]: ../../html-reporter/html-reporter-setup

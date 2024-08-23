@@ -2,24 +2,25 @@ import Admonition from "@theme/Admonition";
 
 # executionContext
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Во время прогона тестов testplane добавляет в `browser` свойство `executionContext` для хранения контекста исполнения.
+During the test run, Testplane adds an `executionContext` property to `browser` to store the execution context.
 
-В свойстве `browser.executionContext` хранится текущий объект теста или хука \_Mocha, дополненный идентификатором браузера.
+The `browser.executionContext` property holds the current test or hook \_Mocha object, supplemented with a browser identifier.
 
 <Admonition type="info">
-    Контекст исполнения добавляет testplane, в [API WebDriverIO][webdriverio-api] его нет.
+    The execution context is added by Testplane and is not available in the [API
+    WebDriverIO][webdriverio-api].
 </Admonition>
 
-## Пример использования {#examples}
+## Usage Example {#examples}
 
 ```javascript
 it("should log execution context", async ({ browser }) => {
     await browser.url("/foo/bar");
 
     console.log("test", browser.executionContext);
-    // выведет:
+    // outputs:
     // test: {
     //   "title": "should log execution context",
     //   "async": 0,

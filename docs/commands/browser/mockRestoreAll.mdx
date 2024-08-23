@@ -1,16 +1,16 @@
 # mockRestoreAll
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `mockRestoreAll`, чтобы восстановить информацию и поведение в зарегистрированных имитациях до их создания. Имитации регистрируются с помощью команды [mock][mock].
+Use the `mockRestoreAll` command to restore the information and behavior in registered mocks to their original state. Mocks are registered using the [mock][mock] command.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```typescript
 await browser.mockRestoreAll();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```typescript
 it("should restore all mocks", async ({ browser }) => {
@@ -29,9 +29,13 @@ it("should restore all mocks", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [mock][mock]
 -   [mockClearAll](../mockClearAll)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/mockRestoreAll), from which we drew some information while writing our version.
 
 [mock]: ../mock

@@ -2,75 +2,75 @@ import Admonition from "@theme/Admonition";
 
 # CLI {#cli}
 
-Testplane позволяет устанавливать параметры через CLI.
+Testplane allows setting options via command line interface.
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Доступные опции:
+Available options:
 
 ```
--V, --version                вывести версию инструмента
--c, --config <path>          путь к конфигурационному файлу
--b, --browser <browser>      запустить тесты только в указанном браузере
--s, --set <set>              запустить тесты только в указанном наборе
--r, --require <module>       добавить модуль
---reporter <reporter>        установить репортер
---grep <grep>                запустить только тесты, соответствующие шаблону
---update-refs                обновить эталоны скриншотов или создать их, если они не существуют (используеося командой "assertView")
---inspect [inspect]          запустить node.js инспектор
---inspect-brk [inspect-brk]  запустить nodejs инспектор с точкой останова в начале
---repl [type]                запустить repl режим, позволяя вызвать `browser.switchToRepl` в коде теста для открытия repl интерфейса (по умолчанию: false)
---repl-before-test [type]    запустить repl режим перед запуском теста (по умолчанию: false)
---repl-on-fail [type]        запустить repl режим только в случае падения теста (по умолчанию: false)
---devtools                   запустить тесты используя протокол автоматизации Chrome Devtools Protocol
--h, --help                   вывести информацию об использовании
+-V, --version                output the version number
+-c, --config <path>          path to configuration file
+-b, --browser <browser>      run tests only in specified browser
+-s, --set <set>              run tests only in the specified set
+-r, --require <module>       require module
+--reporter <reporter>        test reporters
+--grep <grep>                run only tests matching the pattern
+--update-refs                update screenshot references or gather them if they do not exist ("assertView" command)
+--inspect [inspect]          nodejs inspector on [=[host:]port]
+--inspect-brk [inspect-brk]  nodejs inspector with break at the start
+--repl [type]                run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
+--repl-before-test [type]    open repl interface before test run (default: false)
+--repl-on-fail [type]        open repl interface on test fail only (default: false)
+--devtools                   switches the browser to the devtools mode with using CDP protocol
+-h, --help                   output usage information
 ```
 
-## Переопределение настроек {#overriding-settings}
+## Overriding settings {#overriding-settings}
 
-Все параметры можно переопределить с помощью флагов командной строки или переменных среды согласно следующим приоритетам (в порядке убывания):
+All options can be overridden via command-line flags or environment variables with the following priorities, by descending:
 
--   Опция командной строки;
+-   A command-line option;
 
--   Переменная окружения;
+-   An environment variable;
 
--   Значение в файле конфигурации;
+-   A config file value;
 
--   Значение по умолчанию.
+-   The default value.
 
-### Переопределение с помощью опции CLI {#overriding-cli-settings}
+### Overriding with CLI option {#overriding-cli-settings}
 
-Чтобы переопределить параметр конфигурации с помощью опции CLI, преобразуйте полный путь опции в `--kebab-case`.
+To override a config setting with a CLI option, convert the full option path to `--kebab-case`.
 
-Например, чтобы переопределить свойство `baseUrl` в конфигурации:
+For example, to override config's `baseUrl` property:
 
 ```bash
 testplane path/to/mytest.js --base-url http://example.com
 ```
 
-Это также работает для вложенных свойств. Пример переопределения значения `browsers.firefox.sessionsPerBrowser` (предполагается, что Вы описали браузер с идентификатором "firefox"):
+It also works for nested properties. Example of overriding `browsers.firefox.sessionsPerBrowser` value (assuming you have defined browser with id "firefox"):
 
 ```bash
 testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
 ```
 
-### Переопределение с помощью переменной окружения {#overriding-env-settings}
+### Overriding with environment variable {#overriding-env-settings}
 
-Чтобы переопределить настройку с помощью переменной окружения, переведите ее полный путь в `snake_case` и добавьте префикс `testplane_`.
+To override a setting with an environment variable, convert its full path to `snake_case` and add the `testplane_` prefix.
 
-Примеры переопределения тех же значений `baseUrl` и `browsers.firefox.sessionsPerBrowser` с использованием переменных среды вместо опций CLI:
+Examples of overriding the same `baseUrl` and `browsers.firefox.sessionsPerBrowser` values using environment variables instead of CLI options:
 
 ```bash
 testplane_base_url=http://example.com testplane path/to/mytest.js
 testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
 ```
 
-Помимо переопределения значений конфигурации, также существуют две дополнительные переменные среды: "TESTPLANE_SKIP_BROWSERS" и "TESTPLANE_SETS":
+Besides overriding config values, there also two extra environment variables: "TESTPLANE_SKIP_BROWSERS" and "TESTPLANE_SETS":
 
 #### TESTPLANE_SKIP_BROWSERS
 
-Пропустить браузеры, указанные в конфигурации, по их идентификатору. Несколько идентификаторов браузеров должны быть разделены запятой
-(допускаются пробелы после запятых).
+Skip the browsers specified in the config by passing the browser IDs. Multiple browser IDs should be separated by commas
+(spaces after commas are allowed).
 
 ```bash
 TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
@@ -78,7 +78,7 @@ TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
 
 #### TESTPLANE_SETS
 
-Запускает только указанные наборы (альтернатива опции CLI `--set`).
+Runs only specified sets (CLI option `--set` alternative).
 
 ```bash
 TESTPLANE_SETS=desktop,touch testplane
@@ -86,7 +86,7 @@ TESTPLANE_SETS=desktop,touch testplane
 
 ## Version {#version}
 
-Вывести текущую версию `testplane`.
+Print current `testplane` version.
 
 ```bash
 testplane --version
@@ -94,7 +94,7 @@ testplane --version
 
 ## Config {#config}
 
-Использовать заданный файл конфигурации.
+Use custom configuration file.
 
 ```bash
 testplane --config ./local.testplane.config.ts
@@ -102,7 +102,7 @@ testplane --config ./local.testplane.config.ts
 
 ## Browser {#browser}
 
-Запустить тесты только в указанном браузере.
+Run tests only in specified browser.
 
 ```bash
 testplane --browser chrome
@@ -110,7 +110,7 @@ testplane --browser chrome
 
 ## Set {#set}
 
-Запустить тесты только в указанном наборе.
+Run tests only in the specified set.
 
 ```bash
 testplane --set desktop
@@ -118,7 +118,7 @@ testplane --set desktop
 
 ## Require {#require}
 
-Загрузить внешние модули, которые локально у вас на машине, перед запуском `testplane`. Это полезно для загрузчиков, таких как ECMAScript модули через [esm](https://www.npmjs.com/package/esm).
+Load external modules, locally existing in your machine, before running `testplane`. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
 
 ```bash
 testplane --require ./tsconfig-register-paths.js
@@ -126,35 +126,35 @@ testplane --require ./tsconfig-register-paths.js
 
 ## Reporter {#reporter}
 
-Может использоваться для установки одного из следующих терминальных отчетов:
+Can be used to set one of the following reporters:
 
--   `flat` - вся информация об ошибках и повторных тестах будет сгруппирована по браузерам в конце отчета;
--   `plain` - информация об ошибках и повторах будет размещена после каждого теста;
--   `jsonl` - выводит подробную информацию о каждом результате теста в форме [jsonl](https://jsonlines.org/).
+-   `flat` - all information about failed and retried tests would be grouped by browsers at the end of the report;
+-   `plain` - information about fails and retries would be placed after each test;
+-   `jsonl` - displays detailed information about each test result in [jsonl](https://jsonlines.org/) form.
 
-По умолчанию - `flat`.
+Default is `flat`.
 
-По умолчанию информация о результатах тестов выводится в командную строку, но есть возможность перенаправить вывод в файл:
+Information about test results is displayed to the command line by default. But there is an ability to redirect the output to a file:
 
 ```bash
 testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}'
 ```
 
-Вы также можете создавать несколько отчетов:
+You can also specify multiple reporters:
 
 ```bash
 testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --reporter flat
 ```
 
-Помимо этих отчетов для терминала, вы можете использовать плагин [html-reporter][html-reporter] для создания html-отчетов.
+Aside these terminal reporters, you can use [html-reporter][html-reporter] plugin in order to generate html reports.
 
 ## Grep {#grep}
 
-Запусть только те тесты, полное название которых соответствует шаблону.
+Run only tests, which full name matches the pattern.
 
-### Пример {#grep-example}
+### Example {#grep-example}
 
-Если у вас есть некоторые тесты:
+If you have some tests:
 
 ```ts
 describe("test", () => {
@@ -169,7 +169,7 @@ describe("test", () => {
 });
 ```
 
-То вы можете запустить тесты внутри набора "nested path" без запуска тестов внутри набора "other path" с помощью любого из этих вариантов:
+You can run tests inside "nested path" suite without running tests inside "other path" suite with any of these variants:
 
 ```bash
 testplane --grep "nested path"
@@ -179,32 +179,32 @@ testplane --grep "test with nested path"
 
 ### Update refs {#update-refs}
 
-Запустить тесты, обновив все ссылки на снимки экрана, созданные командой [assertView][assert-view].
+Run tests, updating all screenshot references, created by [assertView][assert-view] command.
 
 ```bash
 testplane --update-refs
 ```
 
 <Admonition type="info">
-    Рекомендуемый способ обновления эталонов - использование плагина [html-reporter][html-reporter].
+    Recommended way to update screenshots is using [html-reporter][html-reporter] plugin.
 </Admonition>
 
 ## Inspect {#inspect}
 
-Запускает тесты Testplane с использованием [nodejs дебаггера](https://nodejs.org/en/docs/inspector).
+Runs Testplane tests using [nodejs inspector](https://nodejs.org/en/docs/inspector).
 
 ```bash
 testplane --inspect
 ```
 
 <Admonition type="info">
-    В отладочном режиме запускается только один рабочий процесс, и все тесты выполняются только в
-    нем. Используйте этот режим с опцией `sessionsPerBrowser=1`, чтобы отлаживать тесты по одному.
+    In the debugging mode, only one worker is started and all tests are performed only in it. Use
+    this mode with option `sessionsPerBrowser=1` in order to debug tests one at a time.
 </Admonition>
 
 ## Inspect break {#inspect-brk}
 
-То же самое, что и [Inspect](#inspect), но с точкой останова в начале.
+The same as [Inspect](#inspect), but with breakpoint at the start.
 
 ```bash
 testplane --inspect-brk
@@ -212,34 +212,34 @@ testplane --inspect-brk
 
 ## REPL {#repl}
 
-Включает [REPL](https://ru.wikipedia.org/wiki/REPL). Также отключает таймаут продолжительности теста. Может быть включен с помощью указания следующих CLI опций:
+Enables a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). It also disables test duration timeout. Can be used by specifying following CLI options:
 
--   `--repl` - в этом режиме должен быть запущен только один тест в одном браузере, в противном случае выбрасывается ошибка. REPL интерфейс не запускается автоматически, поэтому вам нужно вызвать команду [switchToRepl][switch-to-repl] в коде теста;
--   `--repl-before-test` - то же, что и опция `--repl`, за исключением того, что REPL интерфейс открывается автоматически перед запуском теста;
--   `--repl-on-fail` - то же, что и опция `--repl`, за исключением того, что REPL интерфейс открывается автоматически при ошибке во время выполнения теста.
+-   `--repl` - in this mode, only one test in one browser should be run, otherwise an error is thrown. REPL interface does not start automatically, so you need to call [switchToRepl][switch-to-repl] command in the test code;
+-   `--repl-before-test` - the same as `--repl` option except that REPL interface opens automatically before run test;
+-   `--repl-on-fail` - the same as `--repl` option except that REPL interface opens automatically on test fail.
 
 ```bash
 testplane --repl --grep 'my test name' --browser chrome
 ```
 
 <Admonition type="info">
-    Больше информации о режиме REPL можно найти в документации команды
-    [switchToRepl][switch-to-repl].
+    More information about Testplane REPL mode can be found in [switchToRepl][switch-to-repl]
+    command documentation.
 </Admonition>
 
 ## Devtools {#devtools}
 
-Запускает тесты Testplane с использованием [протокола автоматизации devtools][webdriver-vs-cdp].
+Runs Testplane tests using [devtools automation protocol][webdriver-vs-cdp].
 
 ```bash
 testplane --devtools
 ```
 
-## Помощь {#help}
+## Help {#help}
 
-Выводит информацию об опциях и командах. Плагины Testplane могут добавлять свои собственные команды и опции.
+Prints out information about options and commands. Testplane Plugins can add their own commands and options.
 
-Например, [html-reporter][html-reporter] добавляет команду `gui`.
+For example, [html-reporter][html-reporter] adds `gui` command.
 
 ```bash
 testplane --help

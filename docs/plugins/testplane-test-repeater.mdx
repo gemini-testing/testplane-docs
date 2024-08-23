@@ -1,20 +1,20 @@
 # testplane-test-repeater
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте плагин [testplane-test-repeater][testplane-test-repeater], чтобы запустить один и тот же тест (или группу тестов) требуемое количество раз.
+Use the [testplane-test-repeater][testplane-test-repeater] plugin to run the same test (or group of tests) the required number of times.
 
-Данный плагин может пригодиться в тех случаях, когда нужно убедиться в стабильности написанных тестов. Плагин гарантирует, что тесты будут запущены столько раз, сколько вы задали, независимо от результатов их прогона в каждой попытке. Кроме того, плагин позволяет запускать тесты каждый раз в новой сессии браузера. Это исключает влияние деградации браузера или еще какие-либо побочные эффекты, которые могли бы возникнуть при повторных прогонах в одной и той же сессии браузера.
+This plugin can be useful in cases when you need to make sure that the written tests are stable. The plugin guarantees that the tests will be run as many times as you set, regardless of the results of their run in each attempt. In addition, the plugin allows you to run tests every time in a new browser session. This eliminates the impact of browser degradation or any other side effects that could occur during repeated runs in the same browser session.
 
-## Установка {#install}
+## Install {#install}
 
 ```bash
 npm install -D testplane-test-repeater
 ```
 
-## Настройка {#setup}
+## Setup {#setup}
 
-Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+Add the plugin to the `plugins` section of the `testplane` config:
 
 ```javascript
 module.exports = {
@@ -27,56 +27,54 @@ module.exports = {
             uniqSession: true,
         },
 
-        // другие плагины testplane...
+        // other Testplane plugins...
     },
 
-    // другие настройки testplane...
+    // other Testplane settings...
 };
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Description of configuration parameters {#setup_description}
 
 <table>
 <thead>
-<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default value**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
-<tr><td>repeat</td><td>Number</td><td>0</td><td>Сколько раз нужно запустить тест, независимо от результата от его прогона.</td></tr>
-<tr><td>minRepeat</td><td>Number</td><td>0</td><td>Минимальное количество раз, которые можно запустить тест.</td></tr>
-<tr><td>maxRepeat</td><td>Number</td><td>Infinity</td><td>Максимальное количество раз, которые можно запустить тест.</td></tr>
-<tr><td>uniqSession</td><td>Boolean</td><td>true</td><td>Запускать каждый тест в уникальной сессии браузера.</td></tr>
+<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>repeat</td><td>Number</td><td>0</td><td>How many times you need to run the test, regardless of the result of its run.</td></tr>
+<tr><td>minRepeat</td><td>Number</td><td>0</td><td>The minimum number of times the test can be run.</td></tr>
+<tr><td>maxRepeat</td><td>Number</td><td>Infinity</td><td>The maximum number of times the test can be run.</td></tr>
+<tr><td>uniqSession</td><td>Boolean</td><td>true</td><td>Run each test in a unique browser session.</td></tr>
 
 </tbody>
 </table>
 
-### Передача параметров через CLI {#setup_by_cli}
+### Passing parameters via the CLI {#setup_by_cli}
 
-Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--test-repeater-` для опций командной строки и `testplane_test_repeater_` — для переменных окружения. Например:
+All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--test-repeater-` for command line options and `testplane_test_repeater_` for environment variables. For example:
 
 ```bash
-npx testplane --test-repeater-repeat 5 ...
+npx testplane --test-repeater-repeat 5
 ```
 
 ```bash
-testplane_test_repeater_repeat=5 npx testplane ...
+testplane_test_repeater_repeat=5 npx testplane
 ```
 
-## Использование {#usage}
+## Usage {#usage}
 
-### Опция --repeat {#usage_option_repeat}
+### Option --repeat {#usage_option_repeat}
 
-Также плагин добавляет к [CLI][cli] testplane специальную опцию `--repeat`, с помощью которой можно запустить тест нужное количество раз более удобным образом. Например:
+The plugin also adds a special `--repeat` option to Testplane's [CLI][cli], with which you can run the test the right number of times in a more convenient way. For example:
 
 ```bash
 npx testplane --repeat 5
 ```
 
-[cli]: https://ru.wikipedia.org/wiki/Интерфейс_командной_строки
+## Useful links {#useful_links}
 
-## Полезные ссылки {#useful_links}
-
--   [Исходники плагина testplane-test-repeater][testplane-test-repeater]
+-   [testplane-test-repeater plugin sources][testplane-test-repeater]
 
 [testplane-test-repeater]: https://github.com/gemini-testing/testplane-test-repeater
-[cli]: https://ru.wikipedia.org/wiki/Интерфейс_командной_строки
+[cli]: https://en.wikipedia.org/wiki/Command-line_interface

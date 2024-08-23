@@ -2,36 +2,37 @@ import Admonition from "@theme/Admonition";
 
 # setMeta
 
-## Обзор
+## Overview
 
-Используйте команду `setMeta`, чтобы записать значение под заданным ключом в мета-информацию теста.
+Use the `setMeta` command to write a value under a specified key in the test's metadata.
 
-Для чтения мета-информации используйте команду [getMeta](../getMeta).
+To read the metadata, use the [getMeta](../getMeta) command.
 
 <Admonition type="info">
-    Эта команда реализована внутри testplane, в [API WebDriverIO][webdriverio-api] её нет.
+    This command is implemented within Testplane and is not available in the [API
+    WebDriverIO][webdriverio-api].
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.setMeta(key, value);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>key</td><td>String</td><td>Ключ, значение для которого нужно записать в мета-информацию теста.</td></tr>
-<tr><td>value</td><td>String</td><td>Значение, которое нужно сохранить в мета-информации теста.</td></tr>
+<tr><td>key</td><td>String</td><td>The key whose value needs to be written in the test's metadata.</td></tr>
+<tr><td>value</td><td>String</td><td>The value to be saved in the test's metadata.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should get meta info of test", async ({ browser }) => {
@@ -39,17 +40,17 @@ it("should get meta info of test", async ({ browser }) => {
     await browser.url("/foo/bar?baz=qux");
 
     const val = await browser.getMeta("foo");
-    console.log(val); // выведет: bar
+    console.log(val); // outputs: bar
 
     const url = await browser.getMeta("url");
-    console.log(url); // выведет: /foo/bar?baz=qux
+    console.log(url); // outputs: /foo/bar?baz=qux
 
     const meta = await browser.getMeta();
-    console.log(meta); // выведет: {foo: 'bar', url: '/foo/bar?baz=qux'}
+    console.log(meta); // outputs: {foo: 'bar', url: '/foo/bar?baz=qux'}
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [getMeta](../getMeta)
 

@@ -1,74 +1,72 @@
 import Admonition from "@theme/Admonition";
 
-# Кастомизация GUI
+# Html-Reporter Customizing GUI
 
-## Обзор {#overview}
+## Overview {#overview}
 
 <Admonition type="warning">
-Данный способ кастомизации GUI устарел.
-
-Вместо него рекомендуется использовать [плагины для отчета](../html-reporter-plugins).
-
+    This method of GUI customization is outdated. It is recommended to use [report
+    plugins](../html-reporter-plugins) instead.
 </Admonition>
 
-Используйте опцию `customGui` в конфиге плагина `html-reporter`, чтобы добавить собственные элементы управления для GUI-режима.
+Use the `customGui` option in the `html-reporter` plugin config to add custom controls for GUI mode.
 
-Для элементов управления задается их тип (кнопка или радиокнопка), надписи и значения, а также функции инициализации и основного действия по нажатию. Элементы управления должны быть разбиты на отдельные разделы в зависимости от их назначения. Как минимум, должен быть указан один раздел.
+For controls, their type (button or radio button), labels and values, as well as initialization functions and the main click action are set. The controls should be divided into separate sections depending on their purpose. At least one section must be specified.
 
-По умолчанию значение опции `customGui`: `{}`.
+By default, the value of the `customGui` option is `{}`.
 
-## Настройка {#setup}
+## Setup {#setup}
 
-Опция `customGui` требует для своего значения объект следующего формата:
+The `customGui` option requires an object of the following format for its value:
 
 ```javascript
 customGui: {
-    '&lt;название раздела>': [
+    '<section name>': [
         {
-            type: '&lt;тип элементов управления>', // 'button' или 'radiobutton'
+            type: '<type of control>', // 'button' or 'radiobutton'
             controls: [
                 {
-                    label: '&lt;надпись на элементе управления>',
-                    value: '&lt;значение элемента управления>'
+                    label: '<label on the control>',
+                    value: '<value of the control>'
                 },
 
-                // другие элементы управления...
+                // other controls...
             ],
             initialize: async ({ testplane, ctx }) => {
-                // код инициализации
-                // возвращаемое значение будет проигнорировано
+                // initialization code
+                // the return value will be ignored
             },
             action: async ({ testplane, ctx, control }) => {
-                // код действия
-                // возвращаемое значение будет проигнорировано
+                // action code
+                // the return value will be ignored
             }
         },
 
-        // другие группы элементов управления...
+        // other groups of controls...
     ],
 
-    // другие разделы...
+    // other sections...
 }
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Description of configuration parameters {#setup_description}
 
 <table>
 <thead>
-<tr><td>**Название**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>type</td><td>String</td><td>Обязательный параметр. Тип элементов управления. Доступные значения: _'button'_ и _'radiobutton'_.</td></tr>
-<tr><td>controls</td><td>Array</td><td>Массив объектов, каждый из которых описывает элемент управления. Объект должен состоять из двух ключей: _label_ и _value_, которые задают надпись на элементе управления и его значение.</td></tr>
-<tr><td>initialize</td><td>Function</td><td>Необязательный параметр. Асинхронная функция, которая будет выполнена на серверной стороне при старте Testplane в GUI-режиме. В функцию будет передан объект вида _\{ testplane, ctx }_, где _testplane_ — это инстанс testplane, а _ctx_ — объект, описывающий группу элементов, для которых вызывается функция инициализации.</td></tr>
-<tr><td>action</td><td>Function</td><td>Обязательный параметр. Асинхронная функция, которая будет выполнена на серверной стороне, когда пользователь нажмет на элемент управления. В функцию будет передан объект вида _\{ testplane, ctx, control }_, где _testplane_ — это инстанс testplane, _ctx_ — объект, описывающий группу элементов, для которых вызывается _action_-функция, и _control_ — ссылка на элемент управления, по которому кликнул пользователь.</td></tr>
+<tr><td>type</td><td>String</td><td>Required parameter. The type of controls. Available values: _'button'_ and _'radiobutton'_.</td></tr>
+<tr><td>controls</td><td>Array</td><td>An array of objects, each of which describes a control. The object must consist of two keys: _label_ and _value_, which specify the label on the control and its value.</td></tr>
+<tr><td>initialize</td><td>Function</td><td>Optional parameter. Asynchronous function that will be executed on the server side when Testplane starts in GUI mode. An object of the form _\{ testplane, ctx }_ will be passed to the function, where _testplane_ is an instance of testplane, and _ctx_ is an object describing a group of elements for which the initialization function is called.</td></tr>
+<tr><td>action</td><td>Function</td><td>Required parameter. Asynchronous function that will be executed on the server side when the user clicks on the control. An object of the form _\{ testplane, ctx, control }_ will be passed to the function, where _testplane_ is an instance of testplane, _ctx_ is an object describing a group of elements for which the _action_ function is called, and _control_ is a link to the control that the user clicked on.</td></tr>
 
 </tbody>
 </table>
 
-## Пример использования {#usage_example}
+## Usage example {#usage_example}
 
-Добавляем радиокнопки для изменения baseUrl'а в GUI-режиме:
+Adding radio buttons to change the base URL in GUI mode:
 
 ```javascript
 customGui: {

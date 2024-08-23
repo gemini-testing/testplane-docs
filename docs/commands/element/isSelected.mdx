@@ -1,28 +1,26 @@
 # isSelected
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `isSelected`, чтобы определить, выбрана ли заданная опция `<option>` или `<input>` типа `checkbox` или `radio`.
+Use the `isSelected` command to determine whether a given `<option>` or `<input>` element of type `checkbox` or `radio` is selected.
 
-Команда возвращает `true`, если элемент выбран, иначе возвращает `false`.
+The command returns `true` if the element is selected; otherwise, it returns `false`.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).isSelected();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
+```html
 <select name="selectbox" id="selectbox">
     <option value="John Doe">John Doe</option>
-    <option value="Layla Terry" selected="selected">
-        Layla Terry
-    </option>
-    <option value="Bill Gilbert">Bill Gilbert"</option>
+    <option value="Layla Terry" selected="selected">Layla Terry</option>
+    <option value="Bill Gilbert">Bill Gilbert</option>
 </select>
 ```
 
@@ -31,9 +29,13 @@ await browser.$(selector).isSelected();
 ```javascript
 it("should detect if an element is selected", async ({ browser }) => {
     let element = await browser.$('[value="Layla Terry"]');
-    console.log(await element.isSelected()); // выведет: true
+    console.log(await element.isSelected()); // outputs: true
 
     element = await browser.$('[value="Bill Gilbert"]');
-    console.log(await element.isSelected()); // выведет: false
+    console.log(await element.isSelected()); // outputs: false
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/isSelected), from which we drew some information while writing our version.

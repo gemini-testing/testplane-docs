@@ -1,10 +1,10 @@
 # abortOnce
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `abortOnce`, чтобы прервать запрос один раз с заданной ошибкой.
+Use the `abortOnce` command to abort a request once with a specified error.
 
-Запрос можно прервать с одной из следующих ошибок:
+A request can be aborted with one of the following errors:
 
 -   Failed
 -   Aborted
@@ -16,25 +16,25 @@
 -   AddressUnreachable
 -   BlockedByClient | BlockedByResponse
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 mock.abortOnce(errorCode);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>errorCode</td><td>ErrorCode</td><td>Код ошибки ответа. Возможные значения см. [выше](#overview).</td></tr>
+<tr><td>errorCode</td><td>ErrorCode</td><td>The response error code. Possible values are listed [above](#overview).</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should block mock only once", async ({ browser }) => {
@@ -43,15 +43,19 @@ it("should block mock only once", async ({ browser }) => {
 
     await browser
         .url("https://webdriver.io")
-        // ловим исключение, так как запрос к странице упадет
+        // catch exception as the request to the page will fail
         .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
 
     await browser.url("https://webdriver.io");
     console.log(await browser.getTitle());
-    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+    // will output: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [abort](../abort)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/abortOnce), from which we drew some information while writing our version.

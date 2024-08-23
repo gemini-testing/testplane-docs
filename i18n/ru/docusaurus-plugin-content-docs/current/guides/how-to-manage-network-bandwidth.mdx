@@ -1,0 +1,58 @@
+import Admonition from "@theme/Admonition";
+
+# Как управлять пропускной способностью сети
+
+## Обзор {#overview}
+
+<Admonition type="warning">
+Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
+
+Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]».
+
+</Admonition>
+
+Огромное количество пользователей пользуются сервисами с мобильных устройств, на которых скорость интернета бывает довольно медленной или совсем пропадает на время. В _webdriverio_ мы можем ограничить пропускную способность сети с помощью метода [throttle][throttle] и таким образом протестировать поведение сайта в сетях с разной пропускной способностью.
+
+Помимо индивидуальных настроек метод [throttle][throttle] поддерживает следующие готовые пресеты:
+
+-   offline | online
+-   GPRS
+-   Regular2G | Good2G
+-   Regular3G | Good3G
+-   Regular4G
+-   DSL
+-   WiFi
+
+## Пример 1: эмуляция 2G-соединения {#example_1}
+
+Сэмулируем 2G-соединение и откроем yandex.ru в Хроме с эмуляцией телефона:
+
+```javascript
+it("should open yandex.ru with emulation of 2G-connection", async function () {
+    // Имитируем 2G-соединение
+    await this.browser.throttle("Good2G");
+
+    await this.browser.url("https://yandex.ru");
+});
+```
+
+## Пример 2: эмуляция сети с заданными характеристиками {#example_2}
+
+Также мы можем сэмулировать соединение с конкретными характеристиками:
+
+```javascript
+it("should open yandex.ru with emulation of custom connection", async function () {
+    // Имитируем соединение в сети с заданными характеристиками
+    await this.browser.throttle({
+        offline: false, // имитация отключения от интернета
+        downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (byte/sec)
+        uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (byte/sec)
+        latency: 10, // минимальная задержка от отправки запроса до получения заголовков ответа
+    });
+
+    await this.browser.url("https://yandex.ru");
+});
+```
+
+[how-to-use-cdp]: ../how-to-use-cdp
+[throttle]: ../../commands/browser/throttle

@@ -1,28 +1,28 @@
 # addValue
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `addValue`, чтобы добавить значение в элемент типа `<input>` или `<textarea>`.
+Use the `addValue` command to add a value to an `<input>` or `<textarea>` element.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).addValue(value);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>value</td><td>String или Number</td><td>Значение, которое необходимо добавить.</td></tr>
+<tr><td>value</td><td>String or Number</td><td>The value to add.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should demonstrate the addValue command", async ({ browser }) => {
@@ -35,8 +35,12 @@ it("should demonstrate the addValue command", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [element.clearValue](../clearValue)
 -   [element.setValue](../setValue)
 -   [browser.keys](../../browser/keys)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/addValue), from which we drew some information while writing our version.

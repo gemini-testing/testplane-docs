@@ -1,0 +1,329 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+import Admonition from "@theme/Admonition";
+
+# url-decorator
+
+## Обзор {#overview}
+
+Используйте плагин [url-decorator][url-decorator], чтобы автоматически дополнять урлы в testplane-тестах нужными query-параметрами.
+
+## Установка {#install}
+
+```bash
+npm install -D url-decorator
+```
+
+## Настройка {#setup}
+
+Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+
+```javascript
+module.exports = {
+    plugins: {
+        "url-decorator": {
+            enabled: true,
+            url: {
+                query: [
+                    {
+                        name: "text",
+                        value: "foo",
+                    },
+
+                    // другие query-параметры...
+                ],
+            },
+        },
+
+        // другие плагины testplane...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[enabled](#setup_enabled)</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
+<tr><td>[url](#setup_url)</td><td>Object</td><td>_N/A_</td><td>Объект с описанием query-параметров, которые должны добавляться к каждому урлу в тесте.</td></tr>
+
+</tbody>
+</table>
+
+### enabled {#setup_enabled}
+
+Включить или отключить плагин. По умолчанию: `true`.
+
+### url {#setup_url}
+
+Параметр `url` представляет собой объект с полем `query`, значением которого может быть как массив, так и объект.
+
+<Tabs>
+<TabItem value="query как массив" label="query как массив">
+```javascript
+    module.exports = {
+        plugins: {
+            'url-decorator': {
+                enabled: true,
+                url: {
+                    query: [
+                        {
+                            name: '<param-1>', // укажите имя query-параметра
+                            value: '<param-1-value>', // укажите значение query-параметра
+                            mode: 'concat', // или 'override'
+                            browsers: /.*/ // по умолчанию: для всех браузеров
+                        },
+                        {
+                            name: '<param-2>', // укажите имя query-параметра
+                            value: '<param-2-value>', // укажите значение query-параметра
+                            mode: 'concat', // или 'override'
+                            browsers: /.*/ // по умолчанию: для всех браузеров
+                        },
+
+                        // остальные query-параметры...
+                    ]
+                }
+            },
+
+            // другие плагины testplane...
+        },
+
+        // другие настройки testplane...
+    };
+    ```
+
+</TabItem>
+
+<TabItem value="query как объект" label="query как объект">
+```javascript
+    module.exports = {
+        plugins: {
+            'url-decorator': {
+                enabled: true,
+                url: {
+                    query: {
+                        '<param-1>': { // укажите имя query-параметра
+                            value: '<param-1-value>', // укажите значение query-параметра
+                            mode: 'concat', // или 'override'
+                            browsers: /.*/ // по умолчанию: для всех браузеров
+                        },
+                        '<param-2>': { // укажите имя query-параметра
+                            value: '<param-2-value>', // укажите значение query-параметра
+                            mode: 'concat', // или 'override'
+                            browsers: /.*/ // по умолчанию: для всех браузеров
+                        },
+
+                        // остальные query-параметры...
+                    }
+                },
+            },
+
+            // другие плагины testplane...
+        },
+
+        // другие настройки testplane...
+    };
+    ```
+
+</TabItem>
+
+</Tabs>
+
+Здесь query-параметр — это объект со следующими полями:
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[name](#setup_query_param_name)</td><td>String</td><td>_N/A_</td><td>Имя query-параметра. Если _query_ задается как объект, то это поле не указывается, так как сам ключ является именем query-параметра.</td></tr>
+<tr><td>[value](#setup_query_param_value)</td><td>String или Number или Array</td><td>_N/A_</td><td>Значение query-параметра.</td></tr>
+<tr><td>[mode](#setup_query_param_mode)</td><td>String</td><td>"concat"</td><td>Режим объединения параметров: _concat_ или _override_.</td></tr>
+<tr><td>[browsers](#setup_query_param_browsers)</td><td>String или RegExp или Array</td><td>_N/A_</td><td>Список браузеров, к которым будет применен query-параметр.</td></tr>
+
+</tbody>
+</table>
+
+#### name {#setup_query_param_name}
+
+Имя query-параметра. Если `query` задается как объект, то это поле не указывается, так как сам ключ является именем query-параметра.
+
+#### value {#setup_query_param_value}
+
+Значение query-параметра. Может задаваться как строка, число или массив строк и/или чисел.
+
+#### mode {#setup_query_param_mode}
+
+Режим объединения параметров. Возможны 2 значения: `concat` _(склеивать параметры)_ и `override` _(перетирать параметры)_. По умолчанию: `concat`.
+
+**Режим concat**
+
+Например:
+
+-   вы хотите добавить query-параметр `nick`, который уже есть в урле вашего теста `http://localhost/test/?nick=bilbo`;
+-   при этом вы не хотите, чтобы дополнительное значение параметра `nick` перетерло то значение, что уже есть в урле.
+
+В этом случае вам нужно указать для параметра `mode: 'concat'` или вообще не указывать `mode` (воспользовавшись режимом по умолчанию):
+
+```javascript
+url: {
+    query: [
+        {
+            name: "nick",
+            value: "torin",
+            mode: "concat", // или можно вообще не указывать mode, так как по умолчанию mode = 'concat'
+        },
+    ];
+}
+```
+
+Тогда результирующим урлом в тесте будет: `http://localhost/test/?nick=bilbo&nick=torin`.
+
+Также вы можете указать в значении `value` массив значений для параметра `nick`:
+
+```javascript
+url: {
+    query: [
+        {
+            name: "nick",
+            value: ["torin", "gloin"],
+            mode: "concat", // или можно вообще не указывать mode, так как по умолчанию mode = 'concat'
+        },
+    ];
+}
+```
+
+Тогда результирующим урлом в тесте будет: `http://localhost/test/?nick=bilbo&nick=torin&nick=gloin`.
+
+**Режим override**
+
+Если же вы хотите перетереть параметр `nick`, то нужно установить режим `override`:
+
+```javascript
+url: {
+    query: [
+        {
+            name: "nick",
+            value: "torin",
+            mode: "override",
+        },
+    ];
+}
+```
+
+Тогда результирующим урлом в тесте будет: `http://localhost/test/?nick=torin`.
+
+#### browsers {#setup_query_param_browsers}
+
+Браузер или список браузеров, или паттерн регулярного выражения для браузеров, к которым нужно применять заданные query-параметры. Если параметр `browsers` не указан, то query-параметры будут применяться для всех браузеров.
+
+Ниже приведены примеры задания параметра `browsers` всеми способами:
+
+<Tabs>
+<TabItem value="строка" label="строка">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: 'firefox'
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+<TabItem value="массив строк" label="массив строк">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: ['firefox', 'chrome']
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+<TabItem value="regexp" label="regexp">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: /ie-\d+/  //ie-8, ie-9, ie-10, ...
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+<TabItem value="массив regexp / строк" label="массив regexp / строк">
+```javascript
+    url: {
+        query: [
+            {
+                name: 'nick',
+                value: 'gloin',
+                browsers: [/ie-\d+/, 'firefox']
+            }
+        ]
+    }
+    ```
+</TabItem>
+
+</Tabs>
+
+### Передача параметров через CLI {#setup_by_cli}
+
+#### HERMIONE*URL_QUERY*\*
+
+Чтобы передать дополнительные query-параметры, можно воспользоваться переменными окружения следующего вида:
+
+```bash
+HERMIONE_URL_QUERY_&lt;имя query-параметра>
+```
+
+Например, в вашем тесте открывается урл `http://localhost/test/?tool=testplane`, а вы хотите добавить к урлу query-параметр `text` со значением `ololo` с помощью переменной окружения:
+
+```bash
+HERMIONE_URL_QUERY_TEXT=ololo testplane ...
+```
+
+После этого в вашем тесте будет открываться урл вида: `http://localhost/test/?tool=testplane&text=ololo`.
+
+#### HERMIONE_URL_CUSTOM_QUERIES
+
+Если среди ваших query-параметров есть параметры, которые нельзя выразить в виде переменной окружения (например, `foo-bar`), то вы можете добавить эти параметры через переменную окружения `HERMIONE_URL_CUSTOM_QUERIES`.
+
+В качестве значения используйте строку вида `<query-param-1>=<value-1>;<query-param-2>=<value-2>;`.
+
+Например:
+
+```bash
+HERMIONE_URL_CUSTOM_QUERIES='foo-bar=baz;qux=1' testplane ...
+```
+
+Тогда в вашем тесте будет открываться урл вида: `http://localhost/test/?foo-bar=baz&qux=1`.
+
+<Admonition type="warning">
+    Переменные окружения имеют более высокий приоритет, чем значения соответствующих переменных в
+    конфиге плагина.
+</Admonition>
+
+## Полезные ссылки {#useful_links}
+
+-   [Исходники плагина url-decorator][url-decorator]
+
+[url-decorator]: https://github.com/gemini-testing/url-decorator
+[internal-url-decorator]: ../../plugins/internal-url-decorator

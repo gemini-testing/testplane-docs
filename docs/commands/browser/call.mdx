@@ -1,46 +1,46 @@
 # call
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `call` для выполнения любого асинхронного действия в тестах.
+Use the `call` command to perform any asynchronous action in tests.
 
-Сама команда при этом обрабатывается как синхронная функция. Она принимает промис и останавливает свое выполнение до тех пор, пока промис не будет выполнен.
+This command is treated as a synchronous function. It accepts a promise and halts its execution until the promise is resolved.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.call(callback);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>callback</td><td>Function</td><td>Функция, которую нужно вызвать.</td></tr>
+<tr><td>callback</td><td>Function</td><td>The function to call.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("some testing here", async ({ browser }) => {
     await browser.url("http://google.com");
 
-    // делаем асинхронный вызов с помощью сторонней библиотеки,
-    // поддерживающей промисы, например, вызов к бэкенду или БД,
-    // чтобы сделать инъекцию фикстуры
+    // make an asynchronous call using a third-party library
+    // that supports promises, e.g., a call to a backend or DB
+    // to inject a fixture
     await browser.call(() => {
         return somePromiseLibrary.someMethod().then(() => {
             // ...
         });
     });
 
-    // пример для асинхронного вызова сторонней библиотеки,
-    // не поддерживающей промисы
+    // example for an asynchronous call using a third-party library
+    // that does not support promises
     const result = await browser.call(() => {
         return new Promise((resolve, reject) => {
             someOtherNodeLibrary.someMethod(param1, (err, res) => {
@@ -53,3 +53,7 @@ it("some testing here", async ({ browser }) => {
     });
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/call), from which we drew some information while writing our version.

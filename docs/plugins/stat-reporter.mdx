@@ -5,17 +5,17 @@ import Admonition from "@theme/Admonition";
 
 # stat-reporter
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте плагин [stat-reporter][stat-reporter], чтобы получить отчет(ы) со статистикой прогона тестов в [testplane][testplane].
+Use the [stat-reporter][stat-reporter] plugin to get a report(s) with test run statistics in [testplane][testplane].
 
-Плагин позволяет получать отчет как в консоли, так и в виде html- и/или json-файла. При этом отчеты не взаимоисключающие: после прогона тестов можно получить сразу 3 вида отчетов.
+The plugin allows you to receive a report both in the console and as an html and/or json file. At the same time, the reports are not mutually exclusive: after running the tests, you can get 3 types of reports at once.
 
-### Формат отчета {#report_format}
+### Report format {#report_format}
 
-В отчете плагина результаты прогона тестов разбиты по браузерам. Также выводятся максимальное время выполнения _(Duration)_ в минутах и секундах и результат прогона тестов _(Status)_ в каждом браузере. Такой отчет позволяет понять в каких браузерах возникли проблемы, а именно: не проходит больше всего тестов или время выполнения резко возросло.
+In the plugin report, the test run results are split by browsers. The maximum execution time _(Duration)_ in minutes and seconds and the result of running tests _(Status)_ in each browser are also displayed. Such a report allows you to understand which browsers have problems: the most tests do not pass or the execution time has increased dramatically.
 
-По умолчанию включен только отчет в консоли:
+By default, only the report in the console is enabled:
 
 ```bash
 ┌──────────────────────┬────────┬───────┬────────┬────────┬─────────┬─────────┬──────────┐
@@ -50,40 +50,40 @@ import Admonition from "@theme/Admonition";
 ```
 
 <Admonition type="info">
-    Если вы хотите получить больше функциональности, то используйте [html-reporter][html-reporter]
-    для получения отчета о прогоне тестов.
+    If you want to get more functionality, then use [html-reporter][html-reporter] to get a test run
+    report.
 </Admonition>
 
-## Установка {#install}
+## Install {#install}
 
 ```bash
 npm install -D stat-reporter
 ```
 
-## Настройка {#setup}
+## Setup {#setup}
 
-Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+Add the plugin to the `plugins` section of the `testplane` config:
 
 <Tabs>
-<TabItem value="Минимальный конфиг" label="Минимальный конфиг">
+<TabItem value="Minimum config" label="Minimum config">
 ```javascript
     module.exports = {
         plugins: {
             'stat-reporter': {
                 enabled: true
-                // отчет будет только в консоли
+                // the report will only be in the console
             },
 
-            // другие плагины testplane...
+            // other Testplane plugins...
         },
 
-        // другие настройки testplane...
+        // other Testplane settings...
     };
     ```
 
 </TabItem>
 
-<TabItem value="Максимальный конфиг" label="Максимальный конфиг">
+<TabItem value="Maximum config" label="Maximum config">
 ```javascript
     module.exports = {
         plugins: {
@@ -96,22 +96,22 @@ npm install -D stat-reporter
                     html: {
                         enabled: true,
                         path: 'some/path/to/file.html'
-                        // если не указывать path, то отчет будет сохранен
-                        // в stat-reporter.html в текущей рабочей директории
+                        // if you do not specify path, the report will be saved
+                        // in stat-reporter.html in the current working directory
                     },
                     json: {
                         enabled: true,
                         path: 'some/path/to/file.json'
-                        // если не указывать path, то отчет будет сохранен
-                        // в stat-reporter.json в текущей рабочей директории
+                        // if you do not specify path, the report will be saved
+                        // in stat-reporter.json in the current working directory
                     }
                 }
             },
 
-            // другие плагины testplane...
+            // other Testplane plugins...
         },
 
-        // другие настройки testplane...
+        // other Testplane settings...
     };
     ```
 
@@ -119,77 +119,77 @@ npm install -D stat-reporter
 
 </Tabs>
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Description of configuration parameters {#setup_description}
 
 <table>
 <thead>
-<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+<tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>[enabled](#setup_enabled)</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
-<tr><td>[reporters](#setup_reporters)</td><td>Object</td><td>_см. описание_</td><td>Настройки отчетов со статистикой прогона тестов. По умолчанию включен только отчет в консоли _(flat)_.</td></tr>
+<tr><td>[enabled](#setup_enabled)</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>[reporters](#setup_reporters)</td><td>Object</td><td>_see&nbsp;description_</td><td>Settings for reports with test run statistics. By default, only the report in the console is enabled _(flat)_.</td></tr>
 
 </tbody>
 </table>
 
 ### enabled {#setup_enabled}
 
-Включить или отключить плагин. По умолчанию: `true`.
+Enable or disable the plugin. By default: `true`.
 
 ### reporters {#setup_reporters}
 
-Необязательный параметр. Задает настройки отчетов со статистикой прогона тестов.
+Optional parameter. Sets the settings for reports with test run statistics.
 
-По умолчанию:
+By default:
 
 ```javascript
 {
-    // отчет со статистикой будет только в консоли
+    // the statistics report will only be in the console
     flat: {
         enabled: true;
     }
 }
 ```
 
-Параметр является объектом, в котором ключ определяет тип отчета, а его значение в виде объекта — соответствующие настройки отчета. Можно задать следующие ключи:
+The parameter is an object in which the key determines the type of report, and its value in the form of an object is the corresponding report settings. You can set the following keys:
 
--   _flat_ — для отчета в консоли;
--   _html_ — для html-отчета;
--   _json_ — для json-отчета.
+-   _flat_—for a report in the console;
+-   _html_—for html-report;
+-   _json_—for json-report.
 
-Все отчеты имеют в настройках параметр `enabled` типа `Boolean`, который определяет включен отчет или отключен. По умолчанию включен только отчет в консоли.
+All reports in the settings have an `enabled` parameter of the `Boolean` type, which determines whether the report is enabled or disabled. By default, only the report in the console is enabled.
 
-Также отчеты типа `html` и `json` имеют дополнительный параметр `path` — путь к файлу, в который необходимо сохранить отчет.
+Also, reports of the type `html` and `json` have an additional parameter `path`—the path to the file to which you want to save the report.
 
-По умолчанию отчет сохраняется в текущей рабочей директории в файл `stat-reporter.html` или `stat-reporter.json` в зависимости от типа отчета.
+By default, the report is saved in the current working directory to a file `stat-reporter.html` or `stat-reporter.json` depending on the type of report.
 
-### Передача параметров через CLI {#setup_by_cli}
+### Passing parameters via the CLI {#setup_by_cli}
 
-Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--stat-reporter-` для опций командной строки и `stat_reporter_` — для переменных окружения. Например:
+All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--stat-reporter-` for command line options and `stat_reporter_` for environment variables. For example:
 
 ```bash
-npx testplane --stat-reporter-reporters-html-enabled=true
+npx testplane --stat-reporter-reporters-html-enabled=true ...
 ```
 
 ```bash
-stat_reporter_reporters_html_enabled = true npx testplane
+stat_reporter_reporters_html_enabled = true npx testplane ...
 ```
 
-## Команды плагина {#commands}
+## Commands {#commands}
 
 ### merge-stat-reports {#commands_merge_stat_reports}
 
-Плагин добавляет к testplane команду `merge-stat-reports`, с помощью которой можно объединить несколько отчетов в один общий отчет как в html, так и в json-формате. При этом команда позволяет получить на выходе итоговые отчеты сразу в двух форматах.
+The plugin adds the `merge-stat-reports` command to Testplane, with which you can merge several reports into one report in both html and json format. At the same time, the command allows you to get the output of the final reports in two formats at once.
 
-Для сохранения итогового отчета в требуемом формате нужно указать соответствующую опцию: `--html` или `--json`.
+To save the final report in the required format, you need to specify the appropriate option: `--html` or `--json`.
 
 ```bash
 npx testplane merge-stat-reports src-report-1.json src-report-2.json --html dest-html-report --json report.json
 ```
 
-## Полезные ссылки {#useful_links}
+## Useful links {#useful_links}
 
--   [Исходники плагина stat-reporter][stat-reporter]
+-   [stat-reporter plugin sources][stat-reporter]
 
 [stat-reporter]: https://github.com/gemini-testing/stat-reporter
 [html-reporter]: ../../html-reporter/html-reporter-setup

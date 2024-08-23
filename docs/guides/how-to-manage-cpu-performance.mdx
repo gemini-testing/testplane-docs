@@ -1,62 +1,62 @@
 import Admonition from "@theme/Admonition";
 
-# Как управлять быстродействием процессора
+# How to Manage CPU Performance
 
-## Обзор {#overview}
+## Overview {#overview}
 
 <Admonition type="warning">
-Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
+This recipe only works when using _Chrome DevTools Protocol (CDP)_.
 
-Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]»
+Read details in the section “[How to Use CDP in Testplane][how-to-use-cdp]”
 
 </Admonition>
 
-Скорость работы процессора на мобильных устройствах сильно уступает скорости на компьютерах. Поэтому для эмуляции скорости CPU в _puppeteer_ существует метод [emulateCPUThrottling][emulate-cpu-throttling].
+The CPU speed on mobile devices is significantly slower than on computers. Therefore, to emulate CPU speed in _puppeteer_, there is a method called [emulateCPUThrottling][emulate-cpu-throttling].
 
-## Пример: замедляем скорость процессора в 8 раз {#example}
+## Example: Slowing Down CPU Speed by 8x {#example}
 
-Воспользуемся этим методом, чтобы замедлить скорость процессора в 8 раз:
+Let's use this method to slow down CPU speed by 8 times:
 
 ```javascript
 it("should open yandex.ru with emulation 8x slower CPU", async function () {
-    // Получаем инстанс puppeteer'а
+    // Get puppeteer instance
     const puppeteer = await this.browser.getPuppeteer();
 
-    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
+    // Get the first open page (considering it to be currently active)
     const [page] = await puppeteer.pages();
 
-    // Замедляем скорость процессора в 8 раз
+    // Slow down the CPU speed by 8 times
     await page.emulateCPUThrottling(8);
 
     await this.browser.url("https://yandex.ru");
 });
 ```
 
-## Небольшая история об одном обходном пути {#workaround_in_the_past}
+## A Small Story About a Workaround {#workaround_in_the_past}
 
-Изначально в _webdriverio_ не было поддержки метода `page.emulateCPUThrottling`, так как в _webdriverio_ использовалась версия _puppeteer-core@9.1.0,_ а не _puppeteer-core@10.1.0_, в которой этот метод был поддержан.
+Initially, _webdriverio_ did not support the `page.emulateCPUThrottling` method because _webdriverio_ used _puppeteer-core@9.1.0,_ not _puppeteer-core@10.1.0_, which supports this method.
 
-Однако это ограничение можно было обойти с помощью метода _puppeteer_ [CDPSession.send()][cdp-session-send], отправив браузеру команду [Emulation.setCPUThrottlingRate][emulation-set-cpu-throttling-rate] по CDP:
+However, this limitation could be bypassed using puppeteer's [CDPSession.send()][cdp-session-send] method by sending the browser the [Emulation.setCPUThrottlingRate][emulation-set-cpu-throttling-rate] command via CDP:
 
 ```javascript
 it("should open yandex.ru with emulation 8x slower CPU", async function () {
-    // Получаем инстанс puppeteer'а
+    // Get puppeteer instance
     const puppeteer = await this.browser.getPuppeteer();
 
-    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
+    // Get the first open page (considering it to be currently active)
     const [page] = await puppeteer.pages();
 
-    // Создаем CDP-сессию
+    // Create a CDP session
     const client = await page.target().createCDPSession();
 
-    // Замедляем скорость процессора в 8 раз
+    // Slow down the CPU speed by 8 times
     await client.send("Emulation.setCPUThrottlingRate", { rate: 8 });
 
     await this.browser.url("https://yandex.ru");
 });
 ```
 
-Позже мы донесли в _webdriverio_ необходимый [пулл-реквест](https://github.com/webdriverio/webdriverio/pull/7135) с апдейтом версии _puppeteer-core_ и теперь метод [emulateCPUThrottling][emulate-cpu-throttling] доступен в testplane прямо из коробки.
+Later, we submitted a requisite [pull request](https://github.com/webdriverio/webdriverio/pull/7135) to _webdriverio_ to update the version of _puppeteer-core_. Now, the [emulateCPUThrottling][emulate-cpu-throttling] method is available in Testplane right out of the box.
 
 [how-to-use-cdp]: ../how-to-use-cdp
 [emulate-cpu-throttling]: https://pptr.dev/api/puppeteer.page.emulatecputhrottling

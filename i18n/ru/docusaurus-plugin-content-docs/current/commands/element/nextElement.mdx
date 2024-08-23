@@ -1,0 +1,39 @@
+# nextElement
+
+## Обзор {#overview}
+
+Используйте команду `nextElement`, чтобы получить следующий дочерний элемент выбранного DOM-элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).nextElement();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<div class="parent">
+    <p>Sibling One</p>
+    <p>Sibling Two</p>
+    <p>Sibling Three</p>
+</div>
+```
+
+**nextElement.js**
+
+```javascript
+it("should get text from next sibling element", async ({ browser }) => {
+    const elem = await browser.$$("p");
+    const nextElement = await elem[1].nextElement();
+
+    console.log(await nextElement.getText()); // выведет: "Sibling Three"
+});
+```
+
+## Связанные команды {#related}
+
+-   [parentElement](../parentElement)
+-   [previousElement](../previousElement)

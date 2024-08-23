@@ -1,41 +1,41 @@
 # execute
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте `execute`, чтобы выполнить _синхронно_ указанный JavaScript-код на странице текущего выбранного фрейма.
+Use `execute` to _synchronously_ execute the specified JavaScript code in the context of the currently selected frame.
 
-Команда возвращает клиенту результат выполнения скрипта.
+The command returns the result of the script execution to the client.
 
-Аргумент `script` определяет сценарий для выполнения в виде тела функции. Значение, возвращаемое этой функцией, будет возвращено клиенту. Функция будет вызвана с предоставленным массивом `args`, и доступ к значениям может быть получен через объект `arguments` в указанном порядке.
+The `script` argument defines the script to be executed as the body of a function. The value returned by this function will be returned to the client. The function will be invoked with the provided array of `args`, and access to the values can be obtained through the `arguments` object in the specified order.
 
-Аргументами могут быть любые JSON-примитивы, массивы или объекты JSON. Объекты JSON, которые определяют ссылку на _WebElement,_ будут преобразованы в соответствующий элемент DOM. Аналогично, любые _WebElements_ в результате скрипта будут возвращены клиенту в виде объектов _WebElement JSON_.
+Arguments can be any JSON primitives, arrays, or JSON objects. JSON objects that define a reference to a _WebElement_ will be converted to the corresponding DOM element. Similarly, any _WebElements_ in the script result will be returned to the client as _WebElement JSON_ objects.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.execute(script, arguments);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>script</td><td>String или Function</td><td>Скрипт, который необходимо выполнить.</td></tr>
-<tr><td>arguments</td><td>Any</td><td>Необязательный параметр. Аргументы для скрипта.</td></tr>
+<tr><td>script</td><td>String or Function</td><td>The script to be executed.</td></tr>
+<tr><td>arguments</td><td>Any</td><td>Optional parameter. Arguments for the script.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should inject javascript on the page", async ({ browser }) => {
     const result = await browser.execute(
         (a, b, c, d) => {
-            // здесь мы в browser-контексте: доступа к консоли и к клиенту у нас нет
+            // here we are in the browser context: no access to console or client
             return a + b + c + d;
         },
         1,
@@ -44,12 +44,16 @@ it("should inject javascript on the page", async ({ browser }) => {
         4,
     );
 
-    // здесь мы в node.js-контексте: доступ к консоли и к клиенту у нас есть
-    console.log(result); // выведет: 10
+    // here we are in the node.js context: access to console and client is available
+    console.log(result); // outputs: 10
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [executeAsync](../executeAsync)
 -   [setTimeout](../setTimeout)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/execute), from which we drew some information while writing our version.

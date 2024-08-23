@@ -2,46 +2,46 @@ import Admonition from "@theme/Admonition";
 
 # action
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `action`, чтобы выполнить действия ввода в одном из виртуализируемых устройств в веб-браузере.
+Use the `action` command to perform input actions on one of the virtualizable devices in the web browser.
 
-В отличие от высокоуровневых команд [scrollIntoView][scrollIntoView] и [doubleClick][doubleClick], Actions API обеспечивает более гранулярное управление устройствами ввода. Доступны следующие источники ввода:
+Unlike high-level commands like [scrollIntoView][scrollIntoView] and [doubleClick][doubleClick], the Actions API provides more granular control of input devices. The following input sources are available:
 
--   ввод текста с клавиатуры для клавиатурных устройств;
--   управление мышью, пером или сенсорным устройством;
--   управление скроллом для устройств с колесом прокрутки.
+-   text input for keyboard devices;
+-   control of mouse, pen, or touch device;
+-   scroll control for devices with a scroll wheel.
 
-Каждая цепочка вызовов `action` команд должна завершаться вызовом команды `perform`, чтобы начать выполнение указанного набора действий. Также это приводит к высвобождению всех нажатых клавиш, кнопок и т.д. на виртуальных устройствах ввода и запускает необходимые события. Высвобождение можно пропустить, передав аргумент `true` в команду `perform`. Пример:
+Each chain of `action` commands must end with a `perform` command to execute the specified set of actions. This also releases all pressed keys, buttons, etc., on virtual input devices and triggers the necessary events. The release can be skipped by passing the argument `true` to the `perform` command. Example:
 
 ```typescript
 await browser.action(...).perform(true);
 ```
 
 <Admonition type="info">
-    Поддержка данной команды и конкретных действий может различаться в зависимости от среды
-    выполнения. За ходом разработки можно следить на [wpt.fyi][web-platform-tests]. Для мобильных
-    устройств вы можете использовать специальные команды жестов [Appium][appium] на
-    [iOS][appium-ios] и [Android][appium-android].
+    Support for this command and specific actions may vary depending on the execution environment.
+    The development progress can be tracked on [wpt.fyi][web-platform-tests]. For mobile devices,
+    you can use specialized gesture commands with [Appium][appium] on [iOS][appium-ios] and
+    [Android][appium-android].
 </Admonition>
 
-## Управление клавиатурой {#keyboard_control}
+## Keyboard Control {#keyboard_control}
 
-Используется при указании `key` в качестве аргумента команды `action`. Пример:
+Used when specifying `key` as the argument for the `action` command. Example:
 
 ```typescript
 await browser.action("key");
 ```
 
-Возвращает объект `KeyAction`, который поддерживает следующие действия:
+Returns a `KeyAction` object that supports the following actions:
 
--   `down(value: string)` — создает действие нажатия клавиши;
--   `up(value: string)` — создает действие отпускания клавиши;
--   `pause(ms: number)` — указывает, что источник ввода ничего не делает указанное количество времени.
+-   `down(value: string)` — creates a key press action;
+-   `up(value: string)` — creates a key release action;
+-   `pause(ms: number)` — specifies that the input source does nothing for the specified amount of time.
 
-### Специальные символы {#special_symbols}
+### Special Symbols {#special_symbols}
 
-Для использования специальных символов (`Control`, `Page Up`, `Shift` и т.д.) можно использовать объект `Key` из пакета [webdriverio][webdriverio-npm]. В нем содержатся unicode представления всех нужных специальных символов. Пример:
+To use special symbols (`Control`, `Page Up`, `Shift`, etc.), you can use the `Key` object from the [webdriverio][webdriverio-npm] package. It contains Unicode representations of all necessary special symbols. Example:
 
 ```typescript
 import { Key } from "webdriverio";
@@ -49,50 +49,50 @@ import { Key } from "webdriverio";
 await browser.action("key").down(Key.Ctrl).perform();
 ```
 
-### Примеры использования {#keyboard_examples}
+### Usage Examples {#keyboard_examples}
 
 ```typescript
 import { Key } from "webdriverio";
 
 it("should emit key events using key action commands", async ({ browser }) => {
     const elem = await browser.$("input");
-    await elem.click(); // сделать элемент активным
+    await elem.click(); // make the element active
 
     await browser.action("key").down("f").down("o").down("o").up("f").up("o").up("o").perform();
 
-    console.log(await elem.getValue()); // возвращает "foo"
+    console.log(await elem.getValue()); // returns "foo"
 
-    // скопировать значение из элемента input
+    // copy value from input element
     await browser.action("key").down(Key.Ctrl).down("c").pause(10).up(Key.Ctrl).up("c").perform();
 });
 ```
 
-Вместо серии `down/up` событий лучше использовать команду `setValue`. Пример исключительно для демонстрации принципов работы команды `action`.
+Instead of a series of `down/up` events, it is better to use the `setValue` command. The example is purely for demonstrating the principles of the `action` command.
 
-## Управление указателем {#pointer_control}
+## Pointer Control {#pointer_control}
 
-Используется при указании `pointer` в качестве аргумента команды `action`, также можно указать тип указателя. Пример:
+Used when specifying `pointer` as the argument for the `action` command, and you can also specify the pointer type. Example:
 
 ```typescript
 await browser.action("pointer", {
-    parameters: { pointerType: "mouse" }, // "mouse" значение по умолчанию, также доступны: "pen" or "touch"
+    parameters: { pointerType: "mouse" }, // "mouse" is the default value, also available: "pen" or "touch"
 });
 ```
 
-Возвращает объект `PointerAction`, который поддерживает следующие действия:
+Returns a `PointerAction` object that supports the following actions:
 
--   `down(button: 'left' | 'middle' | 'right')` — создает действие для нажатия одной клавиши;
--   `down(params: PointerActionParams)` — создает действие для нажатия одной клавиши с подробными параметрами;
--   `move(x: number, y: number)` — создает действие для перемещения указателя на `x` и `y` пикселей относительно вьюпорта;
--   `move(params: PointerActionMoveParams)` — создает действие для перемещения указателя на `x` и `y` пикселей из указанного начала координат. Начало координат может быть определено как текущая позиция указателя, вьюпорта или центр определенного элемента;
--   `up(button: 'left' | 'middle' | 'right')` — создает действие для отпускания одной клавиши;
--   `up(params: PointerActionUpParams)` — создает действие для отпускания одной клавиши с подробными параметрами;
--   `cancel()` — создает действие, которое отменяет текущее положение указателя;
--   `pause(ms: number)` — указывает, что источник ввода ничего не делает указанное количество времени.
+-   `down(button: 'left' | 'middle' | 'right')` — creates an action to press a key;
+-   `down(params: PointerActionParams)` — creates an action to press a key with detailed parameters;
+-   `move(x: number, y: number)` — creates an action to move the pointer by `x` and `y` pixels relative to the viewport;
+-   `move(params: PointerActionMoveParams)` — creates an action to move the pointer by `x` and `y` pixels from the specified origin. The origin can be defined as the current pointer position, the viewport, or the center of a specific element;
+-   `up(button: 'left' | 'middle' | 'right')` — creates an action to release a key;
+-   `up(params: PointerActionUpParams)` — creates an action to release a key with detailed parameters;
+-   `cancel()` — creates an action that cancels the current pointer position;
+-   `pause(ms: number)` — specifies that the input source does nothing for the specified amount of time.
 
-Подробную информацию о типах параметров [PointerActionParams][pointer-action-params], [PointerActionMoveParams][pointer-action-move-params] и [PointerActionUpParams][pointer-action-up-params] можно найти в исходном коде webdriverio.
+Detailed information on the parameter types [PointerActionParams][pointer-action-params], [PointerActionMoveParams][pointer-action-move-params], and [PointerActionUpParams][pointer-action-up-params] can be found in the webdriverio source code.
 
-### Примеры использования {#pointer_examples}
+### Usage Examples {#pointer_examples}
 
 ```typescript
 it("drag and drop using pointer action command", async ({ browser }) => {
@@ -102,7 +102,7 @@ it("drag and drop using pointer action command", async ({ browser }) => {
     await browser
         .action("pointer")
         .move({ duration: 0, origin, x: 0, y: 0 })
-        .down({ button: 0 }) // левая кнопка
+        .down({ button: 0 }) // left button
         .pause(10)
         .move({ duration: 0, origin: targetOrigin })
         .up({ button: 0 })
@@ -110,26 +110,26 @@ it("drag and drop using pointer action command", async ({ browser }) => {
 });
 ```
 
-## Управление колесом прокрутки {#scroll_wheel_control}
+## Scroll Wheel Control {#scroll_wheel_control}
 
-Используется при указании `wheel` в качестве аргумента команды `action`. Пример:
+Used when specifying `wheel` as the argument for the `action` command. Example:
 
 ```typescript
 await browser.action("wheel");
 ```
 
-Возвращает объект `WheelAction`, который поддерживает следующие действия:
+Returns a `WheelAction` object that supports the following actions:
 
--   `scroll(params: ScrollParams)` — прокручивает страницу до указанных координат или до начала координат;
--   `pause(ms: number)` — указывает, что источник ввода ничего не делает указанное количество времени.
+-   `scroll(params: ScrollParams)` — scrolls the page to the specified coordinates or origin;
+-   `pause(ms: number)` — specifies that the input source does nothing for the specified amount of time.
 
-Подробную информацию о типе параметра [ScrollParams][scroll-params] можно найти в исходном коде webdriverio.
+Detailed information on the parameter type [ScrollParams][scroll-params] can be found in the webdriverio source code.
 
-### Примеры использования {#scroll_examples}
+### Usage Examples {#scroll_examples}
 
 ```typescript
 it("should scroll using wheel action commands", async ({ browser }) => {
-    console.log(await browser.execute(() => window.scrollY)); // возвращает 0
+    console.log(await browser.execute(() => window.scrollY)); // returns 0
 
     await browser
         .action("wheel")
@@ -140,13 +140,17 @@ it("should scroll using wheel action commands", async ({ browser }) => {
         })
         .perform();
 
-    console.log(await browser.execute(() => window.scrollY)); // возвращает 500
+    console.log(await browser.execute(() => window.scrollY)); // returns 500
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [actions](../actions)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/action), from which we drew some information while writing our version.
 
 [scrollIntoView]: ../../element/scrollIntoView
 [doubleClick]: ../../element/doubleClick

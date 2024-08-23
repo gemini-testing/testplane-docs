@@ -1,26 +1,26 @@
 # getConfig
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `getConfig`, чтобы получить [конфиг][browser-config] браузера.
+Use the `getConfig` command to get the browser [config][browser-config].
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.getConfig();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("some test", async ({ browser }) => {
     const browserConfig = await browser.getConfig();
     console.log(browserConfig.id);
-    // выведет: "chromeDesktop" – название конфигурации браузера, указанное в конфиге
+    // outputs: "chromeDesktop" – the name of the browser configuration specified in the config
 
     const { browserName } = browserConfig.desiredCapabilities;
     console.log(browserName);
-    // выведет: "chrome" – фактическое название браузера
+    // outputs: "chrome" – the actual name of the browser
 });
 ```
 

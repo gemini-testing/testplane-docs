@@ -1,0 +1,77 @@
+import Admonition from "@theme/Admonition";
+
+# Как обновить hermione до версии 5.x
+
+<Admonition type="warning">
+Если в вашем проекте hermione младше 4-й версии, то прочтите «[Как обновить hermione до версии 4.x][how-to-upgrade-hermione-to-4]», прежде чем обновлять hermione до 5-й версии.
+
+Мы рекомендуем вам обновлять hermione поэтапно, убеждаясь на каждом этапе, что все тесты проекта корректно выполняются.
+
+</Admonition>
+
+## Что изменилось? {#what_is_new}
+
+### Новые дефолты в конфиге {#changes_in_config_options}
+
+Первое, на что стоит обратить внимание при переезде, — это изменение дефолтных значений некоторых опций в конфиге. Все изменения направлены на то, чтобы при базовой настройке hermione тесты проходили быстрее, а после прогона оставалось больше информации о тестах.
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Было**</td><td>**Стало**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[antialiasingTolerance][antialiasing-tolerance]</td><td>0</td><td>4</td><td>Задает чувствительность определения антиалиасинга, который будет игнорироваться при сравнении скриншотов.</td></tr>
+<tr><td>[compositeImage][composite-image]</td><td>false</td><td>true</td><td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td></tr>
+<tr><td>[saveHistory][save-history]</td><td>false</td><td>true</td><td>Сохранять историю всех выполненных команд.</td></tr>
+<tr><td>[takeScreenshotOnFails.assertViewFail][take-screenshot-on-fails-assert-view-fail]</td><td>false</td><td>true</td><td>Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении теста, а также при падении команды _assertView_.</td></tr>
+<tr><td>[takeScreenshotOnFailsMode][take-screenshot-on-fails-mode]</td><td>"viewport"</td><td>"fullpage"</td><td>Режим снятия скриншота при падении теста. Доступные значения: _viewport_ и _fullpage_.</td></tr>
+<tr><td>[takeScreenshotOnFailsTimeout][take-screenshot-on-fails-timeout]</td><td>90000</td><td>5000</td><td>Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении теста, в мс.</td></tr>
+<tr><td>[httpTimeout][http-timeout]</td><td>90000</td><td>30000</td><td>Таймаут для любых запросов к Selenium-серверу, в мс.</td></tr>
+<tr><td>[pageLoadTimeout][page-load-timeout]</td><td>300000</td><td>20000</td><td>Таймаут для полной загрузки страницы, в мс.</td></tr>
+<tr><td>[sessionQuitTimeout][session-quit-timeout]</td><td>90000</td><td>5000</td><td>Таймаут для завершения сессии, в мс.</td></tr>
+
+</tbody>
+</table>
+
+Кроме этого, удалены опции `screenshotOnReject` и `screenshotOnRejectTimeout`, которые ранее были объявлены как устаревшие _(deprecated)_.
+
+Подробнее про все эти опции можно почитать [здесь][config-browsers]. Если новые значения вас устраивают и нет явных причин их переопределять, то этот пункт при миграции можно пропустить.
+
+### Отчеты в CLI {#changes_in_reporters}
+
+В данном разделе речь идет не про html-отчет, а про CLI-репортеры, которые поставляются из коробки.
+
+-   Удален teamcity-репортер, т. к. в самой hermione он смотрелся чужеродно. Если вы всё же используете такой отчет, то можно использовать плагин [hermione-teamcity-reporter][hermione-teamcity-reporter].
+-   Опция `-r`, с помощью которой раньше можно было указать тип репортера, теперь этим не занимается. Чаще всего такое сокращение имени используется для опции `--require`. Многие путались в этом месте и мы решили это поправить. Сам репортер вы всё еще можете указать при помощи опции `--reporter`.
+-   Если вы захотите добавить свой репортер, то в его реализации обязательно должен быть метод `create` для инициализации.
+
+Итого, если вы не использовали teamcity-репортер или не писали свои новые, то этот пункт при миграции можно пропустить.
+
+### testParserAPI {#changes_in_test_parser_api}
+
+Теперь объект [testParser][test-parser], который можно было получить, подписавшись на событие [BEFORE_FILE_READ][before-file-read], не является инстансом `EventEmitter`. Это значит, что теперь нельзя с помощью него подписаться на события [SUITE_BEGIN][event-suite-begin] и [TEST_BEGIN][event-test-begin].
+
+Справедливости ради, оно изначально работало неправильно и никто это не использовал. Поэтому, эта возможность была удалена. Про все доступные события можно почитать [здесь][hermione-events].
+
+## Поддержка {#support}
+
+Если при переезде на новую версию вы столкнетесь с проблемами, или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] — и мы обязательно вам поможем!
+
+[how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
+[config-browsers]: ../../config/browsers
+[hermione-teamcity-reporter]: https://github.com/gemini-testing/hermione-teamcity-reporter
+[before-file-read]: ../../reference/testplane-events#before_file_read
+[event-suite-begin]: ../../reference/testplane-events#suite_begin
+[event-test-begin]: ../../reference/testplane-events#test_begin
+[test-parser]: ../../reference/testplane-events#test_parser
+[hermione-events]: ../../reference/testplane-events
+[antialiasing-tolerance]: ../../config/browsers#antialiasing_tolerance
+[composite-image]: ../../config/browsers#composite_image
+[take-screenshot-on-fails-assert-view-fail]: ../../config/browsers#take_screenshot_on_fails
+[take-screenshot-on-fails-mode]: ../../config/browsers#take_screenshot_on_fails_mode
+[take-screenshot-on-fails-timeout]: ../../config/browsers#take_screenshot_on_fails_timeout
+[http-timeout]: ../../config/browsers#http_timeout
+[page-load-timeout]: ../../config/browsers#page_load_timeout
+[session-quit-timeout]: ../../config/browsers#session_quit_timeout
+[save-history]: ../../config/browsers#save_history
+[gh-issues]: https://github.com/gemini-testing/testplane/issues/

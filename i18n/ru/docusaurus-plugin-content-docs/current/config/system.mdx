@@ -1,0 +1,166 @@
+import Admonition from "@theme/Admonition";
+import SystemExample from "@site/docs/config/_partials/examples/_system-example.mdx";
+import TestRunEnvExample from "@site/docs/config/_partials/examples/_system-test-run-env.mdx";
+
+# system
+
+## Обзор {#overview}
+
+Раздел `system` в настройках Testplane не является обязательным.
+
+Используйте его, чтобы:
+
+-   включить режим дебага для WebDriver'а;
+-   изменить mocha-таймауты для тестов;
+-   занести какие-либо данные в глобальный контекст, который будут видеть все тесты;
+-   задать типы ошибок, при которых нужно закрывать текущую сессию браузера навсегда, а не пытаться её переиспользовать;
+-   задать число подпроцессов, в которых будут запускаться тесты, чтобы ускорить их выполнение;
+-   определить максимально доступное количество браузеров в один момент времени (может быть актуально, если вы получаете браузеры из облачного сервиса, где есть такие ограничения);
+-   задать расширения файлов, среди которых Testplane будет искать тесты;
+-   и т. д.
+
+Пример конфигурации секции `system`:
+
+<SystemExample />
+
+## Справка по секции system {#setup_description}
+
+<table>
+    <thead>
+        <tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+    </thead>
+    <tbody>
+        <tr><td>[`debug`](#debug)</td><td>`boolean`</td><td>`false`</td><td>Включить / отключить режим отладки для WebDriver.</td></tr>
+        <tr><td>[`expectOpts`](#expect_opts)</td><td>`ExpectOpts`</td><td>_[см. ниже](#expect_opts)_</td><td>Опции expect-webdriverio.</td></tr>
+        <tr><td>[`mochaOpts`](#mocha_opts)</td><td>`MochaOpts`</td><td>_[см. ниже](#mocha_opts)_</td><td>Дополнительные опции для _mocha_.</td></tr>
+        <tr><td>[`ctx`](#ctx)</td><td>`Record<string, any>`</td><td>`{ }`</td><td>Контекст, который будет доступен во всех тестах через метод _testplane.ctx._</td></tr>
+        <tr><td>[`patternsOnReject`](#patterns_on_reject)</td><td>`RegExp[]`</td><td>`[ ]`</td><td>Список шаблонов ошибок. Сессия будет закрыта, если тест упадет с ошибкой, соответствующей одному из указанных шаблонов. После чего будет создана новая сессия, чтобы исключить инфраструктурные проблемы.</td></tr>
+        <tr><td>[`workers`](#workers)</td><td>`number`</td><td>`1`</td><td>Число подпроцессов, которые будут запущены для выполнения тестов.</td></tr>
+        <tr><td>[`testsPerWorker`](#tests_per_worker)</td><td>`number`</td><td>`Infinity`</td><td>Максимальное количество тестов, которые будут запущены в одном подпроцессе, прежде чем подпроцесс будет перезапущен.</td></tr>
+        <tr><td>[`diffColor`](#diff_color)</td><td>`string`</td><td>`"#ff00ff"`</td><td>Цвет, которым нужно отображать дифф на скриншотах.</td></tr>
+        <tr><td>[`parallelLimit`](#parallel_limit)</td><td>`number`</td><td>`1`</td><td>Максимальное количество браузеров, которые могут быть запущены одновременно.</td></tr>
+        <tr><td>[`fileExtensions`](#file_extensions)</td><td>`string[]`</td><td>`[".js", ".mjs", ".ts", ".mts", ".jsx", ".tsx"]`</td><td>Расширения файлов, в которых Testplane будет искать тесты для запуска.</td></tr>
+        <tr><td>[`testRunEnv`](#testrunenv)</td><td>`nodejs` или `browser` или `Array`</td><td>`nodejs`</td><td>Возможно указать в каком окружении должны выполняться тесты.</td></tr>
+    </tbody>
+</table>
+
+### debug {#debug}
+
+Включает режим отладки для WebDriver, если установить значение в `true`. В этом режиме в консоль будет выводиться подробная информация о каждой команде, отправленной браузеру.
+
+По умолчанию: `false`.
+
+### expectOpts {#expect_opts}
+
+Опции для [expect-webdriverio](https://webdriver.io/docs/api/expect-webdriverio/). Позволяют менять тайм-аут и интервал между попытками найти элемент.
+
+По умолчанию:
+
+```typescript
+const defaultExpectOpts = {
+    wait: 3000,
+    interval: 100,
+};
+```
+
+### mochaOpts {#mocha_opts}
+
+Дополнительные опции для `mocha`, которые передаются в `mocha.setup`. См. список доступных опций в [документации для Mocha](https://mochajs.org/). По умолчанию: `{ timeout: 60000 }`.
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    system: {
+        mochaOpts: {
+            timeout: 60000,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+### ctx {#ctx}
+
+Контекст, который будет доступен во всех тестах через метод `testplane.ctx`. Предназначен для совместного использования каких-либо данных между всеми тестами, без необходимости прибегать к использованию глобальных переменных.
+
+Пример использования:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    system: {
+        ctx: {
+            services: ["video", "images"],
+        },
+    },
+} satisfies ConfigInput;
+```
+
+```typescript
+it("awesome test", function () {
+    console.log(testplane.ctx); // { services: ['video', 'images'] }
+});
+```
+
+<Admonition type="tip">
+    Используйте в тестах _testplane.ctx_ вместо глобальных переменных.
+</Admonition>
+
+### patternsOnReject {#patterns_on_reject}
+
+Сессия будет закрыта, если тест упадет с ошибкой, соответствующей одному из указанных шаблонов в `patternsOnReject`. После чего будет создана новая сессия, чтобы исключить инфраструктурные проблемы.
+
+Пример:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    system: {
+        patternsOnReject: [/timeout/i, /timedout/i, /timed out/i],
+    },
+} satisfies ConfigInput;
+```
+
+### workers {#workers}
+
+Testplane запускает все тесты в подпроцессах, чтобы уменьшить использование CPU для главного процесса и не упираться в ограничение по памяти для _Node.js._ Данная опция задает число подпроцессов, которые будут запущены для выполнения тестов. По умолчанию: `1`.
+
+### testsPerWorker {#tests_per_worker}
+
+Максимальное количество тестов, которые будут запущены в одном подпроцессе, прежде чем подпроцесс будет перезапущен. По умолчанию: `Infinity`.
+
+### diffColor {#diff_color}
+
+Цвет для отображения диффа при визуальных проверках с помощью команды [`browser.assertView`](../../commands/browser/assertView).
+
+По умолчанию: `"#ff00ff"`.
+
+### parallelLimit {#parallel_limit}
+
+По умолчанию Testplane запускает все браузеры одновременно. Иногда (например, при использовании облачных сервисов, таких как [SauceLabs][sauce-labs]) вам может понадобиться ограничить количество браузеров, которые могут быть запущены одновременно. Данная опция задает это ограничение. По умолчанию: `Infinity`.
+
+### fileExtensions {#file_extensions}
+
+Расширения файлов, в которых Testplane будет искать на файловой системе тесты для запуска. По умолчанию: `[".js", ".mjs", ".ts", ".mts", ".jsx", ".tsx"]`.
+
+### testRunEnv
+
+Позволяют указать, в каком окружении необходимо запускать тесты. Доступны следующие окружения:
+
+-   `nodejs` — Testplane будет запускать тесты в Node.
+-   `browser` — Testplane будет запускать тесты в браузере.
+
+При использовании значения `browser` можно указать дополнительные опции:
+
+-   `viteConfig` — кастомный [конфиг Vite](https://vitejs.dev/config/). Можно указать строку — путь к файлу конфигурации, объект — [UserConfig](https://github.com/vitejs/vite/blob/v5.1.6/packages/vite/src/node/config.ts#L127-L282) или функцию — с типом `(env: ConfigEnv) => UserConfig | Promise<UserConfig>`.
+
+Примеры использования:
+
+<TestRunEnvExample />
+
+[sauce-labs]: https://saucelabs.com

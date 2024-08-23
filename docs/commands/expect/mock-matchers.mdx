@@ -1,10 +1,10 @@
-# expect для моков сети
+# expect for network mocks
 
 ## toBeRequested
 
-Проверяет, был ли сделан указанный запрос.
+Checks if the specified request was made.
 
-Например:
+For example:
 
 ```javascript
 const mock = browser.mock("**/api/todo*");
@@ -13,30 +13,30 @@ await expect(mock).toBeRequested();
 
 ## toBeRequestedTimes
 
-Проверяет, был ли сделан указанный запрос ожидаемое количество раз.
+Checks if the specified request was made the expected number of times.
 
-Например:
+For example:
 
 ```javascript
 const mock = browser.mock("**/api/todo*");
 await expect(mock).toBeRequestedTimes(2);
-// или, что то же самое:
+// or, equivalently:
 await expect(mock).toBeRequestedTimes({ eq: 2 });
 ```
 
 ```javascript
 const mock = browser.mock("**/api/todo*");
-// проверяем, что запрос был сделан как минимум 5 раз, но не больше 10 раз
+// Check if the request was made at least 5 times but no more than 10 times
 await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 });
 ```
 
 ## toBeRequestedWith
 
-Проверяет, был ли сделан указанный запрос с заданными опциями.
+Checks if the specified request was made with the given options.
 
-Большинство опций поддерживают частичные матчеры _expect.* / jasmine.*_ такие как [expect.objectContaining](https://jestjs.io/docs/expect#expectobjectcontainingobject).
+Most options support partial matchers _expect.* / jasmine.*_ such as [expect.objectContaining](https://jestjs.io/docs/expect#expectobjectcontainingobject).
 
-Например:
+For example:
 
 ```javascript
 const mock = browser.mock("**/api/todo*", { method: "POST" });
@@ -53,10 +53,14 @@ await expect(mock).toBeRequestedWith({
 
 await expect(mock).toBeRequestedWith({
     url: expect.stringMatching(/.*\/api\/.*/i),
-    method: ["POST", "PUT"], // или POST, или PUT
-    statusCode: [401, 403], // или 401, или 403
+    method: ["POST", "PUT"], // Either POST or PUT
+    statusCode: [401, 403], // Either 401 or 403
     requestHeaders: headers => headers.Authorization.startsWith("Bearer "),
     postData: expect.objectContaining({ released: true, title: expect.stringContaining("foobar") }),
     response: r => Array.isArray(r) && r.data.items.length === 20,
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/expect-webdriverio), from which we drew some information while writing our version.

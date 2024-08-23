@@ -2,44 +2,48 @@ import Admonition from "@theme/Admonition";
 
 # isClickable
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `isClickable`, чтобы определить, можно ли кликнуть по заданному DOM-элементу.
+Use the `isClickable` command to determine whether a given DOM element is clickable.
 
-Команда возвращает `true`, если выбранный DOM-элемент:
+The command returns `true` if the selected DOM element:
 
--   существует
--   видимый
--   находится внутри вьюпорта (если нет, то попробуйте сделать подскролл к элементу)
--   центр элемента не перекрыт другим элементом
--   элемент не отключен _(not disabled)_
+-   exists
+-   is visible
+-   is within the viewport (if not, try scrolling to the element)
+-   has its center unobstructed by another element
+-   is not disabled
 
-иначе команда возвращает `false`.
+Otherwise, the command returns `false`.
 
 <Admonition type="warning">
-Команда _isClickable_ работает только в веб-браузере и в контексте _webview_ мобильных приложений.
+The _isClickable_ command works only in a web browser and in the _webview_ context of mobile applications.
 
-Команда не работает в нативном контексте мобильных приложений.
+The command does not work in the native context of mobile applications.
 
-Кроме того, в отличие от других команд элемента, testplane не будет дожидаться существования элемента, чтобы выполнить эту команду.
+Additionally, unlike other element commands, Testplane will not wait for the element to exist before executing this command.
 
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).isClickable();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should detect if an element is clickable", async ({ browser }) => {
     const el = await browser.$("#el");
     let clickable = await el.isClickable();
-    console.log(clickable); // выведет: true или false
+    console.log(clickable); // outputs: true or false
 
-    // подождем, когда на элемент можно будет кликнуть
+    // wait until the element is clickable
     await browser.waitUntil(() => el.isClickable());
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/isClickable), from which we drew some information while writing our version.

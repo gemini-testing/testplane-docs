@@ -1,60 +1,60 @@
 import Admonition from "@theme/Admonition";
 
-# Как убрать скроллбары из скриншотов
+# How to Hide Scrollbars from Screenshots
 
-## Проблема {#problem}
+## Problem {#problem}
 
-Одна из причин падений тестов при тестировании верстки с помощью скриншотов — это появление скроллбара в браузере в момент снятия скриншота. При этом возможны 3 варианта, когда при прогоне теста возникает дифф между эталонным скриншотом и текущим, который был заснят в тесте в момент прогона:
+One of the reasons for test failures when testing layouts using screenshots is the presence of scrollbars in the browser at the moment the screenshot is taken. There can be 3 scenarios where a diff occurs between the reference screenshot and the current one taken during the test run:
 
-1. В момент снятия эталонного скриншота скроллбара не было, но он появился при снятии текущего скриншота.
-2. В момент снятия эталонного скриншота скроллбар был, однако при снятии текущего скриншота скроллбар появиться не успел.
-3. Скроллбар есть и на эталонном скриншоте и на текущем, но положения скроллбаров, или их размеры, или прозрачность отличаются из-за разницы во времени, когда были сделаны скриншоты относительно появления скроллбара.
+1. There was no scrollbar when the reference screenshot was taken, but it appeared when taking the current screenshot.
+2. There was a scrollbar when the reference screenshot was taken, but it did not appear in time when taking the current screenshot.
+3. There is a scrollbar on both the reference and current screenshots, but the positions, sizes, or transparency of the scrollbars differ due to the timing of when the screenshots were taken relative to the appearance of the scrollbar.
 
-На скриншоте ниже приведен пример, который соответствует первому варианту:
+The screenshot below shows an example corresponding to the first scenario:
 
-![дифф из-за скроллбара](/img/docs/guides/how-to-hide-scrollbars.diff-in-screenshot.png)
+![diff due to scrollbar](/img/docs/guides/how-to-hide-scrollbars.diff-in-screenshot.png)
 
-## Решение 1: screenshotDelay {#solution_1}
+## Solution 1: screenshotDelay {#solution_1}
 
-В настройках testplane есть обязательная опция `browsers`, которая задает набор браузеров, доступных в проекте, и их свойства. Выберите браузер, в котором у вас возникают диффы из-за скроллбаров, и добавьте для него опцию `screenshotDelay`:
+In Testplane settings, there is a mandatory option `browsers` that specifies the set of browsers available in the project and their properties. Select the browser where you are experiencing diffs due to scrollbars and add the `screenshotDelay` option for it:
 
 ```javascript
 module.exports = {
     browsers: {
         iphone: {
-            screenshotDelay: 600, // Задержка перед снятием скриншота в мс
+            screenshotDelay: 600, // Delay before taking a screenshot in ms
 
-            // другие настройки браузера...
+            // other browser settings...
         },
 
-        // другие браузеры...
+        // other browsers...
     },
 
-    // другие настройки testplane...
+    // other Testplane settings...
 };
 ```
 
-Опция `screenshotDelay` задает паузу в миллисекундах, которую testplane должна выдержать перед снятием скриншота (прежде чем выполнять команду `assertView`).
+The `screenshotDelay` option sets a pause in milliseconds that Testplane should wait before taking a screenshot (before executing the `assertView` command).
 
-### Как это может помочь? {#how_can_it_help}
+### How can it help? {#how_can_it_help}
 
-Часто скриншоты возникают из-за того, что тест должен подскроллить страницу к требуемому элементу, прежде чем сделать скриншот. После того как подскролл выполнен, скроллбар может еще какое-то время «висеть» на экране и соответственно, попасть на скриншот, если тот будет выполнен немедленно. Задержка `screenshotDelay` дает скроллбару время на то, чтобы исчезнуть.
+Often screenshots generate diffs because the test needs to scroll the page to the required element just before taking the screenshot. After the scroll is performed, the scrollbar might still be visible on the screen for some time and thus, might appear in the screenshot if taken immediately. The `screenshotDelay` gives the scrollbar time to disappear.
 
-Однако, данный способ помогает далеко не всегда, так как зависит от реализации браузеров и их поведения.
+However, this method does not always work as it depends on the implementation and behavior of the browsers.
 
-## Решение 2: отключение скроллбаров {#solution_2}
+## Solution 2: Disabling Scrollbars {#solution_2}
 
-Если скроллбары возникают на скриншотах в Chrome-браузере, то их можно отключить с помощью [DevTools протокола][CDP].
+If scrollbars appear in screenshots in the Chrome browser, they can be disabled using the [DevTools protocol][CDP].
 
-Для этого добавьте в свой проект плагин [hermione-hide-scrollbars][hermione-hide-scrollbars] и укажите в его настройках список браузеров, для которых необходимо отключать скроллбары в тестах.
+To do this, add the [hermione-hide-scrollbars][hermione-hide-scrollbars] plugin to your project and specify in its settings the list of browsers for which you want to disable scrollbars in the tests.
 
 <Admonition type="warning">
-    Обновите Chrome-браузер до версии 72.1 и выше, чтобы данная функциональность работала в ваших
-    тестах. Так как более ранние версии Chrome-браузеров не поддерживают команду
-    _Emulation.setScrollbarsHidden_, с помощью которой отключаются скроллбары.
+    Update the Chrome browser to version 72.1 or higher for this functionality to work in your
+    tests. Earlier versions of Chrome do not support the _Emulation.setScrollbarsHidden_ command,
+    which is used to disable the scrollbars.
 </Admonition>
 
-## Ключевые слова {#keywords}
+## Keywords {#keywords}
 
 -   screenshotDelay
 -   hermione-hide-scrollbars

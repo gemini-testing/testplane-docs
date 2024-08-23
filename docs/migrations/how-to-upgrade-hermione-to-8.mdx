@@ -1,91 +1,89 @@
 import Admonition from "@theme/Admonition";
 
-# Как обновить hermione до версии 8.x
+# How to Upgrade hermione to Version 8.x
 
 <Admonition type="warning">
-Если в вашем проекте hermione младше 4-й версии, то прочтите сначала:
-* «[Как обновить hermione до версии 4.x][how-to-upgrade-hermione-to-4]»;
-* «[Как обновить hermione до версии 5.x][how-to-upgrade-hermione-to-5]»;
-* «[Как обновить hermione до версии 6.x][how-to-upgrade-hermione-to-6]»;
-* «[Как обновить hermione до версии 7.x][how-to-upgrade-hermione-to-7]».
+If your project is using a hermione version earlier than 4.x, first read:
+* "How to Upgrade hermione to Version 4.x";
+* "How to Upgrade hermione to Version 5.x";
+* "How to Upgrade hermione to Version 6.x";
+* "How to Upgrade hermione to Version 7.x".
 
-Мы рекомендуем вам обновлять hermione поэтапно, убеждаясь на каждом этапе, что все тесты проекта корректно выполняются.
+We recommend upgrading hermione in stages, ensuring each step that all project tests run correctly.
 
 </Admonition>
 
-## Что изменилось? {#what_is_new}
+## What Has Changed? {#what_is_new}
 
-### Мажорные изменения {#major_changes}
+### Major Changes {#major_changes}
 
-#### Изменились экспорты пакета {#package_exports_changed}
+#### Package Exports Changed {#package_exports_changed}
 
-Для использования hermione по API в javascript теперь необходимо подключать `hermione` следующим образом:
+To use hermione via API in JavaScript, you now need to import `hermione` as follows:
 
 ```javascript
 const { default: hermione } = require("hermione");
 ```
 
-Раньше можно было писать так:
+Previously, you could write it like this:
 
 ```javascript
 const hermione = require("hermione");
 ```
 
-Вариант для typescript:
+For TypeScript:
 
 ```typescript
 import hermione from "hermione";
 ```
 
-#### Изменена логика работы команды moveTo {#move_command_changed}
+#### moveTo Command Changed {#move_command_changed}
 
-Теперь команда `moveTo` смещает курсор не относительно левого верхнего угла, а относительно центра элемента. Если элемент не виден, то к нему будет выполнен подскрол.
-Раньше вызов команды без аргументов (`await browser.$('body).moveTo()`) смещал курсор в левый верхний угол элемента - теперь смещение произойдет в центр элемента.
+The `moveTo` command now moves the cursor relative to the center of the element rather than the top-left corner. If the element is not visible, it will scroll to it. Previously, calling the command without arguments (`await browser.$('body').moveTo()`) moved the cursor to the top-left corner of the element - now it will move to the center of the element.
 
-Если переходить на новую логику `moveTo` нет времени, то можете использовать команду `moveCursorTo`, которая работает как в hermione@7. Была добавлена в hermione@8.1.0.
-Команда `moveCursorTo` временная и будет удалена в следующем мажоре.
+If you don't have time to switch to the new logic of `moveTo`, you can use the `moveCursorTo` command, which works as it did in hermione@7. This command was added in hermione@8.1.0. The `moveCursorTo` command is temporary and will be removed in the next major version.
 
-#### Отказ от поддержки Node.JS < 18.x {#dropped_nodejs_less_than_18x}
+#### Dropped Support for Node.JS < 18.x {#dropped_nodejs_less_than_18x}
 
-В этом мажоре hermione перестала поддерживать версии _Node.JS < 18.x_.
+In this major version, hermione no longer supports versions _Node.JS < 18.x_.
 
-### Минорные изменения {#minor_changes}
+### Minor Changes {#minor_changes}
 
--   реализован REPL-режим для пошагового дебага тестов во всех браузерах (не только CDP) без перезапуска;
--   добавлена браузерная команда [clearSession][hermione-clear-session] для очистки состояния сессии:
-    -   удаляет файлы cookie;
-    -   очищает local storage;
-    -   очищает session storage.
--   добавлена браузерная команда `openAndWait` с настраиваемым ожиданием загрузки (по селектору, кастомному предикату, сетевому запросу и т.д);
--   добавлена cli-опция `--devtools` для упрощения переключения между двумя протоколами (`devtools` и `webdriver`);
--   улучшен stack trace при ошибках `unhandled rejection`;
--   теперь [изоляция][hermione-isolation] включена по умолчанию для chrome >= 94;
--   во время выполнения команды [assertView][hermione-assert-view] CSS-анимации на странице будут отключены по умолчанию;
--   реализовали генерацию уникального заголовка `X-Request-ID` для каждого запроса в браузер. Заголовок состоит из `${TEST_X_REQ_ID}${DELIMITER}$BROWSER_X_REQ_ID}`, где:
+-   Added REPL mode for step-by-step debugging of tests in all browsers (not only CDP) without restarting.
+-   Added a browser command [clearSession][hermione-clear-session] to clear session state:
+    -   Deletes cookies;
+    -   Clears local storage;
+    -   Clears session storage.
+-   Added a browser command `openAndWait` with customizable wait options for page loads (by selector, custom predicate, network request, etc.).
+-   Added a CLI option `--devtools` to simplify switching between the two protocols (`devtools` and `webdriver`).
+-   Improved stack trace for `unhandled rejection` errors.
+-   Now [isolation][hermione-isolation] is enabled by default for Chrome >= 94.
+-   During the execution of the [assertView][hermione-assert-view] command, CSS animations on the page will be disabled by default.
+-   Implemented generation of a unique `X-Request-ID` header for each request in the browser. The header consists of `${TEST_X_REQ_ID}${DELIMITER}$BROWSER_X_REQ_ID}`, where:
 
-    -   `TEST_X_REQ_ID` - уникальный uuid для каждого запуска теста (в том числе ретрая того же самого теста). Позволяет в логах найти все запросы, относящиеся к одному тестовому запуску;
-    -   `DELIMITER` - `__` разделитель между uuid-ами теста и запроса;
-    -   `BROWSER_X_REQ_ID` - уникальный uuid для каждого браузерного запроса.
+    -   `TEST_X_REQ_ID` - a unique UUID for each test run (including retries of the same test). This allows you to find all requests related to a single test run in the logs.
+    -   `DELIMITER` - `__` separator between the test and request UUIDs.
+    -   `BROWSER_X_REQ_ID` - a unique UUID for each browser request.
 
-    Реальный пример uuid-а - `2f31ffb7-369d-41f4-bbb8-77744615d2eb__e8d011d8-bb76-42b9-b80e-02f03b8d6fe1`.
+    A real example of a UUID is `2f31ffb7-369d-41f4-bbb8-77744615d2eb__e8d011d8-bb76-42b9-b80e-02f03b8d6fe1`.
 
-### Патчевые изменения {#patch_changes}
+### Patch Changes {#patch_changes}
 
--   исправили отключение анимаций в айфреймах для ios при использовании [assertView][hermione-assert-view];
--   избавились от реинициализации браузерной сессии в воркерах;
--   исправили баг с невозможностью отключить [изоляцию][hermione-isolation].
+-   Fixed disabling animations in iframes for iOS when using [assertView][hermione-assert-view].
+-   Eliminated reinitialization of browser sessions in workers.
+-   Fixed a bug where it was impossible to disable [isolation][hermione-isolation].
 
-## Как переехать? {#how_to_move}
+## How to Migrate? {#how_to_move}
 
-### 1. Обновить hermione до 8+ и плагины до последних версий {#update_hermione_and_plugins}
+### 1. Update hermione to 8+ and Plugins to the Latest Versions {#update_hermione_and_plugins}
 
-### 2. В случае использования hermione по API в javascript перейти на typescript или изменить require {#replace_hermione_require}
+### 2. If Using hermione via API in JavaScript, Switch to TypeScript or Change the Import Statement {#replace_hermione_require}
 
-### 3. В случае использования moveTo перейти на moveToCursor или указывать координаты от центра элемента {#replace_move_to}
+### 3. If Using moveTo, Switch to moveToCursor or Specify Coordinates from the Center of the Element {#replace_move_to}
 
-## Поддержка {#support}
+## Support {#support}
 
-Если при переезде на новую версию вы столкнетесь с проблемами или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] — и мы обязательно вам поможем!
+If you encounter issues during the migration to the new version or have any questions, visit [github issues][gh-issues] — we will definitely help you!
 
 [how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
 [how-to-upgrade-hermione-to-5]: ../../migrations/how-to-upgrade-hermione-to-5
@@ -95,4 +93,4 @@ import hermione from "hermione";
 [hermione-clear-session]: https://github.com/gemini-testing/hermione?tab=readme-ov-file#clearsession
 [hermione-isolation]: https://github.com/gemini-testing/hermione?tab=readme-ov-file#isolation
 [hermione-assert-view]: https://github.com/gemini-testing/hermione?tab=readme-ov-file#assertview
-[gh-issues]: https://github.com/gemini-testing/testplane/issues/
+[gh-issues]: https://github.com/gemini-testing/testplane/issues

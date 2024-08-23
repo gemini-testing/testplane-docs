@@ -1,32 +1,32 @@
 # selectByIndex
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `selectByIndex`, чтобы выбрать опцию с определенным значением.
+Use the `selectByIndex` command to select an option by a specific index.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).selectByIndex(index);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>index</td><td>Number</td><td>Индекс (опции), по которому нужно выбрать опцию.</td></tr>
+<tr><td>index</td><td>Number</td><td>The index (of the option) by which to select the option.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **example.html**
 
-```javascript
+```html
 <select id="selectbox">
     <option value="someValue0">uno</option>
     <option value="someValue1">dos</option>
@@ -42,14 +42,18 @@ await browser.$(selector).selectByIndex(index);
 ```javascript
 it("should demonstrate the selectByIndex command", async ({ browser }) => {
     const selectBox = await browser.$("#selectbox");
-    console.log(await selectBox.getValue()); // выведет: "someValue0"
+    console.log(await selectBox.getValue()); // outputs: "someValue0"
 
     await selectBox.selectByIndex(4);
-    console.log(await selectBox.getValue()); // выведет: "someValue4"
+    console.log(await selectBox.getValue()); // outputs: "someValue4"
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [selectByAttribute](../selectByAttribute)
 -   [selectByVisibleText](../selectByVisibleText)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/selectByIndex), from which we drew some information while writing our version.

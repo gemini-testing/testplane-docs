@@ -1,32 +1,32 @@
 # getHTML
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `getHTML`, чтобы получить исходный код указанного элемента DOM.
+Use the `getHTML` command to retrieve the HTML source code of a specified DOM element.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).getHTML(includeSelectorTag);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>includeSelectorTag</td><td>Boolean</td><td>Необязательный параметр. Включить в исходный код тег элемента селектора. По умолчанию: _true_.</td></tr>
+<tr><td>includeSelectorTag</td><td>Boolean</td><td>Optional parameter. Include the selector element's tag in the source code. Default: _true_.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
+```html
 <div id="test">
     <span>Lorem ipsum dolor amet</span>
 </div>
@@ -38,12 +38,16 @@ await browser.$(selector).getHTML(includeSelectorTag);
 it("should get html for certain elements", async ({ browser }) => {
     var outerHTML = await browser.$("#test").getHTML();
     console.log(outerHTML);
-    // выведет:
+    // outputs:
     // "<div id="test"><span>Lorem ipsum dolor amet</span></div>"
 
     var innerHTML = await browser.$("#test").getHTML(false);
     console.log(innerHTML);
-    // выведет:
+    // outputs:
     // "<span>Lorem ipsum dolor amet</span>"
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getHTML), from which we drew some information while writing our version.

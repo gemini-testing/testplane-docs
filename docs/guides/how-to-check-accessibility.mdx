@@ -1,84 +1,83 @@
 import Admonition from "@theme/Admonition";
 
-# Как протестировать доступность (accessibility) страницы
+# How to Test Page Accessibility
 
-## Обзор {#overview}
+## Overview {#overview}
 
 <Admonition type="warning">
-Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
+This recipe only works when using _Chrome DevTools Protocol (CDP) or Chrome_.
 
-Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]»
+Read more details in the section “[How to Use CDP in Testplane][how-to-use-cdp]”
 
 </Admonition>
 
-[Accessibility tree][accessibility-tree] — это дерево доступности, которое содержит иерархическую структуру доступных объектов. В отличие от DOM-дерева, которое предназначено для браузеров, accessibility-дерево предназначено для [скрин-ридеров][screen-reader] и других инструментов, помогающих взаимодействовать с сайтами людям с ограниченными возможностями.
+[Accessibility tree][accessibility-tree] is an accessibility tree that contains a hierarchical structure of accessible objects. Unlike the DOM tree, which is intended for browsers, the accessibility tree is intended for [screen readers][screen-reader] and other tools that help people with disabilities interact with websites.
 
-Для получения такого дерева в _puppeteer_ есть специальный [класс Accessibility][puppeteer-accessibility].
+To obtain such a tree, _puppeteer_ has a special [Accessibility class][puppeteer-accessibility].
 
-## Пример {#example}
+## Example {#example}
 
-Вот пример, как его можно использовать:
+Here's an example of how to use it:
 
 ```javascript
 it("should get accessibility tree of yandex.ru", async function () {
-    // Получаем инстанс puppeteer'а
+    // Get puppeteer instance
     const puppeteer = await this.browser.getPuppeteer();
 
-    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
+    // Get the first open page (considering it to be currently active)
     const [page] = await puppeteer.pages();
 
     await this.browser.url("https://yandex.ru");
 
-    // Получаем текущее состояние accessibility дерева
+    // Get the current state of the accessibility tree
     const snapshot = await page.accessibility.snapshot();
     console.log("snapshot:", JSON.stringify(snapshot, null, 4));
 });
 ```
 
-## Accessibility-дерево {#accessibility_tree}
+## Accessibility Tree {#accessibility_tree}
 
-А вот как выглядит получаемое accessibility-дерево:
+And here's how the obtained accessibility tree looks:
 
 ```json
 {
     "role": "WebArea",
-    "name": "Яндекс",
+    "name": "Yandex",
     "children": [
         {
             "role": "link",
-            "name": "Войти"
+            "name": "Login"
         },
         {
             "role": "link",
-            "name": "Почта"
+            "name": "Mail"
         },
         {
             "role": "link",
-            "name": "Диск"
+            "name": "Disk"
         },
         {
             "role": "link",
-            "name": "Попробовать Плюс"
+            "name": "Try Plus"
         },
 
-        // пропустим для краткости...
+        // omitted for brevity...
 
         {
             "role": "link",
-            "name": "финансы"
+            "name": "finance"
         },
         {
             "role": "link",
-            "name": "политика"
+            "name": "politics"
         }
     ]
 }
-}
 ```
 
-Используя полученное дерево мы можем проверить, что все необходимые узлы содержатся в дереве и имеют правильную структуру.
+Using the obtained tree, we can check that all necessary nodes are contained in the tree and have the correct structure.
 
 [how-to-use-cdp]: ../how-to-use-cdp
 [accessibility-tree]: https://web.dev/the-accessibility-tree/
-[screen-reader]: https://ru.wikipedia.org/wiki/Экранное_считывающее_устройство
+[screen-reader]: https://en.wikipedia.org/wiki/Screen_reader
 [puppeteer-accessibility]: https://pptr.dev/api/puppeteer.accessibility

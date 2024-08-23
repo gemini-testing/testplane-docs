@@ -1,0 +1,41 @@
+# isEnabled
+
+## Обзор {#overview}
+
+Используйте команду `isEnabled`, чтобы определить включен ли заданный DOM-элемент.
+
+Команда возвращает `true`, если DOM-элемент включен _(enabled)_, иначе возвращает `false`.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).isEnabled();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<input type="text" name="inputField" class="input1">
+<input type="text" name="inputField" class="input2" disabled>
+<input type="text" name="inputField" class="input3" disabled="disabled">
+```
+
+**isEnabled.js**
+
+```javascript
+it("should detect if an element is enabled", async ({ browser }) => {
+    let elem = await browser.$(".input1");
+    let isEnabled = await elem.isEnabled();
+    console.log(isEnabled); // выведет: true
+
+    elem = await browser.$(".input2");
+    isEnabled = await elem.isEnabled();
+    console.log(isEnabled2); // выведет: false
+
+    elem = await browser.$(".input3");
+    isEnabled = await elem.isEnabled();
+    console.log(isEnabled3); // выведет: false
+});
+```

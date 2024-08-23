@@ -2,43 +2,43 @@ import Admonition from "@theme/Admonition";
 
 # click
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `click`, чтобы кликнуть по элементу.
+Use the `click` command to click on an element.
 
 <Admonition type="warning">
-Если у вас есть элементы с фиксированным положением (например, фиксированный _header_ или _footer)_, которые закрывают выбранный элемент после подскролла к нему, то клик будет произведен в заданных координатах, но будет получен вашим фиксированным (накладывающимся) элементом. В этих случаях выдается следующая ошибка:
+If you have elements with fixed positions (e.g., a fixed header or footer) that cover the selected element after scrolling to it, the click will be executed at the given coordinates but will be intercepted by your fixed (overlaying) element. In such cases, the following error is issued:
 
 _Element is not clickable at point (x, x). Other element would receive the click: ..._
 
-Чтобы обойти это, попробуйте найти накладывающийся элемент и удалить его с помощью команды [execute][execute], чтобы он не мешал клику. Вы также можете попробовать проскроллить элемент самостоятельно, используя скролл со смещением, соответствующим вашему сценарию.
+To bypass this, try finding the overlaying element and remove it using the [execute][execute] command, so it does not interfere with the click. You can also try to scroll the element manually using scroll offset to match your scenario.
 
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).click({ button, x, y, skipRelease });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>button</td><td>String или Number</td><td>Кнопка, с помощью которой нужно выполнить клик. Может принимать значения _0, 1, 2_ или _"left", "middle", "right"_ соответственно.</td></tr>
-<tr><td>x</td><td>Number</td><td>Координата x, куда нужно кликнуть.</td></tr>
-<tr><td>y</td><td>Number</td><td>Координата y, куда нужно кликнуть.</td></tr>
-<tr><td>skipRelease</td><td>Boolean</td><td>Если значение _true_, то после клика не нужно отправлять _releaseActions._</td></tr>
+<tr><td>button</td><td>String or Number</td><td>The button to use for the click. Can be _0, 1, 2_ or _"left", "middle", "right"_ respectively.</td></tr>
+<tr><td>x</td><td>Number</td><td>The x-coordinate to click.</td></tr>
+<tr><td>y</td><td>Number</td><td>The y-coordinate to click.</td></tr>
+<tr><td>skipRelease</td><td>Boolean</td><td>If _true_, no _releaseActions_ will be sent after the click.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
-### Пример 1
+### Example 1
 
 **example-1.html**
 
@@ -73,7 +73,7 @@ it("should fetch menu links and visit each page", async ({ browser }) => {
 });
 ```
 
-### Пример 2
+### Example 2
 
 **example-2.html**
 
@@ -87,13 +87,13 @@ it("should fetch menu links and visit each page", async ({ browser }) => {
 it("should demonstrate a click using an offset", async ({ browser }) => {
     const myButton = await browser.$("#myButton");
 
-    // кликаем на расстоянии 30 горизонтальных пикселей
-    // от местоположения кнопки (от центра элемента)
+    // Click 30 horizontal pixels
+    // from the button's position (from the center of the element)
     await myButton.click({ x: 30 });
 });
 ```
 
-### Пример 3
+### Example 3
 
 **example-3.html**
 
@@ -107,7 +107,7 @@ it("should demonstrate a click using an offset", async ({ browser }) => {
 it("should demonstrate a right click passed as string", async ({ browser }) => {
     const myButton = await browser.$("#myButton");
 
-    // открываем контекстное меню в месте расположения кнопки
+    // Open context menu at the button's location
     await myButton.click({ button: "right" });
 });
 
@@ -116,20 +116,24 @@ it("should demonstrate a right click passed as number while adding an offset", a
 }) => {
     const myButton = await browser.$("#myButton");
 
-    // открываем контекстное меню на расстоянии 30 горизонтальных и 40 вертикальных пикселей
-    // от местоположения кнопки (от центра элемента)
+    // Open context menu 30 horizontal and 40 vertical pixels
+    // from the button's position (from the center of the element)
     await myButton.click({ button: 2, x: 30, y: 40 });
 });
 
-it("should skip sending releaseAction command that cause unexpected alert closure", async ({
+it("should skip sending releaseAction command that causes unexpected alert closure", async ({
     browser,
 }) => {
     const myButton = await browser.$("#myButton");
 
-    // пропускаем отправку releaseActions
+    // Skip sending releaseActions
     await myButton.click({ button: 2, x: 30, y: 40, skipRelease: true });
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/click), from which we drew some information while writing our version.
 
 [execute]: ../../browser/execute
 [webdriver-click]: https://w3c.github.io/webdriver/#dfn-element-click

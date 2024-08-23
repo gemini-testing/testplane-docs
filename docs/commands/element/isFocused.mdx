@@ -1,24 +1,24 @@
 # isFocused
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `isFocused`, чтобы определить, есть ли фокус на заданном DOM-элементе.
+Use the `isFocused` command to determine whether a given DOM element is focused.
 
-Команда возвращает `true`, если выбранный элемент находится в фокусе, иначе возвращает `false`.
+The command returns `true` if the selected element is focused; otherwise, it returns `false`.
 
-Если под селектор попадает множество элементов, то команда возвращает `true`, если хотя бы один из элементов находится в фокусе.
+If multiple elements match the selector, the command returns `true` if at least one of the elements is focused.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).isFocused();
 ```
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
-```javascript
+```html
 <input name="login" autofocus="" />
 ```
 
@@ -28,9 +28,13 @@ await browser.$(selector).isFocused();
 it("should detect the focus of an element", async ({ browser }) => {
     await browser.url("/");
     const loginInput = await browser.$('[name="login"]');
-    console.log(await loginInput.isFocused()); // выведет: false
+    console.log(await loginInput.isFocused()); // outputs: false
 
     await loginInput.click();
-    console.log(await loginInput.isFocused()); // выведет: true
+    console.log(await loginInput.isFocused()); // outputs: true
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/isFocused), from which we drew some information while writing our version.

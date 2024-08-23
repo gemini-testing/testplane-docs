@@ -1,0 +1,1817 @@
+import Admonition from "@theme/Admonition";
+
+# События testplane
+
+## Обзор {#overview}
+
+### Как устроено описание событий {#how_is_events_description_made}
+
+Ниже описаны все события testplane, на которые можно подписаться в своем плагине.
+
+Описание каждого события начинается с тегов, которые представлены следующими вариантами:
+
+-   _sync_ или _async_ обозначают, соответственно, синхронный и асинхронный режимы вызова обработчика события;
+-   _master_ обозначает, что данное событие доступно из мастер-процесса testplane;
+-   _worker_ обозначает, что данное событие доступно из воркеров (подпроцессов) testplane;
+-   _can be intercepted_ обозначает, что данное событие можно перехватить и соответственно, изменить.
+
+Далее идут:
+
+-   описание обстоятельств, при которых триггерится событие;
+-   сниппет с кодом, показывающим как на него подписаться;
+-   параметры обработчика события;
+-   и опционально, примеры использования данного события в плагине или плагинах.
+
+### Схема генерации событий {#events_scheme}
+
+[//]: # "<style>"
+[//]: # '.yc-root_theme_light img[src*="-dark-mode"] { display: none }'
+[//]: # '.yc-root_theme_dark img[src*="-light-mode"] { display: none }'
+[//]: # "</style>"
+
+![Генерация testplane-событий](/img/docs/reference/testplane-events-light-mode.png)
+
+[//]: # "![Генерация testplane-событий](/img/docs/reference/testplane-events-dark-mode.png)"
+
+### Описание последовательности событий {#events_scheme_description}
+
+Testplane можно запускать как через [CLI (командную строку)][cli-wiki], так и через её API: из скрипта с помощью команды [run][testplane-run].
+
+После запуска testplane загружает все плагины и переходит к парсингу CLI, если она была запущена через CLI, или сразу к стадии инициализации, если её запустили через API.
+
+#### Парсинг CLI
+
+Если testplane была запущена через CLI, то она триггерит событие [CLI](#cli). Любой плагин может подписаться на это событие, чтобы добавить свои опции и команды к testplane до того, как testplane распарсит CLI.
+
+Если testplane была запущена с помощью API, то стадия парсинга CLI будет пропущена и сразу же начнется стадия инициализации.
+
+#### Инициализация
+
+Во время инициализации testplane триггерит событие [INIT](#init). Это событие срабатывает всего 1 раз за весь запуск testplane. Подписавшись на это событие, плагины могут выполнить всю необходимую им подготовительную работу: открыть и прочитать какие-то файлы, поднять dev-сервер, инициализировать структуры данных, и т. д. и т. п.
+
+Затем testplane запускает подпроцессы (так называемые воркеры), в рамках которых будут выполняться все тесты. В мастер-процессе testplane тесты не выполняются, а только осуществляется общая оркестрация всего процесса запуска тестов, включая генерацию событий при завершении выполнения отдельных тестов.
+
+Количество воркеров, которые запускает testplane, регулируется параметром [workers][system-workers] в разделе [system][system] конфига testplane. При запуске очередного воркера testplane триггерит специальное событие [NEW_WORKER_PROCESS](#new_worker_process).
+
+<Admonition type="info">
+    Все тесты testplane запускает в воркерах, чтобы не столкнуться с ограничениями по памяти и CPU
+    для мастер-процесса. Как только в воркере количество выполненных тестов достигнет значения
+    [testsPerWorker][system-tests-per-worker], воркер завершит свою работу, и будет запущен новый
+    воркер. Соответственно, будет снова послано событие [NEW_WORKER_PROCESS](#new_worker_process).
+</Admonition>
+
+#### Чтение тестов
+
+После этого testplane читает все тесты с файловой системы в мастер-процессе. Посылая для каждого файла, перед тем как его прочитать, событие [BEFORE_FILE_READ](#before_file_read) и после прочтения — событие [AFTER_FILE_READ](#after_file_read).
+
+После того, как все тесты будут прочитаны, триггерится событие [AFTER_TESTS_READ](#after_tests_read).
+
+#### Запуск тестов
+
+Затем testplane посылает события [RUNNER_START](#runner_start) и [BEGIN](#begin). И стартует новую сессию (браузерную сессию), в которой будут выполняться тесты. При старте сессии testplane триггерит событие [SESSION_START](#session_start).
+
+<Admonition type="info">
+Если количество тестов, выполненных в рамках одной сессии, достигнет значения параметра [testsPerSession][browser-tests-per-session], то testplane завершит сессию, стриггерив событие [SESSION_END](#session_end), и запустит новую, послав событие [SESSION_START](#session_start).
+
+Если тест при выполнении упадет с критической ошибкой, то testplane:
+
+-   досрочно удалит сессию и браузер, который с ней связан;
+-   создаст новую сессию;
+-   запросит новый браузер, и привяжет его к новой сессии.
+
+Это нужно для того, чтобы сбой в сессии при выполнении одного из тестов не начал влиять на запуски последующих тестов.
+
+</Admonition>
+
+После создания новой сессии testplane переходит к выполнению тестов. Все тесты выполняются в воркерах, но сам запуск и сбор результатов прогона тестов осуществляется в рамках мастер-процесса. Мастер-процесс триггерит событие [SUITE_BEGIN](#suite_begin) для describe-блоков в файле с тестами и [TEST_BEGIN](#test_begin) для it-блоков. Если тест отключен с помощью хелперов типа [skip.in][skip-in] и тому подобных, то триггерится событие [TEST_PENDING](#test_pending).
+
+Далее воркеры получают от мастер-процесса информацию о конкретных тестах, которые они должны запустить. Так как тесты хранятся в файлах, то воркеры читают конкретно те файлы, в которых находятся требуемые тесты. И перед чтением каждого такого файла, в каждом воркере триггерится событие [BEFORE_FILE_READ](#before_file_read), а после прочтения — событие [AFTER_FILE_READ](#after_file_read).
+
+После того как соответствующие файлы с тестами будут прочитаны воркером, триггерится событие [AFTER_TESTS_READ](#after_tests_read).
+
+Перечисленные 3 события — [BEFORE_FILE_READ](#before_file_read), [AFTER_FILE_READ](#after_file_read) и [AFTER_TESTS_READ](#after_tests_read) будут триггериться в воркерах в процессе прогона тестов каждый раз как воркеры будут получать от мастер-процесса очередные тесты, которые нужно запустить. Кроме случаев, когда соответствующий файл с тестами уже был прочитан воркером ранее. Так как после первого чтения какого-либо файла, воркер сохраняет его в кэше, чтобы в следующий раз избежать повторного чтения файла с тестами.
+
+<Admonition type="info" title="Почему файл может запрашиваться несколько раз?">
+    Потому что один файл может содержать множество тестов. А запуск тестов идет по отдельным тестам,
+    а не по файлам. Поэтому в какой-то момент времени может прогоняться тест из файла, из которого
+    уже прогонялся другой тест. В таких случаях кэширование защищает от ненужных повторных чтений
+    одних и тех же файлов.
+</Admonition>
+
+Прежде чем тест будет запущен, триггерится событие [NEW_BROWSER](#new_browser). Однако это событие будет триггериться не для всех тестов, так как один и тот же браузер может использоваться много раз для запуска тестов (см. параметр [sessionsPerBrowser][browser-sessions-per-browser]). Также в случае падения теста с критической ошибкой происходит пересоздание браузера, чтобы не допустить падения других тестов в этом браузере из-за системного сбоя. В этом случае снова будет послано событие [NEW_BROWSER](#new_browser).
+
+#### Завершение тестов
+
+После того как тест завершается, может быть послано событие [SESSION_END](#session_end). Но это только в том случае, если суммарное количество тестов, которые были запущены в использованной сессии, превысило значение [testsPerSession][browser-tests-per-session].
+
+Далее всё будет зависеть от того, с каким результатом завершился прогон теста. Если тест прошел успешно, то testplane стриггерит событие [TEST_PASS](#test_pass). Если тест упал — [TEST_FAIL](#test_fail). Если тест упал, но его следует запустить повторно (см. настройки [retry][browsers-retry] и [shouldRetry][browsers-should-retry] в конфиге testplane), то вместо события [TEST_FAIL](#test_fail) будет отправлено событие [RETRY](#retry).
+
+Если тест не нужно запускать повторно, и результат — окончательный, то testplane триггерит события [TEST_END](#test_end) и [SUITE_END](#suite_end), если речь идет о завершении выполнения describe-блока.
+
+После того как все тесты будут выполнены, а сессии завершены, testplane триггерит события [END](#end) и [RUNNER_END](#runner_end).
+
+#### Обновление эталонных скриншотов
+
+Во время запуска тестов может произойти обновление эталонных скриншотов. Это может произойти по следующим причинам:
+
+-   разработчик запустил testplane в специальном GUI-режиме и дал команду «принять скриншоты»;
+-   разработчик указал опцию `--update-ref` при запуске testplane;
+-   у тестов не было эталонных скриншотов.
+
+Во всех этих случаях триггерится событие [UPDATE_REFERENCE](#update_reference).
+
+#### Ошибки и аварийное завершение работы
+
+Если во время прогона тестов, в [одном из перехватчиков событий](#events_interception) произойдет критическая ошибка, то testplane стриггерит для этого теста событие [ERROR](#error). При этом остальные тесты будут выполняться в штатном порядке.
+
+Если во время прогона тестов, testplane получит сигнал [SIGTERM][sigterm] (например, в результате нажатия клавиш `Ctrl + C`), то testplane стриггерит событие [EXIT](#exit) и досрочно прервет выполнение тестов.
+
+### Про перехват событий {#events_interception}
+
+Testplane позволяет разработчику перехватывать ряд событий и изменять их на другие, игнорировать или задерживать их обработку.
+
+События, которые могут быть перехвачены, снабжены в описании тегом _can be intercepted_. Всего таких событий 7:
+
+-   [SUITE_BEGIN](#suite_begin)
+-   [SUITE_END](#suite_end)
+-   [TEST_BEGIN](#test_begin)
+-   [TEST_END](#test_end)
+-   [TEST_PASS](#test_pass)
+-   [TEST_FAIL](#test_fail)
+-   [RETRY](#retry)
+
+#### Меняем одно событие на другое
+
+Например, код ниже показывает, как можно перехватывать событие [TEST_FAIL](#test_fail) и изменять его на событие [TEST_PENDING](#test_pending) — то есть автоматически отключать падающие тесты, не давая им уронить общий прогон тестов:
+
+```javascript
+module.exports = testplane => {
+    testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+        const test = Object.create(data);
+        test.pending = true;
+        test.skipReason = "intercepted failure";
+
+        return { event: testplane.events.TEST_PENDING, data: test };
+    });
+
+    testplane.on(testplane.events.TEST_FAIL, test => {
+        // этот обработчик никогда не будет вызван
+    });
+
+    testplane.on(testplane.evenst.TEST_PENDING, test => {
+        // этот обработчик будет всегда вызываться вместо обработчика для TEST_FAIL
+    });
+};
+```
+
+#### Оставляем событие as is {#events_interception_leaving_event_as_is}
+
+Если по какой-либо причине перехваченное событие нужно оставить _как есть_, то его обработчик должен вернуть точно такой же объект или любое _falsey_ значение: _undefined, null_ или _false._
+
+```javascript
+module.exports = testplane => {
+    testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+        return { event, data };
+        // или return;
+        // или return null;
+        // или return false;
+    });
+
+    testplane.on(testplane.events.TEST_FAIL, test => {
+        // этот обработчик будет вызван как обычно,
+        // потому что перехват события TEST_FAIL никак не меняет его
+    });
+};
+```
+
+#### Игнорируем событие {#events_interception_ignoring_event}
+
+Чтобы проигнорировать какое-либо событие и не дать ему распространяться дальше, нужно вернуть из обработчика (в котором перехватывается событие) пустой объект:
+
+```javascript
+module.exports = testplane => {
+    testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+        return {};
+    });
+
+    testplane.on(testplane.events.TEST_FAIL, test => {
+        // этот обработчик никогда не будет вызван
+    });
+};
+```
+
+#### Задерживаем обработку события {#events_interception_delaying_events}
+
+Приведенный выше подход с игнорированием события можно использовать для задержки появления тех или иных событий, например:
+
+```javascript
+module.exports = testplane => {
+    const intercepted = [];
+
+    testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+        // собираем все события TEST_FAIL
+        intercepted.push({ event, data });
+        // и не даем им распространяться дальше
+        return {};
+    });
+
+    testplane.on(testplane.events.END, () => {
+        // после окончания прогона тестов, триггерим все накопленные события TEST_FAIL
+        intercepted.forEach(({ event, data }) => testplane.emit(event, data));
+    });
+};
+```
+
+### Передача информации между обработчиками событий {#events_handlers_info_interchange}
+
+События, которые триггерятся в мастер-процессе и в воркерах testplane не могут обмениваться информацией через глобальные переменные.
+
+Например, такой подход работать не будет:
+
+```javascript
+module.exports = testplane => {
+    let flag = false;
+
+    testplane.on(testplane.events.RUNNER_START, () => {
+        flag = true;
+    });
+
+    testplane.on(testplane.events.NEW_BROWSER, () => {
+        // будет выведено значение false, потому что событие NEW_BROWSER
+        // триггерится в воркере testplane, а RUNNER_START – в мастер-процессе
+        console.info(flag);
+    });
+
+    testplane.on(testplane.events.RUNNER_END, () => {
+        // будет выведено значение true
+        console.info(flag);
+    });
+};
+```
+
+Но можно решить проблему следующим образом:
+
+```javascript
+module.exports = (testplane, opts) => {
+    testplane.on(testplane.events.RUNNER_START, () => {
+        opts.flag = true;
+    });
+
+    testplane.on(testplane.events.NEW_BROWSER, () => {
+        // будет выведено значение true, потому что свойства в конфиге,
+        // которые имеют примитивный тип (а переменная "opts" является частью конфига),
+        // автоматически передаются в воркеры во время события RUNNER_START
+        console.info(opts.flag);
+    });
+};
+```
+
+Или следующим образом: смотрите [пример](#new_worker_process_usage) из описания события [NEW_WORKER_PROCESS](#new_worker_process).
+
+### Параллельное выполнение кода плагина {#plugin_code_parallel_execution}
+
+У раннера тестов есть метод `registerWorkers`, который регистрирует код плагина для параллельного выполнения в воркерах testplane. Метод принимает следующие параметры:
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>workerFilepath</td><td>String</td><td>Абсолютный путь к воркеру.</td></tr>
+<tr><td>exportedMethods</td><td>String[]</td><td>Список экспортируемых методов.</td></tr>
+
+</tbody>
+</table>
+
+При этом возвращает объект, который содержит асинхронные функции с именами из экспортированных методов.
+
+Файл с путем `workerFilepath` должен экспортировать объект, который содержит асинхронные функции с именами из `exportedMethods`.
+
+#### Пример параллельного выполнения кода плагина {#plugin_code_parallel_execution_example}
+
+**Код плагина: plugin.js**
+
+```javascript
+let workers;
+
+module.exports = testplane => {
+    testplane.on(testplane.events.RUNNER_START, async runner => {
+        const workerFilepath = require.resolve("./worker");
+        const exportedMethods = ["foo"];
+
+        workers = runner.registerWorkers(workerFilepath, exportedMethods);
+
+        // выводит FOO_RUNNER_START
+        console.info(await workers.foo("RUNNER_START"));
+    });
+
+    testplane.on(testplane.events.RUNNER_END, async () => {
+        // выводит FOO_RUNNER_END
+        console.info(await workers.foo("RUNNER_END"));
+    });
+};
+```
+
+**Код воркера: worker.js**
+
+```javascript
+module.exports = {
+    foo: async function (event) {
+        return "FOO_" + event;
+    },
+};
+```
+
+## CLI {#cli}
+
+**sync | master**
+
+Событие `CLI` триггерится сразу при запуске, до того, как testplane распарсит [CLI][cli-wiki]. Обработчик события выполняется синхронно. С помощью него можно добавить новые команды или расширить справку testplane.
+
+### Подписка на событие {#cli_subscription}
+
+```javascript
+testplane.on(testplane.events.CLI, cli => {
+    console.info("Выполняется обработка события CLI...");
+
+    cli.option(
+        "--some-option <some-value>",
+        "the full description of the option",
+        // см. подробнее в https://github.com/tj/commander.js#options
+    );
+});
+```
+
+#### Параметры обработчика {#cli_cb_params}
+
+В обработчик события передается объект типа [Commander][commander].
+
+### Пример использования {#cli_usage}
+
+Рассмотрим в качестве примера [реализацию][testplane-test-repeater-index] плагина [testplane-test-repeater][testplane-test-repeater].
+
+Используя событие [CLI](#cli), плагин добавляет к testplane новую опцию `--repeat`. С помощью неё можно указать, сколько раз нужно прогнать тесты, независимо от результата каждого прогона.
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const parseConfig = require('./config');
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled <tr><td>testplane.isWorker()) {
+        // или плагин отключен, или мы находимся в контексте воркера – уходим
+        return;
+    }
+
+    testplane.on(testplane.events.CLI, (cli) => {
+        // добавляем опцию --repeat
+        cli.option(
+            '--repeat <number>',
+            'how many times tests should be repeated regardless of the result',
+            (value) => parseNonNegativeInteger(value, 'repeat')
+        );
+    });
+
+    // ...
+};
+```
+
+</details>
+
+## INIT {#init}
+
+**async | master**
+
+Событие `INIT` триггерится перед тем, как будут выполнены задачи [run][run] или [readTests][read-tests]. Обработчик события может быть асинхронным: в таком случае задачи начнут выполняться только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события. Событие триггерится только один раз, независимо от того, сколько раз будут выполнены задачи.
+
+### Подписка на событие {#init_subscription}
+
+```javascript
+testplane.on(testplane.events.INIT, async () => {
+    console.info("Выполняется обработка события INIT...");
+});
+```
+
+#### Параметры обработчика {#init_cb_params}
+
+В обработчик события никакие данные не передаются.
+
+### Пример использования {#init_usage}
+
+В обработчике события [INIT](#init) можно организовать, например, запуск dev-сервера для вашего проекта.
+
+<Admonition type="info" title="Что такое dev-сервер?">
+    Dev-сервер — это [express][express]-like приложение, которое позволяет разрабатывать фронтенд
+    проекта.
+</Admonition>
+
+Ниже приведена самая короткая реализация. Более подробный пример можно посмотреть в разделе «[Автоматический запуск dev-сервера](#usage_starting_dev_server)».
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const http = require('http');
+const parseConfig = require('./config');
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled</td></tr> testplane.isWorker()) {
+        // или плагин отключен, или мы находимся в контексте воркера – уходим
+        return;
+    }
+
+    // ...
+
+    testplane.on(testplane.events.INIT, () => {
+        // контент, который отдает dev-сервер
+        const content = '<h1>Hello, World!</h1>';
+
+        // создаем сервер и начинаем слушать порт 3000
+        http
+            .createServer((req, res) => res.end(content))
+            .listen(3000);
+
+        // по адресу http://localhost:3000/index.html будет отдаваться: <h1>Hello, World!</h1>
+    });
+};
+```
+
+</details>
+
+## BEFORE_FILE_READ {#before_file_read}
+
+**sync | master | worker**
+
+Событие `BEFORE_FILE_READ` триггерится перед тем, как будет прочитан файл с тестом, чтобы распарсить его. Обработчик события выполняется синхронно. Событие также доступно в воркерах testplane.
+
+### Подписка на событие {#before_file_read_subscription}
+
+```javascript
+testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }) => {
+    testParser.setController("<some-command-name>", {
+        "<some-helper>": function (matcher) {
+            // ...
+        },
+    });
+});
+```
+
+#### Параметры обработчика {#before_file_read_cb_params}
+
+В обработчик события передается объект следующего формата:
+
+```javascript
+{
+    file, // String: путь к файлу с тестом
+        testplane, // Object: то же, что и global.testplane
+        testParser; // Object: типа TestParserAPI
+}
+```
+
+#### testParser: TestParserAPI {#test_parser}
+
+Объект `testParser` типа `TestParserAPI` передается в обработчик события `BEFORE_FILE_READ`. С помощью него можно управлять процессом парсинга файлов с тестами. Объект поддерживает метод `setController`, с помощью которого можно создать свои хелперы для тестов.
+
+**setController(name, methods)**
+
+Метод добавляет контроллер к глобальному объекту `testplane`, доступному внутри тестов.
+
+-   `name` — имя хелпера (или иначе — контроллера);
+-   `methods` — объект-словарь, ключи которого задают названия методов соответствующих хелперов, а значения ключей определяют их реализацию. Каждый метод будет вызван на соответствующем тесте или наборе тестов _(suite)_.
+
+<Admonition type="info">
+    Контроллер будет удален, как только закончится парсинг текущего файла.
+</Admonition>
+
+### Пример использования {#before_file_read_usage}
+
+Создадим в качестве примера специальный хелпер `testplane.logger.log()`, с помощью которого мы сможем логировать информацию о парсинге интересующего нас теста.
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть пример использования
+
+</summary>
+
+**Код плагина**
+
+```javascript
+testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testParser }) => {
+    testParser.setController("logger", {
+        log: function (prefix) {
+            console.log(
+                `${prefix}: только что распарсил ${this.fullTitle()} из файла ${file} для браузера ${this.browserId}`,
+            );
+        },
+    });
+});
+```
+
+**Код теста**
+
+```javascript
+describe("foo", () => {
+    testplane.logger.log("some-prefix");
+    it("bar", function () {
+        // ...
+    });
+});
+```
+
+</details>
+
+Ещё один пример использования события [BEFORE_FILE_READ](#before_file_read) можно посмотреть в разделе «[Запуск тестов с хелперами](#usage_running_tests_with_helpers)».
+
+## AFTER_FILE_READ {#after_file_read}
+
+**sync | master | worker**
+
+Событие `AFTER_FILE_READ` триггерится после того, как будет прочтен файл с тестом. Обработчик события выполняется синхронно. Событие также доступно в воркерах testplane.
+
+### Подписка на событие {#after_file_read_subscription}
+
+```javascript
+testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
+    console.info("Выполняется обработка события AFTER_FILE_READ...");
+});
+```
+
+#### Параметры обработчика {#after_file_read_cb_params}
+
+В обработчик события передается объект следующего формата:
+
+```javascript
+{
+    file, // String: путь к файлу с тестом
+        testplane; // Object: то же, что и global.testplane
+}
+```
+
+## AFTER_TESTS_READ {#after_tests_read}
+
+**sync | master | worker**
+
+Событие `AFTER_TESTS_READ` триггерится после того, как будут вызваны методы [readTests][read-tests] или [run][run] объекта типа [TestCollection][test-collection]. Обработчик события выполняется синхронно. Событие также доступно в воркерах testplane.
+
+Подписавшись на это событие, вы можете выполнить в обработчике те или иные манипуляции над коллекцией тестов до того, как они будут запущены. Например, вы можете исключить какие-либо тесты из запусков.
+
+### Подписка на событие {#after_tests_read_subscription}
+
+```javascript
+testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
+    console.info("Выполняется обработка события AFTER_TESTS_READ...");
+});
+```
+
+#### Параметры обработчика {#after_tests_read_cb_params}
+
+В обработчик события передается объект `testCollection` типа [TestCollection][test-collection].
+
+### Пример использования {#after_tests_read_usage}
+
+Рассмотрим [реализацию][testplane-global-hook-index] плагина [testplane-global-hook][testplane-global-hook], с помощью которого можно вынести действия, повторяющиеся перед запуском и завершением каждого теста, в отдельные _beforeEach_- и _afterEach_-обработчики.
+
+Используя событие [AFTER_TESTS_READ](#after_tests_read), плагин добавляет к каждому корневому _suite_ обработчики _beforeEach_ и _afterEach_-хуков. Последние задаются пользователем в конфиге плагина [testplane-global-hook][testplane-global-hook].
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const parseConfig = require("./config");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    // ...
+
+    const { beforeEach, afterEach } = pluginConfig;
+
+    testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
+        testCollection.eachRootSuite(root => {
+            beforeEach && root.beforeEach(beforeEach);
+            afterEach && root.afterEach(afterEach);
+        });
+    });
+};
+```
+
+</details>
+
+Ещё примеры использования события [AFTER_TESTS_READ](#after_tests_read) можно посмотреть в разделах «[Запуск тестов из заданного списка](#usage_running_filtered_tests)» и «[Запуск тестов с хелперами](#usage_running_tests_with_helpers)».
+
+## RUNNER_START {#runner_start}
+
+**async | master**
+
+Событие `RUNNER_START` триггерится после инициализации всех воркеров testplane и перед выполнением тестов. Обработчик события может быть асинхронным: в таком случае тесты начнут выполняться только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
+
+### Подписка на событие {#runner_start_subscription}
+
+```javascript
+testplane.on(testplane.events.RUNNER_START, async runner => {
+    console.info("Выполняется обработка события RUNNER_START...");
+});
+```
+
+#### Параметры обработчика {#runner_start_cb_params}
+
+В обработчик события передается ссылка на инстанс раннера. Используя этот инстанс, можно триггерить различные события или подписаться на них.
+
+### Пример использования {#runner_start_usage}
+
+Предположим, мы хотим автоматически поднимать ssh-туннель при запуске тестов и перенаправлять все урлы в тестах в поднятый туннель. Для этого мы можем воспользоваться событиями [RUNNER_START](#runner_start) и [RUNNER_END](#runner_end), чтобы открывать туннель при запуске раннера и закрывать его после завершения работы раннера.
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const parseConfig = require("./config");
+const Tunnel = require("./lib/tunnel");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled) {
+        // плагин отключен – уходим
+        return;
+    }
+
+    // конфиг плагина задает параметры туннеля:
+    // host, ports, localport, retries, etc.
+    const tunnel = Tunnel.create(testplane.config, pluginConfig);
+
+    testplane.on(testplane.events.RUNNER_START, () => tunnel.open());
+    testplane.on(testplane.events.RUNNER_END, () => tunnel.close());
+};
+```
+
+</details>
+
+Похожую [реализацию][ssh-tunneler-index] можно посмотреть в плагине [ssh-tunneler][ssh-tunneler].
+
+## RUNNER_END {#runner_end}
+
+**async | master**
+
+Событие `RUNNER_END` триггерится после выполнения теста и перед тем, как будут завершены все воркеры. Обработчик события может быть асинхронным: в таком случае все воркеры будут завершены только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
+
+### Подписка на событие {#runner_end_subscription}
+
+```javascript
+testplane.on(testplane.events.RUNNER_END, async result => {
+    console.info("Выполняется обработка события RUNNER_END...");
+});
+```
+
+#### Параметры обработчика {#runner_end_cb_params}
+
+В обработчик события передается объект со статистикой прогона тестов следующего вида:
+
+```javascript
+{
+    passed: 0,  // количество успешно выполненных тестов
+    failed: 0,  // количество упавших тестов
+    retries: 0, // количество ретраев (повторных запусков) тестов
+    skipped: 0, // количество отключенных (заскипанных) тестов
+    total: 0    // общее количество тестов
+};
+```
+
+### Пример использования {#runner_end_usage}
+
+Смотрите пример [выше](#runner_start_usage) про открытие и закрытие туннеля при запуске и остановке раннера.
+
+## NEW_WORKER_PROCESS {#new_worker_process}
+
+**sync | master**
+
+Событие `NEW_WORKER_PROCESS` триггерится после порождения нового подпроцесса (воркера) testplane. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#new_worker_process_subscription}
+
+```javascript
+testplane.on(testplane.events.NEW_WORKER_PROCESS, workerProcess => {
+    console.info("Выполняется обработка события NEW_WORKER_PROCESS...");
+});
+```
+
+#### Параметры обработчика {#new_worker_process_cb_params}
+
+В обработчик события передается объект-обертка над порожденным подпроцессом, с одним единственным методом [send][process-send] для обмена сообщениями.
+
+### Пример использования {#new_worker_process_usage}
+
+В примере ниже показано, как можно использовать событие [NEW_WORKER_PROCESS](#new_worker_process), чтобы организовать взаимодействие мастер-процесса со всеми воркерами testplane. Например, для того, чтобы обновить значение какого-либо параметра во всех воркерах testplane из мастер-процесса перед началом прогона всех тестов.
+
+В примере также используется событие [BEGIN](#begin).
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const masterPlugin = (testplane, opts) => {
+    const workers = [];
+
+    testplane.on(testplane.events.NEW_WORKER_PROCESS, (workerProcess) => {
+        // запоминаем ссылки на все созданные воркеры testplane
+        workers.push(workerProcess);
+    });
+
+    testplane.on(testplane.events.BEGIN, () => {
+        // посылаем значение параметра всем воркерам
+        workers.forEach((worker) => {
+            worker.send({
+                type: PARAM_VALUE_UPDATED_EVENT,
+                param: 'some-value'
+            });
+        });
+    });
+};
+
+const workerPlugin = (testplane) => {
+    process.on('message', ({ type, ...data }) => {
+        if (type === PARAM_VALUE_UPDATED_EVENT) {
+            const { param } = data;
+            console.info(`Получил значение "${param}" для "param" из мастер-процесса`);
+        }
+    });
+
+    ...
+};
+
+const plugin = (testplane, opts) => {
+    if (testplane.isWorker()) {
+        workerPlugin(testplane, opts);
+    } else {
+        masterPlugin(testplane, opts);
+    }
+};
+
+module.exports = plugin;
+```
+
+</details>
+
+## SESSION_START {#session_start}
+
+**async | master**
+
+Событие `SESSION_START` триггерится после инициализации сессии браузера. Обработчик события может быть асинхронным: в таком случае тесты начнут выполняться только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
+
+### Подписка на событие {#session_start_subscription}
+
+```javascript
+testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessionId }) => {
+    console.info("Выполняется обработка события SESSION_START...");
+});
+```
+
+#### Параметры обработчика {#session_start_cb_params}
+
+В обработчик события передаются 2 аргумента:
+
+-   первый аргумент — инстанс `WebdriverIO`;
+-   второй аргумент — объект вида `{ browserId, sessionId }`, где _browserId_ — это имя браузера, а _sessionId_ — идентификатор сессии браузера.
+
+### Пример использования {#session_start_usage}
+
+Рассмотрим пример, в котором плагин подписывается на событие [SESSION_START](#session_start), чтобы отключить скролл-бары в браузерах с помощью Chrome DevTools Protocol'а.
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const parseConfig = require("./config");
+const DevTools = require("./dev-tools");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled) {
+        // плагин отключен – уходим
+        return;
+    }
+
+    testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessionId }) => {
+        if (!pluginConfig.browsers.includes(browserId)) {
+            // браузера нет в списке браузеров, для которых возможно отключить скроллбары
+            // посредством Chrome DevTools Protocol'а (CDP) – уходим
+            return;
+        }
+
+        const gridUrl = testplane.config.forBrowser(browserId).gridUrl;
+
+        // pluginConfig.browserWSEndpoint задает функцию, которая должна вернуть URL
+        // для работы с браузером через CDP. Чтобы функция могла вычислить URL,
+        // в функцию передаются идентификатор сессии и ссылка на грид
+        const browserWSEndpoint = pluginConfig.browserWSEndpoint({ sessionId, gridUrl });
+
+        const devtools = await DevTools.create({ browserWSEndpoint });
+
+        devtools.setScrollbarsHiddenOnNewPage();
+
+        await devtools.hideScrollbarsOnActivePages();
+    });
+};
+```
+
+</details>
+
+Более подробную [реализацию][hermione-hide-scrollbars-index] можно посмотреть в плагине [hermione-hide-scrollbars][hermione-hide-scrollbars].
+
+## SESSION_END {#session_end}
+
+**async | master**
+
+Событие `SESSION_END` триггерится после того, как завершается сессия браузера. Обработчик события может быть асинхронным: в таком случае тесты продолжат выполняться только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
+
+### Подписка на событие {#session_end_subscription}
+
+```javascript
+testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionId }) => {
+    console.info("Выполняется обработка события SESSION_END...");
+});
+```
+
+#### Параметры обработчика {#session_end_cb_params}
+
+В обработчик события передаются 2 аргумента:
+
+-   первый аргумент — инстанс `WebdriverIO`;
+-   второй аргумент — объект вида `{ browserId, sessionId }`, где _browserId_ — это имя браузера, а _sessionId_ — идентификатор сессии браузера.
+
+## BEGIN {#begin}
+
+**sync | master**
+
+Событие `BEGIN` триггерится перед выполнением теста, но после того как все раннеры будут инициализированы. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#begin_subscription}
+
+```javascript
+testplane.on(testplane.events.BEGIN, () => {
+    console.info("Выполняется обработка события BEGIN...");
+});
+```
+
+#### Параметры обработчика {#begin_cb_params}
+
+В обработчик события никакие данные не передаются.
+
+### Пример использования {#begin_usage}
+
+Смотрите пример [выше](#new_worker_process_usage) про организацию взаимодействия мастер-процесса testplane со всеми воркерами.
+
+## END {#end}
+
+**sync | master**
+
+Событие `END` триггерится прямо перед событием `RUNNER_END`. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#end_subscription}
+
+```javascript
+testplane.on(testplane.events.END, () => {
+    console.info("Выполняется обработка события END...");
+});
+```
+
+#### Параметры обработчика {#end_cb_params}
+
+В обработчик события никакие данные не передаются.
+
+### Пример использования {#end_usage}
+
+В качестве примера использования события [END](#end) смотрите раздел «[Задерживаем обработку события](#events_interception_delaying_events)».
+
+## SUITE_BEGIN {#suite_begin}
+
+**sync | master | can be intercepted**
+
+Событие `SUITE_BEGIN` триггерится перед выполнением набора тестов _(suite)_. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#suite_begin_subscription}
+
+```javascript
+testplane.on(testplane.events.SUITE_BEGIN, suite => {
+    console.info(`Выполняется обработка события SUITE_BEGIN для "${suite.fullTitle()}"...`);
+});
+```
+
+#### Параметры обработчика {#suite_begin_cb_params}
+
+В обработчик события передается инстанс _suite_.
+
+### Перехват события {#suite_begin_interception}
+
+```javascript
+testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
+    console.info(`Выполняется перехват события SUITE_BEGIN для "${suite.fullTitle()}"...`);
+});
+```
+
+## SUITE_END {#suite_end}
+
+**sync | master | can be intercepted**
+
+Событие `SUITE_END` триггерится после окончания выполнения набора тестов _(suite)_. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#suite_end_subscription}
+
+```javascript
+testplane.on(testplane.events.SUITE_END, suite => {
+    console.info(`Выполняется обработка события SUITE_END для "${suite.fullTitle()}"...`);
+});
+```
+
+#### Параметры обработчика {#suite_end_cb_params}
+
+В обработчик события передается инстанс _suite_.
+
+### Перехват события {#suite_end_interception}
+
+```javascript
+testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
+    console.info(`Выполняется перехват события SUITE_END для "${suite.fullTitle()}"...`);
+});
+```
+
+## TEST_BEGIN {#test_begin}
+
+**sync | master | can be intercepted**
+
+Событие `TEST_BEGIN` триггерится перед выполнением теста. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#test_begin_subscription}
+
+```javascript
+testplane.on(testplane.events.TEST_BEGIN, test => {
+    if (test.pending) {
+        // тест отключен, ничего делать не нужно
+        return;
+    }
+
+    console.info(
+        `Выполняется обработка события TEST_BEGIN ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+#### Параметры обработчика {#test_begin_cb_params}
+
+В обработчик события передается инстанс теста.
+
+### Перехват события {#test_begin_interception}
+
+```javascript
+testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
+    console.info(
+        `Выполняется перехват события TEST_BEGIN ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+### Пример использования {#test_begin_usage}
+
+Смотрите в качестве примера «[Профилирование прогона тестов](#usage_profiling_tests_runs)».
+
+## TEST_END {#test_end}
+
+**sync | master | can be intercepted**
+
+Событие `TEST_END` триггерится после окончания выполнения теста. Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
+
+### Подписка на событие {#test_end_subscription}
+
+```javascript
+testplane.on(testplane.events.TEST_END, test => {
+    if (test.pending) {
+        // тест отключен, ничего делать не нужно
+        return;
+    }
+
+    console.info(
+        `Выполняется обработка события TEST_END ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+#### Параметры обработчика {#test_end_cb_params}
+
+В обработчик события передается инстанс теста.
+
+### Перехват события {#test_end_interception}
+
+```javascript
+testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
+    console.info(
+        `Выполняется перехват события TEST_END ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+### Пример использования {#test_end_usage}
+
+Смотрите в качестве примера «[Профилирование прогона тестов](#usage_profiling_tests_runs)».
+
+## TEST_PASS {#test_pass}
+
+**sync | master | can be intercepted**
+
+Событие `TEST_PASS` триггерится, если тест успешно прошел. Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
+
+### Подписка на событие {#test_pass_subscription}
+
+```javascript
+testplane.on(testplane.events.TEST_PASS, test => {
+    console.info(
+        `Выполняется обработка события TEST_PASS ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+#### Параметры обработчика {#test_pass_cb_params}
+
+В обработчик события передается инстанс теста.
+
+### Перехват события {#test_pass_interception}
+
+```javascript
+testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
+    console.info(
+        `Выполняется перехват события TEST_PASS ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+### Пример использования {#test_pass_usage}
+
+Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
+
+## TEST_FAIL {#test_fail}
+
+**sync | master | can be intercepted**
+
+Событие `TEST_FAIL` триггерится, если тест упал. Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
+
+### Подписка на событие {#test_fail_subscription}
+
+```javascript
+testplane.on(testplane.events.TEST_FAIL, test => {
+    console.info(
+        `Выполняется обработка события TEST_FAIL ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+#### Параметры обработчика {#test_fail_cb_params}
+
+В обработчик события передается инстанс теста.
+
+### Перехват события {#test_fail_interception}
+
+```javascript
+testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+    console.info(
+        `Выполняется перехват события TEST_PASS ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+### Пример использования {#test_fail_usage}
+
+Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
+
+## TEST_PENDING {#test_pending}
+
+**sync | master**
+
+Событие `TEST_PENDING` триггерится, если тест отключен. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#test_pending_subscription}
+
+```javascript
+testplane.on(testplane.events.TEST_PENDING, test => {
+    console.info(
+        `Выполняется обработка события TEST_PENDING ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+#### Параметры обработчика {#test_pending_cb_params}
+
+В обработчик события передается инстанс теста.
+
+### Пример использования {#test_pending_usage}
+
+Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
+
+## RETRY {#retry}
+
+**sync | master | can be intercepted**
+
+Событие `RETRY` триггерится, если тест упал, но ушел на повторный прогон, так называемый «ретрай». Возможности повторного прогона теста определяются настройками [retry][browsers-retry] и [shouldRetry][browsers-should-retry] в конфиге testplane. Также на это могут влиять плагины testplane, если они модифицируют «на лету» указанные выше настройки. Смотрите для примера плагины [retry-limiter][retry-limiter] и [testplane-retry-progressive][testplane-retry-progressive].
+
+Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
+
+### Подписка на событие {#retry_subscription}
+
+```javascript
+testplane.on(testplane.events.RETRY, test => {
+    console.info(
+        `Выполняется обработка события RETRY ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+#### Параметры обработчика {#retry_cb_params}
+
+В обработчик события передается инстанс теста.
+
+### Перехват события {#retry_interception}
+
+```javascript
+testplane.intercept(testplane.events.RETRY, ({ event, data: test }) => {
+    console.info(
+        `Выполняется перехват события RETRY ` +
+            `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
+    );
+});
+```
+
+### Пример использования {#test_retry_usage}
+
+Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
+
+## ERROR {#error}
+
+**sync | master**
+
+Событие `ERROR` триггерится только из [перехватчиков событий](#events_interception) в случае критической ошибки. Обработчик события выполняется синхронно.
+
+### Подписка на событие {#error_subscription}
+
+```javascript
+testplane.on(testplane.events.ERROR, error => {
+    console.info("Выполняется обработка события ERROR...");
+});
+```
+
+#### Параметры обработчика {#error_cb_params}
+
+В обработчик события передается [объект с ошибкой][error-object].
+
+### Пример использования {#error_usage}
+
+Смотрите в качестве примера «[Профилирование прогона тестов](#usage_profiling_tests_runs)».
+
+## INFO {#info}
+
+**reserved**
+
+Зарезервировано.
+
+## WARNING {#warning}
+
+**reserved**
+
+Зарезервировано.
+
+## EXIT {#exit}
+
+**async | master**
+
+Событие `EXIT` триггерится при получении сигнала [SIGTERM][sigterm] (например, после нажатия `Ctrl + C`). Обработчик события может быть асинхронным.
+
+### Подписка на событие {#exit_subscription}
+
+```javascript
+testplane.on(testplane.events.EXIT, async () => {
+    console.info("Выполняется обработка события EXIT...");
+});
+```
+
+#### Параметры обработчика {#exit_cb_params}
+
+В обработчик события никакие данные не передаются.
+
+## NEW_BROWSER {#new_browser}
+
+**sync | worker**
+
+Событие `NEW_BROWSER` триггерится после того, как создан новый инстанс браузера. Обработчик события выполняется синхронно. Событие доступно только в воркерах testplane.
+
+### Подписка на событие {#new_browser_subscription}
+
+```javascript
+testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId, browserVersion }) => {
+    console.info("Выполняется обработка события NEW_BROWSER...");
+});
+```
+
+#### Параметры обработчика {#new_browser_cb_params}
+
+В обработчик события передаются 2 аргумента:
+
+-   первый аргумент — инстанс `WebdriverIO`;
+-   второй аргумент — объект вида `{ browserId, versionId }`, где _browserId_ — это имя браузера, а _browserVersion_ — версия браузера.
+
+### Пример реализации {#new_browser_usage}
+
+Событие [NEW_BROWSER](#new_browser) часто используют для того, чтобы добавить новые команды к браузеру, или как-то дополнить уже существующие команды. Например, некоторые плагины добавляют кастомные команды к браузеру в обработчике события [NEW_BROWSER](#new_browser).
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+module.exports = (testplane, opts) => {
+    // ...
+
+    if (testplane.isWorker()) {
+        testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId }) => {
+            // ...
+
+            browser.addCommand("vncUrl", vncUrlHandler);
+            browser.addCommand("openVnc", createOpenVnc(browser, ipcOptions));
+            browser.addCommand("waitForEnter", waitForEnter);
+        });
+    }
+};
+```
+
+</details>
+
+## UPDATE_REFERENCE {#update_reference}
+
+**sync | worker**
+
+Событие `UPDATE_REFERENCE` триггерится после обновления эталонных скриншотов. Обработчик события выполняется синхронно. Событие доступно только в воркерах testplane.
+
+### Подписка на событие {#update_reference_subscription}
+
+```javascript
+testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
+    console.info("Выполняется обработка события UPDATE_REFERENCE...");
+});
+```
+
+#### Параметры обработчика {#update_reference_cb_params}
+
+В обработчик события передается объект следующего формата:
+
+```javascript
+{
+    state, // String: состояние, которое отражает данный скриншот, например: plain, map-view, scroll-left и т. д.
+        refImg; // Object: типа { path, size: { width, height } }, описывающий эталонный скриншот
+}
+```
+
+Параметр _refImg.path_ хранит путь к эталонному скриншоту на файловой системе, а _refImg.size.width_ и _refImg.size.height_ хранят, соответственно, ширину и высоту эталонного скриншота.
+
+### Пример использования {#update_reference_usage}
+
+Рассмотрим в качестве примера [реализацию][testplane-image-minifier-index] плагина [testplane-image-minifier][testplane-image-minifier], в котором при сохранении эталонных скриншотов происходит их автоматическое сжатие с заданным уровнем компрессии.
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const parseConfig = require("./config");
+const Minifier = require("./minifier");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled) {
+        // плагин отключен – уходим
+        return;
+    }
+
+    const minifier = Minifier.create(pluginConfig);
+
+    testplane.on(testplane.events.UPDATE_REFERENCE, ({ refImg }) => {
+        minifier.minify(refImg.path);
+    });
+};
+```
+
+</details>
+
+## Примеры использования событий
+
+### Запуск тестов из заданного списка {#usage_running_filtered_tests}
+
+Рассмотрим в качестве примера [реализацию][testplane-test-filter-index] плагина [testplane-test-filter][testplane-test-filter], с помощью которого можно запускать только заданные в json-файле тесты.
+
+В этом примере используются следующие события и методы API testplane:
+
+-   [INIT](#init)
+-   [AFTER_TESTS_READ](#after_tests_read)
+-   [TestCollection.disableAll][disable-all]
+-   [TestCollection.enableTest][enable-test]
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const _ = require("lodash");
+const parseConfig = require("./config");
+const utils = require("./utils");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled) {
+        // плагин отключен – уходим
+        return;
+    }
+
+    if (testplane.isWorker()) {
+        // в воркерах testplane нам нечего делать – уходим
+        return;
+    }
+
+    let input;
+
+    testplane.on(testplane.events.INIT, async () => {
+        // читаем файл со списком тестов, которые надо прогнать;
+        // readFile возвращает json, который содержит массив вида:
+        // [
+        //     { "fullTitle": "test-1", "browserId": "bro-1" },
+        //     { "fullTitle": "test-2", "browserId": "bro-2" }
+        // ]
+        input = await utils.readFile(pluginConfig.inputFile);
+    });
+
+    testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
+        if (_.isEmpty(input)) {
+            // список тестов – пустой – будем запускать все тесты,
+            // то есть не трогаем исходную коллекцию (testCollection) тестов
+            return;
+        }
+
+        // отключаем все тесты
+        testCollection.disableAll();
+
+        // а теперь включаем только те, которые были переданы в json-файле
+        input.forEach(({ fullTitle, browserId }) => {
+            testCollection.enableTest(fullTitle, browserId);
+        });
+    });
+};
+```
+
+</details>
+
+### Сбор статистики о прогоне тестов {#usage_collecting_stats}
+
+Рассмотрим в качестве примера [реализацию][json-reporter-index] плагина [json-reporter][json-reporter].
+
+В этом примере используются следующие события testplane:
+
+-   [TEST_PASS](#test_pass)
+-   [TEST_FAIL](#test_fail)
+-   [TEST_PENDING](#test_pending)
+-   [RETRY](#retry)
+-   [RUNNER_END](#runner_end)
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const Collector = require("./lib/collector");
+const testplaneToolCollector = require("./lib/collector/tool/testplane");
+const parseConfig = require("./lib/config");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled) {
+        // плагин отключен – уходим
+        return;
+    }
+
+    // collector будет аккумулировать статистику
+    const collector = Collector.create(testplaneToolCollector, pluginConfig);
+
+    // подписываемся на соответствующие события,
+    // чтобы в итоге получить необходимую статистику:
+
+    // - сколько тестов выполнилось успешно
+    testplane.on(testplane.events.TEST_PASS, data => collector.addSuccess(data));
+
+    // - сколько тестов упало
+    testplane.on(testplane.events.TEST_FAIL, data => collector.addFail(data));
+
+    // - сколько было отключено (заскипано)
+    testplane.on(testplane.events.TEST_PENDING, data => collector.addSkipped(data));
+
+    // - количество ретраев
+    testplane.on(testplane.events.RETRY, data => collector.addRetry(data));
+
+    // после того, как прогон тестов завершен, сохраняем статистику в json-файл
+    testplane.on(testplane.events.RUNNER_END, () => collector.saveFile());
+};
+```
+
+</details>
+
+### Автоматический запуск dev-севера {#usage_starting_dev_server}
+
+Реализуем схематично плагин `testplane-dev-server` для testplane, чтобы при каждом запуске testplane автоматически поднимать dev-сервер.
+
+Запуск dev-сервера — опционален: для этого плагин добавляет специальную опцию `--dev-server` к testplane, позволяя разработчику указывать при запуске testplane, нужно ли поднимать dev-сервер.
+
+Помимо этого, плагин позволяет задать параметр `devServer` в своем конфиге.
+
+В этом примере используются следующие события testplane:
+
+-   [CLI](#cli)
+-   [INIT](#init)
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+**Код плагина**
+
+```javascript
+const http = require('http');
+const parseConfig = require('./config');
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled <tr><td>testplane.isWorker()) {
+        // или плагин отключен, или мы находимся в контексте воркера – уходим
+        return;
+    }
+
+    let program;
+
+    testplane.on(testplane.events.CLI, (cli) => {
+        // нужно сохранить ссылку на инстанс commander'а (https://github.com/tj/commander.js),
+        // чтобы потом проверить наличие опции
+        program = cli;
+        // добавляем к testplane опцию --dev-server,
+        // чтобы пользователь мог явно указывать, когда надо запустить dev-сервер
+        cli.option('--dev-server', 'run dev-server');
+    });
+
+    testplane.on(testplane.events.INIT, () => {
+        // dev-сервер может быть запущен как через указание опции --dev-server
+        // при запуске testplane, так и в настройках плагина
+        const devServer = program && program.devServer</td></tr> pluginConfig.devServer;
+
+        if (!devServer) {
+            // если dev-сервер запускать не нужно – уходим
+            return;
+        }
+
+        // контент, который отдает dev-сервер
+        const content = '<h1>Hello, World!</h1>';
+
+        // создаем сервер и начинаем слушать порт 3000
+        http
+            .createServer((req, res) => res.end(content))
+            .listen(3000);
+
+        // по адресу http://localhost:3000/index.html будет отдаваться: <h1>Hello, World!</h1>
+    });
+};
+```
+
+**Конфиг testplane**
+
+```javascript
+module.exports = {
+    // тесты будут запускаться в локальном браузере,
+    // см. про selenium-standalone в разделе «Быстрый старт»
+    gridUrl: "http://localhost:4444/wd/hub",
+    // указываем путь к dev-серверу
+    baseUrl: "http://localhost:3000",
+
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+    },
+
+    plugins: {
+        // добавляем наш плагин к списку плагинов
+        "testplane-dev-server": {
+            enabled: true,
+            // по умолчанию dev-сервер запускаться не будет
+            devServer: false,
+        },
+    },
+};
+```
+
+**Код теста**
+
+```javascript
+const { assert } = require("chai");
+
+describe("example", async () => {
+    it("should find hello world", async ({ browser }) => {
+        // baseUrl, относительно которого задается index.html,
+        // указан в конфиге testplane выше
+        await browser.url("index.html");
+
+        const title = await browser.$("h1").getText();
+        assert.equal(title, "Hello, World!");
+    });
+});
+```
+
+</details>
+
+### Запуск тестов с хелперами {#usage_running_tests_with_helpers}
+
+Рассмотрим [реализацию][testplane-passive-browsers-index] плагина [testplane-passive-browsers][testplane-passive-browsers].
+
+Используя события [BEFORE_FILE_READ](#before_file_read) и [AFTER_TESTS_READ](#after_tests_read) плагин позволяет добавить специальный хелпер, с помощью которого можно запускать указанные тесты или наборы тестов _(suites)_ в заданных браузерах. Такая логика может пригодиться, если вам не нужно запускать большинство тестов в каких-то браузерах. Но при этом некоторые тесты вы все же хотели бы запускать в этих (пассивных) браузерах, чтобы проверять браузеро-специфичные вещи.
+
+В примере ниже мы немного упростили код плагина, задав название хелпера `also` непосредственно в коде, а не беря его из конфига плагина.
+
+В этом примере используются следующие события testplane:
+
+-   [BEFORE_FILE_READ](#before_file_read)
+-   [AFTER_TESTS_READ](#after_tests_read)
+
+Также используются [testParser](#test_parser) и [testCollection][test-collection].
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+**Код плагина**
+
+```javascript
+const _ = require("lodash");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled) {
+        // плагин отключен – уходим
+        return;
+    }
+
+    if (testplane.isWorker()) {
+        testplane.on(testplane.events.BEFORE_FILE_READ, ({ testParser }) => {
+            // в воркерах хелпер ничего делать не будет,
+            // задаем для него "no operation"
+            testParser.setController("also", { in: _.noop });
+        });
+
+        return;
+    }
+
+    const suitesToRun = {};
+    const testsToRun = {};
+
+    testplane.on(testplane.events.BEFORE_FILE_READ, ({ testParser }) => {
+        testParser.setController("also", {
+            // matcher – параметр, который передается в хелпер also.in();
+            // может быть строкой, регулярным выражением или массивом строк/regexp;
+            // в нашем случае matcher определяет пассивные браузеры,
+            // в которых нужно запустить тест (тесты)
+            in: function (matcher) {
+                const storage = this.suites ? suitesToRun : testsToRun;
+
+                if (!shouldRunInBro(this.browserId, matcher)) {
+                    // если текущего браузера нет в том списке,
+                    // который указан в хелпере, то ничего не делаем
+                    return;
+                }
+
+                if (!storage[this.browserId]) {
+                    storage[this.browserId] = [];
+                }
+
+                // иначе собираем айдишники тестов,
+                // которые должны быть запущены для текущего браузера
+                storage[this.browserId].push({ id: this.id() });
+            },
+        });
+    });
+
+    // используем prependListener, чтобы изначально включить тесты только
+    // в указанных пассивных браузерах, а затем уже будут включены все остальные тесты,
+    // которые должны быть включены
+    testplane.prependListener(testplane.events.AFTER_TESTS_READ, testCollection => {
+        // формируем список пассивных браузеров как пересечение браузеров для тестов,
+        // которые были прочитаны, и браузеров из конфига плагина
+        const passiveBrowserIds = getPassiveBrowserIds(testCollection, pluginConfig);
+
+        passiveBrowserIds.forEach(passiveBrowserId => {
+            const shouldRunTest = (runnable, storage = testsToRun) => {
+                const foundRunnable =
+                    runnable.id && _.find(storage[passiveBrowserId], { id: runnable.id() });
+
+                return (
+                    foundRunnable ||
+                    (runnable.parent && shouldRunTest(runnable.parent, suitesToRun))
+                );
+            };
+
+            // отключаем все тесты, кроме тех, что должны быть запущены
+            // в указанных пассивных браузерах
+            testCollection.eachTest(browserId, test => {
+                test.disabled = !shouldRunTest(test);
+            });
+        });
+    });
+};
+```
+
+**Код теста**
+
+```javascript
+testplane.also.in("ie6");
+describe("suite", () => {
+    it("test1", function () {
+        // ...
+    });
+
+    testplane.also.in(["ie7", /ie[89]/]);
+    it("test2", function () {
+        // ...
+    });
+});
+```
+
+</details>
+
+### Профилирование прогона тестов {#usage_profiling_tests_runs}
+
+Рассмотрим схематичную реализацию профилирования прогона тестов. При каждом запуске теста мы будем засекать время его запуска, а при завершении — время завершения. Всю информацию мы будем сохранять в стрим, который по завершению раннера будет закрываться.
+
+<details>
+
+<summary>
+Нажмите, чтобы посмотреть код
+
+</summary>
+
+```javascript
+const parseConfig = require("./lib/config");
+const StreamWriter = require("./lib/stream-writer");
+
+module.exports = (testplane, opts) => {
+    const pluginConfig = parseConfig(opts);
+
+    if (!pluginConfig.enabled) {
+        // плагин отключен – уходим
+        return;
+    }
+
+    let writeStream;
+
+    testplane.on(testplane.events.RUNNER_START, () => {
+        // создаем стрим для записи данных профилирования
+        writeStream = StreamWriter.create(pluginConfig.path);
+    });
+
+    testplane.on(testplane.events.TEST_BEGIN, test => {
+        if (test.pending) {
+            // тест отключен – ничего делать не нужно
+            return;
+        }
+
+        // засекаем время запуска теста
+        test.timeStart = Date.now();
+    });
+
+    testplane.on(testplane.events.TEST_END, test => {
+        if (test.pending) {
+            // тест отключен – ничего делать не нужно
+            return;
+        }
+
+        // засекаем время завершения теста
+        test.timeEnd = Date.now();
+        // и сохраняем информацию о тесте в стрим
+        writeStream.write(test);
+    });
+
+    // в случае ошибки закрываем стрим
+    testplane.on(testplane.events.ERROR, () => writeStream.end());
+
+    // после завершения раннера закрываем стрим
+    testplane.on(testplane.events.RUNNER_END, () => writeStream.end());
+};
+```
+
+</details>
+
+Более подробную [реализацию][testplane-profiler-index] можно посмотреть в плагине [testplane-profiler][testplane-profiler].
+
+[process-send]: https://nodejs.org/docs/latest-v12.x/api/process.html#process_process_send_message_sendhandle_options_callback
+[test-collection]: ../testplane-api#test_collection
+[disable-all]: ../testplane-api#test_collection_disable_all
+[enable-test]: ../testplane-api#test_collection_enable_test
+[run]: ../testplane-api#testplane_run
+[read-tests]: ../testplane-api#testplane_read_tests
+[testplane-passive-browsers-index]: https://github.com/gemini-testing/testplane-passive-browsers/blob/master/lib/index.js
+[testplane-passive-browsers]: https://github.com/gemini-testing/testplane-passive-browsers
+[testplane-global-hook-index]: https://github.com/gemini-testing/testplane-global-hook/blob/master/index.js
+[testplane-global-hook]: https://github.com/gemini-testing/testplane-global-hook
+[testplane-test-filter]: https://github.com/gemini-testing/testplane-test-filter
+[testplane-test-filter-index]: https://github.com/gemini-testing/testplane-test-filter/blob/master/lib/index.js
+[json-reporter]: https://github.com/gemini-testing/json-reporter
+[json-reporter-index]: https://github.com/gemini-testing/json-reporter/blob/master/testplane.js
+[commander]: https://github.com/gemini-testing/commander.js
+[commander-options]: https://github.com/tj/commander.js#options
+[cli-wiki]: https://ru.wikipedia.org/wiki/Интерфейс_командной_строки
+[testplane-run]: ../testplane-api#testplane_run
+[system]: ../../config/system
+[system-workers]: ../../config/system#workers
+[system-tests-per-worker]: ../../config/system#tests_per_worker
+[browser-tests-per-session]: ../../config/browsers#tests_per_session
+[browser-sessions-per-browser]: ../../config/browsers#sessions_per_browser
+[skip-in]: ../../guides/how-to-skip-test-in-browsers
+[sigterm]: https://ru.wikipedia.org/wiki/Сигнал_(Unix)
+[testplane-test-repeater-index]: https://github.com/gemini-testing/testplane-test-repeater/blob/master/lib/index.js
+[testplane-test-repeater]: https://github.com/gemini-testing/testplane-test-repeater
+[express]: https://github.com/expressjs/express
+[ssh-tunneler]: https://github.com/gemini-testing/ssh-tunneler
+[ssh-tunneler-index]: https://github.com/gemini-testing/ssh-tunneler/blob/master/testplane.js
+[testplane-image-minifier]: https://github.com/gemini-testing/testplane-image-minifier
+[testplane-image-minifier-index]: https://github.com/gemini-testing/testplane-image-minifier/blob/master/lib/index.js
+[testplane-profiler]: https://github.com/gemini-testing/testplane-profiler
+[testplane-profiler-index]: https://github.com/gemini-testing/testplane-profiler/blob/master/index.js
+[hermione-hide-scrollbars]: https://github.com/gemini-testing/hermione-hide-scrollbars
+[hermione-hide-scrollbars-index]: https://github.com/gemini-testing/hermione-hide-scrollbars/blob/master/index.js
+[vnc]: https://ru.wikipedia.org/wiki/Virtual_Network_Computing
+[browsers-retry]: ../../config/browsers#retry
+[browsers-should-retry]: ../../config/browsers#should_retry
+[retry-limiter]: ../../plugins/retry-limiter
+[testplane-retry-progressive]: ../../plugins/testplane-retry-progressive
+[error-object]: https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Error

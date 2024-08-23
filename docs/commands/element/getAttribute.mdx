@@ -1,28 +1,28 @@
 # getAttribute
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `getAttribute`, чтобы получить атрибут из DOM-элемента на основе имени атрибута.
+Use the `getAttribute` command to retrieve an attribute from a DOM element based on the attribute name.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).getAttribute(attributeName);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>attributeName</td><td>String</td><td>Имя запрашиваемого атрибута.</td></tr>
+<tr><td>attributeName</td><td>String</td><td>The name of the attribute to retrieve.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 **index.html**
 
@@ -40,6 +40,10 @@ await browser.$(selector).getAttribute(attributeName);
 it("should demonstrate the getAttribute command", async ({ browser }) => {
     const form = await browser.$("form");
     const attr = await form.getAttribute("method");
-    console.log(attr); // выведет: "post"
+    console.log(attr); // outputs: "post"
 });
 ```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getAttribute), from which we drew some information while writing our version.

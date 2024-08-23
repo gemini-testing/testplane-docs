@@ -1,27 +1,27 @@
 # moveTo
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `moveTo`, чтобы сместить мышь на заданные расстояния по осям X и Y относительно указанного элемента.
+Use the `moveTo` command to move the mouse by specified offsets along the X and Y axes relative to the specified element.
 
-Если элемент не указан, то перемещение будет выполнено относительно текущего курсора мыши.
-Если элемент указан, а смещения по осям не указаны, то мышь будет перемещена в центр элемента.
-Если элемент не виден, то будет выполнен подскролл так, чтобы элемент стал виден.
+If no element is specified, the movement will be executed relative to the current mouse cursor position.
+If an element is specified and no offsets are provided, the mouse will move to the center of the element.
+If the element is not visible, it will scroll into view.
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).moveTo({ xOffset, yOffset });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
     <thead>
         <tr>
-            <td>**Имя**</td>
-            <td>**Тип**</td>
-            <td>**Описание**</td>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
         </tr>
     </thead>
     <tbody>
@@ -29,17 +29,21 @@ await browser.$(selector).moveTo({ xOffset, yOffset });
             <td>xOffset</td>
             <td>Number</td>
             <td>
-                Смещение по оси X. Задается относительно центра элемента. Если не указано, мышь
-                переместится в середину элемента.
+                The X-axis offset relative to the middle of the element. If not specified, the mouse
+                will move to the middle of the element.
             </td>
         </tr>
         <tr>
             <td>yOffset</td>
             <td>Number</td>
             <td>
-                Смещение по оси Y. Задается относительно центра элемента. Если не указано, мышь
-                переместится в середину элемента.
+                The Y-axis offset relative to the middle of the element. If not specified, the mouse
+                will move to the middle of the element.
             </td>
         </tr>
     </tbody>
 </table>
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/moveTo), from which we drew some information while writing our version.

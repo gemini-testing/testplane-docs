@@ -1,0 +1,45 @@
+import Admonition from "@theme/Admonition";
+
+# isClickable
+
+## Обзор {#overview}
+
+Используйте команду `isClickable`, чтобы определить, можно ли кликнуть по заданному DOM-элементу.
+
+Команда возвращает `true`, если выбранный DOM-элемент:
+
+-   существует
+-   видимый
+-   находится внутри вьюпорта (если нет, то попробуйте сделать подскролл к элементу)
+-   центр элемента не перекрыт другим элементом
+-   элемент не отключен _(not disabled)_
+
+иначе команда возвращает `false`.
+
+<Admonition type="warning">
+Команда _isClickable_ работает только в веб-браузере и в контексте _webview_ мобильных приложений.
+
+Команда не работает в нативном контексте мобильных приложений.
+
+Кроме того, в отличие от других команд элемента, testplane не будет дожидаться существования элемента, чтобы выполнить эту команду.
+
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).isClickable();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it("should detect if an element is clickable", async ({ browser }) => {
+    const el = await browser.$("#el");
+    let clickable = await el.isClickable();
+    console.log(clickable); // выведет: true или false
+
+    // подождем, когда на элемент можно будет кликнуть
+    await browser.waitUntil(() => el.isClickable());
+});
+```

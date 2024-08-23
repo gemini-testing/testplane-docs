@@ -1,0 +1,38 @@
+# shadow$$
+
+## Обзор {#overview}
+
+Используйте команду `shadow$$`, чтобы получить доступ к элементам внутри [ShadowRoot][shadow-root] данного элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).shadow$$(shadowSelector);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>shadowSelector</td><td>String или Function</td><td>Селектор или JS-функция для получения определенного элемента (или элементов).</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should return elements inside a ShadowRoot", async ({ browser }) => {
+    const innerEl = await browser.$(".input").shadow$$("#innerEl");
+    console.log(await innerEl.getValue()); // выведет: 'test123'
+});
+```
+
+## Связанные команды {#related}
+
+-   [shadow$](../shadowDollar)
+
+[shadow-root]: https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot

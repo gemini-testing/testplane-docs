@@ -2,63 +2,65 @@ import Admonition from "@theme/Admonition";
 
 # scrollIntoView
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `scrollIntoView`, чтобы выполнить подскролл к заданному элементу.
+Use the `scrollIntoView` command to scroll to a specified element.
 
-<Admonition type="info">
-    Читайте также [Element.scrollIntoView()][scroll-into-view] на MDN.
-</Admonition>
+<Admonition type="info">Also see [Element.scrollIntoView()][scroll-into-view] on MDN.</Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector).scrollIntoView();
 ```
 
-или
+or
 
 ```javascript
 await browser.$(selector).scrollIntoView(alignToTop);
 ```
 
-или
+or
 
 ```javascript
 await browser.$(selector).scrollIntoView({ behavior, block, inline });
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Default**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>alignToTop</td><td>Boolean</td><td>true</td><td>Если значение _true_, то верхняя граница элемента будет выровнена по верху видимой области скроллируемого предка. Соответствует _\{block: 'start', inline: 'nearest'}_. Если значение _false_, нижняя граница элемента будет выровнена по низу видимой области скроллируемого предка. Соответствует _\{block: 'end', inline: 'nearest'}_.</td></tr>
-<tr><td>behavior</td><td>String</td><td>"auto"</td><td>Задает анимацию прокрутки: "auto" или "smooth".</td></tr>
-<tr><td>block</td><td>String</td><td>"start"</td><td>Задает вертикальное выравнивание: "start", "center", "end" или "nearest".</td></tr>
-<tr><td>inline</td><td>String</td><td>"nearest"</td><td>Задает горизонтальное выравнивание: "start", "center", "end" или "nearest".</td></tr>
+<tr><td>alignToTop</td><td>Boolean</td><td>true</td><td>If _true_, the top of the element will be aligned to the top of the scrollable ancestor's visible area. Corresponds to _\{block: 'start', inline: 'nearest'}_. If _false_, the bottom of the element will be aligned to the bottom of the scrollable ancestor's visible area. Corresponds to _\{block: 'end', inline: 'nearest'}_.</td></tr>
+<tr><td>behavior</td><td>String</td><td>"auto"</td><td>Specifies the scrolling animation: "auto" or "smooth".</td></tr>
+<tr><td>block</td><td>String</td><td>"start"</td><td>Specifies vertical alignment: "start", "center", "end", or "nearest".</td></tr>
+<tr><td>inline</td><td>String</td><td>"nearest"</td><td>Specifies horizontal alignment: "start", "center", "end", or "nearest".</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Usage Examples {#examples}
 
 ```javascript
 it("should demonstrate the scrollIntoView command", async ({ browser }) => {
     const elem = await browser.$("#myElement");
 
-    // выполнить подскролл к элементу
+    // scroll the element into view
     await elem.scrollIntoView();
 
-    // подскроллировать так, чтобы элемент был по центру вьюпорта
+    // scroll the element to the center of the viewport
     await elem.scrollIntoView({ block: "center", inline: "center" });
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [browser.scroll](../../browser/scroll)
 
-[scroll-into-view]: https://developer.mozilla.org/ru/docs/Web/API/Element/scrollIntoView
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/scrollIntoView), from which we drew some information while writing our version.
+
+[scroll-into-view]: https://developer.mozilla.org/en/docs/Web/API/Element/scrollIntoView

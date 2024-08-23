@@ -1,0 +1,122 @@
+import Admonition from "@theme/Admonition";
+
+# testplane-retry-command
+
+## Обзор {#overview}
+
+Используйте плагин [testplane-retry-command][testplane-retry-command], чтобы ретраить отдельные команды на низком уровне.
+
+## Установка {#install}
+
+```bash
+npm install -D testplane-retry-command
+```
+
+## Настройка {#setup}
+
+Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+
+```javascript
+module.exports = {
+    plugins: {
+        "testplane-retry-command": {
+            enabled: true,
+            rules: [
+                {
+                    condition: "blank-screenshot",
+                    browsers: ["MicrosoftEdge"],
+                    retryCount: 5,
+                    retryInterval: 120,
+                },
+                {
+                    condition: "assert-view-failed",
+                    browsers: ["Chrome"],
+                    retryCount: 1,
+                    retryOnlyFirst: true,
+                },
+            ],
+        },
+
+        // другие плагины testplane...
+    },
+
+    // другие настройки testplane...
+};
+```
+
+### Расшифровка параметров конфигурации {#setup_description}
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody> 
+<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
+<tr><td>rules</td><td>Array</td><td>_N/A_</td><td>Набор правил, в соответствии с которыми команды будут ретраиться. Обязательный параметр.</td></tr>
+
+</tbody>
+</table>
+
+### rules {#setup_rules}
+
+Параметр `rules` представляет собой массив объектов. Каждый объект описывает отдельное правило для ретрая команд.
+
+Из каких параметров состоит это правило:
+
+<table>
+<thead>
+<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+</thead>
+<tbody> 
+<tr><td>[condition](#setup_rules_condition)</td><td>String</td><td>_N/A_</td><td>Условие для ретрая: _blank-screenshot_ или _assert-view-failed_. Подробнее см. ниже.</td></tr>
+<tr><td>[browsers](#setup_rules_browsers)</td><td>String/RegExp/Array</td><td>/.*/</td><td>Список браузеров, в которых нужно применять ретраи.</td></tr>
+<tr><td>[retryCount](#setup_rules_retry_count)</td><td>Number</td><td>2</td><td>Количество ретраев.</td></tr>
+<tr><td>[retryInterval](#setup_rules_retry_interval)</td><td>Number</td><td>100</td><td>Задержка перед каждым ретраем, в мс.</td></tr>
+<tr><td>[retryOnlyFirst](#setup_rules_retry_only_first)</td><td>Boolean</td><td>false</td><td>Ретраить только первую команду в тесте. Опция актуальна только для условия _assert-view-failed_.</td></tr>
+
+</tbody>
+</table>
+
+### condition {#setup_rules_condition}
+
+Условие, при котором нужно ретраить. Всего доступны 2 значения:
+
+-   `blank-screenshot` — ретраить низкоуровневую команду снятия скриншота [takeScreenshot][take-screenshot], если в результате команды вернулся пустой скриншот;
+-   `assert-view-failed` — ретраить высокоуровневую команду testplane для снятия скриншота [assertView][assert-view], если она упала.
+
+### browsers {#setup_rules_browsers}
+
+Список браузеров, в которых нужно применять низкоуровневые ретраи для команд. Можно задавать как строку (если это один браузер), регулярное выражение или массив строк или регулярных выражений. По умолчанию, параметр `browsers` имеет значение `/.*/`, под которое попадают все браузеры.
+
+### retryCount {#setup_rules_retry_count}
+
+Параметр определяет сколько раз нужно ретраить команду, если соблюдено условие, заданное в параметре `condition`.
+
+### retryInterval {#setup_rules_retry_interval}
+
+Параметр задает время в миллисекундах, которое надо подождать, прежде чем попытаться снова повторить команду.
+
+<Admonition type="warning">
+    Будьте осторожны, устанавливая значение для данного параметра, так как слишком большое значение
+    может драматически снизить скорость ваших тестов.
+</Admonition>
+
+### retryOnlyFirst {#setup_rules_retry_only_first}
+
+Разрешает ретраить только первую команду [assertView][assert-view] в тесте, если установлено значение `true`. Для других условий этот параметр не используется.
+
+### Передача параметров через CLI {#setup_by_cli}
+
+Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--retry-command-` для опций командной строки и `testplane_retry_command_` — для переменных окружения. Например:
+
+```bash
+npx testplane --retry-command-count 3
+```
+
+```bash
+testplane_retry_command_count=3 npx testplane
+```
+
+[testplane-retry-command]: https://github.com/gemini-testing/testplane-retry-command
+[take-screenshot]: https://webdriver.io/docs/api/webdriver/#takescreenshot
+[assert-view]: ../../commands/browser/assertView

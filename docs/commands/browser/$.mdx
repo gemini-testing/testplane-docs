@@ -7,38 +7,38 @@ import Admonition from "@theme/Admonition";
 
 # $
 
-## Обзор {#overview}
+## Overview {#overview}
 
-Используйте команду `$` вместо [findElement][find-element] как более краткую команду, чтобы получить один элемент на странице.
+Use the `$` command instead of [findElement][find-element] as a shorter command to get a single element on the page.
 
-Команда `$` возвращает объект, описывающий элемент, на котором можно вызывать команды действия без передачи селектора. Однако, если вы все же передадите селектор, то сначала будет найден соответствующий элемент, а затем вызвано действие для этого элемента. Вы также можете передать объект в качестве селектора, где объект содержит свойство `element-6066-11e4-a52e-4f735466cecf` со значением ссылки на элемент. Затем команда преобразует ссылку в расширенный элемент WebdriverIO.
+The `$` command returns an object describing the element, on which you can call action commands without passing the selector. However, if you pass a selector, it will first find the corresponding element and then call the action for that element. You can also pass an object as the selector, where the object contains the property `element-6066-11e4-a52e-4f735466cecf` with the value of the element reference. The command will then convert the reference into an extended WebdriverIO element.
 
-Вы можете связать `$` или `$$` вместе, чтобы спуститься по дереву DOM.
+You can chain `$` or `$$` together to traverse down the DOM tree.
 
 <Admonition type="info">
-    Подробнее о том, как выбрать определенные элементы, читайте в рецепте «[Как использовать
-    селекторы][how-to-use-selectors]».
+    Read more about how to select specific elements in the recipe "[How to use
+    selectors][how-to-use-selectors]".
 </Admonition>
 
-## Использование {#usage}
+## Usage {#usage}
 
 ```javascript
 await browser.$(selector);
 ```
 
-## Параметры команды {#parameters}
+## Command Parameters {#parameters}
 
 <table>
 <thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>selector</td><td>String или Function или Matcher</td><td>Селектор или JS-функция для получения конкретного элемента.</td></tr>
+<tr><td>selector</td><td>String or Function or Matcher</td><td>Selector or JS function to get a specific element.</td></tr>
 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Examples {#examples}
 
 **index.html**
 
@@ -62,31 +62,31 @@ await browser.$(selector);
 **$.js**
 
 ```javascript
-it("should get text a menu link", async ({ browser }) => {
+it("should get text of a menu link", async ({ browser }) => {
     const text = await browser.$("#menu");
 
-    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
 });
 
-it("should get text a menu link - JS Function", async ({ browser }) => {
+it("should get text of a menu link - JS Function", async ({ browser }) => {
     const text = await browser.$(function () {
-        // Использовать здесь стрелочную функцию нельзя.
-        // Это Window – https://developer.mozilla.org/en-US/docs/Web/API/Window
+        // Arrow function cannot be used here.
+        // This is Window – https://developer.mozilla.org/en-US/docs/Web/API/Window
         //
-        // TypeScript-пользователи могут сделать что-нибудь вроде:
+        // TypeScript users can do something like:
         // return (this as Window).document.querySelector('#menu')
         return this.document.querySelector("#menu"); // Element
     });
 
-    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
 });
 
-it("should allow to convert protocol result of an element into a WebdriverIO element", async ({
+it("should allow converting the protocol result of an element into a WebdriverIO element", async ({
     browser,
 }) => {
     const activeElement = await browser.getActiveElement();
 
-    console.log(await browser.$(activeElement).getTagName()); // выведет активный элемент
+    console.log(await browser.$(activeElement).getTagName()); // outputs the active element
 });
 
 it("should use Androids DataMatcher or ViewMatcher selector", async ({ browser }) => {
@@ -105,11 +105,15 @@ it("should use Androids DataMatcher or ViewMatcher selector", async ({ browser }
 });
 ```
 
-## Связанные команды {#related}
+## Related Commands {#related}
 
 -   [browser.$$](../_dollardollar)
 -   [element.$](../../element/_dollar)
 -   [element.$$](../../element/_dollardollar)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/$), from which we drew some information while writing our version.
 
 [find-element]: https://webdriver.io/docs/api/webdriver/#findelement
 [how-to-use-selectors]: https://webdriver.io/docs/selectors
