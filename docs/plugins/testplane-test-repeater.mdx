@@ -1,15 +1,15 @@
-# testplane-test-repeater
+# @testplane/test-repeater
 
 ## Overview {#overview}
 
-Use the [testplane-test-repeater][testplane-test-repeater] plugin to run the same test (or group of tests) the required number of times.
+Use the [@testplane/test-repeater][testplane-test-repeater] plugin to run the same test (or group of tests) the required number of times.
 
 This plugin can be useful in cases when you need to make sure that the written tests are stable. The plugin guarantees that the tests will be run as many times as you set, regardless of the results of their run in each attempt. In addition, the plugin allows you to run tests every time in a new browser session. This eliminates the impact of browser degradation or any other side effects that could occur during repeated runs in the same browser session.
 
 ## Install {#install}
 
 ```bash
-npm install -D testplane-test-repeater
+npm install -D @testplane/test-repeater
 ```
 
 ## Setup {#setup}
@@ -19,7 +19,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        "testplane-test-repeater": {
+        "@testplane/test-repeater": {
             enabled: true,
             repeat: 50,
             minRepeat: 10,
@@ -37,17 +37,46 @@ module.exports = {
 ### Description of configuration parameters {#setup_description}
 
 <table>
-<thead>
-<tr><td>**Parameter**</td><td>**Type**</td><td>**Default value**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
-<tr><td>repeat</td><td>Number</td><td>0</td><td>How many times you need to run the test, regardless of the result of its run.</td></tr>
-<tr><td>minRepeat</td><td>Number</td><td>0</td><td>The minimum number of times the test can be run.</td></tr>
-<tr><td>maxRepeat</td><td>Number</td><td>Infinity</td><td>The maximum number of times the test can be run.</td></tr>
-<tr><td>uniqSession</td><td>Boolean</td><td>true</td><td>Run each test in a unique browser session.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Default value**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>Boolean</td>
+            <td>true</td>
+            <td>Enable / disable the plugin.</td>
+        </tr>
+        <tr>
+            <td>repeat</td>
+            <td>Number</td>
+            <td>0</td>
+            <td>How many times you need to run the test, regardless of the result of its run.</td>
+        </tr>
+        <tr>
+            <td>minRepeat</td>
+            <td>Number</td>
+            <td>0</td>
+            <td>The minimum number of times the test can be run.</td>
+        </tr>
+        <tr>
+            <td>maxRepeat</td>
+            <td>Number</td>
+            <td>Infinity</td>
+            <td>The maximum number of times the test can be run.</td>
+        </tr>
+        <tr>
+            <td>uniqSession</td>
+            <td>Boolean</td>
+            <td>true</td>
+            <td>Run each test in a unique browser session.</td>
+        </tr>
+    </tbody>
 </table>
 
 ### Passing parameters via the CLI {#setup_by_cli}
@@ -74,7 +103,7 @@ npx testplane --repeat 5
 
 ## Useful links {#useful_links}
 
--   [testplane-test-repeater plugin sources][testplane-test-repeater]
+-   [@testplane/test-repeater plugin sources][testplane-test-repeater]
 
 [testplane-test-repeater]: https://github.com/gemini-testing/testplane-test-repeater
 [cli]: https://en.wikipedia.org/wiki/Command-line_interface

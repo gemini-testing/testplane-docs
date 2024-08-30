@@ -12,9 +12,9 @@ There are many reasons why tests can fail:
 
 Often these failures do not reproduce on the first attempt. Therefore, to ensure a newly written test is stable, it needs to be run multiple times. But there is one problem: if you run your test in Testplane _as is,_ after the first successful run, Testplane will stop running your test. The test passed – everything is OK. But for stability verification, this is not enough. The test might have passed accidentally, and if you rerun it, it might fail. Ideally, you want to run it not just once or twice, but for example, 20 times and see how many times it passes out of 20. Or 30 times. Or... and so on.
 
-## Solution: testplane-test-repeater {#solution}
+## Solution: @testplane/test-repeater {#solution}
 
-To solve this problem, the [testplane-test-repeater][testplane-test-repeater] plugin was developed.
+To solve this problem, the [@testplane/test-repeater][testplane-test-repeater] plugin was developed.
 
 The plugin allows you to run the same test (or group of tests) the required number of times.
 
@@ -46,6 +46,6 @@ In the next screenshot, the first test is almost non-functional – out of 21 at
 
 ## Keywords {#keywords}
 
--   testplane-test-repeater
+-   @testplane/test-repeater
 
 [testplane-test-repeater]: ../../plugins/testplane-test-repeater
