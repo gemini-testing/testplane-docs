@@ -2,28 +2,465 @@ import Admonition from "@theme/Admonition";
 
 # CLI {#cli}
 
-Testplane allows setting options via command line interface.
+## `testplane` command
 
-## Overview {#overview}
+Main command to run tests.
 
-Available options:
+```bash
+> testplane --help
+
+  Usage: testplane [options] [command] [paths...]
+
+  Run tests
+
+  Options:
+
+    -V, --version                    output the version number
+    -c, --config <path>              path to configuration file
+    -b, --browser <browser>          run tests only in specified browser
+    -s, --set <set>                  run tests only in the specified set
+    -r, --require <module>           require module
+    --grep <grep>                    run only tests matching the pattern
+    --reporter <name>                test reporters
+    --update-refs                    update screenshot references or gather them if they do not exist ("assertView" command)
+    --inspect [inspect]              nodejs inspector on [=[host:]port]
+    --inspect-brk [inspect-brk]      nodejs inspector with break at the start
+    --repl [type]                    run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
+    --repl-before-test [type]        open repl interface before test run (default: false)
+    --repl-on-fail [type]            open repl interface on test fail only (default: false)
+    --devtools                       switches the browser to the devtools mode with using CDP protocol
+    -h, --help                       output usage information
+```
+
+For example,
+
+```bash
+npx testplane --config ./config.js --reporter flat --browser firefox --grep name
+```
+
+### Options {#testplane-options}
+
+#### Version {#testplane-version}
+
+Print current `testplane` version.
+
+```bash
+testplane --version
+```
+
+#### Config {#testplane-config}
+
+Use custom configuration file.
+
+```bash
+testplane --config ./local.testplane.config.ts
+```
+
+#### Browser {#testplane-browser}
+
+Run tests only in specified browser.
+
+```bash
+testplane --browser chrome
+```
+
+#### Set {#testplane-set}
+
+Run tests only in the specified set.
+
+```bash
+testplane --set desktop
+```
+
+#### Require {#testplane-require}
+
+Load external modules, locally existing in your machine, before running `testplane`. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane --require ./tsconfig-register-paths.js
+```
+
+#### Reporter {#testplane-reporter}
+
+Can be used to set one of the following reporters:
+
+-   `flat` - all information about failed and retried tests would be grouped by browsers at the end of the report;
+-   `plain` - information about fails and retries would be placed after each test;
+-   `jsonl` - displays detailed information about each test result in [jsonl](https://jsonlines.org/) form.
+
+Default is `flat`.
+
+Information about test results is displayed to the command line by default. But there is an ability to redirect the output to a file:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}'
+```
+
+You can also specify multiple reporters:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --reporter flat
+```
+
+Aside these terminal reporters, you can use [html-reporter][html-reporter] plugin in order to generate html reports.
+
+#### Grep {#testplane-grep}
+
+Run only tests, which full name matches the pattern.
+
+##### Example {#testplane-grep-example}
+
+If you have some tests:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+You can run tests inside "nested path" suite without running tests inside "other path" suite with any of these variants:
+
+```bash
+testplane --grep "nested path"
+testplane --grep "with nested path"
+testplane --grep "test with nested path"
+```
+
+#### Update refs {#testplane-update-refs}
+
+Run tests, updating all screenshot references, created by [assertView][assert-view] command.
+
+```bash
+testplane --update-refs
+```
+
+<Admonition type="info">
+    Recommended way to update screenshots is using [html-reporter][html-reporter] plugin.
+</Admonition>
+
+#### Inspect {#testplane-inspect}
+
+Runs Testplane tests using [nodejs inspector](https://nodejs.org/en/docs/inspector).
+
+```bash
+testplane --inspect
+```
+
+<Admonition type="info">
+    In the debugging mode, only one worker is started and all tests are performed only in it. Use
+    this mode with option `sessionsPerBrowser=1` in order to debug tests one at a time.
+</Admonition>
+
+#### Inspect break {#testplane-inspect-brk}
+
+The same as [Inspect](#inspect), but with breakpoint at the start.
+
+```bash
+testplane --inspect-brk
+```
+
+#### REPL {#testplane-repl}
+
+Enables a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). It also disables test duration timeout. Can be used by specifying following CLI options:
+
+-   `--repl` - in this mode, only one test in one browser should be run, otherwise an error is thrown. REPL interface does not start automatically, so you need to call [switchToRepl][switch-to-repl] command in the test code;
+-   `--repl-before-test` - the same as `--repl` option except that REPL interface opens automatically before run test;
+-   `--repl-on-fail` - the same as `--repl` option except that REPL interface opens automatically on test fail.
+
+```bash
+testplane --repl --grep 'my test name' --browser chrome
+```
+
+<Admonition type="info">
+    More information about Testplane REPL mode can be found in [switchToRepl][switch-to-repl]
+    command documentation.
+</Admonition>
+
+#### Devtools {#testplane-devtools}
+
+Runs Testplane tests using [devtools automation protocol][webdriver-vs-cdp].
+
+```bash
+testplane --devtools
+```
+
+#### Help {#testplane-help}
+
+Prints out information about options and commands. Testplane Plugins can add their own commands and options.
+
+For example, [html-reporter][html-reporter] adds `gui` command.
+
+```bash
+testplane --help
+```
+
+## `list-tests` command
+
+Command to get list of tests in one of available formats (`list` or `tree`).
+
+```bash
+> testplane list-tests --help
+
+  Usage: list-tests [options] [paths...]
+
+  Lists all tests info in one of available formats
+
+  Options:
+
+    -c, --config <path>        path to configuration file
+    -b, --browser <browser>    list tests only in specified browser
+    -s, --set <set>            list tests only in the specified set
+    -r, --require <module>     require module
+    --grep <grep>              list only tests matching the pattern
+    --ignore <file-path>       exclude paths from tests read
+    --silent [type]            flag to disable events emitting while reading tests (default: false)
+    --output-file <file-path>  save results to specified file
+    --formatter [name]         return tests in specified format (default: list)
+    -h, --help                 output usage information
+```
+
+For example,
 
 ```
--V, --version                output the version number
--c, --config <path>          path to configuration file
--b, --browser <browser>      run tests only in specified browser
--s, --set <set>              run tests only in the specified set
--r, --require <module>       require module
---reporter <reporter>        test reporters
---grep <grep>                run only tests matching the pattern
---update-refs                update screenshot references or gather them if they do not exist ("assertView" command)
---inspect [inspect]          nodejs inspector on [=[host:]port]
---inspect-brk [inspect-brk]  nodejs inspector with break at the start
---repl [type]                run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
---repl-before-test [type]    open repl interface before test run (default: false)
---repl-on-fail [type]        open repl interface on test fail only (default: false)
---devtools                   switches the browser to the devtools mode with using CDP protocol
--h, --help                   output usage information
+npx testplane list-tests --config ./config.js --browser firefox --grep name --formatter tree
+```
+
+### Options {#list-tests-options}
+
+#### Config {#list-tests-config}
+
+Use custom configuration file.
+
+```bash
+testplane list-tests --config ./local.testplane.config.ts
+```
+
+#### Browser {#list-tests-browser}
+
+List tests only in specified browser.
+
+```bash
+testplane list-tests --browser chrome
+```
+
+#### Set {#list-tests-set}
+
+List tests only in the specified set.
+
+```bash
+testplane list-tests --set desktop
+```
+
+#### Require {#list-tests-require}
+
+Load external modules, locally existing in your machine, before listing `testplane` tests. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane list-tests --require ./tsconfig-register-paths.js
+```
+
+#### Grep {#list-tests-grep}
+
+List only tests, which full name matches the pattern.
+
+##### Example {#list-tests-grep-example}
+
+If you have some tests:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+You can list tests inside "nested path" suite without listing tests inside "other path" suite with any of these variants:
+
+```bash
+testplane list-tests --grep "nested path"
+testplane list-tests --grep "with nested path"
+testplane list-tests --grep "test with nested path"
+```
+
+#### Silent {#list-tests-silent}
+
+List tests silently (without emitting events).
+
+```bash
+testplane list-tests --silent
+```
+
+#### Output file {#list-tests-output-file}
+
+Save listed tests to specified file.
+
+```bash
+testplane list-tests --output-file "./tests.json"
+```
+
+#### Formatter {#list-tests-formatter}
+
+List tests in specified format. Available formatters: `list` (default) and `tree`.
+
+##### List formatter {#list-tests-formatter-list}
+
+List tests in `list` format.
+
+```bash
+testplane list-tests --formatter "list"
+```
+
+For following tests:
+
+```typescript title="example.testplane.ts"
+describe("suite1", () => {
+    it("test1", () => {});
+});
+
+it("test2", () => {});
+```
+
+Returns the following output:
+
+```json
+[
+    {
+        "id": "d2b3179",
+        "titlePath": [
+            "suite",
+            "test1"
+        ],
+        "browserIds": [
+            "yandex",
+            "chrome"
+        ],
+        "file": "tests/example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+    {
+        "id": "5a105e8",
+        "titlePath": [
+            "test1"
+        ],
+        "browserIds": [
+            "yandex",
+            "chrome"
+        ],
+        "file": "tests/example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+]
+```
+
+Here, we got plain list of unique tests, where:
+
+-   `id` (`String`) - unique identifier of the test;
+-   `titlePath` (`String[]`) - full name of the test. Each element of the array is the title of a suite or test. To get the full title, you need just join `titlePath` with single whitespace;
+-   `browserIds` (`String[]`) - list of browsers in which the test will be launched;
+-   `file` (`String`) - path to the file relative to the working directory;
+-   `pending` (`Boolean`) - flag that means if the test is disabled or not;
+-   `skipReason` (`String`) - the reason why the test was disabled.
+
+##### Tree formatter {#list-tests-formatter-tree}
+
+List tests in `tree` format.
+
+```bash
+testplane list-tests --formatter "tree"
+```
+
+For following tests:
+
+```typescript title="example.testplane.ts"
+describe("suite1", () => {
+    it("test1", () => {});
+});
+
+it("test2", () => {});
+```
+
+Returns the following output:
+
+```json
+[
+    {
+        "id": "36749990",
+        "title": "suite1",
+        "line": 1,
+        "column": 1,
+        "file": "example.testplane.ts",
+        "suites": [],
+        "tests": [
+            {
+                "id": "d2b3179",
+                "title": "test1",
+                "line": 2,
+                "column": 5,
+                "browserIds": ["yandex", "chrome"]
+            }
+        ],
+        "pending": false,
+        "skipReason": ""
+    },
+    {
+        "id": "5a105e8",
+        "title": "test2",
+        "line": 5,
+        "column": 1,
+        "browserIds": ["yandex", "chrome"],
+        "file": "example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+]
+```
+
+Here, we got list of unique tests in the form of a tree structure (with parent suites), where `Suite` has following options:
+
+-   `id` (`String`) - unique identifier of the suite;
+-   `title` (`String`) - unique identifier of the suite;
+-   `line` (`Number`) - line on which the suite was called;
+-   `column` (`Number`) - column on which the suite was called;
+-   `file` (`String`, only in topmost suite) - path to the file relative to the working directory;
+-   `suites` (`Suite[]`, exists only in suite) - list of child suites;
+-   `tests` (`Test[]`) - list of tests;
+-   `pending` (`Boolean`) - flag that means if the test is disabled or not;
+-   `skipReason` (`String`) - the reason why the test was disabled.
+
+And `Test` has following options:
+
+-   `id` (`String`) - unique identifier of the test;
+-   `title` (`String`) - unique identifier of the test;
+-   `line` (`Number`) - line on which the test was called;
+-   `column` (`Number`) - column on which the test was called;
+-   `browserIds` (`String[]`) - list of browsers in which the test will be launched;
+-   `file` (`String`, only in tests without parent suites) - path to the file relative to the working directory;
+-   `pending` (`Boolean`) - flag that means if the test is disabled or not;
+-   `skipReason` (`String`) - the reason why the test was disabled.
+
+#### Help {#list-tests-help}
+
+Prints out information about options and commands. Testplane Plugins can add their own commands and options.
+
+For example, [html-reporter][html-reporter] adds `gui` command.
+
+```bash
+testplane list-tests --help
 ```
 
 ## Overriding settings {#overriding-settings}
@@ -82,167 +519,6 @@ Runs only specified sets (CLI option `--set` alternative).
 
 ```bash
 TESTPLANE_SETS=desktop,touch testplane
-```
-
-## Version {#version}
-
-Print current `testplane` version.
-
-```bash
-testplane --version
-```
-
-## Config {#config}
-
-Use custom configuration file.
-
-```bash
-testplane --config ./local.testplane.config.ts
-```
-
-## Browser {#browser}
-
-Run tests only in specified browser.
-
-```bash
-testplane --browser chrome
-```
-
-## Set {#set}
-
-Run tests only in the specified set.
-
-```bash
-testplane --set desktop
-```
-
-## Require {#require}
-
-Load external modules, locally existing in your machine, before running `testplane`. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
-
-```bash
-testplane --require ./tsconfig-register-paths.js
-```
-
-## Reporter {#reporter}
-
-Can be used to set one of the following reporters:
-
--   `flat` - all information about failed and retried tests would be grouped by browsers at the end of the report;
--   `plain` - information about fails and retries would be placed after each test;
--   `jsonl` - displays detailed information about each test result in [jsonl](https://jsonlines.org/) form.
-
-Default is `flat`.
-
-Information about test results is displayed to the command line by default. But there is an ability to redirect the output to a file:
-
-```bash
-testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}'
-```
-
-You can also specify multiple reporters:
-
-```bash
-testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --reporter flat
-```
-
-Aside these terminal reporters, you can use [html-reporter][html-reporter] plugin in order to generate html reports.
-
-## Grep {#grep}
-
-Run only tests, which full name matches the pattern.
-
-### Example {#grep-example}
-
-If you have some tests:
-
-```ts
-describe("test", () => {
-    describe("with", () => {
-        describe("nested path", () => {
-            ...
-        });
-        describe("other path", () => {
-            ...
-        })
-    });
-});
-```
-
-You can run tests inside "nested path" suite without running tests inside "other path" suite with any of these variants:
-
-```bash
-testplane --grep "nested path"
-testplane --grep "with nested path"
-testplane --grep "test with nested path"
-```
-
-### Update refs {#update-refs}
-
-Run tests, updating all screenshot references, created by [assertView][assert-view] command.
-
-```bash
-testplane --update-refs
-```
-
-<Admonition type="info">
-    Recommended way to update screenshots is using [html-reporter][html-reporter] plugin.
-</Admonition>
-
-## Inspect {#inspect}
-
-Runs Testplane tests using [nodejs inspector](https://nodejs.org/en/docs/inspector).
-
-```bash
-testplane --inspect
-```
-
-<Admonition type="info">
-    In the debugging mode, only one worker is started and all tests are performed only in it. Use
-    this mode with option `sessionsPerBrowser=1` in order to debug tests one at a time.
-</Admonition>
-
-## Inspect break {#inspect-brk}
-
-The same as [Inspect](#inspect), but with breakpoint at the start.
-
-```bash
-testplane --inspect-brk
-```
-
-## REPL {#repl}
-
-Enables a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). It also disables test duration timeout. Can be used by specifying following CLI options:
-
--   `--repl` - in this mode, only one test in one browser should be run, otherwise an error is thrown. REPL interface does not start automatically, so you need to call [switchToRepl][switch-to-repl] command in the test code;
--   `--repl-before-test` - the same as `--repl` option except that REPL interface opens automatically before run test;
--   `--repl-on-fail` - the same as `--repl` option except that REPL interface opens automatically on test fail.
-
-```bash
-testplane --repl --grep 'my test name' --browser chrome
-```
-
-<Admonition type="info">
-    More information about Testplane REPL mode can be found in [switchToRepl][switch-to-repl]
-    command documentation.
-</Admonition>
-
-## Devtools {#devtools}
-
-Runs Testplane tests using [devtools automation protocol][webdriver-vs-cdp].
-
-```bash
-testplane --devtools
-```
-
-## Help {#help}
-
-Prints out information about options and commands. Testplane Plugins can add their own commands and options.
-
-For example, [html-reporter][html-reporter] adds `gui` command.
-
-```bash
-testplane --help
 ```
 
 [html-reporter]: ../html-reporter/html-reporter-setup
