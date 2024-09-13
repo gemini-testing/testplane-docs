@@ -11,6 +11,10 @@
         "message": "HTML Отчет",
         "description": "The label for category HTML Reporter in sidebar mainSidebar"
     },
+    "sidebar.mainSidebar.category.Visual testing": {
+        "message": "Визуальное тестирование",
+        "description": "The label for category Visual testing in sidebar mainSidebar"
+    },
     "sidebar.mainSidebar.category.Plugins": {
         "message": "Плагины",
         "description": "The label for category Plugins in sidebar mainSidebar"

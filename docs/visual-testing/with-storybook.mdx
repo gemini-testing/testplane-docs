@@ -1,0 +1,209 @@
+import Admonition from "@theme/Admonition";
+
+# Screenshot testing with Storybook
+
+[Storybook][storybook] is a tool for developing user interfaces based on components. It allows developers to independently visualize components in various states in an isolated environment, separate from other components.
+This "showroom" is perfect for screenshot testing your components, as this isolated environment makes such tests significantly more stable and faster compared to e2e testing.
+
+With the [@testplane/storybook][testplane-storybook] plugin, you can automatically verify changes to your components using screenshot testing without writing a single line of test code.
+You just need to describe your component in `Storybook` and Testplane will automatically generate all necessary tests upon execution, run them in the required browsers and provide a visual report for updating screenshots.
+Additionally, if a [play function][play-function] has been declared for the components, Testplane will execute it before the test begins to set the component to the desired state.
+
+## How to use? {#how_to_use}
+
+### Step 1: Install dependencies
+
+If your project does not have a `Testplane` yet, then we recommend that you read the [quickstart][quickstart] section or run the command below in your project directory:
+
+```bash
+npm init testplane@latest
+```
+
+Install the plugin for `testplane`:
+
+```bash
+npm install @testplane/storybook --save-dev
+```
+
+### Step 2: Plugin configuration
+
+Minimal configuration is enough for the plugin to work — you just need to declare it in the `testplane` config without additional options:
+
+```typescript title=".testplane.conf.ts"
+export default {
+    plugins: {
+        "@testplane/storybook": {},
+
+        // other Testplane plugins...
+    },
+
+    // other Testplane settings...
+};
+```
+
+### Step 3: Run tests
+
+To run storybook tests, add the '--storybook` option. The '--update-refs` option allows you to save/update reference images via the CLI:
+
+```bash
+npx testplane --storybook --update-refs
+```
+
+Also using GUI mode from the [html-reporter][html-reporter], you can visually validate changes in screenshots, update them or restart tests:
+
+```bash
+npx testplane gui --storybook
+```
+
+If you use `storybook@6`, you will need to enable [buildStoriesJson][build-stories] feature in your `storybook` config:
+
+```typescript title=".storybook/main.js"
+export default {
+    // ...
+    features: {
+        // ...
+        buildStoriesJson: true,
+    },
+};
+```
+
+## Custom tests {#custom_tests}
+
+Here's the translation:
+
+Some components need to be brought to a specific state before taking a screenshot. For this purpose, Storybook has an entity called the [play function][play-function]. If it is defined, we will first execute all the actions from it, and only then take the screenshot.
+If you find Storybook's expressiveness lacking, you can describe a Testplane test directly within the story which will be executed as an additional test for the component.
+
+```typescript title="stories/Primary.stories.ts"
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    args: {
+        primary: true,
+        label: "Button",
+    },
+    testplane: {
+        "my test": async ({ browser, expect }) => {
+            const element = await browser.$(".storybook-button");
+
+            await expect(element).toHaveText("Button");
+        },
+    },
+};
+```
+
+You can also add additional settings for the test:
+
+```typescript title="stories/Primary.stories.ts"
+import type { WithTestplane } from "@testplane/storybook";
+import type { Meta, StoryObj } from "@storybook/react";
+
+const meta: WithTestplane<Meta<typeof Button>> = {
+    title: "Example/Button",
+    component: Button,
+    testplane: {
+        skip: false, // if true, skips all Testplane tests from this story file
+        autoscreenshotSelector: ".my-selector", // Custom selector to auto-screenshot elements
+        browserIds: ["chrome"], // Testplane browsers to run tests from this story file
+        assertViewOpts: {
+            // override default assertView options for tests from this file
+            ignoreDiffPixelCount: 5,
+        },
+    },
+};
+
+export default meta;
+```
+
+<Admonition type="warning">
+    Storybook story files must have `.js` or `.ts` extension for this to work. Formats `jsx/tsx` are
+    not supported yet.
+</Admonition>
+
+## Plugin configuration
+
+The plugin has a number of options for more flexible configuration. For example, to run tests on a Storybook published remotely on s3, the configuration will look as follows:
+
+```typescript title=".testplane.conf.ts"
+export default {
+    plugins: {
+        "@testplane/storybook": {
+            remoteStorybookUrl: "https://yastatic.net/s3/storybook/index.html",
+        },
+
+        // other Testplane plugins...
+    },
+
+    // other Testplane settings...
+};
+```
+
+The entire list of available options can be viewed on the [plugin page][plugin-link].
+
+## Additional settings {#extra_config}
+
+Other types of testing can already be configured in your project, which can be run using Testplane. In order not to mix entities, we recommend using a separate config for Storybook tests and specifying it when running tests.
+
+```bash
+npx testplane --storybook --config .testplane.storybook.conf.ts
+```
+
+A shortened version of the launch:
+
+```bash
+npx testplane --storybook -c .testplane.storybook.conf.ts
+```
+
+A separate config will allow you to describe storing screenshots of storybooks next to your story file:
+
+```typescript title=".testplane.storybook.conf.ts"
+import path from "path";
+import { getStoryFile } from "@testplane/storybook";
+
+export default {
+    screenshotsDir: test => {
+        const relativeStoryFilePath = getStoryFile(test);
+        const relativeStoryFileDirPath = path.dirname(relativeStoryFilePath);
+
+        return path.join(relativeStoryFileDirPath, "screens", test.id, test.browserId);
+    },
+    // other Testplane settings...
+};
+```
+
+In this example, screenshot references would be stored in `screens/<testId>/<browserId>` folder, next to each of your story files.
+
+## Optimization of test runs {#optimize_run}
+
+Storybook tests themselves are quite fast, because they do not need a complex environment, and only one component is rendered on the page.
+In the context of the browser, Storybook testing environments are created one time and reused from test to test. Therefore, for the maximum speed of passing the tests, we recommend setting the [testsPerSession][tests-per-session] option with a value of at least 20 (more is better) to reuse the browser session as long as possible:
+
+```typescript title=".testplane.storybook.conf.ts"
+export default {
+    testsPerSession: 40, // set value for all browsers
+
+    browsers: {
+        "chrome-desktop": {
+            testsPerSession: 50, // or set value for current browser
+        },
+        firefox: {
+            // ...
+        },
+    },
+
+    // other Testplane settings...
+};
+```
+
+Also, for storybook tests, the [isolation][isolation] option will be ignored, so as not to create an environment for each test (this does not affect the stability of the tests in any way).
+
+[build-stories]: https://storybook.js.org/docs/6.4/configure/overview#feature-flags
+[html-reporter]: ../../html-reporter/html-reporter-setup/
+[isolation]: ../../config/browsers/#isolation
+[play-function]: https://storybook.js.org/docs/writing-stories/play-function
+[plugin-link]: ../plugins/testplane-storybook.mdx
+[quickstart]: ../../quickstart
+[storybook]: https://storybook.js.org
+[testplane-storybook]: https://github.com/gemini-testing/testplane-storybook
+[tests-per-session]: ../../config/browsers/#tests_per_session

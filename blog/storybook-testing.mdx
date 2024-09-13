@@ -1,0 +1,30 @@
+---
+title: Screenshot testing with Storybook
+slug: screenshot-testing-with-storybook
+hide_table_of_contents: false
+date: 2024-09-26T13:00
+---
+
+Now, for automatic visual testing of your components, you only need Storybook with your components and the `@testplane/storybook` plugin. There’s no need to write any tests anymore.
+
+<!-- truncate -->
+
+[Storybook][storybook] is a tool for developing user interfaces based on components. It allows developers to independently visualize components in various states in an isolated environment, separate from other components.
+This "showroom" is perfect for screenshot testing your components, as this isolated environment makes such tests significantly more stable and faster compared to e2e testing.
+
+With the [@testplane/storybook][testplane-storybook] plugin, you can automatically verify changes to your components using screenshot testing without writing a single line of test code.
+You just need to describe your component in `Storybook` and Testplane will automatically generate all necessary tests upon execution, run them in the required browsers and provide a visual report for updating screenshots.
+Additionally, if a [play function][play-function] has been declared for the components, Testplane will execute it before the test begins to set the component to the desired state.
+
+However, if these capabilities are not enough, you can directly describe a Testplane test in the story file, which will be executed as an additional test for the component.
+
+How to use it?
+
+Learn more about this in our documentation [Screenshot testing with Storybook][vt-story].
+Also you can try it yourself in our [example project][example] on GitHub with customized screenshot testing.
+
+[storybook]: https://storybook.js.org
+[testplane-storybook]: https://github.com/gemini-testing/testplane-storybook
+[play-function]: https://storybook.js.org/docs/writing-stories/play-function
+[vt-story]: ../../docs/v8/visual-testing/with-storybook
+[example]: https://github.com/gemini-testing/testplane/tree/master/examples/storybook-autoscreenshots
