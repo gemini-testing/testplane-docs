@@ -16,21 +16,84 @@ import Admonition from "@theme/Admonition";
 Первое, на что стоит обратить внимание при переезде, — это изменение дефолтных значений некоторых опций в конфиге. Все изменения направлены на то, чтобы при базовой настройке hermione тесты проходили быстрее, а после прогона оставалось больше информации о тестах.
 
 <table>
-<thead>
-<tr><td>**Параметр**</td><td>**Было**</td><td>**Стало**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>[antialiasingTolerance][antialiasing-tolerance]</td><td>0</td><td>4</td><td>Задает чувствительность определения антиалиасинга, который будет игнорироваться при сравнении скриншотов.</td></tr>
-<tr><td>[compositeImage][composite-image]</td><td>false</td><td>true</td><td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td></tr>
-<tr><td>[saveHistory][save-history]</td><td>false</td><td>true</td><td>Сохранять историю всех выполненных команд.</td></tr>
-<tr><td>[takeScreenshotOnFails.assertViewFail][take-screenshot-on-fails-assert-view-fail]</td><td>false</td><td>true</td><td>Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении теста, а также при падении команды _assertView_.</td></tr>
-<tr><td>[takeScreenshotOnFailsMode][take-screenshot-on-fails-mode]</td><td>"viewport"</td><td>"fullpage"</td><td>Режим снятия скриншота при падении теста. Доступные значения: _viewport_ и _fullpage_.</td></tr>
-<tr><td>[takeScreenshotOnFailsTimeout][take-screenshot-on-fails-timeout]</td><td>90000</td><td>5000</td><td>Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении теста, в мс.</td></tr>
-<tr><td>[httpTimeout][http-timeout]</td><td>90000</td><td>30000</td><td>Таймаут для любых запросов к Selenium-серверу, в мс.</td></tr>
-<tr><td>[pageLoadTimeout][page-load-timeout]</td><td>300000</td><td>20000</td><td>Таймаут для полной загрузки страницы, в мс.</td></tr>
-<tr><td>[sessionQuitTimeout][session-quit-timeout]</td><td>90000</td><td>5000</td><td>Таймаут для завершения сессии, в мс.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Параметр**</td>
+            <td>**Было**</td>
+            <td>**Стало**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>[antialiasingTolerance][antialiasing-tolerance]</td>
+            <td>0</td>
+            <td>4</td>
+            <td>
+                Задает чувствительность определения антиалиасинга, который будет игнорироваться при
+                сравнении скриншотов.
+            </td>
+        </tr>
+        <tr>
+            <td>[compositeImage][composite-image]</td>
+            <td>false</td>
+            <td>true</td>
+            <td>Позволяет тестировать элементы, не влезающие во вьюпорт по высоте.</td>
+        </tr>
+        <tr>
+            <td>[saveHistory][save-history]</td>
+            <td>false</td>
+            <td>true</td>
+            <td>Сохранять историю всех выполненных команд.</td>
+        </tr>
+        <tr>
+            <td>
+                [takeScreenshotOnFails.assertViewFail][take-screenshot-on-fails-assert-view-fail]
+            </td>
+            <td>false</td>
+            <td>true</td>
+            <td>
+                Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении
+                теста, а также при падении команды _assertView_.
+            </td>
+        </tr>
+        <tr>
+            <td>[takeScreenshotOnFailsMode][take-screenshot-on-fails-mode]</td>
+            <td>"viewport"</td>
+            <td>"fullpage"</td>
+            <td>
+                Режим снятия скриншота при падении теста. Доступные значения: _viewport_ и
+                _fullpage_.
+            </td>
+        </tr>
+        <tr>
+            <td>[takeScreenshotOnFailsTimeout][take-screenshot-on-fails-timeout]</td>
+            <td>90000</td>
+            <td>5000</td>
+            <td>
+                Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении
+                теста, в мс.
+            </td>
+        </tr>
+        <tr>
+            <td>[httpTimeout][http-timeout]</td>
+            <td>90000</td>
+            <td>30000</td>
+            <td>Таймаут для любых запросов к Selenium-серверу, в мс.</td>
+        </tr>
+        <tr>
+            <td>[pageLoadTimeout][page-load-timeout]</td>
+            <td>300000</td>
+            <td>20000</td>
+            <td>Таймаут для полной загрузки страницы, в мс.</td>
+        </tr>
+        <tr>
+            <td>[sessionQuitTimeout][session-quit-timeout]</td>
+            <td>90000</td>
+            <td>5000</td>
+            <td>Таймаут для завершения сессии, в мс.</td>
+        </tr>
+    </tbody>
 </table>
 
 Кроме этого, удалены опции `screenshotOnReject` и `screenshotOnRejectTimeout`, которые ранее были объявлены как устаревшие _(deprecated)_.
@@ -73,5 +136,5 @@ import Admonition from "@theme/Admonition";
 [http-timeout]: ../../config/browsers#http_timeout
 [page-load-timeout]: ../../config/browsers#page_load_timeout
 [session-quit-timeout]: ../../config/browsers#session_quit_timeout
-[save-history]: ../../config/browsers#save_history
+[save-history]: https://www.npmjs.com/package/hermione/v/5.6.4#savehistory
 [gh-issues]: https://github.com/gemini-testing/testplane/issues/
