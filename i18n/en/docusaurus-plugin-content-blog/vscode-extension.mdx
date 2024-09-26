@@ -1,0 +1,129 @@
+---
+title: Extension for VS Code
+slug: vscode-extension
+hide_table_of_contents: false
+date: 2024-09-26T19:00
+---
+
+import Admonition from "@theme/Admonition";
+import runTestsFromSidebarVideoUrl from "/video/blog/vscode-extension/run-tests-from-sidebar.mp4";
+import runTestsFromEditorVideoUrl from "/video/blog/vscode-extension/run-tests-from-editor.mp4";
+
+We have implemented an extension for [VS Code][vscode] for Testplane, which allows you to configure Testplane from scratch, run tests, and conveniently work with the <a href="/ru/docs/v8/command-line/#testplane-repl">REPL mode</a>.
+
+<!-- truncate -->
+
+### Installation
+
+Install the extension from the [VS Code Marketplace][vscode-testplane-marketplace] or from the extensions tab in the VS Code IDE.
+
+![Extension in VS Code IDE](/img/blog/vscode-extension/testplane-in-extensions-panel.png)
+
+After installation, open VS Code in an empty project and enter in the command panel:
+
+```
+Install Testplane
+```
+
+![Install Testplane](/img/blog/vscode-extension/testplane-install.png)
+
+### Running tests
+
+#### From the sidebar in the testing panel
+
+The testing panel can be opened by clicking on the testing icon in the activity bar.
+
+![Opening testing panel in activity bar](/img/blog/vscode-extension/testing-sidebar.png)
+
+On the left side of the screen, a sidebar displays a tree of all read tests. The tree displays from top to bottom:
+
+-   the name of the directory with tests (`testplane-tests`);
+-   the name of the test file (`example.testplane.ts`);
+-   the name of the suite (`test`). In the example, `describe` from the [Mocha BDD interface][mocha-bdd-interface] is used;
+-   the name of the test (`example`). In the example, `it` from the [Mocha BDD interface][mocha-bdd-interface] is used;
+-   the name of the browser in which the test will be run (`chrome`).
+
+Each element in the tree has a `Run Test` button. If you click on it at the element:
+
+-   for a directory, file, or suite, all child tests will run in all browsers;
+-   for a test, the selected test will run in all browsers;
+-   for a browser, one test will run in one browser.
+
+Example of running tests from the sidebar:
+
+<video src={runTestsFromSidebarVideoUrl} width="100%" controls="controls">
+    The video tag is not supported by your browser.
+    <a href="video/blog/vscode-extension/run-tests-from-sidebar.mp4">Download the video</a>.
+</video>
+
+You can also run all tests using the `Run Tests` button.
+
+![Running all tests](/img/blog/vscode-extension/run-all-tests-from-sidebar.png)
+
+#### From a text editor
+
+If you open a Testplane test in the text editor, a green play button will be displayed next to each suite (`describe`) and test (`it`) for launching them. If you click the left mouse button, the test will run in all browsers, and after execution, the result will be displayed as a status icon for the test's pass/fail status.
+If you right-click the play button, you can run the test in one of the browsers.
+
+Example of running tests from a text editor:
+
+<video src={runTestsFromEditorVideoUrl} width="100%" controls="controls">
+    The video tag is not supported by your browser.
+    <a href="video/blog/vscode-extension/run-tests-from-editor.mp4">Download the video</a>.
+</video>
+
+#### With the `devtools` settings
+
+In the sidebar of the testing panel, there is also a section titled Testplane. Here you can manage settings at runtime. By clicking the `Enable devtools` checkbox and subsequently running tests, browsers will launch using the CDP protocol (regardless of what is specified in the config). You can read more about this mode <a href="/en/docs/v8/guides/how-to-use-cdp/">here</a>..
+
+![Enabling devtools option](/img/blog/vscode-extension/enable-devtools.png)
+
+#### With the `REPL` settings
+
+When you click the checkbox `Enable REPL` and subsequently run a test (only one test can be run simultaneously in REPL mode), it will be launched in a special REPL mode. You can read more about this mode <a href="/ru/docs/v8/command-line/#testplane-repl">here</a>.
+
+![Enabling the REPL option](/img/blog/vscode-extension/enable-repl.png)
+
+### Filtering tests in the sidebar of the testing panel
+
+To display only tests in a specific browser in the tree, you need to enter the tag `@testplane:browser:your_browser_name` in the filtering input. To get a suggestion, you can simply type `@browser`. You can also use multiple tags there.
+
+![Filter by specified browser](/img/blog/vscode-extension/filter_sidebar_by_browser.png)
+
+You can also use the following values in the filter input:
+
+-   a string with the name of the tree element (directory/file/suite/test/browser);
+-   tag @doc - to display tests from the active file in the text editor;
+-   tag @openedFiles - to display tests in all open files in the text editor;
+-   tag @executed - to display only running tests;
+-   tag @failed - to display only failed tests.
+
+### Restarting the Testplane Environment
+
+You can restart Testplane using the `Refresh Tests` button in the sidebar. In this case, the config and tests will be re-read. This will be useful if you have added a new test to a file (watching test files is not yet supported) or if a critical error has occurred. The test tree is automatically updated when the config changes.
+
+![Updating the test tree](/img/blog/vscode-extension/refresh-tests.png)
+
+### Requirements
+
+-   the Testplane version must be 8.20.0 or higher (tests will not run with lower versions).
+
+### Current Limitations
+
+-   debug and continuous (auto-run) modes are not supported;
+-   there is no watching for adding/removing tests and files;
+-   using custom Mocha interfaces may lead to incorrect display of icons with the play button for running tests from the text editor.
+
+### Conclusion
+
+This functionality provides our users with new opportunities:
+
+-   the ability to run tests directly from the IDE and view the execution results;
+-   the ability to quickly switch to devtools and REPL mode;
+-   automatically pick up changes made to the Testplane config.
+
+Install the Testplane extension for VS Code and provide us with feedback. If you encounter any issues, please visit the [GitHub issue](https://github.com/gemini-testing/testplane/issues) — we will definitely help you!
+
+[vscode]: https://code.visualstudio.com/
+[vscode-testplane-marketplace]: https://marketplace.visualstudio.com/items?itemName=gemini-testing.vscode-testplane
+[mocha-bdd-interface]: https://mochajs.org/#bdd
