@@ -27,20 +27,80 @@ import TestRunEnvExample from "@site/docs/config/_partials/examples/_system-test
 
 <table>
     <thead>
-        <tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+        <tr>
+            <td>**Параметр**</td>
+            <td>**Тип**</td>
+            <td>**По&nbsp;умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
     </thead>
     <tbody>
-        <tr><td>[`debug`](#debug)</td><td>`boolean`</td><td>`false`</td><td>Включить / отключить режим отладки для WebDriver.</td></tr>
-        <tr><td>[`expectOpts`](#expect_opts)</td><td>`ExpectOpts`</td><td>_[см. ниже](#expect_opts)_</td><td>Опции expect-webdriverio.</td></tr>
-        <tr><td>[`mochaOpts`](#mocha_opts)</td><td>`MochaOpts`</td><td>_[см. ниже](#mocha_opts)_</td><td>Дополнительные опции для _mocha_.</td></tr>
-        <tr><td>[`ctx`](#ctx)</td><td>`Record<string, any>`</td><td>`{ }`</td><td>Контекст, который будет доступен во всех тестах через метод _testplane.ctx._</td></tr>
-        <tr><td>[`patternsOnReject`](#patterns_on_reject)</td><td>`RegExp[]`</td><td>`[ ]`</td><td>Список шаблонов ошибок. Сессия будет закрыта, если тест упадет с ошибкой, соответствующей одному из указанных шаблонов. После чего будет создана новая сессия, чтобы исключить инфраструктурные проблемы.</td></tr>
-        <tr><td>[`workers`](#workers)</td><td>`number`</td><td>`1`</td><td>Число подпроцессов, которые будут запущены для выполнения тестов.</td></tr>
-        <tr><td>[`testsPerWorker`](#tests_per_worker)</td><td>`number`</td><td>`Infinity`</td><td>Максимальное количество тестов, которые будут запущены в одном подпроцессе, прежде чем подпроцесс будет перезапущен.</td></tr>
-        <tr><td>[`diffColor`](#diff_color)</td><td>`string`</td><td>`"#ff00ff"`</td><td>Цвет, которым нужно отображать дифф на скриншотах.</td></tr>
-        <tr><td>[`parallelLimit`](#parallel_limit)</td><td>`number`</td><td>`1`</td><td>Максимальное количество браузеров, которые могут быть запущены одновременно.</td></tr>
-        <tr><td>[`fileExtensions`](#file_extensions)</td><td>`string[]`</td><td>`[".js", ".mjs", ".ts", ".mts", ".jsx", ".tsx"]`</td><td>Расширения файлов, в которых Testplane будет искать тесты для запуска.</td></tr>
-        <tr><td>[`testRunEnv`](#testrunenv)</td><td>`nodejs` или `browser` или `Array`</td><td>`nodejs`</td><td>Возможно указать в каком окружении должны выполняться тесты.</td></tr>
+        <tr>
+            <td>[`debug`](#debug)</td>
+            <td>`boolean`</td>
+            <td>`false`</td>
+            <td>Включить / отключить режим отладки для WebDriver.</td>
+        </tr>
+        <tr>
+            <td>[`expectOpts`](#expect_opts)</td>
+            <td>`ExpectOpts`</td>
+            <td>_[см. ниже](#expect_opts)_</td>
+            <td>Опции expect-webdriverio.</td>
+        </tr>
+        <tr>
+            <td>[`mochaOpts`](#mocha_opts)</td>
+            <td>`MochaOpts`</td>
+            <td>_[см. ниже](#mocha_opts)_</td>
+            <td>Дополнительные опции для _mocha_.</td>
+        </tr>
+        <tr>
+            <td>[`ctx`](#ctx)</td>
+            <td>`Record<string, any>`</td>
+            <td>`{ }`</td>
+            <td>Контекст, который будет доступен во всех тестах через метод _testplane.ctx._</td>
+        </tr>
+        <tr>
+            <td>[`patternsOnReject`](#patterns_on_reject)</td>
+            <td>`RegExp[]`</td>
+            <td>`[ ]`</td>
+            <td>Список шаблонов ошибок. Сессия будет закрыта, если тест упадет с ошибкой, соответствующей одному из указанных шаблонов. После чего будет создана новая сессия, чтобы исключить инфраструктурные проблемы.</td>
+        </tr>
+        <tr>
+            <td>[`workers`](#workers)</td>
+            <td>`number`</td>
+            <td>`1`</td>
+            <td>Число подпроцессов, которые будут запущены для выполнения тестов.</td>
+        </tr>
+        <tr>
+            <td>[`testsPerWorker`](#tests_per_worker)</td>
+            <td>`number`</td>
+            <td>`Infinity`</td>
+            <td>Максимальное количество тестов, которые будут запущены в одном подпроцессе, прежде чем подпроцесс будет перезапущен.</td>
+        </tr>
+        <tr>
+            <td>[`diffColor`](#diff_color)</td>
+            <td>`string`</td>
+            <td>`"#ff00ff"`</td>
+            <td>Цвет, которым нужно отображать дифф на скриншотах.</td>
+        </tr>
+        <tr>
+            <td>[`parallelLimit`](#parallel_limit)</td>
+            <td>`number`</td>
+            <td>`Infinity`</td>
+            <td>Максимальное количество браузеров, которые могут быть запущены одновременно.</td>
+        </tr>
+        <tr>
+            <td>[`fileExtensions`](#file_extensions)</td>
+            <td>`string[]`</td>
+            <td>`[".js", ".mjs", ".ts", ".mts", ".jsx", ".tsx"]`</td>
+            <td>Расширения файлов, в которых Testplane будет искать тесты для запуска.</td>
+        </tr>
+        <tr>
+            <td>[`testRunEnv`](#testrunenv)</td>
+            <td>`nodejs` или `browser` или `Array`</td>
+            <td>`nodejs`</td>
+            <td>Возможно указать в каком окружении должны выполняться тесты.</td>
+        </tr>
     </tbody>
 </table>
 
