@@ -19,25 +19,43 @@ await browser.overwriteCommand(name, callback, elementScope);
 ## Параметры команды {#parameters}
 
 <table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>name</td><td>String</td><td>Имя кастомной команды.</td></tr>
-<tr><td>callback</td><td>Function</td><td>Функция-реализация команды.</td></tr>
-<tr><td>elementScope</td><td>Boolean</td><td>Если значение _true_, то добавить команду к элементу, а не к браузеру. По умолчанию: _false_.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>String</td>
+            <td>Имя кастомной команды.</td>
+        </tr>
+        <tr>
+            <td>callback</td>
+            <td>Function</td>
+            <td>Функция-реализация команды.</td>
+        </tr>
+        <tr>
+            <td>elementScope</td>
+            <td>Boolean</td>
+            <td>
+                Если значение _true_, то добавить команду к элементу, а не к браузеру. По умолчанию:
+                _false_.
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ## Примеры использования {#examples}
 
 ```javascript
 // вывести время паузы в мс перед самой паузой и вернуть потом это значение
-await browser.overwriteCommand("pause", function (origPauseFunction, ms) {
+await browser.overwriteCommand("pause", async function (origPauseFunction, ms) {
     console.log(`Sleeping for ${ms}`);
 
-    origPauseFunction(ms);
+    await origPauseFunction(ms);
 
     return ms;
 });

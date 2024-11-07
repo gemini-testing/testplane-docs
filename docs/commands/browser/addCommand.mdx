@@ -14,28 +14,46 @@ Use the `addCommand` command to add your own command to the browser or to an ele
 ## Usage {#usage}
 
 ```javascript
-await browser.addCommand(name, callback, elementScope);
+browser.addCommand(name, callback, elementScope);
 ```
 
 ## Command Parameters {#parameters}
 
 <table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>name</td><td>String</td><td>Custom command name.</td></tr>
-<tr><td>callback</td><td>Function</td><td>Command implementation function.</td></tr>
-<tr><td>elementScope</td><td>Boolean</td><td>If the value is _true_, add the command to the element instead of the browser. Default: _false_.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>String</td>
+            <td>Custom command name.</td>
+        </tr>
+        <tr>
+            <td>callback</td>
+            <td>Function</td>
+            <td>Command implementation function.</td>
+        </tr>
+        <tr>
+            <td>elementScope</td>
+            <td>Boolean</td>
+            <td>
+                If the value is _true_, add the command to the element instead of the browser.
+                Default: _false_.
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ## Usage Examples {#examples}
 
 ```javascript
 // add the getUrlAndTitle command
-await browser.addCommand("getUrlAndTitle", async function (customParam) {
+browser.addCommand("getUrlAndTitle", async function (customParam) {
     return {
         url: await this.getUrl(), // `this` here and below refers to the "browser" object
         title: await this.getTitle(),
@@ -45,15 +63,12 @@ await browser.addCommand("getUrlAndTitle", async function (customParam) {
 
 // use the new getUrlAndTitle command
 it("should use my add command", async ({ browser }) => {
-    await browser.url("https://webdriver.io");
+    await browser.url("https://testplane.io");
 
     const result = await browser.getUrlAndTitle("foobar");
 
-    assert.strictEqual(result.url, "https://webdriver.io");
-    assert.strictEqual(
-        result.title,
-        "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js",
-    );
+    assert.strictEqual(result.url, "https://testplane.io");
+    assert.strictEqual(result.title, "Testplane Docs | Testplane Docs");
     assert.strictEqual(result.customParam, "foobar");
 });
 ```
