@@ -19,25 +19,42 @@ await browser.overwriteCommand(name, callback, elementScope);
 ## Command Parameters {#parameters}
 
 <table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>name</td><td>String</td><td>The name of the custom command.</td></tr>
-<tr><td>callback</td><td>Function</td><td>The function implementation of the command.</td></tr>
-<tr><td>elementScope</td><td>Boolean</td><td>If the value is _true_, add the command to the element instead of the browser. Default: _false_.</td></tr>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>String</td>
+            <td>The name of the custom command.</td>
+        </tr>
+        <tr>
+            <td>callback</td>
+            <td>Function</td>
+            <td>The function implementation of the command.</td>
+        </tr>
+        <tr>
+            <td>elementScope</td>
+            <td>Boolean</td>
+            <td>If the value is _true_, add the command to the element instead of the browser. Default: _false_.</td>
+        </tr>
 
-</tbody>
+    </tbody>
+
 </table>
 
 ## Usage Examples {#examples}
 
 ```javascript
 // log the pause duration in ms before the pause and then return the value
-await browser.overwriteCommand("pause", function (origPauseFunction, ms) {
+await browser.overwriteCommand("pause", async function (origPauseFunction, ms) {
     console.log(`Sleeping for ${ms}`);
 
-    origPauseFunction(ms);
+    await origPauseFunction(ms);
 
     return ms;
 });
