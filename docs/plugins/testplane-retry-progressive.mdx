@@ -1,8 +1,8 @@
-# testplane-retry-progressive
+# @testplane/retry-progressive
 
 ## Overview {#overview}
 
-Use the `testplane-retry-progressive` plugin to additionally retry tests if the errors with which they fail correspond to a given set of patterns.
+Use the `@testplane/retry-progressive` plugin to additionally retry tests if the errors with which they fail correspond to a given set of patterns.
 
 What might it be needed for?
 
@@ -20,7 +20,7 @@ Tests can fail not only because of developer errors, races between scripts execu
 ## Install {#install}
 
 ```bash
-npm install -D testplane-retry-progressive
+npm install -D @testplane/retry-progressive
 ```
 
 ## Setup {#setup}
@@ -30,7 +30,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        "testplane-retry-progressive": {
+        "@testplane/retry-progressive": {
             enabled: true,
             extraRetry: 7,
             errorPatterns: [
@@ -99,6 +99,6 @@ testplane_retry_progressive_extra_retry=3 npx testplane
 
 ## Useful links {#useful_links}
 
--   [Исходники плагина testplane-retry-progressive][testplane-retry-progressive]
+-   [@testplane/retry-progressive plugin sources][retry-progressive]
 
-[testplane-retry-progressive]: https://github.com/gemini-testing/testplane-retry-progressive
+[retry-progressive]: https://github.com/gemini-testing/testplane-retry-progressive
