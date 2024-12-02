@@ -272,14 +272,27 @@ Or as follows: see the [example](#new_worker_process_usage) from the description
 The test runner has a `registerWorkers` method which registers the plugin code for parallel execution in the Testplane workers. The method takes the following parameters:
 
 <table>
-<thead>
-<tr><td>**Parameter**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>workerFilepath</td><td>String</td><td>Absolute path to the worker.</td></tr>
-<tr><td>exportedMethods</td><td>String[]</td><td>List of exported methods.</td></tr>
+    <thead>
+        <tr>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>workerFilepath</td>
+            <td>String</td>
+            <td>Absolute path to the worker.</td>
+        </tr>
+        <tr>
+            <td>exportedMethods</td>
+            <td>String[]</td>
+            <td>List of exported methods.</td>
+        </tr>
 
-</tbody>
+    </tbody>
+
 </table>
 
 It returns an object which contains asynchronous functions with names from exported methods.
@@ -421,13 +434,13 @@ Click to see the code
 </summary>
 
 ```javascript
-const http = require('http');
-const parseConfig = require('./config');
+const http = require("http");
+const parseConfig = require("./config");
 
 module.exports = (testplane, opts) => {
     const pluginConfig = parseConfig(opts);
 
-    if (!pluginConfig.enabled</td></tr> testplane.isWorker()) {
+    if (!pluginConfig.enabled || testplane.isWorker()) {
         // either the plugin is disabled, or we are in the worker context – exit
         return;
     }
@@ -436,12 +449,10 @@ module.exports = (testplane, opts) => {
 
     testplane.on(testplane.events.INIT, () => {
         // content served by the dev-server
-        const content = '<h1>Hello, World!</h1>';
+        const content = "<h1>Hello, World!</h1>";
 
         // create a server and start listening on port 3000
-        http
-            .createServer((req, res) => res.end(content))
-            .listen(3000);
+        http.createServer((req, res) => res.end(content)).listen(3000);
 
         // at http://localhost:3000/index.html it will serve: <h1>Hello, World!</h1>
     });

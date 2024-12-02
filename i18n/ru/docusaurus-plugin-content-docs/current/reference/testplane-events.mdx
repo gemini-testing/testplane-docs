@@ -273,14 +273,25 @@ module.exports = (testplane, opts) => {
 У раннера тестов есть метод `registerWorkers`, который регистрирует код плагина для параллельного выполнения в воркерах testplane. Метод принимает следующие параметры:
 
 <table>
-<thead>
-<tr><td>**Параметр**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>workerFilepath</td><td>String</td><td>Абсолютный путь к воркеру.</td></tr>
-<tr><td>exportedMethods</td><td>String[]</td><td>Список экспортируемых методов.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>>**Параметр**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>>workerFilepath</td>
+            <td>String</td>
+            <td>Абсолютный путь к воркеру.</td>
+        </tr>
+        <tr>
+            <td>>exportedMethods</td>
+            <td>String[]</td>
+            <td>Список экспортируемых методов.</td>
+        </tr>
+    </tbody>
 </table>
 
 При этом возвращает объект, который содержит асинхронные функции с именами из экспортированных методов.
@@ -360,22 +371,22 @@ testplane.on(testplane.events.CLI, cli => {
 </summary>
 
 ```javascript
-const parseConfig = require('./config');
+const parseConfig = require("./config");
 
 module.exports = (testplane, opts) => {
     const pluginConfig = parseConfig(opts);
 
-    if (!pluginConfig.enabled <tr><td>testplane.isWorker()) {
+    if (!pluginConfig.enabled || testplane.isWorker()) {
         // или плагин отключен, или мы находимся в контексте воркера – уходим
         return;
     }
 
-    testplane.on(testplane.events.CLI, (cli) => {
+    testplane.on(testplane.events.CLI, cli => {
         // добавляем опцию --repeat
         cli.option(
-            '--repeat <number>',
-            'how many times tests should be repeated regardless of the result',
-            (value) => parseNonNegativeInteger(value, 'repeat')
+            "--repeat <number>",
+            "how many times tests should be repeated regardless of the result",
+            value => parseNonNegativeInteger(value, "repeat"),
         );
     });
 
@@ -422,13 +433,13 @@ testplane.on(testplane.events.INIT, async () => {
 </summary>
 
 ```javascript
-const http = require('http');
-const parseConfig = require('./config');
+const http = require("http");
+const parseConfig = require("./config");
 
 module.exports = (testplane, opts) => {
     const pluginConfig = parseConfig(opts);
 
-    if (!pluginConfig.enabled</td></tr> testplane.isWorker()) {
+    if (!pluginConfig.enabled || testplane.isWorker()) {
         // или плагин отключен, или мы находимся в контексте воркера – уходим
         return;
     }
@@ -437,12 +448,10 @@ module.exports = (testplane, opts) => {
 
     testplane.on(testplane.events.INIT, () => {
         // контент, который отдает dev-сервер
-        const content = '<h1>Hello, World!</h1>';
+        const content = "<h1>Hello, World!</h1>";
 
         // создаем сервер и начинаем слушать порт 3000
-        http
-            .createServer((req, res) => res.end(content))
-            .listen(3000);
+        http.createServer((req, res) => res.end(content)).listen(3000);
 
         // по адресу http://localhost:3000/index.html будет отдаваться: <h1>Hello, World!</h1>
     });
@@ -1495,32 +1504,32 @@ module.exports = (testplane, opts) => {
 **Код плагина**
 
 ```javascript
-const http = require('http');
-const parseConfig = require('./config');
+const http = require("http");
+const parseConfig = require("./config");
 
 module.exports = (testplane, opts) => {
     const pluginConfig = parseConfig(opts);
 
-    if (!pluginConfig.enabled <tr><td>testplane.isWorker()) {
+    if (!pluginConfig.enabled || testplane.isWorker()) {
         // или плагин отключен, или мы находимся в контексте воркера – уходим
         return;
     }
 
     let program;
 
-    testplane.on(testplane.events.CLI, (cli) => {
+    testplane.on(testplane.events.CLI, cli => {
         // нужно сохранить ссылку на инстанс commander'а (https://github.com/tj/commander.js),
         // чтобы потом проверить наличие опции
         program = cli;
         // добавляем к testplane опцию --dev-server,
         // чтобы пользователь мог явно указывать, когда надо запустить dev-сервер
-        cli.option('--dev-server', 'run dev-server');
+        cli.option("--dev-server", "run dev-server");
     });
 
     testplane.on(testplane.events.INIT, () => {
         // dev-сервер может быть запущен как через указание опции --dev-server
         // при запуске testplane, так и в настройках плагина
-        const devServer = program && program.devServer</td></tr> pluginConfig.devServer;
+        const devServer = (program && program.devServer) || pluginConfig.devServer;
 
         if (!devServer) {
             // если dev-сервер запускать не нужно – уходим
@@ -1528,12 +1537,10 @@ module.exports = (testplane, opts) => {
         }
 
         // контент, который отдает dev-сервер
-        const content = '<h1>Hello, World!</h1>';
+        const content = "<h1>Hello, World!</h1>";
 
         // создаем сервер и начинаем слушать порт 3000
-        http
-            .createServer((req, res) => res.end(content))
-            .listen(3000);
+        http.createServer((req, res) => res.end(content)).listen(3000);
 
         // по адресу http://localhost:3000/index.html будет отдаваться: <h1>Hello, World!</h1>
     });
