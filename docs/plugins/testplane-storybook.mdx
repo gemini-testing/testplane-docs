@@ -86,6 +86,18 @@ With this minimal config, you will be able to run `npx testplane --storybook` to
             <td>Enable / disable auto-screenshot tests</td>
         </tr>
         <tr>
+            <td>autoscreenshotSelector</td>
+            <td>`String`</td>
+            <td>""</td>
+            <td>Custom selector, which will be used in auto-screenshot tests</td>
+        </tr>
+        <tr>
+            <td>autoScreenshotStorybookGlobals</td>
+            <td>`Record<string, Record<string, unknown>>`</td>
+            <td>{}</td>
+            <td>Run multiple auto-screenshot tests with different [storybook globals](https://storybook.js.org/docs/7/essentials/toolbars-and-globals#globals)</td>
+        </tr>
+        <tr>
             <td>localport</td>
             <td>`Number`</td>
             <td>6006</td>
@@ -112,6 +124,28 @@ With this minimal config, you will be able to run `npx testplane --storybook` to
     is preferred. These tests ignore [Testplane isolation][isolation]. It would be turned off
     unconditionally.
 </Admonition>
+
+#### autoScreenshotStorybookGlobals
+
+For example, with `autoScreenshotStorybookGlobals` set to:
+
+```json
+{
+    "default": {},
+    "light theme": {
+        "theme": "light"
+    },
+    "dark theme": {
+        "theme": "dark"
+    }
+}
+```
+
+3 autoscreenshot tests will be generated for each story, each test having its corresponding storybook globals value:
+
+-   `... Autoscreenshot default`
+-   `... Autoscreenshot light theme`
+-   `... Autoscreenshot dark theme`
 
 ## Advanced usage
 
@@ -151,11 +185,16 @@ const meta: WithTestplane<Meta<typeof Button>> = {
     title: "Example/Button",
     component: Button,
     testplane: {
-        skip: false, // if true, skips all Testplane tests from this story file
-        autoscreenshotSelector: ".my-selector", // Custom selector to auto-screenshot elements
-        browserIds: ["chrome"], // Testplane browsers to run tests from this story file
+        // If true, skips all Testplane tests from this story file
+        skip: false,
+        // Overrides default autoscreenshotSelector from plugin config
+        autoscreenshotSelector: ".my-selector",
+        // Extends default autoScreenshotStorybookGlobals from plugin config
+        autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
+        // Testplane browsers to run tests from this story file
+        browserIds: ["chrome"],
+        // Overrides default assertView options for tests from this file
         assertViewOpts: {
-            // override default assertView options for tests from this file
             ignoreDiffPixelCount: 5,
         },
     },

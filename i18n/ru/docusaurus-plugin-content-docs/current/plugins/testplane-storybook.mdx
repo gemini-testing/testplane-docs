@@ -83,7 +83,19 @@ export default {
             <td>autoScreenshots</td>
             <td>`Boolean`</td>
             <td>true</td>
-            <td>Включить / отключить авто матическое скриншотное тестирование (будут выполняться только вручную описанные tetplane-тесты)</td>
+            <td>Включить / отключить автоматическое скриншотное тестирование</td>
+        </tr>
+        <tr>
+            <td>autoscreenshotSelector</td>
+            <td>`String`</td>
+            <td>""</td>
+            <td>Кастомный селектор, используемый в автоматических скриншотных тестах</td>
+        </tr>
+        <tr>
+            <td>autoScreenshotStorybookGlobals</td>
+            <td>`Record<string, Record<string, unknown>>`</td>
+            <td>{}</td>
+            <td>Комплекты [глобальных параметров storybook](https://storybook.js.org/docs/7/essentials/toolbars-and-globals#globals), для каждого из которых следует генерировать автоматические скриншотные тесты</td>
         </tr>
         <tr>
             <td>localport</td>
@@ -113,6 +125,28 @@ export default {
     более. Такой тип тестов так же проигнорирует опцию [Testplane isolation][isolation]. Изоляция
     будет отключена принудительно для оптимизации скорости прохождения тестов.
 </Admonition>
+
+#### autoScreenshotStorybookGlobals
+
+К примеру, с `autoScreenshotStorybookGlobals` со значением:
+
+```json
+{
+    "default": {},
+    "light theme": {
+        "theme": "light"
+    },
+    "dark theme": {
+        "theme": "dark"
+    }
+}
+```
+
+Для каждой стори будут сгенерированы 3 автоскриншотных теста, каждый из которых устанавливает соответствующие глобальные параметры сторибука:
+
+-   `... Autoscreenshot default`
+-   `... Autoscreenshot light theme`
+-   `... Autoscreenshot dark theme`
 
 ## Продвинутое использование
 
@@ -152,11 +186,16 @@ const meta: WithTestplane<Meta<typeof Button>> = {
     title: "Example/Button",
     component: Button,
     testplane: {
-        skip: false, // если true, все testplane-тесты этого файла будут отключены
-        autoscreenshotSelector: ".my-selector", // переопределение селектора для скриншота (например, если нужно сделать скриншот не всего элемента)
-        browserIds: ["chrome"], // названия браузеров testplane, в которых нужно запустить тест
+        // Если true, все testplane-тесты этого файла будут отключены
+        skip: false,
+        // Переопределяет autoscreenshotSelector, описанный в конфиге плагина
+        autoscreenshotSelector: ".my-selector",
+        // Расширяет autoScreenshotStorybookGlobals, описанные в конфиге плагина
+        autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
+        // Список Testplane браузеров, в которых нужно запустить тест
+        browserIds: ["chrome"],
+        // Переопределяет опции команды assertView для тестов конкретного файла
         assertViewOpts: {
-            // секция для переопределения опций команды assertView для конкретного файла
             ignoreDiffPixelCount: 5,
         },
     },
