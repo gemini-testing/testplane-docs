@@ -409,7 +409,7 @@ const browserOptions = {
             <td>`false`</td>
             <td>
                 Позволяет сделать браузер пассивным. В пассивных браузерах тесты не запускаются по
-                умолчанию. _Доступна с testplane@8.16.0_.
+                умолчанию. _Доступна с testplane@8.16.0_. **Внимание**: есть ограничения, см. ниже.
             </td>
         </tr>
         <tr>
@@ -470,8 +470,10 @@ interface FailedTestData {
 ### passive {#passive}
 
 <Admonition type="warning">
-    Доступна с testplane@8.16.0. Не работает вместе с устаревшим плагином
-    [hermione-passive-browsers](https://github.com/gemini-testing/testplane-passive-browsers).
+    Доступна с testplane@8.16.0.
+
+    В данный момент эта опция не работает с html-reporter. В данный момент мы рекомендуем продолжить использовать плагин [hermione-passive-browsers](https://github.com/gemini-testing/testplane-passive-browsers). Обратите внимание, что нельзя использовать плагин и эту опцию одновременно. Мы уже работаем над исправлением проблемы.
+
 </Admonition>
 
 Позволяет сделать браузер пассивным. В пассивных браузерах тесты не запускаются по умолчанию. С помощью хелпера [`testplane.also.in`][testplane-also-in-helper] можно включить тест или сьют, перед которым он указан.
