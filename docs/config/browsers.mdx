@@ -406,7 +406,8 @@ If the value is not set, the general timeout for all browsers, set with the [sys
             <td>`false`</td>
             <td>
                 Allows making the browser passive. In passive browsers, tests do not run by default.
-                _Available since testplane@8.16.0_.
+                _Available since testplane@8.16.0_. **Warning**: it currently has issues, read
+                below.
             </td>
         </tr>
         <tr>
@@ -467,8 +468,10 @@ This option guarantees strict order of reading tests. Default: `false`.
 ### passive {#passive}
 
 <Admonition type="warning">
-    Available since testplane@8.16.0. Does not work with the deprecated plugin
-    [hermione-passive-browsers](https://github.com/gemini-testing/testplane-passive-browsers).
+    Available since testplane@8.16.0.
+
+    This option currently doesn't work well with html-reporter. For now, we recommend to keep using the [hermione-passive-browsers](https://github.com/gemini-testing/testplane-passive-browsers) plugin. Note that the plugin and this option must not be used together. We're already working on a fix.
+
 </Admonition>
 
 Allows making the browser passive. In passive browsers, tests do not run by default. Using the helper [`testplane.also.in`][testplane-also-in-helper], you can enable a test or suite before it is run.
