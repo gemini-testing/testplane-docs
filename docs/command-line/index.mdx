@@ -29,6 +29,7 @@ Main command to run tests.
     --repl-before-test [type]        open repl interface before test run (default: false)
     --repl-on-fail [type]            open repl interface on test fail only (default: false)
     --devtools                       switches the browser to the devtools mode with using CDP protocol
+    --local                          use automatically downloaded browsers and drivers, provided by Testplane
     -h, --help                       output usage information
 ```
 
@@ -461,6 +462,47 @@ For example, [html-reporter][html-reporter] adds `gui` command.
 
 ```bash
 testplane list-tests --help
+```
+
+## `install-deps` command {#install-deps}
+
+This command is a part of the guide [How to launch Testplane in the local browser](/docs/v8/guides/local-browsers).
+
+Use the `install-deps` command to download all browsers, specified in [Testplane config](/docs/v8/config/main).
+
+If this command is launched on supported ubuntu version, all missing necessary ubuntu packages would be downloaded too.
+
+### Usage {#usage}
+
+```bash
+npx testplane install-deps
+```
+
+### Command arguments {#arguments}
+
+You can also specify, which browsers are need to be downloaded.
+
+For example, if you have browsers "chrome-dark", "firefox-dark" described in <a href="/docs/v8/config/main">Testplane config</a>, you can use the following command to only download these two browsers:
+
+```bash
+npx testplane install-deps chrome-dark firefox-dark
+```
+
+Using browser names with versions in a format like `<browserName>@<browserVersion>` is also supported:
+
+```bash
+npx testplane install-deps chrome@130 firefox@104
+```
+
+### Installation directory {#directory}
+
+By default, browsers and drivers are downloaded to ".testplane" directory at home directory.
+
+You can specify other path by setting `TESTPLANE_BROWSERS_PATH` env variable:
+
+```bash
+TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
+TESTPLANE_BROWSERS_PATH=~/.testplane npx testplane install-deps
 ```
 
 ## Overriding settings {#overriding-settings}

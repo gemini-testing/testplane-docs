@@ -1,0 +1,28 @@
+---
+title: Running on Local Browsers
+slug: local-browsers-intro
+hide_table_of_contents: false
+date: 2024-12-19T14:00
+---
+
+import Admonition from "@theme/Admonition";
+import localBrowsersExampleUrl from "/video/blog/local-browsers/local-browsers-example.mp4";
+
+Testplane is now able to automatically download browsers for running tests locally. Enjoy a hassle-free start with `--local` option if you don't need remote browser grid.
+
+<!-- truncate -->
+
+Previously, Testplane with the webdriver automation protocol could only be launched locally with a manually started [selenium-standalone](https://github.com/webdriverio/selenium-standalone). Now, it is enough to specify `gridUrl: "local"` in the [Testplane Config](/docs/v8/config/main) or run tests with the [CLI option](/docs/v8/command-line) `--local`. In this case, if necessary, the corresponding browsers and web drivers will be downloaded before running the tests, and they will also be launched for further use in these tests.
+
+You can also download the browsers and their web drivers separately using the [install-deps](/docs/v8/command-line#install-deps) command.
+
+Example of running tests on local browser with webdriver automation protocol:
+
+<video src={localBrowsersExampleUrl} width="100%" controls="controls" autoplay="autoplay">
+    Tag video is not supported by your browser.
+    <a href="video/blog/local-browsers/local-browsers-example.mp4">Download video</a>.
+</video>
+
+### How to use?
+
+Learn more about this in our documentation [How to Run Testplane in a Local Browser](/docs/v8/guides/local-browsers).
