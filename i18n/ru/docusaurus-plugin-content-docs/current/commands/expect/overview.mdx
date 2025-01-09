@@ -1,0 +1,48 @@
+---
+sidebar_class_name: hidden
+---
+
+# Ассерты с помощью Expect
+
+## Обзор
+
+В ходе написания тестов нужно часто удостовериться, что значения отвечают определённым требованиям. С помощью функции expect у вас есть доступ к множеству «матчеров», которые помогают проверить различные характеристики браузера, элемента или мока объекта.
+
+Например, можно проверить находится ли браузер на заданной странице
+
+```typescript
+await browser.url("https://webdriver.io/");
+// ...
+await expect(browser).toHaveUrl("https://webdriver.io");
+```
+
+или проверить есть ли у элемента атрибут с заданным значением
+
+```typescript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveAttribute("class", "form-control");
+```
+
+или проверить был ли сделан указанный запрос для вашего мока
+
+```typescript
+const mock = browser.mock("**/api/todo*");
+// ...
+await expect(mock).toBeRequested();
+```
+
+По умолчанию таймаут на выполнение ассертов равен 2000мс с интервалом проверок в 100мс. Но при необходимости эти значения можно переопределить в [секции system][system_config] в общем конфиге.
+
+```typescript
+{
+// другие настройки testplane
+    system: {
+        expectOpts: {
+            wait: 5000,
+            interval: 200,
+        }
+    }
+}
+```
+
+[system_config]: ../../../config/system#expect_opts
