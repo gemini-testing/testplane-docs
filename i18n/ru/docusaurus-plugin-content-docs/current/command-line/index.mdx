@@ -465,6 +465,76 @@ it("test2", () => {});
 testplane list-tests --help
 ```
 
+## Команда `list-browsers`
+
+Команда для получения всех браузеров из конфигурации.
+
+```bash
+> npx testplane list-browsers --help
+
+  Usage: list-browsers [options]
+
+  Lists all browsers from the config
+
+  Options:
+
+    --type [type]      return browsers in specified type ('tags': browserName and browserVersion, 'ids': browserId from config) (default: tags)
+    --format [format]  return browsers in specified format ('json' / 'plain') (default: json)
+    -h, --help         output usage information
+```
+
+Например,
+
+```
+npx testplane list-browsers --type ids --format plain
+```
+
+### Опции {#list-browsers-options}
+
+#### Type {#list-browsers-type}
+
+Укажите тип выводимых данных: browserId из конфигурации или browserName с browserVersion.
+
+```bash
+testplane list-browsers --type tags
+```
+
+#### Format {#list-browsers-format}
+
+Укажите формат выводимых данных: обычный текст или json.
+
+```bash
+testplane list-browsers --format json
+```
+
+#### Пример {#list-browsers-example}
+
+Если у вас имеется следующий раздел "browsers" в вашей конфигурации [Testplane](/docs/v8/config/main):
+
+```json
+{
+    "my-chrome": { "desiredCapabilities": { "browserName": "chrome", "browserVersion": "130.0" } },
+    "my-safari": { "desiredCapabilities": { "browserName": "safari" } }
+}
+```
+
+Следующие команды произведут соответствующий результат:
+
+|                       Команда                        |                                   Результат                                    |
+| :--------------------------------------------------: | :----------------------------------------------------------------------------: |
+| `testplane list-browsers --type ids --format plain`  |                             `my-chrome my-safari`                              |
+|  `testplane list-browsers --type ids --format json`  |                          `["my-chrome","my-safari"]`                           |
+| `testplane list-browsers --type tags --format plain` |                             `chrome@130.0 safari`                              |
+| `testplane list-browsers --type tags --format json`  | `[{"browserName":"chrome","browserVersion":"130.0"},{"browserName":"safari"}]` |
+
+#### Help {#list-browsers-help}
+
+Выводит информацию команде и ее опциях.
+
+```bash
+testplane list-browsers --help
+```
+
 ## Команда `install-deps` {#install-deps}
 
 Эта команда является частью рецепта [Как запустить Testplane в локальном браузере](/docs/v8/guides/local-browsers).

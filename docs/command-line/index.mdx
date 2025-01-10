@@ -464,6 +464,75 @@ For example, [html-reporter][html-reporter] adds `gui` command.
 testplane list-tests --help
 ```
 
+## `list-browsers` command
+
+Command to get all browsers from the config.
+
+```bash
+> npx testplane list-browsers --help
+
+  Usage: list-browsers [options]
+
+  Lists all browsers from the config
+
+  Options:
+
+    --type [type]      return browsers in specified type ('tags': browserName and browserVersion, 'ids': browserId from config) (default: tags)
+    --format [format]  return browsers in specified format ('json' / 'plain') (default: json)
+    -h, --help         output usage information
+```
+
+For example,
+
+```
+npx testplane list-browsers --type ids --format plain
+```
+
+### Options {#list-browsers-options}
+
+#### Type {#list-browsers-type}
+
+Specify type of output data: browserId from config or browserName with browserVersion.
+
+```bash
+testplane list-browsers --type tags
+```
+
+#### Format {#list-browsers-format}
+
+Specify format of output data: plain text or json.
+
+```bash
+testplane list-browsers --format json
+```
+
+#### Example {#list-browsers-example}
+
+If you have the following "browsers" section in your [Testplane config](/docs/v8/config/main):
+
+```json
+{
+    "my-chrome": { "desiredCapabilities": { "browserName": "chrome", "browserVersion": "130.0" } },
+    "my-safari": { "desiredCapabilities": { "browserName": "safari" } }
+}
+```
+
+The following commands will provide corresponding result:
+| Command | Result |
+|:--------------------------------------------------:|:----------------------------------------------------------------------------:|
+| `testplane list-browsers --type ids --format plain` | `my-chrome my-safari` |
+| `testplane list-browsers --type ids --format json` | `["my-chrome","my-safari"]` |
+| `testplane list-browsers --type tags --format plain` | `chrome@130.0 safari` |
+| `testplane list-browsers --type tags --format json` | `[{"browserName":"chrome","browserVersion":"130.0"},{"browserName":"safari"}]` |
+
+#### Help {#list-browsers-help}
+
+Prints out information about the command and its options.
+
+```bash
+testplane list-browsers --help
+```
+
 ## `install-deps` command {#install-deps}
 
 This command is a part of the guide [How to launch Testplane in the local browser](/docs/v8/guides/local-browsers).
