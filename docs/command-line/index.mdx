@@ -533,6 +533,48 @@ Prints out information about the command and its options.
 testplane list-browsers --help
 ```
 
+## The `config` Command
+
+This command is used to retrieve all configuration values of Testplane, including default values and overridden by environment variables ones.
+
+```bash
+> npx testplane config --help
+
+  Usage: config [options]
+
+  Outputs Testplane config (including default and overriden by environment variables values)
+
+  Options:
+
+    -c, --config <path>  path to configuration file
+    --space <count>      white spaces count to insert into the JSON output (default: 0)
+    -h, --help           output usage information
+```
+
+For example:
+
+```bash
+npx testplane config --space 4
+```
+
+### Options {#config-options}
+
+#### Space {#config-space}
+
+Specify the number of spaces used for formatting the human-readable output of the command.
+
+```bash
+testplane config --space 4
+```
+
+#### Help {#config-help}
+
+Outputs information about the command and its options.
+
+```bash
+testplane config --help
+```
+
 ## `install-deps` command {#install-deps}
 
 This command is a part of the guide [How to launch Testplane in the local browser](/docs/v8/guides/local-browsers).
