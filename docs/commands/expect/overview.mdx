@@ -1,0 +1,48 @@
+---
+sidebar_class_name: hidden
+---
+
+# Assertion with Expect
+
+## Overview
+
+When writing tests, it's often necessary to ensure that values meet certain criteria. With the `expect` function you have access to a variety of matchers that help verify different characteristics of the browser, element, or object mock.
+
+For example, you can check if the browser is on a specific page
+
+```typescript
+await browser.url("https://webdriver.io/");
+// ...
+await expect(browser).toHaveUrl("https://webdriver.io");
+```
+
+or check if the element has an attribute with the specified value
+
+```typescript
+const myInput = await browser.$("input");
+await expect(myInput).toHaveAttribute("class", "form-control");
+```
+
+or check if the specified request has been made for your mock
+
+```typescript
+const mock = browser.mock("**/api/todo*");
+// ...
+await expect(mock).toBeRequested();
+```
+
+By default, the timeout for executing asserts is 2000ms with a check interval of 100ms. However, if necessary, these values can be redefined in the [system section][system_config] in the general config.
+
+```typescript
+{
+// another testplane configs
+    system: {
+        expectOpts: {
+            wait: 5000,
+            interval: 200,
+        }
+    }
+}
+```
+
+[system_config]: ../../../config/system#expect_opts
