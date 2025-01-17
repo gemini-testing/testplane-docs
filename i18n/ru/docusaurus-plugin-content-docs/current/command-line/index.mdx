@@ -535,6 +535,48 @@ testplane list-browsers --format json
 testplane list-browsers --help
 ```
 
+## Команда `config`
+
+Команда для получения всех значений конфигурации Testplane, включая значения по умолчанию и перезаписанные значения с помощью переменных среды.
+
+```bash
+> npx testplane config --help
+
+  Usage: config [options]
+
+  Outputs Testplane config (including default and overriden by environment variables values)
+
+  Options:
+
+    -c, --config <path>  path to configuration file
+    --space <count>      white spaces count to insert into the JSON output (default: 0)
+    -h, --help           output usage information
+```
+
+Например:
+
+```bash
+npx testplane config --space 4
+```
+
+### Опции {#config-options}
+
+#### Space {#config-space}
+
+Укажите количество пробелов, используемых для форматирования человекочитаемого вывода команды.
+
+```bash
+testplane config --space 4
+```
+
+#### Help {#config-help}
+
+Выводит информацию команде и ее опциях.
+
+```bash
+testplane config --help
+```
+
 ## Команда `install-deps` {#install-deps}
 
 Эта команда является частью рецепта [Как запустить Testplane в локальном браузере](/docs/v8/guides/local-browsers).
