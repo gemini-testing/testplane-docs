@@ -5,7 +5,7 @@ import { tailwindPlugin } from "./plugins/tailwind";
 import { svgFixDuplicateIdsPlugin } from "./plugins/svg-fix";
 
 const config: Config = {
-    title: "Testplane Docs",
+    title: "Testplane",
     tagline: "Testplane is a modern end-to-end testing framework.",
     favicon: "img/favicon.ico",
 
