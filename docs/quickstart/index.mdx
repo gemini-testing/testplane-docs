@@ -15,58 +15,56 @@ If you do not want to use the defaults when initializing the project and want to
 
 ## Setup {#setup}
 
-After executing the command mentioned above, a `.testplane.conf.js` file with basic settings will be generated at the root of the project. Depending on which protocol you want to use, there are 2 configuration options (by default, the CDP protocol will be specified for the browser).
+After executing the command mentioned above, a `testplane.config.ts` file with basic settings will be generated at the root of the project.
 
-<Tabs>
-<TabItem value="Chrome Devtools Protocol" label="Chrome Devtools Protocol">
-```javascript
-module.exports = {
+```typescript
+export default {
+    // https://testplane.io/docs/v8/guides/local-browsers/
+    gridUrl: "local",
+    baseUrl: "http://localhost",
+    pageLoadTimeout: 0,
+    httpTimeout: 60000,
+    testTimeout: 90000,
+    resetCursor: false,
     sets: {
         desktop: {
-            files: 'tests/desktop'
-        }
+            files: ["testplane-tests/**/*.testplane.(t|j)s"],
+            browsers: ["chrome", "firefox"],
+        },
     },
-
     browsers: {
         chrome: {
-            automationProtocol: 'devtools',
+            headless: true,
             desiredCapabilities: {
-                browserName: 'chrome'
-            }
-        }
-    }
-
-};
-
-````
-</TabItem>
-
-
-<TabItem value="WebDriver protocol" label="WebDriver protocol">
-```javascript
-module.exports = {
-    gridUrl: 'http://localhost:4444/wd/hub',
-
-    sets: {
-        desktop: {
-            files: 'tests/desktop'
-        }
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            headless: true,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
     },
-
-    browsers: {
-        chrome: {
-            automationProtocol: 'webdriver', // default value
-            desiredCapabilities: {
-                browserName: 'chrome'
-            }
-        }
-    }
+    plugins: {
+        "html-reporter/testplane": {
+            // https://github.com/gemini-testing/html-reporter
+            enabled: true,
+            path: "testplane-report",
+            defaultView: "all",
+            diffMode: "3-up-scaled",
+        },
+    },
 };
-````
+```
 
-</TabItem>
+You can download these browsers, described in the config, separately from running Testplane itself:
 
-</Tabs>
+```bash
+npx testplane install-deps
+```
+
+Without running the command, absent browsers will be downloaded during first Testplane launch.
 
 ## Creating a Test {#test_creation}
 
@@ -95,10 +93,4 @@ or launch the GUI mode and run the test through the browser interface
 
 ```bash
 npx testplane gui
-```
-
-If you chose the `WebDriver protocol` during the config setup, you should have `selenium-standalone` running (in a separate tab) before running the tests:
-
-```bash
-selenium-standalone start
 ```
