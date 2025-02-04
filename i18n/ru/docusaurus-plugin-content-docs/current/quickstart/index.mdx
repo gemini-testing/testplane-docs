@@ -15,58 +15,56 @@ npm init testplane@latest YOUR_PROJECT_PATH
 
 ## Настройка {#setup}
 
-После выполнения команды, указанной выше, в корне проекта сгенерится файл `.testplane.conf.js` с базовой настройкой. В зависимости от того, каким протоколом вы хотите воспользоваться, есть 2 варианта настройки (по умолчанию для браузера будет указан протокол CDP).
+После выполнения команды, указанной выше, в корне проекта сгенерится файл `testplane.config.ts` с базовой настройкой.
 
-<Tabs>
-<TabItem value="Chrome Devtools Protocol" label="Chrome Devtools Protocol">
-```javascript
-  module.exports = {
-      sets: {
-          desktop: {
-              files: 'tests/desktop'
-          }
-      },
-
-      browsers: {
-          chrome: {
-              automationProtocol: 'devtools',
-              desiredCapabilities: {
-                  browserName: 'chrome'
-              }
-          }
-      }
-
-};
-
-````
-</TabItem>
-
-
-<TabItem value="WebDriver protocol" label="WebDriver protocol">
-```javascript
-module.exports = {
-    gridUrl: 'http://localhost:4444/wd/hub',
-
+```typescript
+export default {
+    // https://testplane.io/ru/docs/v8/guides/local-browsers/
+    gridUrl: "local",
+    baseUrl: "http://localhost",
+    pageLoadTimeout: 0,
+    httpTimeout: 60000,
+    testTimeout: 90000,
+    resetCursor: false,
     sets: {
         desktop: {
-            files: 'tests/desktop'
-        }
+            files: ["testplane-tests/**/*.testplane.(t|j)s"],
+            browsers: ["chrome", "firefox"],
+        },
     },
-
     browsers: {
         chrome: {
-            automationProtocol: 'webdriver', // default value
+            headless: true,
             desiredCapabilities: {
-                browserName: 'chrome'
-            }
-        }
-    }
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            headless: true,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
+    },
+    plugins: {
+        "html-reporter/testplane": {
+            // https://github.com/gemini-testing/html-reporter
+            enabled: true,
+            path: "testplane-report",
+            defaultView: "all",
+            diffMode: "3-up-scaled",
+        },
+    },
 };
-````
+```
 
-</TabItem>
+Вы можете загрузить браузеры, описанные в конфиге, отдельно от запуска самого Testplane:
 
-</Tabs>
+```bash
+npx testplane install-deps
+```
+
+Без предварительного запуска команды, недостающие браузеры будут автоматически загружены с первым запуском Testplane.
 
 ## Создание теста {#test_creation}
 
@@ -95,10 +93,4 @@ npx testplane
 
 ```bash
 npx testplane gui
-```
-
-Если при настройке конфига вы выбрали `WebDriver protocol`, то перед запуском тестов у вас должен быть запущен (в отдельной вкладке) `selenium-standalone`:
-
-```bash
-selenium-standalone start
 ```
