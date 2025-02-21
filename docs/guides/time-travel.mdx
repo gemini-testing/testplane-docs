@@ -1,0 +1,63 @@
+import Admonition from "@theme/Admonition";
+
+# Time Travel (Preview)
+
+![](/img/docs/guides/time-travel-demo.gif)
+
+## Overview
+
+The Time Travel mode is a new Testplane UI tool that allows you to observe test execution in real-time, as well as record and replay the test's progress.
+
+-   Time Travel records snapshots of the DOM tree, not screenshots or videos, but the actual DOM structure
+-   The average snapshot size is about 200KB thanks to compression and an incremental recording algorithm
+-   The entire functionality is available both within the GUI and in a static report generated from any CI
+
+## Getting Started
+
+<Admonition type="warning">
+    Please note that the Time Travel feature is currently in Preview. For production use, we
+    recommend waiting for the stable version.
+</Admonition>
+
+1. Install the alpha versions of `testplane` and `html-reporter`:
+
+    ```shell
+    npm i -D testplane@8.26.0-alpha.1 html-reporter@10.15.0-alpha.1
+    ```
+
+2. Enable snapshot recording in the Testplane config:
+
+    ```typescript
+    export = {
+        /* ... */
+        record: "on",
+    };
+    ```
+
+3. Run the tests and activate Time Travel in the UI settings:
+
+    ![](/img/docs/guides/time-travel-setting.png)
+
+## Using Time Travel
+
+After activating Time Travel in all supported browsers, a player window will appear before the test starts. During test execution, the browser's activity will be streamed into this player.
+
+![](/img/docs/guides/time-travel-live.png)
+
+After the test run is complete, you can replay the recorded snapshots and navigate through time. Hovering over a specific step will show the browser's state at that exact moment.
+
+![](/img/docs/guides/time-travel-recording.png)
+
+To debug the layout, you can use the browser's DevTools. All selectors and attributes are preserved without changes.
+
+![](/img/docs/guides/time-travel-debug.png)
+
+## Configuring Time Travel
+
+Currently, snapshot recording is controlled via the `record` option in the Testplane config. It supports two values: `"on"` (snapshots will be recorded for every test run) and `"off"` (snapshots are completely disabled).
+
+<Admonition type="info">
+    In the near future, smarter recording modes will be available, such as "only on failure" or
+    "enabled during retries." Additionally, network request debugging and full-screen mode will soon
+    be available.
+</Admonition>
