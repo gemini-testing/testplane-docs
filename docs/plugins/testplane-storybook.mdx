@@ -151,11 +151,6 @@ For example, with `autoScreenshotStorybookGlobals` set to:
 
 If you have `ts-node` in your project, you can write your Testplane tests right inside of storybook story files:
 
-<Admonition type="info">
-    Storybook story files must have `.js` or `.ts` extension for this to work. Formats `jsx/tsx` are
-    not supported yet.
-</Admonition>
-
 ```typescript title="stories/Primary.stories.ts"
 import type { StoryObj } from "@storybook/react";
 import type { WithTestplane } from "@testplane/storybook";
@@ -184,12 +179,14 @@ import type { Meta, StoryObj } from "@storybook/react";
 const meta: WithTestplane<Meta<typeof Button>> = {
     title: "Example/Button",
     component: Button,
-    testplane: {
+    testplaneConfig: {
         // If true, skips all Testplane tests from this story file
         skip: false,
-        // Overrides default autoscreenshotSelector from plugin config
+        // Overrides default "autoScreenshots" value from plugin config
+        autoScreenshots: true,
+        // Overrides default "autoscreenshotSelector" value from plugin config
         autoscreenshotSelector: ".my-selector",
-        // Extends default autoScreenshotStorybookGlobals from plugin config
+        // Extends default "autoScreenshotStorybookGlobals" value from plugin config
         autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
         // Testplane browsers to run tests from this story file
         browserIds: ["chrome"],
@@ -201,6 +198,71 @@ const meta: WithTestplane<Meta<typeof Button>> = {
 };
 
 export default meta;
+```
+
+And then override these options for specific exports:
+
+```typescript
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    args: {
+        primary: true,
+        label: "Button",
+    },
+    testplaneConfig: {
+        // Overrides testplaneConfig.skip from default export
+        skip: true,
+        // Extends testplaneConfig.assertViewOpts from default export
+        assertViewOpts: {
+            // "ignoreDiffPixelCount: 5" config value will be inherited from default export
+            ignoreElements: [".some-selector"],
+        },
+        // Add extra globals set
+        autoScreenshotStorybookGlobals: { "eng locale": { locale: "en" } },
+    },
+};
+```
+
+You can also disable specific sets for the whole story-file (in default export) and for the single story (in named export) by setting null value to the set:
+
+```typescript
+import type { WithTestplane } from "@testplane/storybook";
+import type { Meta, StoryObj } from "@storybook/react";
+
+const meta: WithTestplane<Meta<typeof Button>> = {
+    title: "Example/Button",
+    component: Button,
+    testplaneConfig: {
+        autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
+    },
+};
+
+export default meta;
+
+export const Primary: WithTestplane<StoryObj> = {
+    // ...other Storybook properties
+    testplaneConfig: {
+        // Don't test this story in dark theme
+        autoScreenshotStorybookGlobals: { "dark theme": null },
+    },
+};
+```
+
+Besides extending and disabling, you also can overwrite "autoScreenshotStorybookGlobals", providing the value as a function:
+
+```typescript
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    // ...other Storybook properties
+    testplaneConfig: {
+        // Replaces all global sets with this one
+        autoScreenshotStorybookGlobals: () => ({ "eng locale": { locale: "en" } }),
+    },
+};
 ```
 
 If you decide to create separate config for storybook auto-tests (which is suggested), you need to specify config path via CLI option. For example:
