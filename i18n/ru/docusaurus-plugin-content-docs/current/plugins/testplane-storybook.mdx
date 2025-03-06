@@ -185,12 +185,14 @@ import type { Meta, StoryObj } from "@storybook/react";
 const meta: WithTestplane<Meta<typeof Button>> = {
     title: "Example/Button",
     component: Button,
-    testplane: {
+    testplaneConfig: {
         // Если true, все testplane-тесты этого файла будут отключены
         skip: false,
-        // Переопределяет autoscreenshotSelector, описанный в конфиге плагина
+        // Переопределяет опцию "autoScreenshots", описанную в конфиге плагина
+        autoScreenshots: true,
+        // Переопределяет "autoscreenshotSelector", описанный в конфиге плагина
         autoscreenshotSelector: ".my-selector",
-        // Расширяет autoScreenshotStorybookGlobals, описанные в конфиге плагина
+        // Расширяет "autoScreenshotStorybookGlobals", описанные в конфиге плагина
         autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
         // Список Testplane браузеров, в которых нужно запустить тест
         browserIds: ["chrome"],
@@ -202,6 +204,71 @@ const meta: WithTestplane<Meta<typeof Button>> = {
 };
 
 export default meta;
+```
+
+И затем переопределить эти опции для конкретных экспортов:
+
+```typescript
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    args: {
+        primary: true,
+        label: "Button",
+    },
+    testplaneConfig: {
+        // Переопределяет testplaneConfig.skip из экспорта по умолчанию
+        skip: true,
+        // Расширяет testplaneConfig.assertViewOpts из экспорта по умолчанию
+        assertViewOpts: {
+            // Значение "ignoreDiffPixelCount: 5" будет унаследовано из default export
+            ignoreElements: [".some-selector"],
+        },
+        // Добавляет дополнительные наборы глобальных значений Storybook
+        autoScreenshotStorybookGlobals: { "ru locale": { locale: "ru" } },
+    },
+};
+```
+
+Вы также можете отключить конкретные наборы для всего файла историй (в экспорте по умолчанию) и для отдельной истории (в именованном экспорте), установив значение null:
+
+```typescript
+import type { WithTestplane } from "@testplane/storybook";
+import type { Meta, StoryObj } from "@storybook/react";
+
+const meta: WithTestplane<Meta<typeof Button>> = {
+    title: "Example/Button",
+    component: Button,
+    testplaneConfig: {
+        autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
+    },
+};
+
+export default meta;
+
+export const Primary: WithTestplane<StoryObj> = {
+    // ...другие свойства Storybook
+    testplaneConfig: {
+        // Не тестировать эту story в темной теме
+        autoScreenshotStorybookGlobals: { "dark theme": null },
+    },
+};
+```
+
+Помимо расширения и отключения, Вы также можете полностью перезаписать "autoScreenshotStorybookGlobals", передав значение как функцию:
+
+```typescript
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    // ...другие свойства Storybook
+    testplaneConfig: {
+        // Заменяет все глобальные наборы Storybook значений для этой story
+        autoScreenshotStorybookGlobals: () => ({ "ru locale": { locale: "ru" } }),
+    },
+};
 ```
 
 В Вашем проекте уже могут быть настроены другие типы тестирования, запускающиеся с помощью `testplane`. Чтобы не смешивать сущности, мы рекомендуем для storybook описать отдельный конфиг, а при запуске указывать путь к нему с помощью CLI-опции. Например:
