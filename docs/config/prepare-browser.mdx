@@ -1,7 +1,4 @@
 import Admonition from "@theme/Admonition";
-import AddBrowserCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-browser-command.mdx";
-import AddElementCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-element-command.mdx";
-import OverwriteCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-overwrite-command.mdx";
 import AddMultipleCommandsExample from "@site/docs/config/_partials/examples/_prepare-browser-add-multiple-commands.mdx";
 
 # prepareBrowser
@@ -10,44 +7,37 @@ import AddMultipleCommandsExample from "@site/docs/config/_partials/examples/_pr
 
 This parameter is a hook. The function specified for this parameter will be automatically called before running tests in the browser. The function receives a reference to the browser session as an argument.
 
-Typically, new commands are added to the browser or the behavior of existing commands is extended within this function.
+The `prepareBrowser` hook is a perfect place to set up all of your custom commands or overwrite existing ones.
+
+<Admonition type="info">
+    Read more about custom commands in [our guide](../guides/custom-commands.mdx).
+</Admonition>
 
 ## Usage Examples {#example}
 
-### Example 1: Adding a new command to the browser {#example_add_new_command_to_browser}
+### Adding new browser commands or overwriting existing browser commands
 
-To add a new command, use the [browser.addCommand()][add-command] function.
+This is how you can add or overwrite browser commands:
 
-<AddBrowserCommandExample />
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+import { openScenario, customUrl } from "./testplane/browser-commands";
+import { getCoords } from "./testplane/element-commands";
 
-### Example 2: Adding a new command to an element {#example_2_add_new_command_to_element}
-
-You can add a command not to the browser, but to an element. In this case, the third argument of the [browser.addCommand()][add-command] function should be set to `true`.
-
-<Admonition type="warning">
-    If a command is added to an element, not to the browser, the function is executed in the context
-    of the element!
-</Admonition>
-
-<AddElementCommandExample />
-
-Inside the function, the commands [getLocation()][get-location] and [getSize()][get-size], which are available for the element, are used.
-
-After adding the `getCoords()` command, it can be used in tests as follows:
-
-```typescript
-const { left, top, right, bottom } = await browser.$(".selector").getCoords();
+export default {
+    // ...
+    prepareBrowser: function (browser) {
+        // Browser commands
+        browser.addCommand("openScenario", openScenario);
+        // Element commands
+        browser.addCommand("getCoords", getCoords, true);
+        // Browser command overwrites
+        browser.overwriteCommand("url", customUrl);
+    },
+} satisfies ConfigInput;
 ```
 
-### Example 3: Overwriting an existing command {#example_3_overwrite_command}
-
-To change an existing command, use the [browser.overwriteCommand()][overwrite-command] command.
-
-For example, we might want to pass an object with query parameters as a separate argument to the [browser.url()][url] command:
-
-<OverwriteCommandExample />
-
-### Example 4: Adding a set of commands from a folder {#example_4_add_commands_from_folder}
+### Adding a set of commands from a folder
 
 If the project has many specific commands, it is convenient to store them in a separate folder, and add all commands at once in a unified manner in `prepareBrowser`. For example:
 

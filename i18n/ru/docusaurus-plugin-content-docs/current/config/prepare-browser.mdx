@@ -1,7 +1,4 @@
 import Admonition from "@theme/Admonition";
-import AddBrowserCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-browser-command.mdx";
-import AddElementCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-add-element-command.mdx";
-import OverwriteCommandExample from "@site/docs/config/_partials/examples/_prepare-browser-overwrite-command.mdx";
 import AddMultipleCommandsExample from "@site/docs/config/_partials/examples/_prepare-browser-add-multiple-commands.mdx";
 
 # prepareBrowser
@@ -12,42 +9,35 @@ import AddMultipleCommandsExample from "@site/docs/config/_partials/examples/_pr
 
 Обычно внутри данной функции к браузеру добавляют новые команды, или расширяют поведение уже существующих команд.
 
-## Примеры использования {#example}
-
-### Пример 1: добавляем новую команду для браузера {#example_add_new_command_to_browser}
-
-Для добавления новой команды воспользуемся функцией [browser.addCommand()][add-command].
-
-<AddBrowserCommandExample />
-
-### Пример 2: добавляем новую команду для элемента {#example_2_add_new_command_to_element}
-
-Можно добавить команду не для браузера, а для элемента. Тогда третьим аргументом функции [browser.addCommand()][add-command] надо указать `true`.
-
-<Admonition type="warning">
-    Если добавляется команда для элемента, а не для браузера, то функция выполняется в контексте
-    элемента!
+<Admonition type="info">
+    Узнайте больше о кастомных командах в [нашем рецепте](../guides/custom-commands.mdx).
 </Admonition>
 
-<AddElementCommandExample />
+## Примеры использования {#example}
 
-Внутри функции применяются команды [getLocation()][get-location] и [getSize()][get-size], которые доступны для элемента.
+### Добавление новых команд и перезапись существующих команд браузера
 
-После добавления команды `getCoords()`, её можно использовать в тестах следующим образом:
+Так вы можете добавлять и перезаписывать браузерные команды:
 
-```typescript
-const { left, top, right, bottom } = await browser.$(‘.selector’).getCoords();
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+import { openScenario, customUrl } from "./testplane/browser-commands";
+import { getCoords } from "./testplane/element-commands";
+
+export default {
+    // ...
+    prepareBrowser: function (browser) {
+        // Browser commands
+        browser.addCommand("openScenario", openScenario);
+        // Element commands
+        browser.addCommand("getCoords", getCoords, true);
+        // Browser command overwrites
+        browser.overwriteCommand("url", customUrl);
+    },
+} satisfies ConfigInput;
 ```
 
-### Пример 3: меняем уже существующую команду {#example_3_overwrite_command}
-
-Чтобы изменить уже существующую команду, воспользуемся командой [browser.overwriteCommand()][overwrite-command].
-
-Например, мы можем захотеть передавать в команду [browser.url()][url] отдельным аргументом объект с query-параметрами:
-
-<OverwriteCommandExample />
-
-### Пример 4: добавляем набор команд из папки {#example_4_add_commands_from_folder}
+### Добавление набора команд из папки
 
 Если в проекте много своих специфических команд, то их удобно хранить в отдельной папке, а в `prepareBrowser` добавлять все команды сразу унифицированным образом. Например:
 
