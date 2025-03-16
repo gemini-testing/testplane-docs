@@ -43,6 +43,11 @@
             text-decoration: none !important;
         }
     }
+
+    ol {
+        list-style: auto;
+        padding-left: 30px;
+    }
 }
 
 @tailwind components;
