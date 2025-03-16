@@ -27,6 +27,7 @@ import AddElementCommandExample from "@site/docs/config/_partials/examples/_prep
 
 ```typescript
 browser.addCommand("getUrlAndTitle", async function () {
+    // this в контексте кастомных команд указывает на объект браузера
     return {
         url: await this.getUrl(),
         title: await this.getTitle(),

@@ -27,6 +27,7 @@ To add a custom command to the `browser` object, use the `addCommand` method. He
 
 ```typescript
 browser.addCommand("getUrlAndTitle", async function () {
+    // this in the context of custom commands points to browser object
     return {
         url: await this.getUrl(),
         title: await this.getTitle(),
