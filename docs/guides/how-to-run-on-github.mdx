@@ -1,0 +1,334 @@
+# How to Run Testplane in GitHub CI
+
+## Introduction
+
+To run Testplane in GitHub CI, there's a [dedicated GitHub Action][gh-actions-testplane] that:
+
+-   Handles caching of [local browsers](/docs/v8/guides/local-browsers) (if used);
+-   Writes statistics about failed tests to [Job Summary](https://github.blog/news-insights/product-news/supercharging-github-actions-with-job-summaries/);
+-   Helps display [HTML reports](../../html-reporter/html-reporter-setup) with test results in the browser.
+
+## Configuration
+
+Basic workflow to run Testplane:
+
+```yml
+name: Testplane CI
+
+on: # Workflow trigger rules
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+
+jobs:
+    testplane_test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Use Node.js 18
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
+
+            - name: Cache npm dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+            - name: Install npm deps
+              run: npm install
+
+            - name: Run Testplane
+              id: testplane
+              uses: gemini-testing/gh-actions-testplane@v1
+```
+
+The "gemini-testing/gh-actions-testplane" action supports the following parameters:
+
+<table>
+    <thead>
+        <tr>
+            <td>
+                <strong>Parameter</strong>
+            </td>
+            <td>
+                <strong>Default Value</strong>
+            </td>
+            <td>
+                <strong>Description</strong>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <code>cwd</code>
+            </td>
+            <td>
+                <code>.</code>
+            </td>
+            <td>Relative directory to run Testplane from (useful for monorepos)</td>
+        </tr>
+        <tr>
+            <td>
+                <code>package-manager</code>
+            </td>
+            <td>
+                <code>npm</code>
+            </td>
+            <td>Package manager used in the project (one of: npm, pnpm, yarn)</td>
+        </tr>
+        <tr>
+            <td>
+                <code>html-report-prefix</code>
+            </td>
+            <td>
+                <code>testplane-reports</code>
+            </td>
+            <td>Path prefix for HTML reporter reports</td>
+        </tr>
+        <tr>
+            <td>
+                <code>config-path</code>
+            </td>
+            <td>
+                <code>''</code>
+            </td>
+            <td>Path to custom Testplane config</td>
+        </tr>
+        <tr>
+            <td>
+                <code>storybook</code>
+            </td>
+            <td>
+                <code>''</code>
+            </td>
+            <td>
+                Enable to use @testplane/storybook plugin tests (e.g., <code>'true'</code>)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <code>set</code>
+            </td>
+            <td>
+                <code>''</code>
+            </td>
+            <td>List of test sets (comma-separated)</td>
+        </tr>
+        <tr>
+            <td>
+                <code>browser</code>
+            </td>
+            <td>
+                <code>''</code>
+            </td>
+            <td>List of browsers for testing (comma-separated)</td>
+        </tr>
+        <tr>
+            <td>
+                <code>grep</code>
+            </td>
+            <td>
+                <code>''</code>
+            </td>
+            <td>Grep expression to select specific tests</td>
+        </tr>
+    </tbody>
+</table>
+
+To modify default parameters, pass values in the `with` section. For example, to run Testplane in a monorepo subdirectory:
+
+```yml
+- name: Run Testplane
+  id: testplane
+  uses: gemini-testing/gh-actions-testplane@v1
+  with:
+      cwd: ./projects/my-project
+```
+
+### Launching chrome in GitHub CI
+
+GitHub CI only works with `headless` browsers.
+
+Also, to ensure Chrome browsers function properly in CI, you need to add the `--no-sandbox` argument to the Chrome browser launch options as follows:
+
+```js
+{
+    // ... other Testplane settings
+    headless: true, // Essential for GitHub CI
+    browsers: {
+        // ... other browsers,
+        "linux-chrome": {
+            // ... other browser settings
+            desiredCapabilities: {
+                // .. other desired capabilities
+                browserName: "chrome",
+                browserVersion: "135",
+                "goog:chromeOptions": {
+                    args: ["--no-sandbox"] // Essential for GitHub CI
+                }
+            }
+        }
+    }
+}
+```
+
+### Upload HTML Report Archive
+
+Add this step to upload an HTML report archive:
+
+```yml
+- name: Upload report
+  if: always() && steps.testplane.outputs.html-report-path # Run step if report exists
+  uses: actions/upload-artifact@v4
+  with:
+      name: testplane-html-report
+      path: ${{ steps.testplane.outputs.html-report-path }} # Path where report is saved
+```
+
+This will add an HTML report artifact to the job summary:
+
+![github artifact](/img/docs/guides/how-to-run-on-github.job-summary-artifact.png)
+
+### View HTML Reports in Browser
+
+To view reports directly in the browser via GitHub Pages:
+
+1. Set up GitHub Pages (Settings → Pages on the repository page):
+
+![gh-pages setup](/img/docs/guides/how-to-run-on-github.gh-pages-setup.png)
+
+2. Update job permissions:
+
+```yml
+jobs:
+    testplane_test:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # Required to deploy reports to gh-pages
+            pull-requests: write # Required to post report links in PR comments
+        steps:
+```
+
+3. Replace the upload step with these two steps:
+
+```yml
+- name: Deploy report # Deploys report to gh-pages
+  if: always() && steps.testplane.outputs.html-report-path
+  uses: peaceiris/actions-gh-pages@v4
+  with:
+      github_token: ${{ secrets.GITHUB_TOKEN }} # Auto-provided by GitHub
+      publish_dir: ${{ steps.testplane.outputs.html-report-path }}
+      destination_dir: ${{ steps.testplane.outputs.html-report-path }}
+      keep_files: true
+
+- name: Comment PR with link to Testplane HTML report
+  if: always() && steps.testplane.outputs.html-report-path
+  uses: thollander/actions-comment-pull-request@v3
+  with:
+      message: |
+          ### Testplane run finished
+          Testplane HTML report is available at https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ steps.testplane.outputs.html-report-path }}
+      comment-tag: testplane_html_report_link
+```
+
+PR comments will now include a direct link to the HTML report:
+
+![gh-pages setup](/img/docs/guides/how-to-run-on-github.pull-request-comment.png)
+
+Final workflow example:
+
+```yml
+name: Testplane CI
+
+on: # Workflow trigger rules
+    push:
+        branches: [master]
+    pull_request:
+        branches: [master]
+
+jobs:
+    testplane_test:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # Required to deploy reports to gh-pages
+            pull-requests: write # Required to post report links in PR comments
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Use Node.js 18
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
+
+            - name: Cache npm dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+            - name: Install npm deps
+              run: npm install
+
+            - name: Run Testplane
+              id: testplane
+              uses: gemini-testing/gh-actions-testplane@v1
+              with:
+                  html-report-prefix: testplane-reports # Report directory path
+
+            - name: Deploy report # Deploys report to gh-pages
+              if: always() && steps.testplane.outputs.html-report-path
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ${{ steps.testplane.outputs.html-report-path }}
+                  destination_dir: ${{ steps.testplane.outputs.html-report-path }}
+                  keep_files: true
+
+            - name: Comment PR with link to Testplane HTML report
+              if: always() && steps.testplane.outputs.html-report-path
+              uses: thollander/actions-comment-pull-request@v3
+              with:
+                  message: |
+                      ### Testplane run finished
+                      Testplane HTML report is available at https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${{ steps.testplane.outputs.html-report-path }}
+                  comment-tag: testplane_html_report_link
+```
+
+### Clean Up Old Reports
+
+To periodically remove old reports, use [gemini-testing/gh-actions-reports-ttl-cleaner][gh-actions-reports-ttl-cleaner]:
+
+```yml
+name: Remove old Testplane html reports
+on:
+    schedule: # Runs once daily
+        - cron: 0 0 * * *
+jobs:
+    collect:
+        name: Remove old Testplane html reports
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+              with:
+                  ref: gh-pages
+                  fetch-depth: 0
+                  # GitHub token with "contents: write" permissions.
+                  # Learn more: https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions
+                  token: ...
+            - name: Remove reports
+              uses: gemini-testing/gh-actions-reports-ttl-cleaner@v1
+              with:
+                  html-report-prefix: testplane-reports # Report directory path
+                  ttl: 90 # Delete reports older than 90 days
+```
+
+[gh-actions-testplane]: https://github.com/gemini-testing/gh-actions-testplane
+[gh-actions-reports-ttl-cleaner]: https://github.com/gemini-testing/gh-actions-reports-ttl-cleaner
