@@ -141,15 +141,25 @@ The "gemini-testing/gh-actions-testplane" action supports the following paramete
     </tbody>
 </table>
 
-To modify default parameters, pass values in the `with` section. For example, to run Testplane in a monorepo subdirectory:
+<details>
+  <summary>Example action with Testplane run using all parameters</summary>
 
 ```yml
-- name: Run Testplane
+- name: Run Comprehensive Testplane Suite
   id: testplane
   uses: gemini-testing/gh-actions-testplane@v1
   with:
-      cwd: ./projects/my-project
+      cwd: "projects/my-project-name" # Specify project path (for monorepos)
+      package-manager: "yarn" # Use yarn instead of npm
+      html-report-prefix: "reports/testplane" # Save reports to existing reports directory (for preserving reports on gh-pages)
+      config-path: "configs/testplane.conf.js" # Use custom config path
+      storybook: "true" # Run tests from `@testplane/storybook` plugin
+      set: "smoke,regression" # Run only selected test sets
+      browser: "linux-chrome,linux-firefox" # Run tests in two browsers only
+      grep: "Login" # Run only tests containing 'Login' in their name
 ```
+
+</details>
 
 ### Launching chrome in GitHub CI
 

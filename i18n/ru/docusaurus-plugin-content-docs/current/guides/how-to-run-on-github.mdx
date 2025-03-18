@@ -107,16 +107,25 @@ Action "gemini-testing/gh-actions-testplane" поддерживает следу
     </tbody>
 </table>
 
-Изменить параметры по умолчанию можно, передав соответствующие значения в секции `with`.
-Например, для запуска Testplane в конкретной директории монорепозитория, можно передать значение `cwd` следующим образом:
+<details>
+  <summary>Пример action с запуском Testplane со всеми параметрами</summary>
 
 ```yml
-- name: Run Testplane
+- name: Run Comprehensive Testplane Suite
   id: testplane
   uses: gemini-testing/gh-actions-testplane@v1
   with:
-      cwd: ./projects/my-project
+      cwd: "projects/my-project-name" # Указываем путь до проекта (для монорепозиториев)
+      package-manager: "yarn" # Используем yarn вместо npm
+      html-report-prefix: "reports/testplane" # Сохраняем отчеты в имеющуюся директорию reports (для сохранения отчетов на gh-pages)
+      config-path: "configs/testplane.conf.js" # Используем кастомный путь до конфига
+      storybook: "true" # Запускаем тесты плагина `@testplane/storybook`
+      set: "smoke,regression" # Запускаем только тесты выбранных сетов
+      browser: "linux-chrome,linux-firefox" # Запускаем тесты только в двух браузерах
+      grep: "Login" # Запускаем только тесты, в названии которых есть слово Login
 ```
+
+</details>
 
 ### Запуск браузеров в GitHub CI
 
