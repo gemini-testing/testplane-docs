@@ -18,5 +18,9 @@
     "sidebar.mainSidebar.category.Plugins": {
         "message": "Plugins",
         "description": "The label for category Plugins in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.API Reference": {
+        "message": "API Reference",
+        "description": "The label for category API Reference in sidebar mainSidebar"
     }
 }

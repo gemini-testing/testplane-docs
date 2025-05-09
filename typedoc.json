@@ -1,0 +1,46 @@
+{
+    "$schema": "https://typedoc-plugin-markdown.org/schema.json",
+    "basePath": ".testplane/",
+    "tsconfig": ".testplane/tsconfig.json",
+    "name": "testplane",
+    "entryPoints": [".testplane/src/index.ts"],
+    "exclude": [".testplane/node_modules/**"],
+    "plugin": ["typedoc-plugin-rename-defaults", "typedoc-plugin-localization", "typedoc-plugin-markdown"],
+    "readme": "none",
+    "useCodeBlocks": true,
+    "expandObjects": true,
+    "hidePageHeader": true,
+    "excludeInternal": true,
+    "classPropertiesFormat": "htmlTable",
+    "excludeProtected": true,
+    "fileExtension": ".mdx",
+    "gitRemote": "origin",
+    "textContentMappings": {
+        "title.memberPage": "{name}",
+    },
+
+    "locales": {
+        "ru": {
+            "kind_module": "Модуль",
+            "kind_enum": "Перечисление",
+            "kind_variable": "Переменная",
+            "kind_function": "Функция",
+            "kind_class": "Класс",
+            "kind_interface": "Интерфейс",
+            "kind_constructor": "Конструктор",
+            "kind_property": "Свойство",
+            "kind_method": "Метод",
+
+            // ReflectionKind plural translations
+            "kind_plural_module": "Модули",
+            "kind_plural_enum": "Перечисления",
+            "kind_plural_variable": "Переменные",
+            "kind_plural_function": "Функции",
+            "kind_plural_class": "Классы",
+            "kind_plural_interface": "Интерфейсы",
+            "kind_plural_constructor": "Конструкторы",
+            "kind_plural_property": "Свойства",
+            "kind_plural_method": "Методы",
+        }
+    }
+}
