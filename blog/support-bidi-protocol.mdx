@@ -1,0 +1,144 @@
+---
+title: Поддержка WebDriver BiDi протокола
+slug: support-bidi-protocol
+hide_table_of_contents: false
+date: 2025-05-06T14:00
+---
+
+import Admonition from "@theme/Admonition";
+import mockNetworkRequestExampleUrl from "/video/blog/bidi/mock-network-request-example.mp4";
+import networkResponsesExampleUrl from "/video/blog/bidi/network-responses-example.mp4";
+import browserLogsExampleUrl from "/video/blog/bidi/browser-logs-example.mp4";
+import screenFullPageExampleUrl from "/video/blog/bidi/screen-full-page-example.mp4";
+
+В [testplane@8.27.0][testplane@8.27.0] добавлена поддержка [WebDriver BiDi протокола][bidi] (будущий единый стандарт для автоматизации браузеров).
+
+<!-- truncate -->
+
+WebDriver BiDi (Bidirectional) — это новый протокол кросс-браузерной автоматизации, который сочетает в себе лучшее из существующих протоколов: [W3C WebDriver][webdriver] и [Chrome DevTools Protocol (CDP)][cdp] (подробнее о них можно почитать в нашей [статье][webvider-vs-cdp]). По сути новый протокол расширяет существующий
+W3C Webdriver протокол и добавляет в него новые кросс-браузерные команды, которые заменяют CDP протокол (не является кросс-браузерным). Старые webdriver-команды работают как и раньше по http, а новые команды обеспечивают двунаправленную коммуникацию между клиентом и браузером по websocket соединению.
+
+Новый протокол на данный момент поддержан следующими браузерами: Chrome, Firefox, Edge. В safari поддержки пока нет. Следить за поддерживаемыми браузерами можно на этой [странице][bidi-browsers-support].
+
+Список команд BiDi протокола доступен на этой [странице][bidi-commands].
+
+### Как использовать?
+
+<Admonition type="warning">
+    В Testplane поддержка BiDi протокола доступна в браузерах начиная с версии: chrome@128 и
+    firefox@129.
+</Admonition>
+
+Для использования BiDi протокола необходимо:
+
+-   установить testplane@8.27.0 или старше;
+-   указать капабилити `webSocketUrl: true` в поле `desiredCapabilities` для необходимого браузера (в следующей мажорной версии будет выставляться по умолчанию);
+-   запустить тесты.
+
+### Что можно сделать с помощью нового протокола?
+
+#### Отслеживание и перехват сетевых запросов/ответов
+
+1. Можно замокать запрос к testplane.io и вернуть свой ответ:
+
+```typescript
+it("should mock testplane.io", async ({ browser }) => {
+    await browser.networkAddIntercept({ phases: ["beforeRequestSent"] });
+
+    browser.on("network.beforeRequestSent", networkRequest => {
+        browser.networkProvideResponse({
+            request: networkRequest.request.request,
+            body: {
+                type: "string",
+                value: "hello world",
+            },
+        });
+    });
+
+    await browser.url("https://testplane.io");
+});
+```
+
+<video src={mockNetworkRequestExampleUrl} width="100%" controls="controls">
+    Тег video не поддерживается вашим браузером.
+    <a href="video/blog/bidi/mock-network-request-example.mp4">Скачайте видео</a>.
+</video>
+
+2. Перехватим все запросы к ресурсу testplane.io и отобразим список всех загружаемых урлов:
+
+```typescript
+it("should log all loaded urls", async ({ browser }) => {
+    browser.on("network.responseCompleted", networkResponse =>
+        console.log("got response from url:", networkResponse.response.url),
+    );
+
+    await browser.url("https://testplane.io");
+});
+```
+
+<video src={networkResponsesExampleUrl} width="100%" controls="controls">
+    Тег video не поддерживается вашим браузером.
+    <a href="video/blog/bidi/network-responses-example.mp4">Скачайте видео</a>.
+</video>
+
+#### Отображение логов в браузере
+
+```typescript
+it("should show browser console logs", async ({ browser }) => {
+    browser.on("log.entryAdded", entryAdded => console.log(JSON.stringify(entryAdded, null, 4)));
+
+    await browser.execute(() => console.log("Hello Bidi"));
+});
+```
+
+<video src={browserLogsExampleUrl} width="100%" controls="controls">
+    Тег video не поддерживается вашим браузером.
+    <a href="video/blog/bidi/browser-logs-example.mp4">Скачайте видео</a>.
+</video>
+
+#### Снятие скриншота всей страницы
+
+```typescript
+import * as fs from "node:fs";
+
+it("should screen full page", async ({ browser }) => {
+    await browser.url("https://www.npmjs.com/");
+
+    const tree = await browser.browsingContextGetTree({});
+    const file = await browser.browsingContextCaptureScreenshot({
+        context: tree.contexts[0].context,
+        origin: "document",
+    });
+
+    fs.writeFileSync("screenshot.png", Buffer.from(file.data, "base64"));
+});
+```
+
+<video src={screenFullPageExampleUrl} width="100%" controls="controls">
+    Тег video не поддерживается вашим браузером.
+    <a href="video/blog/bidi/screen-full-page-example.mp4">Скачайте видео</a>.
+</video>
+
+### Заключение
+
+Хотя протокол BiDi все еще находится в [Editor's Draft][editors-draft], но уже очевидно, что за этим протоколом будущее. Так например браузер firefox уже объявил о том, что [прекращает поддержку CDP протокола с версии 129][ff-deprecate-cdp].
+
+Поддержка протокола BiDi позволяет нашим пользователям:
+
+-   использовать больше возможностей для автоматизации тестов, которых не было в WebDriver протоколе;
+-   возможность отказаться от использования [Puppeteer][puppeteer] (используются под капотом для поддержки CDP протокола), который по нашему опыту приводит к множеству проблем в тестах;
+-   идти в ногу со временем и уже начинать привыкать к будущему единому стандарту.
+
+Переходите на новую версию Testplane и приносите фидбек. В случае обнаружения проблем приходите в [issue github][gh-issues] — мы вам обязательно поможем!
+
+[testplane@8.27.0]: https://github.com/gemini-testing/testplane/releases/tag/v8.27.0
+[bidi]: https://w3c.github.io/webdriver-bidi/
+[webdriver]: https://www.w3.org/TR/webdriver1/
+[cdp]: https://chromedevtools.github.io/devtools-protocol/
+[webvider-vs-cdp]: https://testplane.io/ru/docs/v8/reference/webdriver-vs-cdp/
+[bidi-browsers-support]: https://wpt.fyi/results/webdriver/tests/bidi?label=master&label=stable&aligned
+[bidi-commands]: https://webdriver.io/docs/api/webdriverBidi
+[editors-draft]: https://www.w3.org/standards/types/#ED
+[ff-deprecate-cdp]: https://fxdx.dev/deprecating-cdp-support-in-firefox-embracing-the-future-with-webdriver-bidi/
+[puppeteer]: https://pptr.dev/
+[gh-issues]: https://github.com/gemini-testing/testplane/issues
