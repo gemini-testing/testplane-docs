@@ -115,6 +115,12 @@ With this minimal config, you will be able to run `npx testplane --storybook` to
             <td>[]</td>
             <td>Array of `browserId` to run storybook tests on. By default, all of browsers, specified in Testplane config would be used</td>
         </tr>
+        <tr>
+            <td>waitStorybookJsonTimeout</td>
+            <td>`Number`</td>
+            <td>30000</td>
+            <td>Timeout for fetching Storybook stories data. Consider increasing this value if Storybook requires additional time to build the development server (e.g., when using webpack)</td>
+        </tr>
     </tbody>
 </table>
 
