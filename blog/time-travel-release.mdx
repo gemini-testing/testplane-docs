@@ -1,0 +1,68 @@
+---
+title: Time Travel + новости Testplane UI
+slug: time-travel-release
+hide_table_of_contents: false
+date: 2025-05-21T17:00
+---
+
+import Admonition from "@theme/Admonition";
+import mockNetworkRequestExampleUrl from "/video/blog/bidi/mock-network-request-example.mp4";
+import networkResponsesExampleUrl from "/video/blog/bidi/network-responses-example.mp4";
+import browserLogsExampleUrl from "/video/blog/bidi/browser-logs-example.mp4";
+import screenFullPageExampleUrl from "/video/blog/bidi/screen-full-page-example.mp4";
+
+Представляем новый инструмент Testplane UI — Time Travel, теперь в стабильной версии! Расскажем о новой функциональности и что ещё появилось в Testplane UI за последнее время.
+
+![](/img/blog/time-travel.png)
+
+<!-- truncate -->
+
+## Как получить доступ к последним обновлениям?
+
+Нужно установить свежие версии Testplane и `html-reporter`:
+
+```shell
+npm i -D testplane@8.29.2 html-reporter@10.18.0
+```
+
+## Time Travel
+
+Time Travel — это новый инструмент Testplane UI, который позволяет просматривать прогоны тестов в реальном времени, а также записывать и воспроизводить все действия, которые происходили в браузере во время теста.
+
+Вот как это выглядит:
+
+![](/img/docs/guides/time-travel-demo.gif)
+
+Time Travel записывает снапшоты DOM-дерева, что позволяет отлаживать проблемы, связанные с селекторами, и в то же время экономить место на диске.
+
+Подробнее — в нашем [новом руководстве][time-travel-guide].
+
+## Новости Testplane UI
+
+### Fuzzy-поиск тестов
+
+Поиск тестов теперь более интеллектуальный и понимает запросы даже с опечатками или в другой раскладке. Появились опции поиска как в IDE: regex и case-insensitive.
+
+А ещё мы добавили новый способ сортировки — по релевантности. Он включается автоматически во время поиска, благодаря чему сверху вы видите самые релевантные тесты.
+
+![](/img/blog/fuzzy-search.gif)
+
+### Новые кнопки для управления элементами интерфейса
+
+Добавили кнопки для управления видимостью дерева тестов и плеера. Теперь можно скрывать их, когда они вам не нужны и, например, работать со скриншотами во весь экран.
+
+Интерфейс запоминает ваши предпочтения и даже после перезагрузки страницы всё будет так, как вы настроили.
+
+![](/img/blog/show-hide-buttons.gif)
+
+### Другие улучшения
+
+-   Значительно переработали [команду `merge-reports`](/docs/v8/html-reporter/html-reporter-commands/#merge-reports) — теперь она работает лучше, стабильнее и покрывает больше кейсов
+-   Testplane UI теперь умеет работать с отчетами, созданными в старых версиях — теперь можно не бояться потерять данные при обновлении
+-   [Появилось API](https://github.com/gemini-testing/html-reporter/releases/tag/v10.17.0) для выгрузки снапшотов в Time Travel
+-   Возможность выбирать скорость воспроизведения в плеере Time Travel
+
+Следите за новыми релизами в нашем блоге и в разделе [Release Notes на GitHub](https://github.com/gemini-testing/html-reporter/releases), а в случае обнаружения проблем приходите в [issue GitHub][gh-issues] — мы вам обязательно поможем!
+
+[gh-issues]: https://github.com/gemini-testing/testplane/issues
+[time-travel-guide]: https://testplane.io/ru/docs/v8/guides/time-travel/

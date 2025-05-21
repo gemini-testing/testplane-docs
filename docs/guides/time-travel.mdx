@@ -1,12 +1,16 @@
+---
+sidebar_position: 1
+---
+
 import Admonition from "@theme/Admonition";
 
-# Time Travel (Preview)
+# Time Travel
 
 ![](/img/docs/guides/time-travel-demo.gif)
 
 ## Overview
 
-The Time Travel mode is a new Testplane UI tool that allows you to observe test execution in real-time, as well as record and replay the test's progress.
+Time Travel is a new Testplane UI tool that allows you to observe test execution in real-time, as well as record and replay the test's progress.
 
 -   Time Travel records snapshots of the DOM tree, not screenshots or videos, but the actual DOM structure
 -   The average snapshot size is about 200KB thanks to compression and an incremental recording algorithm
@@ -14,29 +18,28 @@ The Time Travel mode is a new Testplane UI tool that allows you to observe test 
 
 ## Getting Started
 
-<Admonition type="warning">
-    Please note that the Time Travel feature is currently in Preview. For production use, we
-    recommend waiting for the stable version.
-</Admonition>
+You need to install the latest versions of `testplane` and `html-reporter` (stable support was introduced in `testplane@8.29.2` and `html-reporter@10.18.0`):
 
-1. Install the alpha versions of `testplane` and `html-reporter`:
+```shell
+npm i -D testplane@latest html-reporter@latest
+```
 
-    ```shell
-    npm i -D testplane@8.26.0 html-reporter@10.15.0
-    ```
+This is sufficient for the snapshot player and browser streaming to appear in GUI mode during test runs. You can launch the GUI with the standard command:
 
-2. Enable snapshot recording in the Testplane config:
+```shell
+npx html-reporter gui
+```
 
-    ```typescript
-    export = {
-        /* ... */
-        record: "on",
-    };
-    ```
+To enable Time Travel in CI, you need to set the `timeTravel` option in the Testplane config:
 
-3. Run the tests and activate Time Travel in the UI settings:
+```typescript
+export = {
+    /* ... */
+    timeTravel: "on", // You can also specify "retries-only" or "last-failed-run"
+};
+```
 
-    ![](/img/docs/guides/time-travel-setting.png)
+You can learn more about these options in the [configuration reference][config-reference].
 
 ## Using Time Travel
 
@@ -54,10 +57,16 @@ To debug the layout, you can use the browser's DevTools. All selectors and attri
 
 ## Configuring Time Travel
 
-Currently, snapshot recording is controlled via the `record` option in the Testplane config. It supports two values: `"on"` (snapshots will be recorded for every test run) and `"off"` (snapshots are completely disabled).
+Currently, all snapshot recording management is done through the `timeTravel` option in the Testplane config. Complete information can be found in the [configuration reference][config-reference].
+
+Also note that `html-reporter` automatically sets the necessary settings in GUI mode.
+If for some reason this doesn't work for you, it can be disabled in the settings panel — in this case, your project's config will be used without modifications:
+
+![](/img/docs/guides/time-travel-ui-settings.png)
 
 <Admonition type="info">
-    In the near future, smarter recording modes will be available, such as "only on failure" or
-    "enabled during retries." Additionally, network request debugging and full-screen mode will soon
-    be available.
+    We are actively developing Time Travel, and more functionality will be available in the near
+    future, such as network request debugging and full-screen mode.
 </Admonition>
+
+[config-reference]: ../../config/browsers#time_travel

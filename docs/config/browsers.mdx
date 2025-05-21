@@ -950,6 +950,69 @@ Allows selecting different data centers in the cloud service. Default: `null`.
 
 Allows running a headless browser in the cloud service. Default: `null`.
 
+## Time Travel {#time_travel}
+
+These settings allow you to configure test run snapshot recording for subsequent playback in the player.
+To learn more about Time Travel capabilities, see the [Time Travel guide][time-travel].
+
+<table>
+    <thead>
+        <tr>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`timeTravel`</td>
+            <td>`string | TimeTravelSettings`</td>
+            <td>`"off"`</td>
+            <td>Time Travel settings.</td>
+        </tr>
+    </tbody>
+</table>
+
+### timeTravel {#time_travel}
+
+Time Travel settings. Default: `"off"`.
+
+For quick setup, you can pass a string — one of the recording modes (`TimeTravelMode`). The full configuration looks like this:
+
+```typescript
+enum TimeTravelMode {
+    // Snapshot recording is enabled for all runs
+    On = "on",
+    // Snapshot recording is disabled
+    Off = "off",
+    // Snapshot recording is enabled for all retries (first run is not considered a retry)
+    RetriesOnly = "retries-only",
+    // Snapshot recording is enabled for all runs, but only snapshots for the last failed run are saved
+    // For example:
+    // - if the test was run once and failed, the snapshot will be recorded.
+    // - if the test was run 5 times and failed all 5 times, the snapshot for the 5th retry will be recorded.
+    // - if the test was run 2 times and passed both times, no snapshots will be recorded.
+    LastFailedRun = "last-failed-run",
+}
+
+interface TimeTravelConfig {
+    mode: TimeTravelMode;
+}
+```
+
+Example of a valid configuration:
+
+```typescript
+import { TimeTravelMode } from "@testplane/testplane";
+
+export = {
+    timeTravel: {
+        mode: TimeTravelMode.RetriesOnly,
+    },
+};
+```
+
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
 [html-reporter]: ../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
@@ -964,3 +1027,4 @@ Allows running a headless browser in the cloud service. Default: `null`.
 [element-wait-until]: ../../commands/element/waitUntil
 [how-to-use-cdp]: ../../guides/how-to-use-cdp
 [testplane-also-in-helper]: ../../guides/how-to-skip-test-in-browsers#solution_4
+[time-travel]: ../../guides/time-travel
