@@ -958,6 +958,69 @@ type TransformResponsetFn = (res: Response, req: RequestOptions) => Response;
 
 Позволяет запускать headless-браузер в облачном сервисе. По умолчанию: `null`.
 
+## Time Travel {#time_travel}
+
+Эти настройки позволяют конфигурировать запись снапшотов прогонов теста для их последующего воспроизведения в плеере.
+Чтобы узнать больше о возможностях Time Travel, перейдите в [руководство по Time Travel][time-travel].
+
+<table>
+    <thead>
+        <tr>
+            <td>**Параметр**</td>
+            <td>**Тип**</td>
+            <td>**По&nbsp;умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`timeTravel`</td>
+            <td>`string | TimeTravelSettings`</td>
+            <td>`"off"`</td>
+            <td>Настройки Time Travel.</td>
+        </tr>
+    </tbody>
+</table>
+
+### timeTravel {#time_travel}
+
+Настройки Time Travel. По умолчанию: `"off"`.
+
+Для быстрого задания сюда можно передать строку — один из режимов записи (`TimeTravelMode`). Полная конфигурация выглядит так:
+
+```typescript
+enum TimeTravelMode {
+    // Запись снапшотов включена для всех прогонов
+    On = "on",
+    // Запись снапшотов выключена
+    Off = "off",
+    // Запись снапшотов включена для всех ретраев (первый запуск не считается ретраем)
+    RetriesOnly = "retries-only",
+    // Запись снапшотов включена для всех прогонов, но сохраняются только снапшоты для последнего прогона с ошибкой
+    // Например:
+    // - если тест запускался 1 раз и упал, снапшот будет записан.
+    // - если тест запускался 5 раз и упал все 5 раз, будет записан снапшот для 5-го ретрая.
+    // - если тест запускался 2 раза и оба раза успешно прошел, снапшотов не будет.
+    LastFailedRun = "last-failed-run",
+}
+
+interface TimeTravelConfig {
+    mode: TimeTravelMode;
+}
+```
+
+Пример валидной конфигурации:
+
+```typescript
+import { TimeTravelMode } from "@testplane/testplane";
+
+export = {
+    timeTravel: {
+        mode: TimeTravelMode.RetriesOnly,
+    },
+};
+```
+
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
 [html-reporter]: ../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
@@ -972,3 +1035,4 @@ type TransformResponsetFn = (res: Response, req: RequestOptions) => Response;
 [element-wait-until]: ../../commands/element/waitUntil
 [how-to-use-cdp]: ../../guides/how-to-use-cdp
 [testplane-also-in-helper]: ../../guides/how-to-skip-test-in-browsers#solution_4
+[time-travel]: ../../guides/time-travel
