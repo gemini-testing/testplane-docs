@@ -8,6 +8,7 @@ date: 2025-06-16T17:00
 import Admonition from "@theme/Admonition";
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import SnapshotExample from "/docs/_partials/mcp-snapshot-example.mdx";
 import investigateVideoUrl from "/video/blog/mcp/investigate.mp4";
 import generateVideoUrl from "/video/blog/mcp/generate.mp4";
 
@@ -23,13 +24,13 @@ We're excited to present Testplane MCP — a project that allows AI agents to be
 
 Imagine you've added new functionality to your application and now want to generate tests for it using an AI agent. Previously, an AI agent could only guess what this page looks like — the selectors would likely be fictional, and the test would require serious edits.
 
-Testplane MCP takes this process to a new level: while writing tests, the AI agent can open the required page in a browser, look at its layout, and perform any actions, such as clicking a button or filling out a form.
+Testplane MCP takes this process to a new level: while writing tests, the AI agent can open the required page in a browser, look at its layout, or perform any actions (such as clicking a button or filling out a form).
 
 As a result, the AI agent can generate tests with full context of what's happening in the browser — including selectors that actually exist on the page.
 
 ### Browser usage by AI agents
 
-Testplane MCP makes it possible to automate repetitive processes. For example, you can build a workflow to extract information from photos, then use Testplane MCP to access your organization's management panel and fill out application forms with the corresponding information.
+Testplane MCP makes it possible to automate repetitive processes. For example, you can build a workflow to extract information from receipt photos, then use Testplane MCP to access your organization's management panel and fill out report forms with the corresponding information (item names, quantities, prices, etc.).
 
 ## Installation
 
@@ -165,13 +166,31 @@ Now let's try to generate tests and run them.
 
 As we can see, the AI agent generated tests on the first try that pass and contain correct selectors.
 
-## Differences from other solutions
+You can try this prompt for generating tests using Testplane MCP:
+
+> Use testplane mcp to open the page `https://ya.ru`, perform a search for "cats", and verify that search results are displayed.
+>
+> Don't write unnecessary comments in tests, except for complex edge cases. Write tests following the project's style guide.
+>
+> Try to use semantic selectors, for example, by `data-testid` attributes or element text instead of complex CSS selectors.
+
+## Implementation Details
 
 Testplane MCP is not the only implementation that enables AI agent interaction with browsers.
 
 Currently, Testplane MCP provides the following advantages:
 
 -   Very compact and flexible page snapshots, models don't need to work with screenshots. This significantly saves LLM API token usage.
+
+    As an example — the full source code of `https://ya.ru` takes ~260,000 characters, while a compact snapshot takes only ~9,000.
+
+    <details>
+    <summary>Snapshot example</summary>
+
+        <SnapshotExample />
+
+    </details>
+
 -   Seamless integration with the Testplane ecosystem, which will only improve in the future. For example, each server response contains the code that was executed, so the model can embed it into tests.
 
 Follow new releases in our blog and in the [Release Notes section on GitHub](https://github.com/gemini-testing/testplane-mcp/releases), and if you encounter any issues, come to [GitHub issues][gh-issues] or our [Telegram chat](https://t.me/testplane) — we'll definitely help you!

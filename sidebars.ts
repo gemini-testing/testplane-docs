@@ -14,6 +14,11 @@ const sidebars: SidebarsConfig = {
             label: "CLI",
         },
         {
+            type: "doc",
+            id: "testplane-mcp",
+            label: "Testplane MCP",
+        },
+        {
             type: "category",
             label: "Commands",
             items: [
