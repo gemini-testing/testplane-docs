@@ -20,14 +20,14 @@ To obtain such a tree, _puppeteer_ has a special [Accessibility class][puppeteer
 Here's an example of how to use it:
 
 ```javascript
-it("should get accessibility tree of yandex.ru", async function () {
+it("should get accessibility tree of yandex.ru", async function ({browser}) {
     // Get puppeteer instance
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Get the first open page (considering it to be currently active)
     const [page] = await puppeteer.pages();
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 
     // Get the current state of the accessibility tree
     const snapshot = await page.accessibility.snapshot();

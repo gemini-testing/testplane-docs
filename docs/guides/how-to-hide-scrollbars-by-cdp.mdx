@@ -20,9 +20,9 @@ CDP has a special method [Emulation.setScrollbarsHidden][set-scrollbars-hidden] 
 Here's how it looks:
 
 ```javascript
-it("should hide scrollbar", async function () {
+it("should hide scrollbar", async function ({browser}) {
     // Get puppeteer instance
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Get the first open page (considering it to be currently active)
     const [page] = await puppeteer.pages();
@@ -33,7 +33,7 @@ it("should hide scrollbar", async function () {
     // Hide the scrollbar
     await client.send("Emulation.setScrollbarsHidden", { hidden: true });
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 });
 ```
 

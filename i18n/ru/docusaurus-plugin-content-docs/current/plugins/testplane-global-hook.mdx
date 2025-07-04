@@ -30,11 +30,11 @@ npm install -D testplane-global-hook
 module.exports = {
     plugins: {
         "testplane-global-hook": {
-            beforeEach: async function () {
-                await this.browser.deleteCookie(); // Например, мы хотим всегда очищать cookies перед запуском теста
+            beforeEach: async function ({browser}) {
+                await browser.deleteCookie(); // Например, мы хотим всегда очищать cookies перед запуском теста
             },
-            afterEach: async function () {
-                await this.browser.execute(function () {
+            afterEach: async function ({browser}) {
+                await browser.execute(function () {
                     try {
                         localStorage.clear(); // И всегда очищать за собой localStorage после завершения теста
                     } catch (e) {}
@@ -52,15 +52,35 @@ module.exports = {
 ### Расшифровка параметров конфигурации {#setup_description}
 
 <table>
-<thead>
-<tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>enabled</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
-<tr><td>beforeEach</td><td>Function</td><td>null</td><td>Асинхронная функция-обработчик, которая будет выполняться перед запуском каждого теста.</td></tr>
-<tr><td>afterEach</td><td>Function</td><td>null</td><td>Асинхронная функция-обработчик, которая будет выполняться после завершения каждого теста.</td></tr>
+    <thead>
+        <tr>
+            <td>**Параметр**</td>
+            <td>**Тип**</td>
+            <td>**По&nbsp;умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>Boolean</td>
+            <td>true</td>
+            <td>Включить / отключить плагин.</td>
+        </tr>
+        <tr>
+            <td>beforeEach</td>
+            <td>Function</td>
+            <td>null</td>
+            <td>Асинхронная функция-обработчик, которая будет выполняться перед запуском каждого теста.</td>
+        </tr>
+        <tr>
+            <td>afterEach</td>
+            <td>Function</td>
+            <td>null</td>
+            <td>Асинхронная функция-обработчик, которая будет выполняться после завершения каждого теста.</td>
+        </tr>
 
-</tbody>
+    </tbody>
 </table>
 
 ## Полезные ссылки {#useful_links}

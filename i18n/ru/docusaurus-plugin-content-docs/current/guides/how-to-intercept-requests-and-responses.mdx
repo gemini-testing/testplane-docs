@@ -30,25 +30,25 @@ import Admonition from "@theme/Admonition";
 ## Пример 1: мокаем запрос к google.com и возвращаем свой ответ {#example_1}
 
 ```javascript
-it("should mock google.com", async function () {
+it("should mock google.com", async function ({browser}) {
     // Мокаем поход на google.com
-    const mock = await this.browser.mock("https://google.com");
+    const mock = await browser.mock("https://google.com");
 
     // Возвращаем строку "Hello, world!" вместо ответа от сайта.
     // Опция "fetchResponse" отвечает за то, нужно ли делать запрос
     // на замоканный ресурс, по умолчанию - true
     mock.respond("Hello, world!", { fetchResponse: false });
 
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
 По графическому изображению видно, что мы вернули свой текст, при этом в строке браузера отображается как будто мы выполнили переход на _google.com._ Также видно, что мы не замокали фавиконку и она приехала снаружи. Этот же самый пример мы можем написать с использованием API puppeteer'а, для этого в _webdriverio_ реализована команда [getPuppeteer()][get-puppeteer]:
 
 ```javascript
-it("should mock google.com using puppeteer api", async function () {
+it("should mock google.com using puppeteer api", async function ({browser}) {
     // Получаем инстанс puppeteer'а
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Получаем первую открытую страницу (считаем, что она активная в данный момент)
     const [page] = await puppeteer.pages();
@@ -69,7 +69,7 @@ it("should mock google.com using puppeteer api", async function () {
     // Здесь можно было бы вызвать и "page.goto('https://google.com')", но лучше вызывать "url",
     // так как в большинстве плагинов есть обертки команды "url", добавляющие дополнительную
     // логику. Например, в testplane добавляется урл в мету.
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
@@ -78,9 +78,9 @@ it("should mock google.com using puppeteer api", async function () {
 А теперь представим, что в _puppeteer_ еще нет API для мока запросов, но это уже реализовано в домене [Fetch][fetch] CDP. В этом случае воспользуемся методом этого домена через общение с CDP-сессией напрямую. Для этого в _puppeteer_ есть метод [CDPSession.send()][cdp-session-send]:
 
 ```javascript
-it("should mock google.com using cdp fetch domain", async function () {
+it("should mock google.com using cdp fetch domain", async function ({browser}) {
     // Получаем инстанс puppeteer'а
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Получаем первую открытую страницу (считаем, что она активная в данный момент)
     const [page] = await puppeteer.pages();
@@ -113,7 +113,7 @@ it("should mock google.com using cdp fetch domain", async function () {
         });
     });
 
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
@@ -122,14 +122,14 @@ it("should mock google.com using cdp fetch domain", async function () {
 ## Пример 2: отменяем запрос за логотипом гугла {#example_2}
 
 ```javascript
-it("should abort request to logo on google.com", async function () {
+it("should abort request to logo on google.com", async function ({browser}) {
     // В качестве урла можно использовать маску
-    const mock = await this.browser.mock("https://www.google.com/images/**/*.png");
+    const mock = await browser.mock("https://www.google.com/images/**/*.png");
 
     // Кидаем ошибку "ERR_FAILED" при загрузке ресурса, сматчившегося на маску мока
     mock.abort("Failed");
 
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
@@ -138,15 +138,15 @@ it("should abort request to logo on google.com", async function () {
 ## Пример 3: при загрузке google.com берем ответ из фикстуры {#example_3}
 
 ```javascript
-it("should mock google.com and return answer from fixture", async function () {
+it("should mock google.com and return answer from fixture", async function ({browser}) {
     // Мокаем поход на google.com
-    const mock = await this.browser.mock("https://google.com");
+    const mock = await browser.mock("https://google.com");
 
     // Указываем путь, откуда нужно взять фикстуру, а с помощью
     // "fetchResponse: false" говорим, что выполнять реальный поход не нужно
     mock.respond("./fixtures/my-google.com.html", { fetchResponse: false });
 
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
@@ -155,14 +155,14 @@ it("should mock google.com and return answer from fixture", async function () {
 ## Пример 4: перенаправляем запрос с google.com на yandex.ru {#example_4}
 
 ```javascript
-it("should redirect from google.com to yandex.ru", async function () {
+it("should redirect from google.com to yandex.ru", async function ({browser}) {
     // Мокаем поход на google.com
-    const mock = await this.browser.mock("https://google.com");
+    const mock = await browser.mock("https://google.com");
 
     // Для редиректа необходимо просто указать урл
     mock.respond("https://yandex.ru");
 
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
@@ -173,26 +173,26 @@ it("should redirect from google.com to yandex.ru", async function () {
 Заменим в ответе от _google.com_ все строки содержащие `Google` на `Yandex`:
 
 ```javascript
-it("should modify response from google.com", async function () {
+it("should modify response from google.com", async function ({browser}) {
     // Тут нужно мокать именно с www, так как переход на google.com
     // возвращает ответ 301 без body и перенаправляет нас на www
-    const mock = await this.browser.mock("https://www.google.com");
+    const mock = await browser.mock("https://www.google.com");
 
     mock.respond(req => {
         // С помощью регулярки заменяем "Google" на "Yandex"
         return req.body.replace(/Google/g, "Yandex");
     });
 
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
 Кроме этого, мы можем видоизменять ответы от заранее неизвестных источников. Например, давайте модифицируем все скрипты, загружаемые на _google.com:_
 
 ```javascript
-it("should modify response from google.com", async function () {
+it("should modify response from google.com", async function ({browser}) {
     // Первым аргументом указываем, что будем перехватывать абсолютно все запросы
-    const mock = await this.browser.mock("**", {
+    const mock = await browser.mock("**", {
         headers: headers => {
             // Фильтруем только запросы, в которых заголовок "content-type"
             // содержит значения "text/javascript" или "application/javascript"
@@ -208,7 +208,7 @@ it("should modify response from google.com", async function () {
         return (req.body += `\nconsole.log("This script was modified in realtime");`);
     });
 
-    await this.browser.url("https://google.com");
+    await browser.url("https://google.com");
 });
 ```
 
@@ -217,11 +217,11 @@ it("should modify response from google.com", async function () {
 Предположим, что нам необходимо собрать список всех урлов, которые загружаются на странице. Используя эту информацию мы могли бы определить, есть ли у нас походы за внешними ресурсами или в соседние сервисы, которые мы никак не контролируем. Это означает, что они в любой момент могут не ответить и сломать нам тесты. Как мог бы выглядеть наш код:
 
 ```javascript
-it("should mock yandex.ru and log all loaded urls", async function () {
+it("should mock yandex.ru and log all loaded urls", async function ({browser}) {
     // Перехватываем абсолютно все запросы
-    const mock = await this.browser.mock("**");
+    const mock = await browser.mock("**");
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 
     // mock.calls содержит не только информацию о посещенном урле,
     // Но также ответ от источника, хэдеры запроса, хэдеры ответа и т. д.
@@ -235,7 +235,7 @@ it("should mock yandex.ru and log all loaded urls", async function () {
 Скорее всего, ваши тесты сложнее этих примеров и у вас будут различные клики в элементы, которые открываются в новых табах. В таких случаях предыдущий код ничего не узнает об открытии новых вкладок, а также о том, что в них тоже нужно собрать список урлов. Поэтому для такого случая нужно использовать API puppeteer'а:
 
 ```javascript
-it("should mock yandex.ru and log all loaded urls (using puppeteer)", async function () {
+it("should mock yandex.ru and log all loaded urls (using puppeteer)", async function ({browser}) {
     // В этой переменной будем накапливать список всех урлов
     const urls = [];
 
@@ -249,7 +249,7 @@ it("should mock yandex.ru and log all loaded urls (using puppeteer)", async func
     }
 
     // Получаем инстанс puppeteer'а
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Получаем все открытые страницы на текущий момент
     const pages = await puppeteer.pages();
@@ -274,10 +274,10 @@ it("should mock yandex.ru and log all loaded urls (using puppeteer)", async func
         urlsHandler(page);
     });
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 
     // Находим первым элемент в списке сервисов (на тот момент была страница с футболом)
-    const elem = await this.browser.$(".services-new__list-item > a");
+    const elem = await browser.$(".services-new__list-item > a");
 
     // Выполняем клик в сервис, который открывается в новой вкладке
     await elem.click();
@@ -298,20 +298,20 @@ module.exports = {
         "testplane-global-hook": {
             enabled: true,
 
-            beforeEach: async function () {
+            beforeEach: async function ({browser}) {
                 // Проверяем, что имя браузера не начинается на "chrome"
-                if (!/^chrome$/i.test(this.browser.capabilities.browserName)) {
+                if (!/^chrome$/i.test(browser.capabilities.browserName)) {
                     return;
                 }
 
                 // Мокаем поход на google.com
-                const mock = await this.browser.mock("https://google.com");
+                const mock = await browser.mock("https://google.com");
                 mock.respond("hello world", { fetchResponse: false });
             },
 
-            afterEach: function () {
+            afterEach: function ({browser}) {
                 // Очищаем все моки в текущей сессии
-                this.browser.mockRestoreAll();
+                browser.mockRestoreAll();
             },
         },
 
@@ -327,8 +327,8 @@ module.exports = {
 ```javascript
 // Явно укажем, чтобы тест выполнялся только в браузерах, название которых начинается с chrome
 testplane.only.in(/^chrome/);
-it("should mock google.com inside global before each", async function () {
-    await this.browser.url("https://google.com");
+it("should mock google.com inside global before each", async function ({browser}) {
+    await browser.url("https://google.com");
 });
 ```
 

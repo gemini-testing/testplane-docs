@@ -20,14 +20,14 @@ import Admonition from "@theme/Admonition";
 Вот пример, как его можно использовать:
 
 ```javascript
-it("should get accessibility tree of yandex.ru", async function () {
+it("should get accessibility tree of yandex.ru", async function ({browser}) {
     // Получаем инстанс puppeteer'а
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Получаем первую открытую страницу (считаем, что она активная в данный момент)
     const [page] = await puppeteer.pages();
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 
     // Получаем текущее состояние accessibility дерева
     const snapshot = await page.accessibility.snapshot();

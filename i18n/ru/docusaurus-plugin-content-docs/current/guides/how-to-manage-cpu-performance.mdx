@@ -18,9 +18,9 @@ import Admonition from "@theme/Admonition";
 Воспользуемся этим методом, чтобы замедлить скорость процессора в 8 раз:
 
 ```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function () {
+it("should open yandex.ru with emulation 8x slower CPU", async function ({browser}) {
     // Получаем инстанс puppeteer'а
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Получаем первую открытую страницу (считаем, что она активная в данный момент)
     const [page] = await puppeteer.pages();
@@ -28,7 +28,7 @@ it("should open yandex.ru with emulation 8x slower CPU", async function () {
     // Замедляем скорость процессора в 8 раз
     await page.emulateCPUThrottling(8);
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 });
 ```
 
@@ -39,9 +39,9 @@ it("should open yandex.ru with emulation 8x slower CPU", async function () {
 Однако это ограничение можно было обойти с помощью метода _puppeteer_ [CDPSession.send()][cdp-session-send], отправив браузеру команду [Emulation.setCPUThrottlingRate][emulation-set-cpu-throttling-rate] по CDP:
 
 ```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function () {
+it("should open yandex.ru with emulation 8x slower CPU", async function ({browser}) {
     // Получаем инстанс puppeteer'а
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Получаем первую открытую страницу (считаем, что она активная в данный момент)
     const [page] = await puppeteer.pages();
@@ -52,7 +52,7 @@ it("should open yandex.ru with emulation 8x slower CPU", async function () {
     // Замедляем скорость процессора в 8 раз
     await client.send("Emulation.setCPUThrottlingRate", { rate: 8 });
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 });
 ```
 
