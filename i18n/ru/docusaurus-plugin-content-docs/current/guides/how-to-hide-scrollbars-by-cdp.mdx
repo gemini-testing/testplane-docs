@@ -20,9 +20,9 @@ import Admonition from "@theme/Admonition";
 Вот как это будет выглядеть:
 
 ```javascript
-it("should hide scrollbar", async function () {
+it("should hide scrollbar", async function ({browser}) {
     // Получаем инстанс puppeteer'а
-    const puppeteer = await this.browser.getPuppeteer();
+    const puppeteer = await browser.getPuppeteer();
 
     // Получаем первую открытую страницу (считаем, что она активная в данный момент)
     const [page] = await puppeteer.pages();
@@ -33,7 +33,7 @@ it("should hide scrollbar", async function () {
     // Скрываем скроллбар
     await client.send("Emulation.setScrollbarsHidden", { hidden: true });
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 });
 ```
 

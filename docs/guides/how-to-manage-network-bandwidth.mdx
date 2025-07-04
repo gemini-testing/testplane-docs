@@ -28,11 +28,11 @@ Besides custom settings, the [throttle][throttle] method supports the following 
 Let's emulate a 2G connection and open yandex.ru in Chrome with phone emulation:
 
 ```javascript
-it("should open yandex.ru with emulation of 2G-connection", async function () {
+it("should open yandex.ru with emulation of 2G-connection", async function ({browser}) {
     // Emulate a 2G connection
-    await this.browser.throttle("Good2G");
+    await browser.throttle("Good2G");
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 });
 ```
 
@@ -41,16 +41,16 @@ it("should open yandex.ru with emulation of 2G-connection", async function () {
 We can also emulate a connection with specific characteristics:
 
 ```javascript
-it("should open yandex.ru with emulation of custom connection", async function () {
+it("should open yandex.ru with emulation of custom connection", async function ({browser}) {
     // Emulate a network connection with specified characteristics
-    await this.browser.throttle({
+    await browser.throttle({
         offline: false, // emulate offline state
         downloadThroughput: (10 * 1024) / 8, // max download bandwidth (byte/sec)
         uploadThroughput: (10 * 1024) / 8, // max upload bandwidth (byte/sec)
         latency: 10, // min latency from sending the request to receiving the response headers
     });
 
-    await this.browser.url("https://yandex.ru");
+    await browser.url("https://yandex.ru");
 });
 ```
 

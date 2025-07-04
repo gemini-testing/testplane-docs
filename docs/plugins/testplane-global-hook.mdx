@@ -30,11 +30,11 @@ Add the plugin to the `plugins` section of the `testplane` config:
 module.exports = {
     plugins: {
         "testplane-global-hook": {
-            beforeEach: async function () {
-                await this.browser.deleteCookie(); // Say, we want to always clear cookies before running a test
+            beforeEach: async function ({browser}) {
+                await browser.deleteCookie(); // Say, we want to always clear cookies before running a test
             },
-            afterEach: async function () {
-                await this.browser.execute(function () {
+            afterEach: async function ({browser}) {
+                await browser.execute(function () {
                     try {
                         localStorage.clear(); // And always clean up the localStorage after the test is completed
                     } catch (e) {}
