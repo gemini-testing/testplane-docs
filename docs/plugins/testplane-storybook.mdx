@@ -95,7 +95,7 @@ With this minimal config, you will be able to run `npx testplane --storybook` to
             <td>autoScreenshotStorybookGlobals</td>
             <td>`Record<string, Record<string, unknown>>`</td>
             <td>{}</td>
-            <td>Run multiple auto-screenshot tests with different [storybook globals](https://storybook.js.org/docs/7/essentials/toolbars-and-globals#globals)</td>
+            <td>Run multiple auto-screenshot tests with different [storybook globals](https://storybook.js.org/docs/7/essentials/toolbars-and-globals#globals). Only works with storybook >= 8</td>
         </tr>
         <tr>
             <td>localport</td>
@@ -132,6 +132,8 @@ With this minimal config, you will be able to run `npx testplane --storybook` to
 </Admonition>
 
 #### autoScreenshotStorybookGlobals
+
+<Admonition type="warning">Storybook >= 8 is required.</Admonition>
 
 For example, with `autoScreenshotStorybookGlobals` set to:
 
