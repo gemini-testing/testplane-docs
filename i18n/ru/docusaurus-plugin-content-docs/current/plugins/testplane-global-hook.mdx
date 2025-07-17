@@ -30,10 +30,10 @@ npm install -D testplane-global-hook
 module.exports = {
     plugins: {
         "testplane-global-hook": {
-            beforeEach: async function ({browser}) {
+            beforeEach: async function ({ browser }) {
                 await browser.deleteCookie(); // Например, мы хотим всегда очищать cookies перед запуском теста
             },
-            afterEach: async function ({browser}) {
+            afterEach: async function ({ browser }) {
                 await browser.execute(function () {
                     try {
                         localStorage.clear(); // И всегда очищать за собой localStorage после завершения теста
@@ -81,6 +81,7 @@ module.exports = {
         </tr>
 
     </tbody>
+
 </table>
 
 ## Полезные ссылки {#useful_links}

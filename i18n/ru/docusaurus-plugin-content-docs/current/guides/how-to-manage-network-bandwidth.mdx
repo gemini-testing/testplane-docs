@@ -28,7 +28,7 @@ import Admonition from "@theme/Admonition";
 Сэмулируем 2G-соединение и откроем yandex.ru в Хроме с эмуляцией телефона:
 
 ```javascript
-it("should open yandex.ru with emulation of 2G-connection", async function ({browser}) {
+it("should open yandex.ru with emulation of 2G-connection", async function ({ browser }) {
     // Имитируем 2G-соединение
     await browser.throttle("Good2G");
 
@@ -41,7 +41,7 @@ it("should open yandex.ru with emulation of 2G-connection", async function ({bro
 Также мы можем сэмулировать соединение с конкретными характеристиками:
 
 ```javascript
-it("should open yandex.ru with emulation of custom connection", async function ({browser}) {
+it("should open yandex.ru with emulation of custom connection", async function ({ browser }) {
     // Имитируем соединение в сети с заданными характеристиками
     await browser.throttle({
         offline: false, // имитация отключения от интернета

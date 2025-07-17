@@ -18,7 +18,7 @@ The CPU speed on mobile devices is significantly slower than on computers. There
 Let's use this method to slow down CPU speed by 8 times:
 
 ```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function ({browser}) {
+it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
     // Get puppeteer instance
     const puppeteer = await browser.getPuppeteer();
 
@@ -39,7 +39,7 @@ Initially, _webdriverio_ did not support the `page.emulateCPUThrottling` method 
 However, this limitation could be bypassed using puppeteer's [CDPSession.send()][cdp-session-send] method by sending the browser the [Emulation.setCPUThrottlingRate][emulation-set-cpu-throttling-rate] command via CDP:
 
 ```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function ({browser}) {
+it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
     // Get puppeteer instance
     const puppeteer = await browser.getPuppeteer();
 

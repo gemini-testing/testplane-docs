@@ -18,7 +18,7 @@ import Admonition from "@theme/Admonition";
 Воспользуемся этим методом, чтобы замедлить скорость процессора в 8 раз:
 
 ```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function ({browser}) {
+it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
     // Получаем инстанс puppeteer'а
     const puppeteer = await browser.getPuppeteer();
 
@@ -39,7 +39,7 @@ it("should open yandex.ru with emulation 8x slower CPU", async function ({browse
 Однако это ограничение можно было обойти с помощью метода _puppeteer_ [CDPSession.send()][cdp-session-send], отправив браузеру команду [Emulation.setCPUThrottlingRate][emulation-set-cpu-throttling-rate] по CDP:
 
 ```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function ({browser}) {
+it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
     // Получаем инстанс puppeteer'а
     const puppeteer = await browser.getPuppeteer();
 
