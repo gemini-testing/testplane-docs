@@ -9,9 +9,13 @@ on:
     pull_request:
         branches: [master]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted-arc
 
         strategy:
             matrix:
@@ -29,7 +33,7 @@ jobs:
             - run: npm test
 
     deploy-static:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted-arc
         environment: CI
 
         strategy:
