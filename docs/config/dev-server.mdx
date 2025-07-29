@@ -1,8 +1,16 @@
+import Admonition from "@theme/Admonition";
 import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-example.mdx";
 
 # devServer
 
 With the `devServer` section, you can run a server that tests will interact with. The server starts during the initialization of Testplane on the INIT event.
+
+<Admonition type="warning">
+The `devServer` section is only responsible for launching the server.
+
+Keep in mind that the `devServer` configuration does not change the `baseUrl`, which must be set correctly manually.
+
+</Admonition>
 
 ## Example Usage {#example}
 
@@ -26,6 +34,15 @@ With the `devServer` section, you can run a server that tests will interact with
         <td>_N/A_</td>
         <td>
             Command to start the dev server. If not specified, the dev server will not be started.
+        </td>
+    </tr>
+    <tr>
+        <td>[`reuseExisting`](#reuseexisting)</td>
+        <td>`boolean`</td>
+        <td>`false`</td>
+        <td>
+            Reuse an existing dev server if it's already running, instead of spawning a new one. Requires setting the "url" property in "readinessProbe" section.
+            This readiness probe will be used to verify that the server is ready.
         </td>
     </tr>
     <tr>
@@ -74,6 +91,12 @@ With the `devServer` section, you can run a server that tests will interact with
 ### command {#command}
 
 Command to start the dev server. If not specified, the dev server will not be started.
+
+### reuseExisting {#reuseexisting}
+
+Reuse an existing dev server if it's already running, instead of spawning a new one. When enabled, Testplane will check if a server is already available at the specified URL before attempting to start a new one.
+
+This option requires setting the `url` property in the `readinessProbe` section, which will be used to verify that the server is ready and accessible.
 
 ### env {#env}
 
