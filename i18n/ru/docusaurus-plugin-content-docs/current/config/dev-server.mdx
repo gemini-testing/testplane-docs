@@ -1,8 +1,16 @@
+import Admonition from "@theme/Admonition";
 import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-example.mdx";
 
 # devServer
 
 С помощью секции `devServer` можно запускать сервер, на который будут ходить тесты. Запуск происходит во время инициализации Testplane на событие INIT.
+
+<Admonition type="warning">
+Секция devServer отвечает только за поднятие сервера.
+
+Стоит учитывать, что описание devServer секции не изменяет `baseUrl`, который нужно указывать правильно вручную.
+
+</Admonition>
 
 ## Пример использования {#example}
 
@@ -26,6 +34,15 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
         <td>_N/A_</td>
         <td>
             Команда для запуска dev сервера. Если не указана, dev сервер не будет запущен.
+        </td>
+    </tr>
+    <tr>
+        <td>[`reuseExisting`](#reuseexisting)</td>
+        <td>`boolean`</td>
+        <td>`false`</td>
+        <td>
+            Переиспользовать уже запущенный dev сервер вместо создания нового. Требует указания свойства "url" в секции "readinessProbe".
+            Эта проверка готовности будет использоваться для проверки того, что сервер готов к работе.
         </td>
     </tr>
     <tr>
@@ -74,6 +91,12 @@ import DevServerExample from "@site/docs/config/_partials/examples/_dev-server-e
 ### command {#command}
 
 Команда для запуска dev сервера. Если не указана, dev сервер не будет запущен.
+
+### reuseExisting {#reuseexisting}
+
+Переиспользовать уже запущенный dev сервер вместо создания нового. Когда эта опция включена, Testplane проверит, доступен ли сервер по указанному URL, прежде чем пытаться запустить новый.
+
+Эта опция требует указания свойства `url` в секции `readinessProbe`, которое будет использоваться для проверки того, что сервер готов и доступен.
 
 ### env {#env}
 

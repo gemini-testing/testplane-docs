@@ -8,6 +8,7 @@ export default {
     devServer: {
         command: "npm run server:dev",
         env: { PORT: SERVER_PORT },
+        reuseExisting: true,
         readinessProbe: {
             url: `http://localhost:${SERVER_PORT}/health`,
             timeouts: {
