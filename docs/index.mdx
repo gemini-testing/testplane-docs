@@ -6,7 +6,7 @@ sidebar_position: 1
 
 **Testplane** — a tool for automating testing of user scenarios in web interfaces.
 
-With Testplane, you can test the functionality of your site or project and ensure that your layout consistently matches what's expected under any circumstances. At your disposal, you have the full range of [commands][commands] provided by [WebDriverIO v8][webdriverio-api] and [all the capabilities of the Chrome DevTools protocol][how-to-use-cdp]. Additionally, you have the familiar [Mocha][mocha] syntax.
+With Testplane, you can test the functionality of your site or project and ensure that your layout consistently matches what's expected under any circumstances. At your disposal, you have the full range of [commands][commands] provided by [WebDriverIO v9][webdriverio-api] and [all the capabilities of the Chrome DevTools protocol][how-to-use-cdp]. Additionally, you have the familiar [Mocha][mocha] syntax.
 
 Is your testing workload growing as your project evolves? — Testplane allows you to easily scale your test runs without losing usability. It not only runs tests in parallel, across different browsers and platforms, but also gathers all the test results into a single HTML report with flexible viewing, grouping, and filtering capabilities.
 
@@ -91,36 +91,36 @@ And that’s not all.
 -   available [extension points][html-reporter-extension-points] in the Testplane report;
 -   [extend the Testplane CLI from your plugin][testplane-cli], adding new commands and options.
 
-[create-testplane]: https://github.com/gemini-testing/create-testplane
-[webdriverio-api]: https://webdriver.io/docs/api
-[mocha]: https://mochajs.org
-[testplane-chunks]: ./plugins/testplane-chunks
-[testplane-option-grep]: ./guides/how-to-run-specified-test#solution_2
-[how-to-run-test-in-file]: ./guides/how-to-run-specified-test#solution_1
-[how-to-skip-tests]: ./guides/how-to-skip-test-in-browsers
-[how-to-check-test-stability]: ./guides/how-to-check-test-stability
-[testplane-sets]: ./config/sets
-[retry-limiter]: ./plugins/retry-limiter
-[retry-progressive]: ./plugins/testplane-retry-progressive
-[sharp]: https://github.com/lovell/sharp
-[sessions-reuse]: ./config/browsers#tests_per_session
-[patterns-on-reject]: ./config/system#patterns_on_reject
 [assert-view-opts]: ./config/browsers#assert_view_opts
 [assert-view]: ./commands/browser/assertView
-[how-to-use-cdp]: ./guides/how-to-use-cdp
-[testplane-profiler]: https://github.com/gemini-testing/testplane-profiler
-[testplane-plugins-profiler]: https://github.com/gemini-testing/testplane-plugins-profiler
-[how-to-test-layout-under-login]: ./guides/how-to-test-layout-under-login
-[how-to-read-browser-logs]: ./guides/how-to-read-browser-logs
-[prepare-browser]: ./config/prepare-browser
-[defaults]: ./config/browsers#timeouts
 [commands]: ./commands/overview
-[html-reporter]: ./html-reporter/html-reporter-setup
+[create-testplane]: https://github.com/gemini-testing/create-testplane
+[defaults]: ./config/browsers#timeouts
+[how-to-check-test-stability]: ./guides/how-to-check-test-stability
+[how-to-read-browser-logs]: ./guides/how-to-read-browser-logs
+[how-to-run-test-in-file]: ./guides/how-to-run-specified-test#solution_1
+[how-to-skip-tests]: ./guides/how-to-skip-test-in-browsers
+[how-to-test-layout-under-login]: ./guides/how-to-test-layout-under-login
+[how-to-use-cdp]: ./guides/how-to-use-cdp
 [html-reporter-diff]: ./html-reporter/html-reporter-setup#diffmode
-[html-reporter-gui]: ./html-reporter/html-reporter-commands#gui
-[plugins]: https://github.com/gemini-testing/
-[testplane-events]: ./reference/testplane-events
 [html-reporter-extension-points]: ./html-reporter/html-reporter-plugins#extension_points
-[testplane-cli]: ./reference/testplane-events#cli
+[html-reporter-gui]: ./html-reporter/html-reporter-commands#gui
 [html-reporter-plugins]: ./html-reporter/html-reporter-plugins
+[html-reporter]: ./html-reporter/html-reporter-setup
+[mocha]: https://mochajs.org
+[patterns-on-reject]: ./config/system#patterns_on_reject
+[plugins]: https://github.com/gemini-testing/
+[prepare-browser]: ./config/prepare-browser
+[retry-limiter]: ./plugins/retry-limiter
+[retry-progressive]: ./plugins/testplane-retry-progressive
+[sessions-reuse]: ./config/browsers#tests_per_session
+[sharp]: https://github.com/lovell/sharp
+[testplane-chunks]: ./plugins/testplane-chunks
+[testplane-cli]: ./reference/testplane-events#cli
+[testplane-events]: ./reference/testplane-events
+[testplane-option-grep]: ./guides/how-to-run-specified-test#solution_2
+[testplane-plugins-profiler]: https://github.com/gemini-testing/testplane-plugins-profiler
+[testplane-profiler]: https://github.com/gemini-testing/testplane-profiler
+[testplane-sets]: ./config/sets
 [testplane-workers]: ./config/system#workers
+[webdriverio-api]: https://webdriver.io/docs/api
