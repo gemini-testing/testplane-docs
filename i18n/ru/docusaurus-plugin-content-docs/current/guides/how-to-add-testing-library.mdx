@@ -8,17 +8,17 @@
 
 Для того чтобы появилась возможность использования [запросов (queries)][queries] из `testing-library` в testplane-тестах, необходимо выполнить всего несколько шагов.
 
-1. Установите npm-пакет `'@testing-library/webdriverio'`
+1. Установите npm-пакет `@testplane/testing-library` (наша адаптация testing-library для testplane)
 
 ```bash
-npm i -D @testing-library/webdriverio
+npm i -D @testplane/testing-library
 ```
 
 2. Подключите реализацию в конфиге testplane в секции `prepareBrowser`
 
 ```javascript
 // .testplane.conf.js
-const { setupBrowser } = require("@testing-library/webdriverio");
+const { setupBrowser } = require("@testplane/testing-library");
 
 module.exports = {
     prepareBrowser(browser) {
@@ -61,7 +61,7 @@ it("example", async ({ browser }) => {
 ## Полезные ссылки {#useful_links}
 
 -   [Testing-library][testing-library]
--   [WebdriverIO Testing Library](https://testing-library.com/docs/webdriverio-testing-library/intro)
+-   [Testplane Testing Library](https://github.com/gemini-testing/testplane-testing-library)
 
 [testing-library]: https://testing-library.com/
 [queries]: https://testing-library.com/docs/queries/about
