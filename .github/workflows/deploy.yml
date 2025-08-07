@@ -43,7 +43,6 @@ jobs:
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_PRODUCTION_SECRET_ACCESS_KEY }}
                   AWS_S3_ENDPOINT: https://s3.yandexcloud.net/
                   SOURCE_DIR: "build"
-                  DEST_DIR: "."
 
     # Deployment job
     deploy:
