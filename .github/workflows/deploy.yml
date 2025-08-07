@@ -38,7 +38,7 @@ jobs:
               with:
                   args: --acl public-read --follow-symlinks
               env:
-                  AWS_S3_BUCKET: testplane-site
+                  AWS_S3_BUCKET: testplane.io
                   AWS_ACCESS_KEY_ID: ${{ secrets.S3_PRODUCTION_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_PRODUCTION_SECRET_ACCESS_KEY }}
                   AWS_S3_ENDPOINT: https://s3.yandexcloud.net/
