@@ -16,16 +16,16 @@ npm i -D @testplane/testing-library
 
 2. Include it in the Testplane config in the `prepareBrowser` section:
 
-```javascript
-// .testplane.conf.js
-const { setupBrowser } = require("@testplane/testing-library");
+```typescript
+// testplane.config.ts
+import { setupBrowser } from "@testplane/testing-library";
 
-module.exports = {
+export default {
     prepareBrowser(browser) {
         setupBrowser(browser);
     },
 
-    // other Testplane settings...
+    // other settings for testplane...
 };
 ```
 
