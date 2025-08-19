@@ -29,6 +29,16 @@ export default {
 };
 ```
 
+Если у вас возникнут проблемы с типами то добавьте это в `tsconfig.json`
+
+```json
+{
+    "compilerOptions": {
+        "types": ["testplane", "@testplane/testing-library"]
+    }
+}
+```
+
 ## Использование
 
 После подключения вы сможете использовать в тестах поиск по селекторам из `testing-library`, описанные в [официальной документации](https://testing-library.com/docs/queries/about/). Например, поиск элемента по его тексту
