@@ -16,17 +16,27 @@ npm i -D @testplane/testing-library
 
 2. Подключите реализацию в конфиге testplane в секции `prepareBrowser`
 
-```javascript
-// .testplane.conf.js
-const { setupBrowser } = require("@testplane/testing-library");
+```typescript
+// testplane.config.ts
+import { setupBrowser } from "@testplane/testing-library";
 
-module.exports = {
+export default {
     prepareBrowser(browser) {
         setupBrowser(browser);
     },
 
     // другие настройки testplane...
 };
+```
+
+Если у вас возникнут проблемы с типами, то добавьте типы явно в `tsconfig.json`
+
+```json
+{
+    "compilerOptions": {
+        "types": ["testplane", "@testplane/testing-library"]
+    }
+}
 ```
 
 ## Использование
