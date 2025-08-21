@@ -30,6 +30,8 @@ Main command to run tests.
     --repl-on-fail [type]            open repl interface on test fail only (default: false)
     --devtools                       switches the browser to the devtools mode with using CDP protocol
     --local                          use automatically downloaded browsers and drivers, provided by Testplane
+    --keep-browser                   do not close browser session after test completion
+    --keep-browser-on-fail           do not close browser session when test fails
     -h, --help                       output usage information
 ```
 
@@ -183,6 +185,27 @@ testplane --repl --grep 'my test name' --browser chrome
     More information about Testplane REPL mode can be found in [switchToRepl][switch-to-repl]
     command documentation.
 </Admonition>
+
+#### Keep browser {#testplane-keep-browser}
+
+-   `--keep-browser` - in this mode, the browser will not close after the tests complete; the console will output information on how to connect to the remaining browser instance.
+-   `--keep-browser-on-fail` - the same as the `--keep-browser` option, but the browser will only remain open if the tests fail.
+
+Example of console output with connection information to the browser:
+```
+[15:44:38 +0700] Testplane run has finished, but the browser won't be closed, because you passed the --keep-browser argument.
+[15:44:38 +0700] You may attach to this browser using the following capabilities:
+[15:44:38 +0700] {
+  "sessionId": "c69958b3f85b851f7bf83f27bb026d58",
+  "sessionCaps": {
+    "acceptInsecureCerts": false,
+    ...
+  },
+  "driverPid": 31745
+}
+[15:44:38 +0700] ✓ test example #0 [chrome:c69958b3f85b851f7bf83f27bb026d58, pid:31744] - 1676ms
+
+```
 
 #### Devtools {#testplane-devtools}
 
