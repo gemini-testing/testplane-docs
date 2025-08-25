@@ -1,0 +1,68 @@
+# Testplane standalone api
+
+## Overview
+
+The Standalone API allows you to launch a new browser instance or connect to an existing one directly from your code, and then perform any required actions within it.
+
+Please note: The Standalone API is currently unstable and its interface is subject to change. Please keep this in mind when using it.
+
+## Usage
+
+### Launch browser
+
+Launching the browser with the necessary parameters
+
+```typescript
+import { launchBrowser } from "testplane/unstable";
+
+// Launch a new browser with the given settings
+const browser = await launchBrowser({
+    desiredCapabilities: {
+        browserName: 'chrome',
+    },
+    headless: false,
+});
+
+// Navigate to the URL and perform necessary actions
+await browser.url("https://example.com");
+
+// !Important: terminate the session to prevent resource leaks (zombie processes)
+await browser.deleteSession();
+```
+
+More info about [launchBrowser](https://github.com/gemini-testing/testplane/blob/master/src/browser/standalone/launchBrowser.ts)
+
+### Attach to browser
+
+Attach to the existing browser with session params.
+You can get session params if run testplane with `--keep-browser` option, see [more](../command-line/index.mdx#testplane-keep-browser)
+
+```typescript
+import { attachToBrowser } from "testplane/unstable";
+
+// Attach to existing browser with session params
+const browser = await attachToBrowser({
+    sessionId: "f1bd2b2bc6563f82d2120c31f4b92c03",
+    sessionCaps: {
+        browserName: "chrome",
+        browserVersion: "137.0.7151.119",
+        setWindowRect: true,
+    },
+    sessionOpts: {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: 62536,
+        path: "/",
+        strictSSL: true,
+    },
+    driverPid: 34985, // Very important parameter, need for kill driver process
+});
+
+// Navigate to the URL and perform necessary actions
+await browser.url("https://example.com");
+
+// !Important: terminate the session to prevent resource leaks (zombie processes)
+await browser.deleteSession();
+```
+
+More info about [attachToBrowser](https://github.com/gemini-testing/testplane/blob/master/src/browser/standalone/attachToBrowser.ts)
