@@ -23,3 +23,5 @@ npm-debug.log*
 *storybook.log
 storybook-static
 tmp
+.testplane
+!exports

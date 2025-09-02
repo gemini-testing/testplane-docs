@@ -1,0 +1,291 @@
+# Config
+
+## Extends
+
+- [`CommonConfig`](../interfaces/CommonConfig.mdx)
+
+## Constructors
+
+### new Config()
+
+```ts
+new Config(config?): Config
+```
+
+#### Parameters
+
+• **config?**: `string` \| [`ConfigInput`](../type-aliases/ConfigInput.mdx)
+
+#### Returns
+
+[`Config`](Config.mdx)
+
+#### Defined in
+
+[src/config/index.ts:28](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L28)
+
+## Properties
+
+| Property | Type | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ |
+| `antialiasingTolerance` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`antialiasingTolerance`](../interfaces/CommonConfig.mdx#antialiasingtolerance) | [src/config/types.ts:133](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L133) |
+| `assertViewOpts` | [`AssertViewOptsConfig`](../interfaces/AssertViewOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`assertViewOpts`](../interfaces/CommonConfig.mdx#assertviewopts) | [src/config/types.ts:136](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L136) |
+| `automationProtocol` | `"webdriver"` \| `"devtools"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`automationProtocol`](../interfaces/CommonConfig.mdx#automationprotocol) | [src/config/types.ts:97](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L97) |
+| `baseUrl` | `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`baseUrl`](../interfaces/CommonConfig.mdx#baseurl) | [src/config/types.ts:104](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L104) |
+| `browsers` | `Record`\<`string`, `BrowserConfig`\> | - | [src/config/types.ts:207](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L207) |
+| `buildDiffOpts` | [`BuildDiffOptsConfig`](../interfaces/BuildDiffOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`buildDiffOpts`](../interfaces/CommonConfig.mdx#builddiffopts) | [src/config/types.ts:135](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L135) |
+| `calibrate` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`calibrate`](../interfaces/CommonConfig.mdx#calibrate) | [src/config/types.ts:127](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L127) |
+| `compareOpts` | [`CompareOptsConfig`](../interfaces/CompareOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`compareOpts`](../interfaces/CommonConfig.mdx#compareopts) | [src/config/types.ts:134](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L134) |
+| `compositeImage` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`compositeImage`](../interfaces/CommonConfig.mdx#compositeimage) | [src/config/types.ts:128](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L128) |
+| `configPath` | `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`configPath`](../interfaces/CommonConfig.mdx#configpath) | [src/config/index.ts:10](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L10) |
+| `desiredCapabilities` | `null` \| `Capabilities` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`desiredCapabilities`](../interfaces/CommonConfig.mdx#desiredcapabilities) | [src/config/types.ts:98](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L98) |
+| `devServer` | \{ `args`: `string`[]; `command`: `null` \| `string`; `cwd`: `null` \| `string`; `env`: `Record`\<`string`, `string`\>; `logs`: `boolean`; `readinessProbe`: `ReadinessProbe`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`devServer`](../interfaces/CommonConfig.mdx#devserver) | [src/config/types.ts:170](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L170) |
+| `args` | `string`[] | - | [src/config/types.ts:174](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L174) |
+| `command` | `null` \| `string` | - | [src/config/types.ts:171](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L171) |
+| `cwd` | `null` \| `string` | - | [src/config/types.ts:172](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L172) |
+| `env` | `Record`\<`string`, `string`\> | - | [src/config/types.ts:173](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L173) |
+| `logs` | `boolean` | - | [src/config/types.ts:175](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L175) |
+| `readinessProbe` | `ReadinessProbe` | - | [src/config/types.ts:176](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L176) |
+| `expectOpts` | [`ExpectOptsConfig`](../interfaces/ExpectOptsConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`expectOpts`](../interfaces/CommonConfig.mdx#expectopts) | [src/config/types.ts:137](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L137) |
+| `gridUrl` | `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`gridUrl`](../interfaces/CommonConfig.mdx#gridurl) | [src/config/types.ts:103](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L103) |
+| `headers` | `null` \| `Record`\<`string`, `string`\> | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`headers`](../interfaces/CommonConfig.mdx#headers) | [src/config/types.ts:142](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L142) |
+| `headless` | `null` \| `boolean` \| `"old"` \| `"new"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`headless`](../interfaces/CommonConfig.mdx#headless) | [src/config/types.ts:153](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L153) |
+| `httpTimeout` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`httpTimeout`](../interfaces/CommonConfig.mdx#httptimeout) | [src/config/types.ts:109](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L109) |
+| `isolation` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`isolation`](../interfaces/CommonConfig.mdx#isolation) | [src/config/types.ts:154](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L154) |
+| `key` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`key`](../interfaces/CommonConfig.mdx#key) | [src/config/types.ts:149](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L149) |
+| `lastFailed` | \{ `input`: `string` \| `string`[]; `only`: `boolean`; `output`: `string`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`lastFailed`](../interfaces/CommonConfig.mdx#lastfailed) | [src/config/types.ts:156](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L156) |
+| `input` | `string` \| `string`[] | - | [src/config/types.ts:158](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L158) |
+| `only` | `boolean` | - | [src/config/types.ts:157](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L157) |
+| `output` | `string` | - | [src/config/types.ts:159](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L159) |
+| `meta` | \{\} | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`meta`](../interfaces/CommonConfig.mdx#meta) | [src/config/types.ts:138](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L138) |
+| `openAndWaitOpts` | \{ `failOnNetworkError`: `boolean`; `ignoreNetworkErrorsPatterns`: (`string` \| `RegExp`)[]; `timeout`: `number`; `waitNetworkIdle`: `boolean`; `waitNetworkIdleTimeout`: `number`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`openAndWaitOpts`](../interfaces/CommonConfig.mdx#openandwaitopts) | [src/config/types.ts:162](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L162) |
+| `failOnNetworkError` | `boolean` | - | [src/config/types.ts:166](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L166) |
+| `ignoreNetworkErrorsPatterns` | (`string` \| `RegExp`)[] | - | [src/config/types.ts:167](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L167) |
+| `timeout?` | `number` | - | [src/config/types.ts:163](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L163) |
+| `waitNetworkIdle` | `boolean` | - | [src/config/types.ts:164](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L164) |
+| `waitNetworkIdleTimeout` | `number` | - | [src/config/types.ts:165](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L165) |
+| `orientation` | `null` \| `"landscape"` \| `"portrait"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`orientation`](../interfaces/CommonConfig.mdx#orientation) | [src/config/types.ts:140](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L140) |
+| `pageLoadTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`pageLoadTimeout`](../interfaces/CommonConfig.mdx#pageloadtimeout) | [src/config/types.ts:111](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L111) |
+| `plugins` | `Record`\<`string`, `Record`\<`string`, `unknown`\>\> | - | [src/config/types.ts:208](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L208) |
+| `prepareEnvironment?` | () => `null` \| `void` | - | [src/config/types.ts:210](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L210) |
+| `region` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`region`](../interfaces/CommonConfig.mdx#region) | [src/config/types.ts:150](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L150) |
+| `resetCursor` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`resetCursor`](../interfaces/CommonConfig.mdx#resetcursor) | [src/config/types.ts:141](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L141) |
+| `retry` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`retry`](../interfaces/CommonConfig.mdx#retry) | [src/config/types.ts:107](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L107) |
+| `saveHistoryMode` | `"all"` \| `"none"` \| `"onlyFailed"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`saveHistoryMode`](../interfaces/CommonConfig.mdx#savehistorymode) | [src/config/types.ts:117](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L117) |
+| `screenshotDelay` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`screenshotDelay`](../interfaces/CommonConfig.mdx#screenshotdelay) | [src/config/types.ts:131](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L131) |
+| `screenshotMode` | `"auto"` \| `"fullpage"` \| `"viewport"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`screenshotMode`](../interfaces/CommonConfig.mdx#screenshotmode) | [src/config/types.ts:130](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L130) |
+| `screenshotPath` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`screenshotPath`](../interfaces/CommonConfig.mdx#screenshotpath) | [src/config/types.ts:125](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L125) |
+| `sessionEnvFlags` | `Record`\< \| `"isW3C"` \| `"isAndroid"` \| `"isMobile"` \| `"isIOS"` \| `"isSauce"` \| `"isSeleniumStandalone"` \| `"isChrome"`, `boolean`\> | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`sessionEnvFlags`](../interfaces/CommonConfig.mdx#sessionenvflags) | [src/config/types.ts:99](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L99) |
+| `sessionQuitTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`sessionQuitTimeout`](../interfaces/CommonConfig.mdx#sessionquittimeout) | [src/config/types.ts:113](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L113) |
+| `sessionRequestTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`sessionRequestTimeout`](../interfaces/CommonConfig.mdx#sessionrequesttimeout) | [src/config/types.ts:112](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L112) |
+| `sessionsPerBrowser` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`sessionsPerBrowser`](../interfaces/CommonConfig.mdx#sessionsperbrowser) | [src/config/types.ts:105](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L105) |
+| `sets` | `Record`\<`string`, [`SetsConfigParsed`](../interfaces/SetsConfigParsed.mdx)\> | - | [src/config/types.ts:209](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L209) |
+| `strictSSL` | `null` \| `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`strictSSL`](../interfaces/CommonConfig.mdx#strictssl) | [src/config/types.ts:147](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L147) |
+| `strictTestsOrder` | `boolean` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`strictTestsOrder`](../interfaces/CommonConfig.mdx#stricttestsorder) | [src/config/types.ts:129](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L129) |
+| `system` | [`SystemConfig`](../interfaces/SystemConfig.mdx) | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`system`](../interfaces/CommonConfig.mdx#system) | [src/config/types.ts:152](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L152) |
+| `takeScreenshotOnFails` | \{ `assertViewFail`: `boolean`; `testFail`: `boolean`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`takeScreenshotOnFails`](../interfaces/CommonConfig.mdx#takescreenshotonfails) | [src/config/types.ts:118](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L118) |
+| `assertViewFail` | `boolean` | - | [src/config/types.ts:120](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L120) |
+| `testFail` | `boolean` | - | [src/config/types.ts:119](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L119) |
+| `takeScreenshotOnFailsMode` | `"fullpage"` \| `"viewport"` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`takeScreenshotOnFailsMode`](../interfaces/CommonConfig.mdx#takescreenshotonfailsmode) | [src/config/types.ts:123](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L123) |
+| `takeScreenshotOnFailsTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`takeScreenshotOnFailsTimeout`](../interfaces/CommonConfig.mdx#takescreenshotonfailstimeout) | [src/config/types.ts:122](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L122) |
+| `testTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`testTimeout`](../interfaces/CommonConfig.mdx#testtimeout) | [src/config/types.ts:114](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L114) |
+| `testsPerSession` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`testsPerSession`](../interfaces/CommonConfig.mdx#testspersession) | [src/config/types.ts:106](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L106) |
+| `tolerance` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`tolerance`](../interfaces/CommonConfig.mdx#tolerance) | [src/config/types.ts:132](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L132) |
+| `transformRequest` | (`req`: `RequestOptions`) => `RequestOptions` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`transformRequest`](../interfaces/CommonConfig.mdx#transformrequest) | [src/config/types.ts:144](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L144) |
+| `transformResponse` | (`res`: `Response`, `req`: `RequestOptions`) => `Response` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`transformResponse`](../interfaces/CommonConfig.mdx#transformresponse) | [src/config/types.ts:145](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L145) |
+| `urlHttpTimeout` | `null` \| `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`urlHttpTimeout`](../interfaces/CommonConfig.mdx#urlhttptimeout) | [src/config/types.ts:110](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L110) |
+| `user` | `null` \| `string` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`user`](../interfaces/CommonConfig.mdx#user) | [src/config/types.ts:148](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L148) |
+| `waitInterval` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`waitInterval`](../interfaces/CommonConfig.mdx#waitinterval) | [src/config/types.ts:116](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L116) |
+| `waitTimeout` | `number` | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`waitTimeout`](../interfaces/CommonConfig.mdx#waittimeout) | [src/config/types.ts:115](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L115) |
+| `windowSize` | `null` \| `string` \| \{ `height`: `number`; `width`: `number`; \} | [`CommonConfig`](../interfaces/CommonConfig.mdx).[`windowSize`](../interfaces/CommonConfig.mdx#windowsize) | [src/config/types.ts:139](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L139) |
+
+## Methods
+
+### forBrowser()
+
+```ts
+forBrowser(id): BrowserConfig
+```
+
+#### Parameters
+
+• **id**: `string`
+
+#### Returns
+
+`BrowserConfig`
+
+#### Defined in
+
+[src/config/index.ts:82](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L82)
+
+***
+
+### getBrowserIds()
+
+```ts
+getBrowserIds(): string[]
+```
+
+#### Returns
+
+`string`[]
+
+#### Defined in
+
+[src/config/index.ts:86](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L86)
+
+***
+
+### mergeWith()
+
+```ts
+mergeWith(config): void
+```
+
+This method is used in subrocesses to merge a created config
+in a subrocess with a config from the main process
+
+#### Parameters
+
+• **config**: [`Config`](Config.mdx)
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/config/index.ts:100](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L100)
+
+***
+
+### prepareBrowser()
+
+```ts
+prepareBrowser(browser): null | void
+```
+
+#### Parameters
+
+• **browser**: `Browser`
+
+#### Returns
+
+`null` \| `void`
+
+#### Inherited from
+
+[`CommonConfig`](../interfaces/CommonConfig.mdx).[`prepareBrowser`](../interfaces/CommonConfig.mdx#preparebrowser)
+
+#### Defined in
+
+[src/config/types.ts:124](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L124)
+
+***
+
+### screenshotsDir()
+
+```ts
+screenshotsDir(test): string
+```
+
+#### Parameters
+
+• **test**: [`Test`](Test.mdx)
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[`CommonConfig`](../interfaces/CommonConfig.mdx).[`screenshotsDir`](../interfaces/CommonConfig.mdx#screenshotsdir)
+
+#### Defined in
+
+[src/config/types.ts:126](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L126)
+
+***
+
+### serialize()
+
+```ts
+serialize(): Omit<Config, "system">
+```
+
+#### Returns
+
+`Omit`\<[`Config`](Config.mdx), `"system"`\>
+
+#### Defined in
+
+[src/config/index.ts:90](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L90)
+
+***
+
+### shouldRetry()
+
+```ts
+shouldRetry(testInfo): null | boolean
+```
+
+#### Parameters
+
+• **testInfo**
+
+• **testInfo.ctx**: [`Test`](Test.mdx)
+
+• **testInfo.retriesLeft**: `number`
+
+#### Returns
+
+`null` \| `boolean`
+
+#### Inherited from
+
+[`CommonConfig`](../interfaces/CommonConfig.mdx).[`shouldRetry`](../interfaces/CommonConfig.mdx#shouldretry)
+
+#### Defined in
+
+[src/config/types.ts:108](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/types.ts#L108)
+
+***
+
+### create()
+
+```ts
+static create(config?): Config
+```
+
+#### Parameters
+
+• **config?**: `string` \| [`ConfigInput`](../type-aliases/ConfigInput.mdx)
+
+#### Returns
+
+[`Config`](Config.mdx)
+
+#### Defined in
+
+[src/config/index.ts:12](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L12)
+
+***
+
+### read()
+
+```ts
+static read(configPath): unknown
+```
+
+#### Parameters
+
+• **configPath**: `string`
+
+#### Returns
+
+`unknown`
+
+#### Defined in
+
+[src/config/index.ts:16](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/config/index.ts#L16)
