@@ -278,11 +278,11 @@ await expect(elem).toHaveId("elem");
 Например:
 
 ```javascript
-await browser.url("https://webdriver.io/");
+await browser.url("https://testplane.io/");
 const elem = await browser.$(".container");
-await expect(elem).toHaveText("Next-gen browser and mobile automation test framework for Node.js");
+await expect(elem).toHaveText("Fast, scalable and robust end-to-end web testing solution | Testplane");
 await expect(elem).toHaveText([
-    "Next-gen browser and mobile automation test framework for Node.js",
+    "Fast, scalable and robust end-to-end web testing solution | Testplane",
     "Get Started",
 ]);
 ```
@@ -296,12 +296,12 @@ await expect(elem).toHaveText([
 Например:
 
 ```javascript
-await browser.url("https://webdriver.io/");
-const elem = await browser.$(".container");
-await expect(elem).toHaveTextContaining("browser and mobile automation test framework");
+await browser.url("https://testplane.io/");
+const elem = await browser.$("h1");
+await expect(elem).toHaveTextContaining("ultimate solution for end-to-end testing");
 await expect(elem).toHaveTextContaining([
-    "browser and mobile automation test framework",
-    "Started",
+    "ultimate solution for end-to-end testing",
+    "battle-hardened framework for creating tests at any scale, any browser, any platform",
 ]);
 ```
 
