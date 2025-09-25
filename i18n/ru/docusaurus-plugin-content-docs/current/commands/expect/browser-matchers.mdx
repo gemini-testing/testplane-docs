@@ -7,8 +7,8 @@
 Например:
 
 ```javascript
-await browser.url("https://webdriver.io/");
-await expect(browser).toHaveUrl("https://webdriver.io");
+await browser.url("https://testplane.io/");
+await expect(browser).toHaveUrl("https://testplane.io");
 ```
 
 ## toHaveUrlContaining
@@ -18,8 +18,8 @@ await expect(browser).toHaveUrl("https://webdriver.io");
 Например:
 
 ```javascript
-await browser.url("https://webdriver.io/");
-await expect(browser).toHaveUrlContaining("webdriver");
+await browser.url("https://testplane.io/");
+await expect(browser).toHaveUrlContaining("testplane");
 ```
 
 ## toHaveTitle
@@ -29,9 +29,9 @@ await expect(browser).toHaveUrlContaining("webdriver");
 Например:
 
 ```javascript
-await browser.url("https://webdriver.io/");
+await browser.url("https://testplane.io/");
 await expect(browser).toHaveTitle(
-    "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js",
+    "Fast, scalable and robust end-to-end web testing solution | Testplane",
 );
 ```
 
@@ -42,6 +42,6 @@ await expect(browser).toHaveTitle(
 Например:
 
 ```javascript
-await browser.url("https://webdriver.io/");
-await expect(browser).toHaveTitleContaining("WebdriverIO");
+await browser.url("https://testplane.io/");
+await expect(browser).toHaveTitleContaining("Testplane");
 ```
