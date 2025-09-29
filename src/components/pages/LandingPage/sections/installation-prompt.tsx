@@ -28,18 +28,18 @@ export const InstallationPromptSection = () => {
         <section className="relative overflow-hidden bg-white">
             <div className="hidden xl:block">
                 <img
-                    className={"absolute left-[16%] top-[20%] size-16 rotate-[15deg]"}
+                    className={"absolute top-[20%] left-[16%] size-16 rotate-[15deg]"}
                     src={useBaseUrl("/img/landing/shard-multi.svg")}
                     alt={"Star"}
                 />
                 <img
-                    className={"absolute left-[77%] top-[10%] size-28"}
+                    className={"absolute top-[10%] left-[77%] size-28"}
                     src={useBaseUrl("/img/landing/star-4-sharp.svg")}
                     alt="Star"
                 />
             </div>
             <AnimatedAppear onAppear={type}>
-                <div className="container !max-w-screen-lg pb-16 pt-10">
+                <div className="container !max-w-screen-lg pt-10 pb-16">
                     <Heading>
                         <div className="mb-3 text-neutral-700">
                             <Translate

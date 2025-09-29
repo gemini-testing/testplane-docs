@@ -38,7 +38,7 @@ export const CoreFeaturesSection = () => {
                                     id="landing.core-features.browsers.heading"
                                     values={{
                                         underline: (
-                                            <GradientUnderline className=" rotate-[2deg]">
+                                            <GradientUnderline className="rotate-[2deg]">
                                                 <Translate id="landing.core-features.browsers.heading.underline">
                                                     browser
                                                 </Translate>
@@ -94,7 +94,7 @@ export const CoreFeaturesSection = () => {
                                     id="landing.core-features.scale.heading"
                                     values={{
                                         underline: (
-                                            <GradientUnderline className=" rotate-[2deg]">
+                                            <GradientUnderline className="rotate-[2deg]">
                                                 <Translate id="landing.core-features.browsers.scale.underline">
                                                     scale
                                                 </Translate>
@@ -146,7 +146,7 @@ export const CoreFeaturesSection = () => {
                                     id="landing.core-features.extend.heading"
                                     values={{
                                         underline: (
-                                            <GradientUnderline className=" rotate-[2deg]">
+                                            <GradientUnderline className="rotate-[2deg]">
                                                 <Translate id="landing.core-features.browsers.extend.underline">
                                                     extend
                                                 </Translate>

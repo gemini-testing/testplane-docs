@@ -37,7 +37,7 @@ export function FeatureBlock(props: FeatureBlockProps) {
                             key={index}
                             className="mb-3 flex max-w-48 text-lg font-medium text-neutral-500"
                         >
-                            <TickIcon className="mr-1 mt-1 size-5 flex-shrink-0 fill-neutral-500" />
+                            <TickIcon className="mt-1 mr-1 size-5 flex-shrink-0 fill-neutral-500" />
                             {item}
                         </div>
                     ))}

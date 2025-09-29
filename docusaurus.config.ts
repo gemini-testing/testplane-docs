@@ -66,7 +66,7 @@ const config: Config = {
 
     themeConfig: {
         colorMode: {
-            disableSwitch: true,
+            disableSwitch: false,
         },
         image: "img/docusaurus-social-card.jpg",
         navbar: {
@@ -74,6 +74,7 @@ const config: Config = {
             logo: {
                 alt: "Testplane Logo",
                 src: "img/logo.svg",
+                srcDark: "img/logo-dark.svg",
                 target: "_self",
                 width: 28,
                 height: 28,

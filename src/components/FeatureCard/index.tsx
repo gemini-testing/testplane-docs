@@ -23,7 +23,7 @@ export function FeatureCard(props: FeatureCardProps) {
             <div className="flex items-center justify-center pt-3">
                 <div className="h-full w-0.5 bg-gradient-to-b from-indigo-600 to-transparent"></div>
             </div>
-            <div className="ml-3 pb-5 pt-1">
+            <div className="ml-3 pt-1 pb-5">
                 {props.items.map(item => (
                     <div className="mt-4 text-lg leading-6 text-gray-500" key={item}>
                         {item}

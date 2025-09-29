@@ -1,13 +1,19 @@
-@tailwind base;
+@import "tailwindcss/theme.css";
 
-@layer base {
+@import "tailwindcss/utilities.css";
+
+@import "tailwindcss/preflight.css" layer preflight;
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+body {
     h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
-        @apply mb-3 text-lg font-medium;
+        @apply mb-3 text-lg font-medium dark:text-neutral-200;
     }
 
     h1 {
@@ -27,7 +33,7 @@
     }
 
     p {
-        @apply mb-3;
+        @apply mb-3 text-neutral-700 dark:text-neutral-400;
     }
 
     code {
@@ -36,7 +42,8 @@
     }
 
     a {
-        @apply text-indigo-600;
+        @apply text-indigo-600 dark:text-indigo-500;
+        text-decoration: none !important;
 
         &:hover {
             @apply text-indigo-400;
@@ -49,9 +56,6 @@
         padding-left: 30px;
     }
 }
-
-@tailwind components;
-@tailwind utilities;
 
 /* Infima variables. */
 :root {
@@ -73,8 +77,12 @@
 }
 
 /* Dark mode. */
-[data-theme="dark"] {
-    --ifm-color-primary: #25c2a0;
+html[data-theme="dark"] {
+    --ifm-background-color: theme("colors.neutral.950");
+    --ifm-link-color: theme("colors.indigo.500");
+    --ifm-tabs-color-active: theme("colors.indigo.500");
+    --ifm-navbar-link-hover-color: #fff;
+    --ifm-color-primary: theme("colors.indigo.600");
     --ifm-color-primary-dark: #21af90;
     --ifm-color-primary-darker: #1fa588;
     --ifm-color-primary-darkest: #1a8870;
@@ -97,7 +105,7 @@
     transition: transform 0.25s ease-in-out;
     transform: translateY(0);
     will-change: transform;
-    @apply justify-center px-0 shadow-none;
+    @apply justify-center px-0 shadow-none dark:fill-white;
 
     .navbar__inner {
         max-width: var(--max-width);
@@ -105,6 +113,7 @@
     }
 
     &.navbar--fixed-top {
+        @apply dark:bg-neutral-950/80;
         background-color: rgba(255, 255, 255, 0.7);
 
         &::before {
@@ -125,7 +134,8 @@
     }
 
     .DocSearch-Button {
-        @apply h-8 w-80 rounded-lg bg-neutral-100 font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none;
+        @apply h-8 w-80 rounded-lg bg-neutral-100 font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none dark:bg-neutral-800/50 dark:hover:bg-neutral-800/80;
+        font-family: Jost;
 
         svg {
             @apply w-4 text-neutral-500;
@@ -134,7 +144,11 @@
         .DocSearch-Button-Key {
             background: white;
             border: 1px solid theme("colors.neutral.300");
-            @apply text-neutral-500 shadow-none;
+            @apply flex items-center p-0 text-neutral-500 shadow-none dark:border-neutral-200/20 dark:bg-neutral-950/80;
+
+            &:first-child {
+                @apply text-base;
+            }
 
             &:last-child {
                 @apply text-xs;
@@ -143,7 +157,7 @@
     }
 
     .navbar__link {
-        @apply flex items-center font-medium text-neutral-600 after:border-t-neutral-600;
+        @apply flex items-center font-medium text-neutral-600 after:border-t-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300;
 
         svg {
             display: inline;
@@ -160,12 +174,12 @@
     }
 
     .navbar__brand {
-        @apply px-2 font-mono hover:text-black;
+        @apply px-2 font-mono;
     }
 
     .navbar__brand,
     .navbar__item {
-        @apply rounded-lg hover:bg-neutral-100;
+        @apply rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-200/10;
     }
 
     .dropdown > .navbar__link:after {
@@ -173,13 +187,13 @@
     }
 
     .dropdown__menu {
-        @apply rounded-lg border border-neutral-100;
+        @apply rounded-lg border border-neutral-100 dark:border-neutral-300/20;
         box-shadow:
             rgba(112, 112, 112, 0.05) 0px 20px 25px -5px,
             rgba(112, 112, 112, 0.05) 0px 8px 10px -6px;
 
         .dropdown__link {
-            @apply rounded-lg hover:bg-neutral-100;
+            @apply rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-200/10;
         }
     }
 }
@@ -199,13 +213,23 @@ body.footer-in-view .navbar {
     .menu__link,
     .menu__list-item-collapsible,
     .menu__caret {
-        @apply rounded-lg text-neutral-500;
+        @apply rounded-lg text-neutral-500 dark:text-neutral-400 dark:hover:text-neutral-300;
+    }
+
+    .menu__link.menu__link--active {
+        @apply dark:text-neutral-200;
     }
 }
 
 .table-of-contents {
     font-size: theme("fontSize.sm");
-    @apply text-neutral-500;
+    .table-of-contents__link {
+        @apply text-neutral-500 dark:text-neutral-400 dark:hover:text-neutral-300;
+    }
+
+    .table-of-contents__link--active {
+        @apply dark:text-indigo-500 dark:hover:text-indigo-400;
+    }
 }
 
 .theme-doc-sidebar-container {
@@ -254,35 +278,39 @@ body.footer-in-view .navbar {
     & > div:first-child {
         @apply flex items-center text-base font-medium;
 
+        span {
+            @apply flex items-center;
+        }
+
         svg {
             @apply scale-75;
         }
     }
 
     &.theme-admonition-info {
-        @apply border-sky-200 bg-sky-50 text-sky-900;
+        @apply border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200/90;
 
         p,
         svg {
-            @apply fill-sky-900 text-sky-900;
+            @apply fill-sky-900 text-sky-900 dark:fill-sky-200/90 dark:text-sky-200/90;
         }
     }
 
     &.theme-admonition-tip {
-        @apply border-green-200 bg-green-50 text-green-900;
+        @apply border-green-200 bg-green-50 text-green-900 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200/90;
 
         p,
         svg {
-            @apply fill-green-900 text-green-900;
+            @apply fill-green-900 text-green-900 dark:fill-green-200/90 dark:text-green-200/90;
         }
     }
 
     &.theme-admonition-warning {
-        @apply border-amber-200 bg-amber-50 text-amber-900;
+        @apply border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200/90;
 
         p,
         svg {
-            @apply fill-amber-900 text-amber-900;
+            @apply fill-amber-900 text-amber-900 dark:fill-amber-200/90 dark:text-amber-200/90;
         }
     }
 }
@@ -293,7 +321,12 @@ table {
     thead {
         @apply bg-transparent;
         tr {
-            @apply border-t-0 border-b-neutral-200 bg-transparent #{!important};
+            @apply border-t-0 border-b-neutral-200 dark:border-b-neutral-300/10;
+            background: transparent !important;
+
+            th {
+                @apply border-0;
+            }
         }
 
         td {
@@ -306,9 +339,10 @@ table {
     }
 
     tr {
-        @apply border-t-neutral-200 bg-transparent #{!important};
+        @apply border-t-neutral-200 dark:border-t-neutral-300/10;
+        background: transparent !important;
         td {
-            @apply border-0 align-top;
+            @apply border-0 align-top text-neutral-400;
         }
     }
 }
@@ -319,7 +353,6 @@ article {
     ul,
     ol,
     table {
-        @apply text-neutral-700;
         font-size: theme("fontSize.lg");
     }
 

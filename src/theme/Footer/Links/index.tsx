@@ -14,11 +14,15 @@ export default function FooterLinks({ links }: Props): ReactNode {
         <>
             {links.map((column, index) => (
                 <div className="flex basis-1/2 flex-col p-1 lg:basis-1/4" key={index}>
-                    <div className={"font-medium text-neutral-900"}>{column.title}</div>
+                    <div className={"font-medium text-neutral-900 dark:text-neutral-200"}>
+                        {column.title}
+                    </div>
                     <>
                         {column.items.map((item, i) => (
                             <FooterLinkItem
-                                className={"mt-3 text-neutral-500 hover:text-indigo-600"}
+                                className={
+                                    "mt-3 text-neutral-500 hover:text-indigo-600 dark:text-neutral-400 dark:hover:text-indigo-400"
+                                }
                                 item={item}
                                 key={i}
                             />

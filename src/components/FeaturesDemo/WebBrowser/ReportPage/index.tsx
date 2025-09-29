@@ -51,12 +51,12 @@ export const ReportPage = forwardRef(function ReportPageInternal(props: ReportPa
                         ref={runTestsButtonRef}
                     >
                         Run
-                        <div className="ml-4 h-0 w-0 border-[3px] border-b-0 border-l-transparent border-r-transparent border-t-[rgba(0,0,0,.6)]" />
+                        <div className="ml-4 h-0 w-0 border-[3px] border-b-0 border-t-[rgba(0,0,0,.6)] border-r-transparent border-l-transparent" />
                     </button>
                 </div>
             </div>
 
-            <div className="py-2 pl-7 pr-2" ref={testsWrapperRef}>
+            <div className="py-2 pr-2 pl-7" ref={testsWrapperRef}>
                 {props.tests.map((test, index) => (
                     <TestResult data={test} key={index} />
                 ))}

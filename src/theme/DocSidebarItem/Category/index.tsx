@@ -95,7 +95,7 @@ function CollapseButton({
             }
             aria-expanded={!collapsed}
             type="button"
-            className="flex w-8 items-center justify-center rounded-lg text-neutral-500 hover:bg-[var(--ifm-menu-color-background-hover)]"
+            className="flex w-8 items-center justify-center rounded-lg border-0 bg-transparent text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-200/10"
             onClick={onClick}
         >
             <ChevronRight className={clsx("transition-transform", { "rotate-90": !collapsed })} />

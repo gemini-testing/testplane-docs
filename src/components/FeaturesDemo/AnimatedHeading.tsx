@@ -26,7 +26,7 @@ function TextTransition(props: TextTransitionProps) {
             {transitions((style, item) => (
                 <animated.div
                     style={{ ...style }}
-                    className="absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2"
+                    className="absolute top-1/2 left-1/2 w-full -translate-x-1/2 -translate-y-1/2"
                 >
                     {item}
                 </animated.div>
@@ -42,7 +42,7 @@ interface HeadingProps {
 
 export function Heading(props: HeadingProps) {
     return (
-        <div className="text-center text-xl font-bold text-white xs:text-2xl sm:text-3xl 2xl:text-4xl">
+        <div className="xs:text-2xl text-center text-xl font-bold text-white sm:text-3xl 2xl:text-4xl">
             {props.children}
         </div>
     );

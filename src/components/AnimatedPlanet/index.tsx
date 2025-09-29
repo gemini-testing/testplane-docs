@@ -117,12 +117,12 @@ export function AnimatedPlanet(props: AnimatedPlanetProps) {
                 */}
                 <div
                     className={clsx(
-                        "absolute left-0 top-1/2 -translate-y-1/2",
+                        "absolute top-1/2 left-0 -translate-y-1/2",
                         styles["outer-orbit-glow"],
                     )}
                 >
                     <svg
-                        className={clsx("absolute left-0 top-1/2 -translate-y-1/2")}
+                        className={clsx("absolute top-1/2 left-0 -translate-y-1/2")}
                         viewBox="0 0 991.8 911.76"
                         width="991.8"
                         height="911.76"

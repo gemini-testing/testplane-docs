@@ -11,7 +11,7 @@ export function Label(props: LabelProps) {
     return (
         <div
             className={clsx(
-                "label flex flex-nowrap text-nowrap text-xs text-gray-500",
+                "label flex flex-nowrap text-xs text-nowrap text-gray-500",
                 props.className,
             )}
         >

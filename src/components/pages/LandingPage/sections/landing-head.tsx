@@ -20,14 +20,14 @@ export const LandingHeadSection = () => {
     return (
         <section className="overflow-hidden bg-white">
             <MobileBg className="absolute top-0 w-full sm:hidden" />
-            <div className="container relative mx-auto">
-                <Star4Pink className={"absolute left-[35%] top-[20%] hidden size-28 sm:block"} />
+            <div className="relative container mx-auto">
+                <Star4Pink className={"absolute top-[20%] left-[35%] hidden size-28 sm:block"} />
                 <Star4Violet
                     className={
-                        "absolute left-[25%] top-[70%] hidden size-24 rotate-[30deg] sm:block"
+                        "absolute top-[70%] left-[25%] hidden size-24 rotate-[30deg] sm:block"
                     }
                 />
-                <Cone className={"absolute left-[68%] top-[50%] size-24 scale-75 sm:hidden"} />
+                <Cone className={"absolute top-[50%] left-[68%] size-24 scale-75 sm:hidden"} />
                 <div className="mt-16 flex items-center py-8 sm:mt-0 2xl:py-16">
                     <div className="flex flex-grow basis-full flex-col items-start">
                         <LinkBadge
@@ -46,7 +46,7 @@ export const LandingHeadSection = () => {
                         <h1
                             className={clsx(
                                 styles["text-glow"],
-                                "z-40 mt-2 text-5xl font-bold leading-[1.1] text-neutral-700 md:leading-none 2xl:text-7xl",
+                                "z-40 mt-2 text-5xl leading-[1.1] font-bold text-neutral-700 md:leading-none 2xl:text-7xl",
                             )}
                         >
                             <Translate
@@ -65,7 +65,7 @@ export const LandingHeadSection = () => {
                                     ),
                                     highlight: (
                                         <span className="relative inline-block">
-                                            <HighlightRoundSvg className="absolute left-0 top-0 -translate-y-0.5 scale-[1.15]" />
+                                            <HighlightRoundSvg className="absolute top-0 left-0 -translate-y-0.5 scale-[1.15]" />
                                             <Translate id="landing.landing-head.heading.highlight">
                                                 ultimate
                                             </Translate>

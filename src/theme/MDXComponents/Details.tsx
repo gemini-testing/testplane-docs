@@ -24,26 +24,28 @@ export default function MDXDetails({ children, className, ...rest }: Props): JSX
         <details
             {...rest}
             className={clsx(
-                "group overflow-hidden rounded-xl border border-neutral-200",
+                "group overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-300/10",
                 className,
             )}
         >
             <summary
                 {...summaryRestProps}
                 className={clsx(
-                    "flex cursor-pointer select-none items-start p-4 font-medium transition-colors duration-200 hover:bg-neutral-50 group-open:bg-neutral-50",
+                    "flex cursor-pointer items-start p-4 font-medium transition-colors duration-200 select-none group-open:bg-neutral-50 hover:bg-neutral-50 dark:group-open:bg-neutral-600/20 dark:hover:bg-neutral-600/10",
                     summaryClassName,
                 )}
             >
                 <span className="flex-1 text-base leading-relaxed [&>p]:mb-0">
                     {summaryContent}
                 </span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 transition-colors duration-300 group-hover:bg-neutral-200">
+                <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 transition-colors duration-300 group-hover:bg-neutral-200 dark:bg-neutral-600/20 dark:group-hover:bg-neutral-600/30">
                     <ChevronRight className="h-4 w-4 transition-transform duration-300 group-open:rotate-90" />
                 </span>
             </summary>
 
-            <div className="border-t border-neutral-200 p-4">{content}</div>
+            <div className="border-t border-neutral-200 p-4 dark:border-neutral-300/10">
+                {content}
+            </div>
         </details>
     );
 }

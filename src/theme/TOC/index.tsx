@@ -9,7 +9,7 @@ type Props = WrapperProps<typeof TOCType>;
 export default function TOCWrapper(props: Props): JSX.Element {
     return (
         <div className="sticky top-[5rem]">
-            <div className="flex items-baseline">
+            <div className="flex items-baseline dark:text-neutral-400">
                 <BarsDescendingAlignLeft className="h-[13px]" />
                 <span className="ml-2 font-medium">On this page</span>
             </div>

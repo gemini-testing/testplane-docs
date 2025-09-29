@@ -54,9 +54,9 @@ export const AnimatedDemoSection = () => {
     return (
         <section className={clsx(styles.demo, "relative")} style={{ backgroundImage: grainyBg }}>
             <div className="hidden 2xl:block">
-                <DemoStrokeLeft className="absolute left-0 top-1/3 origin-left scale-90" />
-                <Star5 className="absolute right-16 top-[65%] size-28" />
-                <Star4Sharp className="absolute right-2 top-[60%] size-16 rotate-[-20deg]" />
+                <DemoStrokeLeft className="absolute top-1/3 left-0 origin-left scale-90" />
+                <Star5 className="absolute top-[65%] right-16 size-28" />
+                <Star4Sharp className="absolute top-[60%] right-2 size-16 rotate-[-20deg]" />
             </div>
             <div className="container mx-auto py-6">
                 <BrowserOnly>

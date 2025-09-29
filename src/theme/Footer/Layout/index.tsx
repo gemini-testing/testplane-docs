@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import type { Props } from "@theme/Footer/Layout";
 import GithubIcon from "@site/static/icons/github.svg";
 import TestplaneLogo from "@site/static/img/logo.svg";
+import TestplaneLogoDark from "@site/static/img/logo-dark.svg";
 import { LogoStackOverflow, LogoTelegram } from "@gravity-ui/icons";
 
 export default function FooterLayout({ links, copyright }: Props): JSX.Element {
@@ -56,9 +57,10 @@ export default function FooterLayout({ links, copyright }: Props): JSX.Element {
 
     return (
         <footer ref={footerRef} className="flex justify-center">
-            <div className="w-full !max-w-[var(--max-width)] border-t border-neutral-100 px-8 pb-4 pt-10">
+            <div className="w-full !max-w-[var(--max-width)] border-t border-neutral-100 px-8 pt-10 pb-4 dark:border-neutral-500/10">
                 <div className="align-start flex justify-between pb-10">
-                    <TestplaneLogo className="h-10 w-10" />
+                    <TestplaneLogo className="h-10 w-10 dark:hidden" />
+                    <TestplaneLogoDark className="hidden h-10 w-10 dark:block" />
                     <div className="flex basis-2/3 flex-wrap">{links}</div>
                 </div>
                 <div className="mt-4 flex items-center">
@@ -66,7 +68,7 @@ export default function FooterLayout({ links, copyright }: Props): JSX.Element {
                     <div className="ml-1 flex items-center">
                         {SOCIAL_LINKS.map(({ icon: Icon, href }, index) => (
                             <a
-                                className="h-8 w-8 rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+                                className="flex h-8 w-8 items-center rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-200/10 dark:hover:text-neutral-200"
                                 href={href}
                                 target="_blank"
                                 rel="noreferrer"

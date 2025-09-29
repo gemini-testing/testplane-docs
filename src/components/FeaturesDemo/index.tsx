@@ -673,19 +673,19 @@ export function FeaturesDemo(props: {
     const windows = (
         <div
             className={clsx(
-                "-ml-2 -mt-2 flex w-full flex-grow basis-full justify-stretch overflow-hidden",
+                "-mt-2 -ml-2 flex w-full flex-grow basis-full justify-stretch overflow-hidden",
                 { "flex-col": !isHorizontalScreen },
             )}
         >
             {transitions((styles, item) => {
                 let Window;
                 if (item.type === ComponentTypes.CodeEditor) {
-                    Window = <CodeEditor className="h-full w-full pl-4 pt-4" {...item.props} />;
+                    Window = <CodeEditor className="h-full w-full pt-4 pl-4" {...item.props} />;
                 } else if (item.type === ComponentTypes.WebBrowser) {
                     if (item.pageData.type === PageTypes.App) {
                         Window = (
                             <WebBrowser
-                                className="h-full w-full pl-4 pt-4"
+                                className="h-full w-full pt-4 pl-4"
                                 page={<AppPage {...item.pageData.props} />}
                                 ref={appBrowserPageRef}
                                 {...item.props}
@@ -694,7 +694,7 @@ export function FeaturesDemo(props: {
                     } else if (item.pageData.type === PageTypes.Report) {
                         Window = (
                             <WebBrowser
-                                className="h-full w-full pl-4 pt-4"
+                                className="h-full w-full pt-4 pl-4"
                                 page={
                                     <AnimatedCursor ref={reportCursorRef}>
                                         <ReportPage {...item.pageData.props} />
@@ -706,7 +706,7 @@ export function FeaturesDemo(props: {
                         );
                     } else {
                         Window = (
-                            <WebBrowser className="h-full pl-4 pt-4" page={null} {...item.props} />
+                            <WebBrowser className="h-full pt-4 pl-4" page={null} {...item.props} />
                         );
                     }
                 }
