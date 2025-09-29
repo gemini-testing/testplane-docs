@@ -45,6 +45,7 @@ const config: Config = {
                     sidebarPath: "./sidebars.ts",
                     editUrl: "https://github.com/gemini-testing/testplane-docs/tree/master/",
                     lastVersion: "current",
+                    breadcrumbs: false,
                     versions: {
                         current: {
                             label: "v8",
@@ -70,6 +71,13 @@ const config: Config = {
         image: "img/docusaurus-social-card.jpg",
         navbar: {
             title: "testplane",
+            logo: {
+                alt: "Testplane Logo",
+                src: "img/logo.svg",
+                target: "_self",
+                width: 28,
+                height: 28,
+            },
             items: [
                 {
                     type: "docSidebar",
@@ -167,7 +175,6 @@ const config: Config = {
                     ],
                 },
             ],
-            copyright: `MIT License © ${new Date().getFullYear()}`,
         },
         prism: {
             theme: prismThemes.github,

@@ -26,16 +26,18 @@ export function FeatureBlock(props: FeatureBlockProps) {
             )}
         >
             <div className="flex flex-grow basis-1/2 flex-col justify-center overflow-hidden">
-                <div className="text-xl font-bold text-gray-700 sm:text-2xl">{props.heading}</div>
+                <div className="text-xl font-bold text-neutral-700 sm:text-2xl">
+                    {props.heading}
+                </div>
                 <img className="sm:hidden" src={props.imgSrc} alt="Feature Image" />
-                <div className="mt-4 text-lg font-medium text-gray-500">{props.description}</div>
+                <div className="mt-4 text-lg font-medium text-neutral-500">{props.description}</div>
                 <div className="mt-4 columns-2">
                     {props.items.map((item, index) => (
                         <div
                             key={index}
-                            className="mb-3 flex max-w-48 text-lg font-medium text-gray-500"
+                            className="mb-3 flex max-w-48 text-lg font-medium text-neutral-500"
                         >
-                            <TickIcon className="mr-1 mt-1 size-5 flex-shrink-0 fill-gray-500" />
+                            <TickIcon className="mr-1 mt-1 size-5 flex-shrink-0 fill-neutral-500" />
                             {item}
                         </div>
                     ))}

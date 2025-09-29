@@ -8,11 +8,11 @@ import Translate, { translate } from "@docusaurus/Translate";
 
 export const CoreFeaturesSection = () => {
     return (
-        <section className="bg-gray-100">
+        <section className="bg-white">
             <div className="container !max-w-screen-lg py-6">
                 <AnimatedAppear>
                     <Heading>
-                        <div className="mb-3 text-gray-700">
+                        <div className="mb-3 text-neutral-700">
                             <Translate
                                 id="landing.core-features.heading"
                                 values={{

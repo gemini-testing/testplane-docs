@@ -56,7 +56,7 @@ export const WebBrowser = forwardRef(function WebBrowserInternal(
                 <div
                     className={clsx(
                         styles.topbar,
-                        "flex min-w-0 items-center justify-between border-b border-gray-200 bg-gray-100 fill-gray-400 px-4 text-gray-400",
+                        "flex min-w-0 items-center justify-between border-b border-gray-200 bg-white fill-gray-400 px-4 text-gray-400",
                     )}
                 >
                     <div className="flex">

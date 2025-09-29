@@ -25,7 +25,7 @@ export const InstallationPromptSection = () => {
     const latestVersion = useLatestVersion(docsPluginId);
 
     return (
-        <section className="relative overflow-hidden bg-gray-50">
+        <section className="relative overflow-hidden bg-white">
             <div className="hidden xl:block">
                 <img
                     className={"absolute left-[16%] top-[20%] size-16 rotate-[15deg]"}
@@ -41,7 +41,7 @@ export const InstallationPromptSection = () => {
             <AnimatedAppear onAppear={type}>
                 <div className="container !max-w-screen-lg pb-16 pt-10">
                     <Heading>
-                        <div className="mb-3 text-gray-700">
+                        <div className="mb-3 text-neutral-700">
                             <Translate
                                 id="landing.installation-prompt.heading"
                                 values={{
@@ -56,7 +56,7 @@ export const InstallationPromptSection = () => {
                             </Translate>
                         </div>
                     </Heading>
-                    <div className="text-center text-lg font-medium text-gray-500">
+                    <div className="text-center text-lg font-medium text-neutral-500">
                         <Translate
                             id="landing.installation-prompt.description"
                             values={{

@@ -1,70 +1,78 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import type { Props } from "@theme/Footer/Layout";
-import styles from "./index.module.scss";
-import ArrowLinkIcon from "@site/static/icons/arrow-link.svg";
 import GithubIcon from "@site/static/icons/github.svg";
-import StackoverflowIcon from "@site/static/icons/stackoverflow.svg";
-import TelegramIcon from "@site/static/icons/telegram.svg";
-import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
-import Translate from "@docusaurus/Translate";
+import TestplaneLogo from "@site/static/img/logo.svg";
+import { LogoStackOverflow, LogoTelegram } from "@gravity-ui/icons";
 
 export default function FooterLayout({ links, copyright }: Props): JSX.Element {
+    const footerRef = useRef<HTMLElement | null>(null);
+
+    useEffect(() => {
+        if (typeof window === "undefined") {
+            return undefined;
+        }
+
+        const footerElement = footerRef.current;
+
+        if (!footerElement || !document.querySelector("nav.navbar")) {
+            return undefined;
+        }
+
+        const handleIntersection: IntersectionObserverCallback = ([entry]) => {
+            if (entry?.isIntersecting) {
+                document.body.classList.add("footer-in-view");
+            } else {
+                document.body.classList.remove("footer-in-view");
+            }
+        };
+
+        const observer = new IntersectionObserver(handleIntersection, {
+            root: null,
+            threshold: 0,
+        });
+
+        observer.observe(footerElement);
+
+        return () => {
+            observer.disconnect();
+            document.body.classList.remove("footer-in-view");
+        };
+    }, []);
+
     const SOCIAL_LINKS = [
         {
             icon: GithubIcon,
             href: "https://github.com/gemini-testing/testplane",
         },
         {
-            icon: StackoverflowIcon,
+            icon: LogoStackOverflow,
             href: "https://stackoverflow.com/questions/tagged/testplane",
         },
         {
-            icon: TelegramIcon,
+            icon: LogoTelegram,
             href: "https://t.me/testplane",
         },
     ];
-    const grainyBg = `radial-gradient(circle at center top, rgba(188, 93, 254, 1) 0%, rgba(136, 71, 254, 1) 100%), url(${useBaseUrl("/img/landing/noise.png")})`;
 
     return (
-        <footer className={styles.footer} style={{ backgroundImage: grainyBg }}>
-            <div className="container !max-w-screen-lg py-10">
-                <div className="flex flex-wrap justify-between border-b-2 border-white/50 pb-10">
-                    <div className="basis-full p-1">
-                        <div className="flex items-center font-mono text-lg font-bold text-violet-50">
-                            testplane
-                        </div>
-                        <div className={"mt-3 max-w-[75vw] text-lg font-medium text-white/60"}>
-                            <Translate id="footer.slogan">
-                                Fast, scalable and robust end-to-end testing framework for the
-                                ever-evolving web landscape.
-                            </Translate>
-                        </div>
-                        <a
-                            className={
-                                "mt-3 inline-flex items-baseline fill-white/60 text-lg font-medium text-white/60 transition-colors"
-                            }
-                            href="https://github.com/gemini-testing/testplane/discussions"
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            <Translate id="footer.contact-us">Contact us</Translate>
-                            <ArrowLinkIcon className={"ml-1 size-4"} />
-                        </a>
-                    </div>
-                    {links}
+        <footer ref={footerRef} className="flex justify-center">
+            <div className="w-full !max-w-[var(--max-width)] border-t border-neutral-100 px-8 pb-4 pt-10">
+                <div className="align-start flex justify-between pb-10">
+                    <TestplaneLogo className="h-10 w-10" />
+                    <div className="flex basis-2/3 flex-wrap">{links}</div>
                 </div>
-                <div className="mt-10 flex items-center justify-between">
-                    <div className="font-mono text-lg font-bold text-white/60">{copyright}</div>
-                    <div className="flex items-center">
+                <div className="mt-4 flex items-center">
+                    <div className="">{copyright}</div>
+                    <div className="ml-1 flex items-center">
                         {SOCIAL_LINKS.map(({ icon: Icon, href }, index) => (
                             <a
-                                className="fill-white/60"
+                                className="h-8 w-8 rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
                                 href={href}
                                 target="_blank"
                                 rel="noreferrer"
                                 key={index}
                             >
-                                <Icon className="ml-3 size-8" />
+                                <Icon className="h-full w-full" />
                             </a>
                         ))}
                     </div>

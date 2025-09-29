@@ -18,7 +18,7 @@ export const LandingHeadSection = () => {
     const latestVersion = useLatestVersion(docsPluginId);
 
     return (
-        <section className="overflow-hidden bg-gray-100">
+        <section className="overflow-hidden bg-white">
             <MobileBg className="absolute top-0 w-full sm:hidden" />
             <div className="container relative mx-auto">
                 <Star4Pink className={"absolute left-[35%] top-[20%] hidden size-28 sm:block"} />
@@ -46,7 +46,7 @@ export const LandingHeadSection = () => {
                         <h1
                             className={clsx(
                                 styles["text-glow"],
-                                "z-40 mt-2 text-5xl font-bold leading-[1.1] text-gray-700 md:leading-none 2xl:text-7xl",
+                                "z-40 mt-2 text-5xl font-bold leading-[1.1] text-neutral-700 md:leading-none 2xl:text-7xl",
                             )}
                         >
                             <Translate
@@ -81,7 +81,7 @@ export const LandingHeadSection = () => {
                         <div
                             className={clsx(
                                 styles["text-glow"],
-                                "z-40 mt-5 text-lg text-gray-500 xl:text-xl",
+                                "z-40 mt-5 text-lg text-neutral-500 xl:text-xl",
                             )}
                         >
                             <Translate
