@@ -71,14 +71,14 @@ export const AnimatedDemoSection = () => {
                         })}
                     />
                     <DemoStats
-                        value="600+"
+                        value="800+"
                         description={translate({
                             id: "landing.animated-demo.stats.stars",
                             message: "Stars on GitHub",
                         })}
                     />
                     <DemoStats
-                        value="300+"
+                        value="450+"
                         description={translate({
                             id: "landing.animated-demo.stats.projects",
                             message: "Projects that trust us",

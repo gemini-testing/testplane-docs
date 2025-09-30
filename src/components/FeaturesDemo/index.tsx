@@ -673,7 +673,7 @@ export function FeaturesDemo(props: {
     const windows = (
         <div
             className={clsx(
-                "-mt-2 -ml-2 flex w-full flex-grow basis-full justify-stretch overflow-hidden",
+                "relative -mt-2 -ml-2 flex w-full flex-grow basis-full justify-stretch overflow-hidden",
                 { "flex-col": !isHorizontalScreen },
             )}
         >

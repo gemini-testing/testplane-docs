@@ -116,7 +116,7 @@ export const LandingHeadSection = () => {
                             </Translate>
                         </div>
                         <Link to={latestVersion.path}>
-                            <button className="mt-5 flex rounded-xl bg-[#6C47FF] px-6 py-3 font-bold text-white transition-colors hover:bg-[#7b59ff] active:bg-[#5e34ff]">
+                            <button className="mt-5 flex items-center rounded-xl border-0 bg-[#6C47FF] px-6 py-3 font-[Jost] text-lg font-bold text-white transition-colors hover:bg-[#7b59ff] active:bg-[#5e34ff]">
                                 <Translate id="landing.getStartedButton">Get started</Translate>
                                 <ArrowHandDrawn className="ml-1 size-6" />
                             </button>

@@ -6,6 +6,28 @@ import { AnimatedDemoSection } from "@site/src/components/pages/LandingPage/sect
 import { LandingHeadSection } from "@site/src/components/pages/LandingPage/sections/landing-head";
 
 export const LandingPage = () => {
+    React.useEffect(() => {
+        if (typeof document === "undefined") {
+            return undefined;
+        }
+
+        const root = document.documentElement;
+        const previousOverride = root.getAttribute("data-theme-override");
+        const hadDarkClass = root.classList.contains("dark");
+
+        root.setAttribute("data-theme-override", "light");
+        root.classList.remove("dark");
+
+        return () => {
+            root.classList.toggle("dark", hadDarkClass);
+            if (previousOverride) {
+                root.setAttribute("data-theme-override", previousOverride);
+            } else {
+                root.removeAttribute("data-theme-override");
+            }
+        };
+    }, []);
+
     return (
         <>
             <LandingHeadSection />

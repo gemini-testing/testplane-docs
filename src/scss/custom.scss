@@ -4,7 +4,7 @@
 
 @import "tailwindcss/preflight.css" layer preflight;
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (&:where([data-theme=dark]:not([data-theme-override=light]), [data-theme=dark]:not([data-theme-override=light]) *));
 
 body {
     h1,
@@ -42,11 +42,11 @@ body {
     }
 
     a {
-        @apply text-indigo-600 dark:text-indigo-500;
+        @apply text-indigo-600 dark:text-indigo-400;
         text-decoration: none !important;
 
         &:hover {
-            @apply text-indigo-400;
+            @apply text-indigo-400 dark:text-indigo-300;
             text-decoration: none !important;
         }
     }
@@ -90,6 +90,13 @@ html[data-theme="dark"] {
     --ifm-color-primary-lighter: #32d8b4;
     --ifm-color-primary-lightest: #4fddbf;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme-override="light"] {
+    background-color: #ffffff !important;
+    color: theme("colors.neutral.900") !important;
+    --ifm-navbar-link-color: theme("colors.neutral.900");
+    --ifm-navbar-link-hover-color: theme("colors.neutral.900");
 }
 
 .docs-wrapper .main-wrapper,
@@ -187,13 +194,16 @@ html[data-theme="dark"] {
     }
 
     .dropdown__menu {
-        @apply rounded-lg border border-neutral-100 dark:border-neutral-300/20;
+        @apply rounded-lg border border-neutral-100 bg-white dark:border-neutral-300/10 dark:bg-neutral-900;
         box-shadow:
             rgba(112, 112, 112, 0.05) 0px 20px 25px -5px,
             rgba(112, 112, 112, 0.05) 0px 8px 10px -6px;
 
         .dropdown__link {
-            @apply rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-200/10;
+            @apply rounded-lg text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-200/10 dark:hover:text-neutral-300;
+        }
+        .dropdown__link--active {
+            @apply text-indigo-600 dark:hover:text-indigo-500;
         }
     }
 }
@@ -228,7 +238,7 @@ body.footer-in-view .navbar {
     }
 
     .table-of-contents__link--active {
-        @apply dark:text-indigo-500 dark:hover:text-indigo-400;
+        @apply dark:text-indigo-400 dark:hover:text-indigo-300;
     }
 }
 
@@ -268,6 +278,7 @@ body.footer-in-view .navbar {
     }
 
     .tabs__item--active {
+        @apply dark:border-indigo-400 dark:text-indigo-400;
         border-bottom-width: 2px;
     }
 }
@@ -339,10 +350,13 @@ table {
     }
 
     tr {
-        @apply border-t-neutral-200 dark:border-t-neutral-300/10;
-        background: transparent !important;
+        @apply border-0;
         td {
-            @apply border-0 align-top text-neutral-400;
+            @apply border-0 align-top text-neutral-700 dark:text-neutral-400;
+        }
+
+        &:nth-child(2n) {
+            @apply bg-neutral-100 dark:bg-neutral-500/10;
         }
     }
 }

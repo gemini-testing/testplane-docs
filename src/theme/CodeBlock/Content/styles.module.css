@@ -5,10 +5,11 @@
     /* rtl:ignore */
     direction: ltr;
     border-radius: inherit;
+    @apply dark:border-neutral-300/10;
 }
 
 .codeBlockTitle {
-    @apply border border-b-0 border-neutral-200 dark:border-neutral-300/10;
+    @apply border border-b-0 border-neutral-200 dark:border-neutral-300/20 dark:bg-neutral-900;
 
     font-size: var(--ifm-code-font-size);
     font-weight: 500;
@@ -22,7 +23,8 @@
     padding: 0;
 }
 
-.codeBlockTitle + .codeBlockContent .codeBlock {
+.codeBlockTitle + .codeBlockContent .codeBlock,
+.codeBlockTitle + .codeBlockContent .codeBlock code {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
@@ -37,6 +39,7 @@
     float: left;
     min-width: 100%;
     padding: var(--ifm-pre-padding);
+    @apply bg-neutral-100 dark:bg-neutral-900;
 }
 
 .codeBlockLinesWithNumbering {

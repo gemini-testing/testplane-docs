@@ -73,7 +73,7 @@ export default function CodeBlockString({
                             ref={wordWrap.codeBlockRef}
                             className={clsx(
                                 styles.codeBlock,
-                                "thin-scrollbar rounded-xl border border-neutral-200 bg-white dark:border-neutral-300/10 dark:bg-neutral-950",
+                                "thin-scrollbar rounded-xl border border-neutral-200 bg-white dark:border-neutral-300/20 dark:bg-neutral-950",
                             )}
                         >
                             <code
