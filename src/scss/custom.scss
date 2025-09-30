@@ -2,7 +2,7 @@
 
 @import "tailwindcss/utilities.css";
 
-@import "tailwindcss/preflight.css" layer preflight;
+@import "tailwindcss/preflight.css" layer(preflight);
 
 /* Classes for code highlighting */
 @source inline("text-green-400");
