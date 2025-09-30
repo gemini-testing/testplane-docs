@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
     build:
-        runs-on: self-hosted-arc
+        runs-on: ubuntu-latest
 
         strategy:
             matrix:
@@ -33,7 +33,7 @@ jobs:
             - run: npm test
 
     deploy-static:
-        runs-on: self-hosted-arc
+        runs-on: ubuntu-latest
         environment: CI
 
         strategy:

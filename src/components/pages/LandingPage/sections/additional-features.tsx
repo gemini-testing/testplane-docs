@@ -164,8 +164,8 @@ export const AdditionalFeaturesSection = () => {
             <div className="hidden 2xl:block">
                 <FeaturesStrokeLeft className={"absolute left-0 origin-left scale-[0.7]"} />
                 <FeaturesStrokeRight className={"absolute right-0 origin-right scale-[0.7]"} />
-                <Star5 className={"absolute left-[6%] top-[70%] scale-x-[-0.7] scale-y-[0.7]"} />
-                <Star4Violet className={"absolute left-[85%] top-[10%] size-24 rotate-[15deg]"} />
+                <Star5 className={"absolute top-[70%] left-[6%] scale-x-[-0.7] scale-y-[0.7]"} />
+                <Star4Violet className={"absolute top-[10%] left-[85%] size-24 rotate-[15deg]"} />
             </div>
             <div className="container !max-w-screen-lg pt-10">
                 <AnimatedAppear>

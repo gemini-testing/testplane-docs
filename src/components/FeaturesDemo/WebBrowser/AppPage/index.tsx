@@ -36,9 +36,9 @@ export const AppPage = forwardRef(function AppPageInternal(
 
     return (
         <div className="app-page w-full min-w-0 bg-white">
-            <div className="sticky top-0 z-20 flex w-full flex-nowrap justify-between bg-white bg-opacity-35 p-1 align-middle backdrop-blur">
+            <div className="bg-opacity-35 sticky top-0 z-20 flex w-full flex-nowrap justify-between bg-white p-1 align-middle backdrop-blur">
                 <div className="flex items-baseline">
-                    <div className="whitespace-nowrap pl-1 text-lg font-medium italic">
+                    <div className="pl-1 text-lg font-medium whitespace-nowrap italic">
                         Awesome store.
                     </div>
                     <div className="ml-3 hidden sm:block">Home</div>
@@ -68,7 +68,7 @@ export const AppPage = forwardRef(function AppPageInternal(
                         </button>
                     </div>
                 </div>
-                <div className="-z-100 absolute -bottom-14 left-1/2 -translate-x-1/2 whitespace-nowrap text-9xl font-bold italic text-white opacity-30">
+                <div className="absolute -bottom-14 left-1/2 -z-100 -translate-x-1/2 text-9xl font-bold whitespace-nowrap text-white italic opacity-30">
                     STYLE STYLE STYLE
                 </div>
             </div>
@@ -98,7 +98,7 @@ export const AppPage = forwardRef(function AppPageInternal(
                     ))}
             </div>
             <div className="relative flex h-96 justify-between bg-gray-500 p-6 bg-blend-hard-light">
-                <div className="text-2xl font-medium italic text-white">Bookstore app.</div>
+                <div className="text-2xl font-medium text-white italic">Bookstore app.</div>
                 <div className="mt-2 flex">
                     <div>
                         <TwitterIcon className="size-4" />

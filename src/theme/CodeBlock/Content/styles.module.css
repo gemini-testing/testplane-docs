@@ -1,0 +1,85 @@
+@reference "../../../scss/custom.scss";
+
+.codeBlockContent {
+    position: relative;
+    /* rtl:ignore */
+    direction: ltr;
+    border-radius: inherit;
+    @apply text-base dark:border-neutral-300/10;
+}
+
+.codeBlockTitle {
+    @apply border border-b-0 border-neutral-200 bg-neutral-100 dark:border-neutral-300/20 dark:bg-neutral-900;
+
+    font-size: var(--ifm-code-font-size);
+    font-weight: 500;
+    padding: 0.75rem var(--ifm-pre-padding);
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}
+
+.codeBlock {
+    margin: 0;
+    padding: 0;
+}
+
+.codeBlockTitle + .codeBlockContent .codeBlock,
+.codeBlockTitle + .codeBlockContent .codeBlock code {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.codeBlockStandalone {
+    padding: 0;
+}
+
+.codeBlockLines {
+    font: inherit;
+    /* rtl:ignore */
+    float: left;
+    min-width: 100%;
+    padding: var(--ifm-pre-padding);
+    @apply bg-neutral-100 dark:bg-neutral-900;
+}
+
+.codeBlockLinesWithNumbering {
+    display: table;
+    padding: var(--ifm-pre-padding) 0;
+}
+
+@media print {
+    .codeBlockLines {
+        white-space: pre-wrap;
+    }
+}
+
+.buttonGroup {
+    display: flex;
+    column-gap: 0.2rem;
+    position: absolute;
+    /* rtl:ignore */
+    right: 0.65rem;
+    top: 0.65rem;
+}
+
+.buttonGroup button {
+    @apply bg-neutral-100 dark:bg-neutral-200/10;
+    display: flex;
+    align-items: center;
+    color: var(--prism-color);
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: var(--ifm-global-radius);
+    padding: 0.4rem;
+    line-height: 0;
+    transition: opacity var(--ifm-transition-fast) ease-in-out;
+    opacity: 0;
+}
+
+.buttonGroup button:focus-visible,
+.buttonGroup button:hover {
+    opacity: 1 !important;
+}
+
+:global(.theme-code-block:hover) .buttonGroup button {
+    opacity: 0.4;
+}

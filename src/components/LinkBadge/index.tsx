@@ -18,7 +18,7 @@ export function LinkBadge(props: LinkBadgeProps) {
             className={clsx(
                 mainStyles["box-glow"],
                 styles["link-badge"],
-                "z-50 border-gray-400 bg-gray-100 pr-2 text-sm text-gray-700 hover:bg-gray-200 hover:text-gray-700",
+                "z-50 border border-neutral-200 bg-gray-100 pr-2 text-sm text-gray-700 hover:bg-gray-200 hover:text-gray-700",
             )}
             rel="noreferrer"
         >

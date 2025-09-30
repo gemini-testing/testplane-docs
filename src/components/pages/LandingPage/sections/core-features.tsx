@@ -8,11 +8,11 @@ import Translate, { translate } from "@docusaurus/Translate";
 
 export const CoreFeaturesSection = () => {
     return (
-        <section className="bg-gray-100">
+        <section className="bg-white">
             <div className="container !max-w-screen-lg py-6">
                 <AnimatedAppear>
                     <Heading>
-                        <div className="mb-3 text-gray-700">
+                        <div className="mb-3 text-neutral-700">
                             <Translate
                                 id="landing.core-features.heading"
                                 values={{
@@ -38,7 +38,7 @@ export const CoreFeaturesSection = () => {
                                     id="landing.core-features.browsers.heading"
                                     values={{
                                         underline: (
-                                            <GradientUnderline className=" rotate-[2deg]">
+                                            <GradientUnderline className="rotate-[2deg]">
                                                 <Translate id="landing.core-features.browsers.heading.underline">
                                                     browser
                                                 </Translate>
@@ -94,7 +94,7 @@ export const CoreFeaturesSection = () => {
                                     id="landing.core-features.scale.heading"
                                     values={{
                                         underline: (
-                                            <GradientUnderline className=" rotate-[2deg]">
+                                            <GradientUnderline className="rotate-[2deg]">
                                                 <Translate id="landing.core-features.browsers.scale.underline">
                                                     scale
                                                 </Translate>
@@ -146,7 +146,7 @@ export const CoreFeaturesSection = () => {
                                     id="landing.core-features.extend.heading"
                                     values={{
                                         underline: (
-                                            <GradientUnderline className=" rotate-[2deg]">
+                                            <GradientUnderline className="rotate-[2deg]">
                                                 <Translate id="landing.core-features.browsers.extend.underline">
                                                     extend
                                                 </Translate>

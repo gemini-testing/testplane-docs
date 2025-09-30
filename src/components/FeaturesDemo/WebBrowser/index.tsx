@@ -56,17 +56,17 @@ export const WebBrowser = forwardRef(function WebBrowserInternal(
                 <div
                     className={clsx(
                         styles.topbar,
-                        "flex min-w-0 items-center justify-between border-b border-gray-200 bg-gray-100 fill-gray-400 px-4 text-gray-400",
+                        "flex min-w-0 items-center justify-between border-b border-gray-200 bg-white fill-gray-400 px-4 text-gray-400",
                     )}
                 >
                     <div className="flex">
                         <AngleIcon className="mr-2 size-3.5 rotate-180" />
                         <AngleIcon className="size-3.5" />
                     </div>
-                    <div className="relative w-2/3 overflow-hidden text-ellipsis text-nowrap rounded-xl border border-gray-300 px-5 text-center text-sm">
+                    <div className="relative w-2/3 overflow-hidden rounded-xl border border-gray-300 px-5 text-center text-sm text-nowrap text-ellipsis">
                         {props.url ?? "about:blank"}
                         {props.isPageLoading && (
-                            <div className="absolute right-1.5 top-1/2 -translate-y-1/2">
+                            <div className="absolute top-1/2 right-1.5 -translate-y-1/2">
                                 <SpinnerIcon className="size-3 animate-spin overflow-visible stroke-gray-400 stroke-[15px]" />
                             </div>
                         )}

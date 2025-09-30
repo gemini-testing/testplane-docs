@@ -79,7 +79,7 @@ function CollapsibleFsTreeItem(props: FsTreeItem) {
                 {props.type === FsTreeItemType.Dir && (
                     <AngleIcon
                         className={clsx(
-                            "absolute -left-5 top-1/2 flex size-3 -translate-y-1/2 items-center",
+                            "absolute top-1/2 -left-5 flex size-3 -translate-y-1/2 items-center",
                             { "rotate-90": !props.isCollapsed },
                         )}
                     />
@@ -150,7 +150,7 @@ export function CodeEditor(props: CodeEditorProps): JSX.Element {
                 <div
                     className={clsx(
                         styles.code,
-                        "overflow-y-hidden whitespace-pre-wrap bg-gradient-to-tr from-indigo-950 to-indigo-900 p-1 font-mono text-xs text-white sm:text-sm",
+                        "overflow-y-hidden bg-gradient-to-tr from-indigo-950 to-indigo-900 p-1 font-mono text-xs whitespace-pre-wrap text-white sm:text-sm",
                     )}
                 >
                     {props.code}

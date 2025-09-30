@@ -71,7 +71,7 @@ function AssertViewDiff({ data }: AssertViewDiffProps) {
                     <CompareIcon className="size-3" />
                 </ActionButton>
             </div>
-            <div className="hidden overflow-x-scroll text-nowrap border-b border-gray-200 py-1 text-center text-sm text-gray-500 sm:block">
+            <div className="hidden overflow-x-scroll border-b border-gray-200 py-1 text-center text-sm text-nowrap text-gray-500 sm:block">
                 3-up | <span className="font-medium">3-up scaled</span> | 3-up scaled to fit | Only
                 diff | Switch | Swipe | Onion skin
             </div>
@@ -97,7 +97,7 @@ function AssertViewDiff({ data }: AssertViewDiffProps) {
                                         left: bubble.x,
                                     }}
                                 >
-                                    <div className="absolute left-1/2 top-1/2 size-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-fuchsia-600"></div>
+                                    <div className="absolute top-1/2 left-1/2 size-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-fuchsia-600"></div>
                                 </div>
                             ))}
                         </div>

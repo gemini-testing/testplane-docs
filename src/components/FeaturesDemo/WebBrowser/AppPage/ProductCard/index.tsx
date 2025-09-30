@@ -23,7 +23,7 @@ export function ProductCard(props: ProductCardProps) {
             </div>
             <div className="mt-2 flex items-center justify-between">
                 <div className="shrink basis-full overflow-hidden">
-                    <div className="overflow-hidden overflow-ellipsis whitespace-nowrap pr-6 text-sm capitalize text-gray-500">
+                    <div className="overflow-hidden pr-6 text-sm overflow-ellipsis whitespace-nowrap text-gray-500 capitalize">
                         {props.title}
                     </div>
                     <div className="mt-1 text-lg font-bold">${props.price}</div>

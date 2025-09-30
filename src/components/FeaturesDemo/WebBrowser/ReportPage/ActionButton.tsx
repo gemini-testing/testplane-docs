@@ -12,7 +12,7 @@ export function ActionButton(props: ActionButtonProps) {
         <button
             data-role-id={props.dataRoleId}
             className={clsx(
-                "flex items-center text-nowrap rounded-sm border border-gray-200 px-2 py-1 text-xs text-black shadow-sm",
+                "flex items-center rounded-sm border border-gray-200 px-2 py-1 text-xs text-nowrap text-black shadow-sm",
                 props.className,
             )}
         >

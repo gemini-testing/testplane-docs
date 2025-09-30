@@ -1,13 +1,30 @@
-@tailwind base;
+@import "tailwindcss/theme.css";
 
-@layer base {
+@import "tailwindcss/utilities.css";
+
+@import "tailwindcss/preflight.css" layer(preflight);
+
+/* Classes for code highlighting */
+@source inline("text-green-400");
+@source inline("text-pink-500");
+@source inline("text-violet-400");
+@source inline("italic");
+/* Classes used for "add to cart" button on demo page */
+@source inline("hidden");
+@source inline("outline");
+@source inline("outline-2");
+@source inline("outline-indigo-300");
+
+@custom-variant dark (&:where([data-theme=dark]:not([data-theme-override=light]), [data-theme=dark]:not([data-theme-override=light]) *));
+
+body {
     h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
-        @apply mb-3 text-lg font-medium;
+        @apply mb-3 text-lg font-medium dark:text-neutral-200;
     }
 
     h1 {
@@ -30,16 +47,22 @@
         @apply mb-3;
     }
 
+    p,
+    li {
+        @apply text-neutral-700 dark:text-neutral-400;
+    }
+
     code {
         font-size: var(--ifm-code-font-size);
         font-family: monospace, monospace !important;
     }
 
     a {
-        @apply text-indigo-600;
+        @apply text-indigo-600 dark:text-indigo-400;
+        text-decoration: none !important;
 
         &:hover {
-            @apply text-indigo-400;
+            @apply text-indigo-400 dark:text-indigo-300;
             text-decoration: none !important;
         }
     }
@@ -50,9 +73,6 @@
     }
 }
 
-@tailwind components;
-@tailwind utilities;
-
 /* Infima variables. */
 :root {
     --ifm-color-primary: theme("colors.indigo.600");
@@ -62,18 +82,23 @@
     --ifm-color-primary-light: theme("colors.indigo.500");
     --ifm-color-primary-lighter: theme("colors.indigo.400");
     --ifm-color-primary-lightest: theme("colors.indigo.300");
-    --ifm-code-font-size: 95%;
+    --ifm-code-font-size: 85%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
     --ifm-font-family-base: Jost, sans-serif;
     --ifm-link-color: theme("colors.indigo.600");
     --ifm-menu-color-active: theme("colors.indigo.600");
     --ifm-breadcrumb-color-active: theme("colors.indigo.600");
     --docsearch-searchbox-background: transparent !important;
+    --max-width: 92rem;
 }
 
 /* Dark mode. */
-[data-theme="dark"] {
-    --ifm-color-primary: #25c2a0;
+html[data-theme="dark"] {
+    --ifm-background-color: theme("colors.neutral.950");
+    --ifm-link-color: theme("colors.indigo.500");
+    --ifm-tabs-color-active: theme("colors.indigo.500");
+    --ifm-navbar-link-hover-color: #fff;
+    --ifm-color-primary: theme("colors.indigo.600");
     --ifm-color-primary-dark: #21af90;
     --ifm-color-primary-darker: #1fa588;
     --ifm-color-primary-darkest: #1a8870;
@@ -83,8 +108,35 @@
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+html[data-theme-override="light"] {
+    background-color: #ffffff !important;
+    color: theme("colors.neutral.900") !important;
+    --ifm-navbar-link-color: theme("colors.neutral.900");
+    --ifm-navbar-link-hover-color: theme("colors.neutral.900");
+}
+
+.docs-wrapper .main-wrapper,
+.blog-wrapper .main-wrapper {
+    max-width: var(--max-width);
+    left: 50%;
+    position: relative;
+    translate: -50% 0;
+    padding: 0 2rem;
+}
+
 .navbar {
+    transition: transform 0.25s ease-in-out;
+    transform: translateY(0);
+    will-change: transform;
+    @apply justify-center px-0 shadow-none dark:fill-white;
+
+    .navbar__inner {
+        max-width: var(--max-width);
+        padding: 0 2rem;
+    }
+
     &.navbar--fixed-top {
+        @apply dark:bg-neutral-950/80;
         background-color: rgba(255, 255, 255, 0.7);
 
         &::before {
@@ -105,17 +157,30 @@
     }
 
     .DocSearch-Button {
-        background-color: rgba(75, 85, 99, 0.1);
-
-        color: theme("colors.gray.600") !important;
+        @apply h-8 w-80 rounded-lg bg-neutral-100 font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none dark:bg-neutral-800/50 dark:hover:bg-neutral-800/80;
+        font-family: Jost;
 
         svg {
-            color: theme("colors.gray.600") !important;
+            @apply w-4 text-neutral-500;
+        }
+
+        .DocSearch-Button-Key {
+            background: white;
+            border: 1px solid theme("colors.neutral.300");
+            @apply flex items-center border-neutral-200 p-0 text-neutral-500 shadow-none dark:border-neutral-200/20 dark:bg-neutral-950/80;
+
+            &:first-child {
+                @apply text-base;
+            }
+
+            &:last-child {
+                @apply text-xs;
+            }
         }
     }
 
     .navbar__link {
-        @apply font-medium text-gray-600 after:border-t-gray-600;
+        @apply flex items-center font-medium text-neutral-600 after:border-t-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300;
 
         svg {
             display: inline;
@@ -132,7 +197,43 @@
     }
 
     .navbar__brand {
-        @apply font-mono text-indigo-600 hover:text-indigo-400;
+        @apply px-2 font-mono;
+    }
+
+    .navbar__brand,
+    .navbar__item {
+        @apply rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-200/10;
+    }
+
+    .dropdown > .navbar__link:after {
+        display: none;
+    }
+
+    .dropdown__menu {
+        @apply rounded-lg border border-neutral-100 bg-white dark:border-neutral-300/10 dark:bg-neutral-900;
+        box-shadow:
+            rgba(112, 112, 112, 0.05) 0px 20px 25px -5px,
+            rgba(112, 112, 112, 0.05) 0px 8px 10px -6px;
+
+        .dropdown__link {
+            @apply rounded-lg text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-200/10 dark:hover:text-neutral-300;
+        }
+        .dropdown__link--active {
+            @apply text-indigo-600 dark:hover:text-indigo-500;
+        }
+    }
+}
+
+.theme-doc-sidebar-container {
+    a:has(img[alt="Testplane Logo"]) {
+        @apply m-0;
+
+        img {
+            @apply m-0 h-8 w-8;
+        }
+        b {
+            @apply flex h-8 items-center rounded-lg px-2 font-mono hover:bg-neutral-100 dark:hover:bg-neutral-200/10;
+        }
     }
 }
 
@@ -142,11 +243,146 @@
 }
 
 .menu {
-    padding: 0.5rem !important;
+    padding: 0.5rem 2rem 0.5rem 0 !important;
+
+    .menu__link,
+    .menu__list-item-collapsible,
+    .menu__caret {
+        @apply rounded-lg text-neutral-500 dark:text-neutral-400 dark:hover:text-neutral-300;
+    }
+
+    .menu__link.menu__link--active {
+        @apply dark:text-neutral-200;
+    }
 }
 
 .table-of-contents {
     font-size: theme("fontSize.sm");
+    .table-of-contents__link {
+        @apply text-neutral-500 hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-neutral-300;
+    }
+
+    .table-of-contents__link--active {
+        @apply text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300;
+    }
+}
+
+.theme-doc-sidebar-container {
+    border-right: none !important;
+}
+
+.theme-code-block {
+    --ifm-global-shadow-lw: none;
+    @apply shadow-none;
+}
+
+.theme-back-to-top-button {
+    display: none;
+}
+
+.table-of-contents {
+    border-left: none;
+    padding-left: 0;
+
+    li {
+        margin-left: 0;
+        font-size: 1rem;
+    }
+}
+
+.theme-doc-markdown {
+    padding-top: 2rem;
+}
+
+.tabs {
+    padding-left: 0 !important;
+
+    .tabs__item {
+        @apply py-2 text-base font-medium;
+    }
+
+    .tabs__item--active {
+        @apply dark:border-indigo-400 dark:text-indigo-400;
+        border-bottom-width: 2px;
+    }
+}
+
+.theme-admonition {
+    @apply rounded-xl border shadow-none;
+
+    & > div:first-child {
+        @apply flex items-center text-base font-medium;
+
+        span {
+            @apply flex items-center;
+        }
+
+        svg {
+            @apply scale-75;
+        }
+    }
+
+    &.theme-admonition-info {
+        @apply border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200/90;
+
+        p,
+        svg {
+            @apply fill-sky-900 text-sky-900 dark:fill-sky-200/90 dark:text-sky-200/90;
+        }
+    }
+
+    &.theme-admonition-tip {
+        @apply border-green-200 bg-green-50 text-green-900 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200/90;
+
+        p,
+        svg {
+            @apply fill-green-900 text-green-900 dark:fill-green-200/90 dark:text-green-200/90;
+        }
+    }
+
+    &.theme-admonition-warning {
+        @apply border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200/90;
+
+        p,
+        svg {
+            @apply fill-amber-900 text-amber-900 dark:fill-amber-200/90 dark:text-amber-200/90;
+        }
+    }
+}
+
+table {
+    @apply text-xs/6;
+
+    thead {
+        @apply bg-transparent;
+        tr {
+            @apply border-t-0 border-b-neutral-200 dark:border-b-neutral-300/10;
+            background: transparent !important;
+
+            th {
+                @apply border-0;
+            }
+        }
+
+        td {
+            @apply text-center text-base;
+
+            strong {
+                @apply font-semibold;
+            }
+        }
+    }
+
+    tr {
+        @apply border-0;
+        td {
+            @apply border-0 align-top text-neutral-700 dark:text-neutral-400;
+        }
+
+        &:nth-child(2n) {
+            @apply bg-neutral-100 dark:bg-neutral-500/10;
+        }
+    }
 }
 
 .theme-doc-markdown,
