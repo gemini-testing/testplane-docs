@@ -7,7 +7,7 @@ import { useLocation } from "@docusaurus/router";
 import { translate } from "@docusaurus/Translate";
 import type { Props } from "@theme/ColorModeToggle";
 import { Moon, Sun } from "@gravity-ui/icons";
-import {ThemeIcon} from "./ThemeIcon";
+import { ThemeIcon } from "./ThemeIcon";
 
 import styles from "./styles.module.css";
 
@@ -155,7 +155,13 @@ function ColorModeToggle({ className, buttonClassName, onChange }: Props): JSX.E
     const Icon = iconByMode[modeSetting];
 
     return (
-        <div className={clsx(styles.toggle, className, "text-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300")}>
+        <div
+            className={clsx(
+                styles.toggle,
+                className,
+                "text-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300",
+            )}
+        >
             <button
                 className={clsx(
                     "clean-btn",

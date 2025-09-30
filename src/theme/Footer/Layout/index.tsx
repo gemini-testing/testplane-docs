@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import type { Props } from "@theme/Footer/Layout";
 import GithubIcon from "@site/static/icons/github.svg";
 import TestplaneLogo from "@site/static/img/logo.svg";
