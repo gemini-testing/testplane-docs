@@ -5,7 +5,7 @@
     /* rtl:ignore */
     direction: ltr;
     border-radius: inherit;
-    @apply text-lg dark:border-neutral-300/10;
+    @apply text-base dark:border-neutral-300/10;
 }
 
 .codeBlockTitle {
@@ -58,8 +58,8 @@
     column-gap: 0.2rem;
     position: absolute;
     /* rtl:ignore */
-    right: 0.7rem;
-    top: 0.7rem;
+    right: 0.65rem;
+    top: 0.65rem;
 }
 
 .buttonGroup button {
