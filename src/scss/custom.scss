@@ -245,11 +245,11 @@ body.footer-in-view .navbar {
 .table-of-contents {
     font-size: theme("fontSize.sm");
     .table-of-contents__link {
-        @apply text-neutral-500 dark:text-neutral-400 dark:hover:text-neutral-300;
+        @apply text-neutral-500 hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-neutral-300;
     }
 
     .table-of-contents__link--active {
-        @apply dark:text-indigo-400 dark:hover:text-indigo-300;
+        @apply text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300;
     }
 }
 
