@@ -8,38 +8,6 @@ import { LogoStackOverflow, LogoTelegram } from "@gravity-ui/icons";
 export default function FooterLayout({ links, copyright }: Props): JSX.Element {
     const footerRef = useRef<HTMLElement | null>(null);
 
-    useEffect(() => {
-        if (typeof window === "undefined") {
-            return undefined;
-        }
-
-        const footerElement = footerRef.current;
-
-        if (!footerElement || !document.querySelector("nav.navbar")) {
-            return undefined;
-        }
-
-        const handleIntersection: IntersectionObserverCallback = ([entry]) => {
-            if (entry?.isIntersecting) {
-                document.body.classList.add("footer-in-view");
-            } else {
-                document.body.classList.remove("footer-in-view");
-            }
-        };
-
-        const observer = new IntersectionObserver(handleIntersection, {
-            root: null,
-            threshold: 0,
-        });
-
-        observer.observe(footerElement);
-
-        return () => {
-            observer.disconnect();
-            document.body.classList.remove("footer-in-view");
-        };
-    }, []);
-
     const SOCIAL_LINKS = [
         {
             icon: GithubIcon,

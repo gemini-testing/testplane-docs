@@ -1,11 +1,13 @@
 import React from "react";
+import type { ComponentType, SVGProps } from "react";
 import clsx from "clsx";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useIsBrowser from "@docusaurus/useIsBrowser";
 import { useLocation } from "@docusaurus/router";
 import { translate } from "@docusaurus/Translate";
 import type { Props } from "@theme/ColorModeToggle";
-import { Display, Moon, Sun } from "@gravity-ui/icons";
+import { Moon, Sun } from "@gravity-ui/icons";
+import {ThemeIcon} from "./ThemeIcon";
 
 import styles from "./styles.module.css";
 
@@ -15,13 +17,10 @@ const STORAGE_KEY = "color-mode-setting";
 const SYSTEM_QUERY = "(prefers-color-scheme: dark)";
 const modeOrder: ModeSetting[] = ["light", "dark", "system"];
 
-const iconByMode: Record<
-    ModeSetting,
-    React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>
-> = {
+const iconByMode: Record<ModeSetting, ComponentType<SVGProps<SVGSVGElement>>> = {
     light: Sun,
     dark: Moon,
-    system: Display,
+    system: ThemeIcon,
 };
 
 const modeLabel: Record<ModeSetting, string> = {
@@ -156,7 +155,7 @@ function ColorModeToggle({ className, buttonClassName, onChange }: Props): JSX.E
     const Icon = iconByMode[modeSetting];
 
     return (
-        <div className={clsx(styles.toggle, className)}>
+        <div className={clsx(styles.toggle, className, "text-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300")}>
             <button
                 className={clsx(
                     "clean-btn",

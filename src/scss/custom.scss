@@ -44,7 +44,11 @@ body {
     }
 
     p {
-        @apply mb-3 text-neutral-700 dark:text-neutral-400;
+        @apply mb-3;
+    }
+
+    p, li {
+        @apply text-neutral-700 dark:text-neutral-400
     }
 
     code {
@@ -162,7 +166,7 @@ html[data-theme-override="light"] {
         .DocSearch-Button-Key {
             background: white;
             border: 1px solid theme("colors.neutral.300");
-            @apply flex items-center p-0 text-neutral-500 shadow-none dark:border-neutral-200/20 dark:bg-neutral-950/80;
+            @apply flex items-center p-0 text-neutral-500 shadow-none border-neutral-200 dark:border-neutral-200/20 dark:bg-neutral-950/80;
 
             &:first-child {
                 @apply text-base;
@@ -219,8 +223,17 @@ html[data-theme-override="light"] {
     }
 }
 
-body.footer-in-view .navbar {
-    transform: translateY(-100%);
+.theme-doc-sidebar-container {
+    a:has(img[alt="Testplane Logo"]) {
+        @apply m-0;
+
+        img {
+            @apply w-8 h-8 m-0;
+        }
+        b {
+            @apply font-mono rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-200/10 px-2 h-8 flex items-center;
+        }
+    }
 }
 
 .breadcrumbs svg,

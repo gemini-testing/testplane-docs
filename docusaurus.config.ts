@@ -70,6 +70,7 @@ const config: Config = {
         },
         image: "img/docusaurus-social-card.jpg",
         navbar: {
+            hideOnScroll: true,
             title: "testplane",
             logo: {
                 alt: "Testplane Logo",

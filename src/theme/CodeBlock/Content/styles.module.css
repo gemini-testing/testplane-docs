@@ -9,7 +9,7 @@
 }
 
 .codeBlockTitle {
-    @apply border border-b-0 border-neutral-200 dark:border-neutral-300/20 dark:bg-neutral-900;
+    @apply border border-b-0 border-neutral-200 bg-neutral-100 dark:border-neutral-300/20 dark:bg-neutral-900;
 
     font-size: var(--ifm-code-font-size);
     font-weight: 500;
