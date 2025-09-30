@@ -4,6 +4,17 @@
 
 @import "tailwindcss/preflight.css" layer preflight;
 
+/* Classes for code highlighting */
+@source inline("text-green-400");
+@source inline("text-pink-500");
+@source inline("text-violet-400");
+@source inline("italic");
+/* Classes used for "add to cart" button on demo page */
+@source inline("hidden");
+@source inline("outline");
+@source inline("outline-2");
+@source inline("outline-indigo-300");
+
 @custom-variant dark (&:where([data-theme=dark]:not([data-theme-override=light]), [data-theme=dark]:not([data-theme-override=light]) *));
 
 body {
