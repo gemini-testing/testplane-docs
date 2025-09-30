@@ -5,7 +5,7 @@
     /* rtl:ignore */
     direction: ltr;
     border-radius: inherit;
-    @apply dark:border-neutral-300/10;
+    @apply text-lg dark:border-neutral-300/10;
 }
 
 .codeBlockTitle {
