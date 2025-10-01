@@ -1,0 +1,48 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+<Tabs>
+    <TabItem value="Testplane" label="Testplane">
+        ```javascript title="testplane.config.ts"
+        export = {
+            // ...
+            plugins: {
+                'html-reporter/testplane': {
+                    enabled: true,
+                    path: 'html-report',
+                },
+            },
+        };
+        ```
+    </TabItem>
+
+    <TabItem value="Playwright" label="Playwright">
+        ```javascript title="playwright.config.ts"
+        // playwright.config.ts
+        export default defineConfig({
+            // ...
+            reporter: [
+                ['html-reporter/playwright', {
+                    enabled: true,
+                    defaultView: 'failed',
+                    path: 'html-report',
+                }],
+            ],
+        });
+        ```
+    </TabItem>
+
+    <TabItem value="Jest" label="Jest">
+        ```javascript title="jest.config.ts"
+        const config = {
+            // ...
+            reporters: [
+                ['html-reporter/jest', {
+                    path: 'html-report',
+                }]
+            ],
+        };
+        ```
+    </TabItem>
+
+</Tabs>
