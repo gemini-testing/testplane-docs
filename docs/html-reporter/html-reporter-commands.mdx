@@ -1,14 +1,24 @@
-# Html-Reporter Commands
+import Admonition from "@theme/Admonition";
+
+# CLI
 
 ## Overview {#overview}
 
-The `html-reporter` plugin adds the following commands to Testplane:
+HTML Reporter has the following commands:
 
 -   [gui](#gui)—to run Testplane in GUI mode;
+-   [merge-reports](#merge-reports)—to merge multiple reports into one.
 -   [remove-unused-screens](#remove-unused-screens)—to remove reference screenshots that are not used in tests;
--   [merge-reports](#merge-reports)—to merge Testplane's separate reports into one general report.
+
+When using HTML Reporter with Testplane, you can also use commands through Testplane, for example: `npx testplane gui`.
+
+When using with other tools, you need to specify the tool name in the tool argument, for example: `npx html-reporter gui --tool playwright`.
 
 ## gui
+
+<Admonition type="info" title="Command availability">
+    This command is only available when using HTML Reporter with Testplane and Playwright.
+</Admonition>
 
 Use the `gui` command to launch Testplane in GUI mode.
 
@@ -22,10 +32,49 @@ GUI mode allows you to:
 ### Usage {#gui_usage}
 
 ```bash
-npx testplane gui
+npx html-reporter gui
+```
+
+## merge-reports
+
+<Admonition type="info" title="Command availability">
+    This command is only available when using HTML Reporter with Testplane and Playwright.
+</Admonition>
+
+Use the `merge-reports` command to merge multiple reports into one.
+
+The command accepts paths to report directories, database files, or `databaseUrls.json` files.
+
+It creates a new html-report in the destination folder with data from all passed reports.
+
+-   When merging local reports—all data, including SQLite databases and screenshots, are copied to the destination directory.
+-   When merging reports by link (for example, if `databaseUrls.json` files with links to reports in S3 are passed as input)—a report with links to the original reports in `databaseUrls.json` will be created in the destination directory, without downloading and copying all nested resources. When working with the report, this will not be noticeable, but you need to keep in mind that the original reports must remain accessible, as the merged report gets data from them.
+
+### Usage {#merge_reports_usage}
+
+The `merge-reports` command supports the following required option:
+
+<table>
+<thead>
+<tr><td>**Option**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>-d, --destination &lt;folder></td><td>The path to the folder where you want to save the final report.</td></tr>
+
+</tbody>
+</table>
+
+Usage example:
+
+```bash
+npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report
 ```
 
 ## remove-unused-screens
+
+<Admonition type="info" title="Command availability">
+    This command is only available when using HTML Reporter with Testplane.
+</Admonition>
 
 Use the `remove-unused-screens` command to remove the reference screenshots that are not used in tests.
 
@@ -81,30 +130,4 @@ Getting the reference information about the command:
 
 ```bash
 npx testplane remove-unused-screens --help
-```
-
-## merge-reports
-
-Use the `merge-reports` command to merge Testplane's separate reports into one general report.
-
-The command accepts paths to database files or to `databaseUrls.json` files from other html-reports. It creates a new html-report in the destination folder with a single file `databaseUrls.json`, which will contain a link to the database file or to the files `databaseUrls.json` from the input parameters. Database files are not copied to the destination folder at the same time.
-
-### Usage {#merge_reports_usage}
-
-The `merge-reports` command supports the following required option:
-
-<table>
-<thead>
-<tr><td>**Option**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>-d, --destination &lt;folder></td><td>The path to the folder where you want to save the final report.</td></tr>
-
-</tbody>
-</table>
-
-Usage example:
-
-```bash
-npx testplane merge-reports path-to-database.db path-to-databaseUrls.json -d dest-report
 ```

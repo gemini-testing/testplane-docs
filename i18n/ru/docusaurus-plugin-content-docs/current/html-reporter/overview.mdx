@@ -1,0 +1,136 @@
+---
+sidebar_position: 1
+sidebar_label: Обзор
+title: Testplane UI
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import Admonition from "@theme/Admonition";
+
+![](/img/docs/html-reporter/html-reporter-demo.png)
+
+<br />
+
+Testplane UI или, как мы его также называем, `html-reporter` — это проект с открытым исходным кодом, который можно использовать для просмотра результатов тестов или взаимодействия с инструментами, такими как [Testplane](https://testplane.io), [Playwright](https://playwright.dev/) или [Jest](https://jestjs.io/).
+
+## Возможности
+
+#### Запускайте и отлаживайте свои тесты
+
+Просматривайте шаги теста, воспроизводите их, и когда что-то идет не так, легко находите первопричину.
+
+![](/gif/docs/ui/run-debug.gif)
+
+#### Превосходные возможности визуального тестирования
+
+Принимайте или отменяйте изменения в визуальных проверках одним кликом. Множество режимов просмотра и специальная вкладка визуальных проверок помогут вам проанализировать различия.
+
+![](/gif/docs/ui/visual-checks.gif)
+
+#### Единый UI для CI и локального использования
+
+Что-то пошло не так в CI? Загрузите отчет и продолжайте устранение неполадок локально.
+
+![](/gif/docs/ui/ci-and-local.gif)
+
+#### Мощная аналитика
+
+Находите нестабильные тесты, медленные тесты или другие проблемы с помощью опций "сортировка" и "группировка".
+
+![](/gif/docs/ui/analytics.gif)
+
+#### И многое другое
+
+Вот некоторые преимущества HTML Reporter:
+
+-   **Больше, чем просто отчет**: это не статический отчет — вы можете запускать свои тесты, обновлять эталонные изображения, анализировать прогоны тестов и многое другое.
+-   **Экономия времени разработчика**: нет необходимости перезапускать отчеты или переключаться между терминалами во время разработки — весь рабочий процесс возможен из UI.
+-   **Нет vendor-lock**: все данные ваши, UI имеет открытый исходный код, и все работает локально на вашей машине. Нет подписок и привязки к облаку.
+-   **Оптимизирован для работы в масштабе**: неважно, есть ли у вас 100 или 100 000+ тестов в одном отчете — UI будет работать так же плавно. Встроенная поддержка загрузки артефактов на лету в S3 или другое хранилище.
+-   **Множество источников данных**: html-reporter может загружать и объединять данные из любого количества источников во время выполнения, или вы можете использовать специальную команду merge-reports.
+
+## Демо
+
+Попробуйте HTML Reporter — он доступен [по ссылке](https://storage.yandexcloud.net/testplane-ui-demo/v10.16.3/new-ui.html#/suites/testplane%20New%20UI%20Suites%20page%20Expand%2Fcollapse%20suites%20tree%20button%20should%20offer%20to%20expand%20when%20collapsed%20using%20button%20chrome).
+
+## Начало работы
+
+<Admonition type="info">
+В настоящее время `html-reporter` требует Node v18 или выше и работает с Testplane, Playwright и Jest.
+
+Обратите внимание, что html-reporter не зависит от конкретного инструмента в своей основе, поэтому добавление поддержки нового инструмента — это вопрос реализации новых адаптеров данных. Если у вас есть конкретный инструмент на примете, [создайте issue](https://github.com/gemini-testing/html-reporter/issues) — обсудим, что можно сделать.
+
+</Admonition>
+
+1. Установите `html-reporter`:
+
+    ```shell
+    npm i -D html-reporter
+    ```
+
+2. Включите его в конфиге вашего инструмента:
+
+    <Tabs>
+<TabItem value="Testplane" label="Testplane">
+    ```javascript title="testplane.config.ts"
+    export = {
+        // ...
+        plugins: {
+            'html-reporter/testplane': {
+                enabled: true,
+                path: 'html-report',
+            },
+        },
+    };
+    ```
+
+    </TabItem>
+
+    <TabItem value="Playwright" label="Playwright">
+    ```javascript title="playwright.config.ts"
+    // playwright.config.ts
+    export default defineConfig({
+        // ...
+        reporter: [
+            ['html-reporter/playwright', {
+                enabled: true,
+                defaultView: 'failed',
+                path: 'html-report',
+            }],
+        ],
+    });
+    ```
+
+    </TabItem>
+
+    <TabItem value="Jest" label="Jest">
+    ```javascript title="jest.config.ts"
+    const config = {
+        // ...
+        reporters: [
+            ['html-reporter/jest', {
+                path: 'html-report',
+            }]
+        ],
+    };
+    ```
+</TabItem>
+
+    </Tabs>
+
+3. Запустите ваши тесты и посмотрите отчет:
+
+    ```shell
+    npm test
+
+    npx serve html-report
+    ```
+
+4. Попробуйте UI режим для запуска тестов из UI:
+
+    ```shell
+    npx html-reporter gui
+    ```
+
+    Примечание: UI режим доступен только для Testplane и Playwright. Для использования с Playwright добавьте `--tool playwright`.

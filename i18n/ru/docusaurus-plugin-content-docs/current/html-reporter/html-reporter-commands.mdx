@@ -1,14 +1,24 @@
-# Команды плагина
+import Admonition from "@theme/Admonition";
+
+# CLI
 
 ## Обзор {#overview}
 
-Плагин `html-reporter` добавляет к Testplane следующие команды:
+HTML Reporter имеет следующие команды:
 
 -   [gui](#gui) — чтобы запускать Testplane в GUI-режиме;
+-   [merge-reports](#merge-reports) — чтобы объединять несколько отчетов в один.
 -   [remove-unused-screens](#remove-unused-screens) — чтобы удалять неиспользуемые в тестах эталонные скриншоты;
--   [merge-reports](#merge-reports) — чтобы объединять отдельные отчеты Testplane в один общий отчет.
+
+При использовании HTML Reporter с Testplane, вы также можете использовать команды через Testplane, например: `npx testplane gui`.
+
+При использовании с другими инструментами, необходимо указывать название инструмента в аргументе tool, например: `npx html-reporter gui --tool playwright`.
 
 ## gui
+
+<Admonition type="info" title="Доступность команды">
+    Команда доступна только при использовании HTML Reporter с Testplane и Playwright.
+</Admonition>
 
 Используйте команду `gui`, чтобы запустить Testplane в GUI-режиме.
 
@@ -23,10 +33,49 @@ GUI-режим позволяет:
 ### Использование {#gui_usage}
 
 ```bash
-npx testplane gui
+npx html-reporter gui
+```
+
+## merge-reports
+
+<Admonition type="info" title="Доступность команды">
+    Команда доступна только при использовании HTML Reporter с Testplane и Playwright.
+</Admonition>
+
+Используйте команду `merge-reports`, чтобы объединить несколько отчетов в один.
+
+Команда принимает пути к директориям с отчетами, файлам баз данных или к файлам `databaseUrls.json`.
+
+Она создает новый html-отчет в папке назначения с данными из всех переданных отчетов.
+
+-   При объединении локальных отчетов — все данные, включая SQLite базы данных и скриншоты, копируются в директорию назначения.
+-   При объединении отчетов по ссылке (например, если на вход переданы файлы `databaseUrls.json` со ссылками на отчеты в S3) — в директории назначения будет создан отчет со ссылками на исходные отчеты в `databaseUrls.json`, без скачивания и копирования всех вложенных ресурсов. При работе с отчетом это никак не будет заметно, но нужно учитывать, что исходные отчеты должны оставаться доступными, так как объединенный отчет получает данные из них.
+
+### Использование {#merge_reports_usage}
+
+Команда `merge-reports` поддерживает следующую обязательную опцию:
+
+<table>
+<thead>
+<tr><td>**Опция**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>-d, --destination &lt;folder></td><td>Путь к папке, в которую нужно сохранить итоговый отчет.</td></tr>
+
+</tbody>
+</table>
+
+Пример использования:
+
+```bash
+npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report
 ```
 
 ## remove-unused-screens
+
+<Admonition type="info" title="Доступность команды">
+    Команда доступна только при использовании HTML Reporter с Testplane.
+</Admonition>
 
 Используйте команду `remove-unused-screens`, чтобы удалить неиспользуемые в тестах эталонные скриншоты.
 
@@ -82,30 +131,4 @@ npx testplane remove-unused-screens -p 'testplane-screens-folder' --skip-questio
 
 ```bash
 npx testplane remove-unused-screens --help
-```
-
-## merge-reports
-
-Используйте команду `merge-reports`, чтобы объединить отдельные отчеты testplane в один общий отчет.
-
-Команда принимает пути к файлам баз данных или к файлам `databaseUrls.json` из других html-отчетов. Она создает новый html-отчет в папке назначения с общим файлом `databaseUrls.json`, который будет содержать ссылку на файл базы данных или на файлы `databaseUrls.json` из входных параметров. Файлы баз данных в папку назначения не копируются при этом.
-
-### Использование {#merge_reports_usage}
-
-Команда `merge-reports` поддерживает следующую обязательную опцию:
-
-<table>
-<thead>
-<tr><td>**Опция**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>-d, --destination &lt;folder></td><td>Путь к папке, в которую нужно сохранить итоговый отчет.</td></tr>
-
-</tbody>
-</table>
-
-Пример использования:
-
-```bash
-npx testplane merge-reports path-to-database.db path-to-databaseUrls.json -d dest-report
 ```

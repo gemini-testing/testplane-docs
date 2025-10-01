@@ -1,0 +1,136 @@
+---
+sidebar_position: 1
+sidebar_label: Overview
+title: Testplane UI
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import Admonition from "@theme/Admonition";
+
+![](/img/docs/html-reporter/html-reporter-demo.png)
+
+<br />
+
+Testplane UI or, as we also call it, `html-reporter` — is an open-source project that can be used to view test results or interact with tools like [Testplane](https://testplane.io), [Playwright](https://playwright.dev/) or [Jest](https://jestjs.io/).
+
+## Features
+
+#### Run and debug your tests
+
+View test steps, replay them and when something goes wrong, find the root cause with ease.
+
+![](/gif/docs/ui/run-debug.gif)
+
+#### Superb visual testing capabilities
+
+Accept or undo changes in visual checks with one click. Multiple viewing modes and dedicated visual checks tab will help you analyze the difference.
+
+![](/gif/docs/ui/visual-checks.gif)
+
+#### Unified UI for CI and local usage
+
+Something went wrong in CI? Pull the report and continue troubleshooting locally.
+
+![](/gif/docs/ui/ci-and-local.gif)
+
+#### Powerful analytics
+
+Spot flaky tests, slow tests or other issues using "sort by" and "group by" options.
+
+![](/gif/docs/ui/analytics.gif)
+
+#### And so much more
+
+Benefits over regular reporters include:
+
+-   **More than a reporter**: it's not static, you can run your tests, update reference images, analyze test runs and more.
+-   **Save developer time**: no need to relaunch reports or switch terminals during development — the whole workflow is possible from the UI.
+-   **No vendor lock-in**: all data is yours, the UI is open-source and everything is running locally on your machine. There's no cloud.
+-   **Optimized to work at scale**: doesn't matter if you have 100 or 100,000+ tests in one report — the UI will work just as smoothly. Built-in support for artifacts uploading on the fly to S3 or other storage.
+-   **Multiple data sources**: html-reporter can pull and merge data from any amount of data sources at runtime, or you can use dedicated merge-reports command.
+
+## Demo
+
+One link is worth a thousand words, so [here it is](https://storage.yandexcloud.net/testplane-ui-demo/v10.16.3/new-ui.html#/suites/testplane%20New%20UI%20Suites%20page%20Expand%2Fcollapse%20suites%20tree%20button%20should%20offer%20to%20expand%20when%20collapsed%20using%20button%20chrome) — see all the features for yourself.
+
+## Getting started
+
+<Admonition type="info">
+Currently `html-reporter` needs Node v18 or higher and works with Testplane, Playwright and Jest.
+
+Note that html-reporter is tool-agnostic at its core, so adding support for a new tool is a matter of implementing new data adapters. If you have a specific tool in mind, [raise an issue](https://github.com/gemini-testing/html-reporter/issues) — let's discuss what can be done.
+
+</Admonition>
+
+1. Install `html-reporter` with your favorite package manager:
+
+    ```shell
+    npm i -D html-reporter
+    ```
+
+2. Turn it on in your tool's config:
+
+    <Tabs>
+<TabItem value="Testplane" label="Testplane">
+    ```javascript title="testplane.config.ts"
+    export = {
+        // ...
+        plugins: {
+            'html-reporter/testplane': {
+                enabled: true,
+                path: 'html-report',
+            },
+        },
+    };
+    ```
+
+    </TabItem>
+
+    <TabItem value="Playwright" label="Playwright">
+    ```javascript title="playwright.config.ts"
+    // playwright.config.ts
+    export default defineConfig({
+        // ...
+        reporter: [
+            ['html-reporter/playwright', {
+                enabled: true,
+                defaultView: 'failed',
+                path: 'html-report',
+            }],
+        ],
+    });
+    ```
+
+    </TabItem>
+
+    <TabItem value="Jest" label="Jest">
+    ```javascript title="jest.config.ts"
+    const config = {
+        // ...
+        reporters: [
+            ['html-reporter/jest', {
+                path: 'html-report',
+            }]
+        ],
+    };
+    ```
+</TabItem>
+
+    </Tabs>
+
+3. Run your tests and see the report:
+
+    ```shell
+    npm test
+
+    npx serve html-report
+    ```
+
+4. Try UI mode to run your tests from the UI:
+
+    ```shell
+    npx html-reporter gui
+    ```
+
+    Note: UI mode is available only for Testplane and Playwright. To use with Playwright, add `--tool playwright`.

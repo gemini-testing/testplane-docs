@@ -87,6 +87,12 @@ const config: Config = {
                     position: "left",
                     label: "Docs",
                 },
+                {
+                    type: "docSidebar",
+                    sidebarId: "ui",
+                    position: "left",
+                    label: "UI",
+                },
                 { to: "/blog", label: "Blog", position: "left" },
                 {
                     type: "docsVersionDropdown",

@@ -1,5 +1,5 @@
 ---
-sidebar_class_name: hidden
+sidebar_position: 2
 ---
 
 import Tabs from "@theme/Tabs";
@@ -7,139 +7,80 @@ import TabItem from "@theme/TabItem";
 
 import Admonition from "@theme/Admonition";
 
-# Html-Reporter Setup
+# Configuration
 
-## Overview {#overview}
-
-Use the [html-reporter][html-reporter] plugin to get an html-report on the tests run.
-
-![HTML Report](/img/docs/html-reporter/html-reporter.overview.png)
-
-<Admonition type="warning" title="Requirements for testplane">
-    For the html-reporter plugin to work correctly, [hermione][testplane] version 4 and higher is
-    required.
-</Admonition>
-
-The plugin saves the tests run results to the [SQLite][sqlite] database. Therefore, you will not be able to open the local report as a file using the `file://` protocol.
-
-To view the report, run Testplane in GUI mode:
-
-```bash
-npx testplane gui
-```
-
-Or run [http-server][http-server] in the report folder:
-
-```bash
-npx http-server -p 8000
-```
-
-If you are starting a local server not from the folder with the report, then specify the path to the report:
-
-```bash
-npx http-server ./testplane-report -p 8000
-```
-
-Then open the page `http://localhost:8000` in the browser.
-
-## Install {#install}
-
-```bash
-npm install -D html-reporter
-```
-
-## Setup {#setup}
-
-Add the plugin to the `plugins` section of the Testplane config:
+## Config Examples {#setup}
 
 <Tabs>
-<TabItem value="Minimum config" label="Minimum config">
-```javascript
-    module.exports = {
+<TabItem value="Testplane" label="Testplane">
+    ```javascript title="testplane.config.ts"
+    export = {
+        // ...
         plugins: {
             'html-reporter/testplane': {
-                enabled: true
+                enabled: true,
+                path: 'html-report',
             },
-
-            // other Testplane plugins...
         },
-
-        // other Testplane settings...
     };
     ```
 
 </TabItem>
 
-<TabItem value="Maximum config" label="Maximum config">
-```javascript
-    module.exports = {
-        plugins: {
-            'html-reporter/testplane': {
+<TabItem value="Playwright" label="Playwright">
+    ```javascript title="playwright.config.ts"
+     // playwright.config.ts
+    export default defineConfig({
+        // ...
+        reporter: [
+            ['html-reporter/playwright', {
                 enabled: true,
-                path: 'my/testplane-reports',
-                defaultView: 'all',
-                baseHost: 'test.com',
-                errorPatterns: [
-                    'Parameter .* must be a string',
-                    {
-                        name: 'Cannot read property of undefined',
-                        pattern: 'Cannot read property .* of undefined',
-                        hint: '<div>google it, i dont know how to fix it =(</div>'
-                    }
-                ],
-                customScripts: [
-                    function() {
-                        // custom script
-                    },
-
-                    // other scripts...
-                ],
-                customGui: {
-                    // DEPRECATED
-                    // additional controls for GUI mode
-                    // use report plugins instead of customGui
-                },
-                pluginsEnabled: true,
-                plugins: [
-                    // report plugins...
-                ],
-                yandexMetrika: {
-                    counter: 1234567
-                }
-            },
-
-            // other Testplane plugins...
-        },
-
-        // other Testplane settings...
-    };
+                defaultView: 'failed',
+                path: 'html-report',
+            }],
+        ],
+    });
     ```
 
+</TabItem>
+
+<TabItem value="Jest" label="Jest">
+    ```javascript title="jest.config.ts"
+     const config = {
+        // ...
+        reporters: [
+            ['html-reporter/jest', {
+                path: 'html-report',
+            }]
+        ],
+    };
+    ```
 </TabItem>
 
 </Tabs>
 
-### Description of configuration parameters {#setup_description}
+## Configuration Reference {#setup_description}
 
 <table>
 <thead>
 <tr><td>**Parameter**</td><td>**Type**</td><td>**Default&nbsp;value**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>[enabled](#enabled)</td><td>Boolean</td><td>true</td><td>Enable / disable the plugin.</td></tr>
-<tr><td>[path](#path)</td><td>String</td><td>"testplane-report"</td><td>The path to the folder for saving html-report files.</td></tr>
-<tr><td>[saveErrorDetails](#saveerrordetails)</td><td>Boolean</td><td>false</td><td>Save / do not save error details in json files.</td></tr>
-<tr><td>[defaultView](#defaultview)</td><td>String</td><td>"all"</td><td>The test filtering mode when displayed, which will be set by default.</td></tr>
-<tr><td>[diffMode](#diffmode)</td><td>String</td><td>"3-up"</td><td>The mode of viewing diffs, which will be set by default.</td></tr>
-<tr><td>[baseHost](#basehost)</td><td>String</td><td>_N/A_</td><td>Replaces the original host address for viewing in the browser.</td></tr>
-<tr><td>[errorPatterns](#errorpatterns)</td><td>Object[] or String[]</td><td>[ ]</td><td>Error patterns with hints to improve the UX of the report.</td></tr>
-<tr><td>[metaInfoBaseUrls](#metainfobaseurls)</td><td>Object</td><td>`{ }`</td><td>Base URLs for generating links in the _Meta_ section based on meta information about the tests run.</td></tr>
-<tr><td>[saveFormat](#saveformat)</td><td>String</td><td>"sqlite"</td><td>DEPRECATED. Allows you to set the format in which the results of the tests run will be saved.</td></tr>
-<tr><td>[customGui](#customgui)</td><td>Object</td><td>`{ }`</td><td>DEPRECATED. Use [plugins](#plugins) instead. Description of custom controls for GUI mode.</td></tr>
-<tr><td>[pluginsEnabled](#pluginsenabled)</td><td>Boolean</td><td>false</td><td>Enable plugins for the report.</td></tr>
-<tr><td>[plugins](#plugins)</td><td>Object[]</td><td>[ ]</td><td>A list of plugins with their settings.</td></tr>
-<tr><td>[customScripts](#customscripts)</td><td>Function[]</td><td>[ ]</td><td>A list of functions that implement custom scripts. For example, Yandex.Metrika scripts or a Bug.</td></tr>
-<tr><td>[yandexMetrika](#yandexmetrika)</td><td>Object</td><td>`{ }`</td><td>[Yandex.Metrika][yandex-metrika].</td></tr>
+<tr><td>[enabled](#enabled)</td><td>`boolean`</td><td>`true`</td><td>Enable / disable the plugin.</td></tr>
+<tr><td>[path](#path)</td><td>`string`</td><td>`"testplane-report"`</td><td>The path to the folder for saving html-report files.</td></tr>
+<tr><td>[saveErrorDetails](#saveerrordetails)</td><td>`boolean`</td><td>`false`</td><td>Save / do not save error details in json files.</td></tr>
+<tr><td>[uiMode](#uimode)</td><td>`string`</td><td>`null`</td><td>Default UI mode: "old" for classic interface, "new" for modern interface.</td></tr>
+<tr><td>[defaultView](#defaultview)</td><td>`string`</td><td>`"all"`</td><td>The test filtering mode when displayed, which will be set by default.</td></tr>
+<tr><td>[diffMode](#diffmode)</td><td>`string`</td><td>`"3-up"`</td><td>The mode of viewing diffs, which will be set by default.</td></tr>
+<tr><td>[baseHost](#basehost)</td><td>`string`</td><td>_N/A_</td><td>Replaces the original host address for viewing in the browser.</td></tr>
+<tr><td>[errorPatterns](#errorpatterns)</td><td>`ErrorPattern[] | string[]`</td><td>`[]`</td><td>Error patterns with hints to improve the UX of the report.</td></tr>
+<tr><td>[metaInfoBaseUrls](#metainfobaseurls)</td><td>`Record<string, string>`</td><td>`{}`</td><td>Base URLs for generating links in the _Meta_ section based on meta information about the tests run.</td></tr>
+<tr><td>[saveFormat](#saveformat)</td><td>`string`</td><td>`"sqlite"`</td><td>DEPRECATED. Allows you to set the format in which the results of the tests run will be saved.</td></tr>
+<tr><td>[customGui](#customgui)</td><td>`CustomGUI`</td><td>`{ }`</td><td>DEPRECATED. Use [plugins](#plugins) instead. Description of custom controls for GUI mode.</td></tr>
+<tr><td>[pluginsEnabled](#pluginsenabled)</td><td>`boolean`</td><td>`false`</td><td>Enable plugins for the report.</td></tr>
+<tr><td>[plugins](#plugins)</td><td>`Plugin[]`</td><td>`[]`</td><td>A list of plugins with their settings.</td></tr>
+<tr><td>[customScripts](#customscripts)</td><td>`AnyFunction[]`</td><td>`[]`</td><td>A list of functions that implement custom scripts. For example, Yandex.Metrika scripts or a Bug.</td></tr>
+<tr><td>[yandexMetrika](#yandexmetrika)</td><td>`YandexMetrika`</td><td>*see below*</td><td>[Yandex.Metrika][yandex-metrika].</td></tr>
 
 </tbody>
 </table>
@@ -174,6 +115,16 @@ err.details = {
 
 throw err;
 ```
+
+### uiMode
+
+Default UI mode: "old" for classic interface, "new" for modern interface. Affects redirects between old and new interfaces.
+
+By default, no redirects are performed.
+
+Available values: `"old"`, `"new"`.
+
+For example, if set to `"new"`, users will be redirected to the new interface when trying to access the old interface. However, if the user manually clicks "return to old interface", this preference will be saved, and they will always use the old interface until they switch back.
 
 ### defaultView
 
@@ -246,9 +197,9 @@ where:
 <tr><td>**Parameter**</td><td>**Type**</td><td>**Description**</td></tr>
 </thead>
 <tbody>
-<tr><td>name</td><td>String</td><td>Error name.</td></tr>
-<tr><td>pattern</td><td>String or RegExp</td><td>A regular expression or a regular string that the error should match.</td></tr>
-<tr><td>hint</td><td>String</td><td>Optional parameter. A hint of what can be done with this error: why it occurred, how to fix it, etc.</td></tr>
+<tr><td>name</td><td>`string`</td><td>Error name.</td></tr>
+<tr><td>pattern</td><td>`string | RegExp`</td><td>A regular expression or a regular string that the error should match.</td></tr>
+<tr><td>hint</td><td>`string`</td><td>Optional parameter. A hint of what can be done with this error: why it occurred, how to fix it, etc.</td></tr>
 
 </tbody>
 </table>
@@ -292,6 +243,21 @@ For example:
     'file': 'base/path'
 }
 ```
+
+When the value of any key is set to `auto`, the base URL will be set to the base host specified in the report UI, or remain unchanged if the base host is not specified.
+
+For example, if you have the following `metaInfoBaseUrls` value:
+
+```javascript
+{
+    custom_url: "auto";
+}
+```
+
+And you set the `meta.custom_url` field to `https://example.com/some/path` in your tests, you will see in the meta:
+
+-   A link to `https://example.com/some/path` if the base host is not set in the UI
+-   A link to `https://another-host.com/some/path` if the base host in the UI is set to `https://another-host.com`
 
 ### saveFormat
 
@@ -346,41 +312,27 @@ customScripts: [
 
 ### yandexMetrika
 
-This parameter allows you to add [Yandex.Metrika][yandex-metrika] to the report. The parameter is set as an object with the key `counterNumber`. As the key value, you must specify the Yandex.Metrica counter number (see "[How to create a counter][how-to-create-counter]"). The number should be set as a Number, not a String.
+By default, anonymous data about report UI usage is collected for analysis and UX improvement purposes. Data collected includes report loading speed, frequency of some feature usage (e.g., test sorting), and clicks on UI elements. Data about your project or test content is NOT collected under any circumstances.
 
-Also, in the Yandex.Metrika interface, go to the _"Counter"_ tab in the settings section, click _"Copy"_ and paste the counter code into the [customScripts](#customscripts) field.
+If you don't want to share analytics with us, you can disable it in any of the following ways:
 
-With the help of metrics, you can find out how developers interact with your report and what kind of problems they face.
-
-The report supports the following [goals of metrics][yandex-metrika-goals]:
-
--   **ACCEPT_SCREENSHOT**—there was a click on the _Accept_ button to accept a screenshot;
--   **ACCEPT_OPENED_SCREENSHOTS**—there was a click on the _Accept opened_ button to accept screenshots from open tests.
-
-Example of setting up Yandex.Metrika in one of the projects:
-
-```javascript
-module.exports = {
-    plugins: {
-        'html-reporter/testplane': {
-            customScripts: [
-                function(){(function(m,e,t,r,i,k,a){m[i]=m[i]<tr><td>function(){(m[i].a=m[i].a</td></tr>[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(56782912, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true })},
-
-                // other scripts...
-            ],
-            yandexMetrika: {
-                counterNumber: 1234567
+-   In the config
+    ```javascript
+    module.exports = {
+        plugins: {
+            "html-reporter/testplane": {
+                yandexMetrika: {
+                    enabled: false,
+                },
+                // other html-reporter settings...
             },
-
-            // other plugin settings...
+            // other Testplane plugins...
         },
-
-        // other Testplane plugins...
-    },
-
-    // other Testplane settings...
-};
-```
+        // other Testplane settings...
+    };
+    ```
+-   Using environment variables: `html_reporter_yandex_metrika_enabled=false` or simply `NO_ANALYTICS=true`
+-   Using CLI arguments: `--html-reporter-yandex_metrika_enabled=false`
 
 ### Passing parameters via the CLI {#setup_by_cli}
 
