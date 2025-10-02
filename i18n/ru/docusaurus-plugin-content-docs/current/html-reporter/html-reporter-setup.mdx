@@ -1,5 +1,5 @@
 ---
-sidebar_class_name: hidden
+sidebar_position: 2
 ---
 
 import Tabs from "@theme/Tabs";
@@ -7,138 +7,80 @@ import TabItem from "@theme/TabItem";
 
 import Admonition from "@theme/Admonition";
 
-# Подключение html-reporter
+# Конфигурация
 
-## Обзор {#overview}
-
-Используйте плагин [html-reporter][html-reporter], чтобы получить html-отчет о прогоне тестов.
-
-![Html-отчет](/img/docs/html-reporter/html-reporter.overview.png)
-
-<Admonition type="warning" title="Требования к testplane">
-    Для корректной работы плагина _html-reporter_ требуется [testplane][testplane] версии 4 и выше.
-</Admonition>
-
-Плагин сохраняет результаты прогона тестов в базу данных [SQLite][sqlite]. Поэтому вы не сможете открыть локальный отчет как файл с помощью `file://` протокола.
-
-Чтобы посмотреть отчет, запустите testplane в GUI-режиме:
-
-```bash
-npx testplane gui
-```
-
-Или запустите [http-server][http-server] в папке с отчетом:
-
-```bash
-npx http-server -p 8000
-```
-
-Если вы запускаете локальный сервер не из папки с отчетом, то укажите путь к отчету:
-
-```bash
-npx http-server ./testplane-report -p 8000
-```
-
-После чего откройте страницу `http://localhost:8000` в браузере.
-
-## Установка {#install}
-
-```bash
-npm install -D html-reporter
-```
-
-## Настройка {#setup}
-
-Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
+## Примеры настройки {#setup}
 
 <Tabs>
-<TabItem value="Минимальный конфиг" label="Минимальный конфиг">
-```javascript
-    module.exports = {
+<TabItem value="Testplane" label="Testplane">
+    ```javascript title="testplane.config.ts"
+    export = {
+        // ...
         plugins: {
             'html-reporter/testplane': {
-                enabled: true
+                enabled: true,
+                path: 'html-report',
             },
-
-            // другие плагины testplane...
         },
-
-        // другие настройки testplane...
     };
     ```
 
 </TabItem>
 
-<TabItem value="Максимальный конфиг" label="Максимальный конфиг">
-```javascript
-    module.exports = {
-        plugins: {
-            'html-reporter/testplane': {
+<TabItem value="Playwright" label="Playwright">
+    ```javascript title="playwright.config.ts"
+     // playwright.config.ts
+    export default defineConfig({
+        // ...
+        reporter: [
+            ['html-reporter/playwright', {
                 enabled: true,
-                path: 'my/testplane-reports',
-                defaultView: 'all',
-                baseHost: 'test.com',
-                errorPatterns: [
-                    'Parameter .* must be a string',
-                    {
-                        name: 'Cannot read property of undefined',
-                        pattern: 'Cannot read property .* of undefined',
-                        hint: '<div>google it, i dont know how to fix it =(</div>'
-                    }
-                ],
-                customScripts: [
-                    function() {
-                        // кастомный скрипт
-                    },
-
-                    // другие скрипты...
-                ],
-                customGui: {
-                    // DEPRECATED (этот параметр устарел)
-                    // дополнительные элементы управления для GUI-режима
-                    // используйте plugins (плагины для отчета) вместо customGui
-                },
-                pluginsEnabled: true,
-                plugins: [
-                    // плагины для отчета...
-                ],
-                yandexMetrika: {
-                    counter: 1234567
-                }
-            },
-
-            // другие плагины testplane...
-        },
-
-        // другие настройки testplane...
-    }
+                defaultView: 'failed',
+                path: 'html-report',
+            }],
+        ],
+    });
     ```
 
 </TabItem>
 
+<TabItem value="Jest" label="Jest">
+    ```javascript title="jest.config.ts"
+     const config = {
+        // ...
+        reporters: [
+            ['html-reporter/jest', {
+                path: 'html-report',
+            }]
+        ],
+    };
+    ```
+</TabItem>
+
 </Tabs>
 
-### Расшифровка параметров конфигурации {#setup_description}
+## Справочник по параметрам конфигурации {#setup_description}
 
 <table>
 <thead>
 <tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
 </thead>
 <tbody>
-<tr><td>[enabled](#enabled)</td><td>Boolean</td><td>true</td><td>Включить / отключить плагин.</td></tr>
-<tr><td>[path](#path)</td><td>String</td><td>"testplane-report"</td><td>Путь к папке для сохранения файлов html-отчета.</td></tr>
-<tr><td>[saveErrorDetails](#saveerrordetails)</td><td>Boolean</td><td>false</td><td>Сохранять / не сохранять подробности ошибок в json-файлах.</td></tr>
-<tr><td>[defaultView](#defaultview)</td><td>String</td><td>"all"</td><td>Режим фильтрации тестов при отображении, который будет установлен по умолчанию.</td></tr>
-<tr><td>[diffMode](#diffmode)</td><td>String</td><td>"3-up"</td><td>Режим просмотра диффов, который будет установлен по умолчанию.</td></tr>
-<tr><td>[baseHost](#basehost)</td><td>String</td><td>_N/A_</td><td>Заменяет оригинальный адрес хоста для просмотра в браузере.</td></tr>
-<tr><td>[errorPatterns](#errorpatterns)</td><td>Object[] или String[]</td><td>[ ]</td><td>Паттерны ошибок с подсказками для улучшения UX отчета.</td></tr>
-<tr><td>[metaInfoBaseUrls](#metainfobaseurls)</td><td>Object</td><td>`{ }`</td><td>Базовые URL-адреса для формирования ссылок в разделе _Meta_ на основе мета-информации о прогоне теста.</td></tr>
-<tr><td>[saveFormat](#saveformat)</td><td>String</td><td>"sqlite"</td><td>ПАРАМЕТР УСТАРЕЛ. Позволяет задать формат, в котором будут сохранены результаты прогона тестов.</td></tr>
-<tr><td>[customGui](#customgui)</td><td>Object</td><td>`{ }`</td><td>ПАРАМЕТР УСТАРЕЛ. Используйте вместо него [plugins](#plugins). Описание собственных элементов управления для GUI-режима.</td></tr>
-<tr><td>[pluginsEnabled](#pluginsenabled)</td><td>Boolean</td><td>false</td><td>Включить плагины для отчета.</td></tr>
-<tr><td>[plugins](#plugins)</td><td>Object[]</td><td>[ ]</td><td>Список плагинов с их настройками.</td></tr>
-<tr><td>[customScripts](#customscripts)</td><td>Function[]</td><td>[ ]</td><td>Список функций, реализующих кастомные скрипты. Например, скрипты Яндекс.Метрики или Жучка.</td></tr>
-<tr><td>[yandexMetrika](#yandexmetrika)</td><td>Object</td><td>`{ }`</td><td>[Яндекс.Метрика][yandex-metrika].</td></tr>
+<tr><td>[enabled](#enabled)</td><td>`boolean`</td><td>`true`</td><td>Включить / отключить плагин.</td></tr>
+<tr><td>[path](#path)</td><td>`string`</td><td>`"testplane-report"`</td><td>Путь к папке для сохранения файлов html-отчета.</td></tr>
+<tr><td>[saveErrorDetails](#saveerrordetails)</td><td>`boolean`</td><td>`false`</td><td>Сохранять / не сохранять подробности ошибок в json-файлах.</td></tr>
+<tr><td>[uiMode](#uimode)</td><td>`string`</td><td>`null`</td><td>Режим интерфейса по умолчанию: "old" для классического интерфейса, "new" для современного интерфейса.</td></tr>
+<tr><td>[defaultView](#defaultview)</td><td>`string`</td><td>`"all"`</td><td>Режим фильтрации тестов при отображении, который будет установлен по умолчанию.</td></tr>
+<tr><td>[diffMode](#diffmode)</td><td>`string`</td><td>`"3-up"`</td><td>Режим просмотра диффов, который будет установлен по умолчанию.</td></tr>
+<tr><td>[baseHost](#basehost)</td><td>`string`</td><td>_N/A_</td><td>Заменяет оригинальный адрес хоста для просмотра в браузере.</td></tr>
+<tr><td>[errorPatterns](#errorpatterns)</td><td>`ErrorPattern[] | string[]`</td><td>`[]`</td><td>Паттерны ошибок с подсказками для улучшения UX отчета.</td></tr>
+<tr><td>[metaInfoBaseUrls](#metainfobaseurls)</td><td>`Record<string, string>`</td><td>`{}`</td><td>Базовые URL-адреса для формирования ссылок в разделе _Meta_ на основе мета-информации о прогоне теста.</td></tr>
+<tr><td>[saveFormat](#saveformat)</td><td>`string`</td><td>`"sqlite"`</td><td>ПАРАМЕТР УСТАРЕЛ. Позволяет задать формат, в котором будут сохранены результаты прогона тестов.</td></tr>
+<tr><td>[customGui](#customgui)</td><td>`CustomGUI`</td><td>`{ }`</td><td>ПАРАМЕТР УСТАРЕЛ. Используйте вместо него [plugins](#plugins). Описание собственных элементов управления для GUI-режима.</td></tr>
+<tr><td>[pluginsEnabled](#pluginsenabled)</td><td>`boolean`</td><td>`false`</td><td>Включить плагины для отчета.</td></tr>
+<tr><td>[plugins](#plugins)</td><td>`Plugin[]`</td><td>`[]`</td><td>Список плагинов с их настройками.</td></tr>
+<tr><td>[customScripts](#customscripts)</td><td>`AnyFunction[]`</td><td>`[]`</td><td>Список функций, реализующих кастомные скрипты. Например, скрипты Яндекс.Метрики или Жучка.</td></tr>
+<tr><td>[yandexMetrika](#yandexmetrika)</td><td>`YandexMetrika`</td><td>*см. ниже*</td><td>[Яндекс.Метрика][yandex-metrika].</td></tr>
 
 </tbody>
 </table>
@@ -157,7 +99,7 @@ npm install -D html-reporter
 
 По умолчанию «не сохранять»: `false`.
 
-Любой плагин testplane может добавить какие-либо подробности в объект ошибки при её возникновении. Эти подробности могут помочь пользователю в отладке проблем, которые возникли в тесте. Html-reporter сохраняет эти детали в папке `error-details` в файле с именем: `&lt;хэш от полного названия теста>-&lt;браузер>_&lt;номер ретрая>_&lt;временная метка>.json`.
+Любой плагин testplane может добавить какие-либо подробности в объект ошибки при её возникновении. Эти подробности могут помочь пользователю в отладке проблем, которые возникли в тесте. Html-reporter сохраняет эти детали в папке `error-details` в файле с именем: `<хэш от полного названия теста>-<браузер>_<номер ретрая>_<временная метка>.json`.
 
 Под стектрейсом html-reporter добавляет раздел `Error details` со ссылкой `<title>`, указывающей на json-файл. Пользователь может открыть этот файл либо в браузере, либо в любой IDE.
 
@@ -173,6 +115,16 @@ err.details = {
 
 throw err;
 ```
+
+### uiMode
+
+Режим интерфейса по умолчанию: "old" для классического интерфейса, "new" для современного интерфейса. Влияет на редиректы между старым и новым интерфейсом.
+
+По умолчанию редиректы не выполняются.
+
+Доступны следующие значения: `"old"`, `"new"`.
+
+Например, если установлено значение `"new"`, то пользователи будут перенаправляться на новый интерфейс при попытке доступа к старому интерфейсу. Однако, если пользователь вручную нажмет кнопку "вернуться к старому интерфейсу", эта настройка будет сохранена, и он всегда будет использовать старый интерфейс, пока не переключится обратно.
 
 ### defaultView
 
@@ -232,9 +184,9 @@ throw err;
 
 ```javascript
 {
-    name: '&lt;название ошибки>',
-    pattern: '&lt;паттерн ошибки>',
-    hint: '&lt;подсказка пользователю>'
+    name: '<название ошибки>',
+    pattern: '<паттерн ошибки>',
+    hint: '<подсказка пользователю>'
 }
 ```
 
@@ -245,9 +197,9 @@ throw err;
 <tr><td>**Параметр**</td><td>**Тип**</td><td>**Описание**</td></tr>
 </thead>
 <tbody>
-<tr><td>name</td><td>String</td><td>Название ошибки.</td></tr>
-<tr><td>pattern</td><td>String или RegExp</td><td>Регулярное выражение или обычная строка, которой должна соответствовать ошибка.</td></tr>
-<tr><td>hint</td><td>String</td><td>Необязательный параметр. Подсказка, что можно сделать с данной ошибкой: почему она возникла, как её исправить и т. п.</td></tr>
+<tr><td>name</td><td>`string`</td><td>Название ошибки.</td></tr>
+<tr><td>pattern</td><td>`string | RegExp`</td><td>Регулярное выражение или обычная строка, которой должна соответствовать ошибка.</td></tr>
+<tr><td>hint</td><td>`string`</td><td>Необязательный параметр. Подсказка, что можно сделать с данной ошибкой: почему она возникла, как её исправить и т. п.</td></tr>
 
 </tbody>
 </table>
@@ -256,8 +208,8 @@ throw err;
 
 ```javascript
 {
-    name: '&lt;ошибка>',
-    pattern: '&lt;ошибка>'
+    name: '<ошибка>',
+    pattern: '<ошибка>'
 }
 ```
 
@@ -278,8 +230,8 @@ throw err;
 
 ```javascript
 {
-    '&lt;опция-1>': 'значение опции 1',
-    '&lt;опция-2>': 'значение опции 2',
+    '<опция-1>': 'значение опции 1',
+    '<опция-2>': 'значение опции 2',
     // и т. д.
 }
 ```
@@ -291,6 +243,21 @@ throw err;
     'file': 'base/path'
 }
 ```
+
+Когда значение любого ключа установлено на `auto`, базовый URL будет установлен на базовый хост, указанный в интерфейсе отчета, или останется неизменным, если базовый хост не указан.
+
+Например, если у вас есть следующее значение `metaInfoBaseUrls`:
+
+```javascript
+{
+    custom_url: "auto";
+}
+```
+
+И вы установите поле `meta.custom_url` в `https://example.com/some/path` в ваших тестах, вы увидите в мете:
+
+-   Ссылку на `https://example.com/some/path`, если базовый хост не установлен в интерфейсе пользователя
+-   Ссылку на `https://another-host.com/some/path`, если базовый хост в интерфейсе пользователя установлен в `https://another-host.com`
 
 ### saveFormat
 
@@ -345,41 +312,27 @@ customScripts: [
 
 ### yandexMetrika
 
-Данный параметр позволяет добавить в отчет [Яндекс.Метрику][yandex-metrika]. Параметр задается в виде объекта с ключом `counterNumber` _(номер счетчика)_. В качестве значения ключа необходимо указать номер счетчика Яндекс.Метрики (см. «[Как создать счетчик][how-to-create-counter]»). Номер должен задаваться как число _(Number)_, а не строка.
+По умолчанию выполняется сбор анонимных сведений об использовании интерфейса отчета в целях анализа и улучшения UX. Собираются такие сведения, как скорость загрузки отчета, частота использования некоторых функций (например, сортировка тестов) и клики по элементам управления. Сведения о вашем проекте или содержимом тестов НЕ собираются ни при каких обстоятельствах.
 
-Также в интерфейсе Яндекс.Метрики необходимо перейти в разделе настроек на вкладку _«Счетчик»_, нажать кнопку _«Скопировать»_ и вставить код счетчика в поле [customScripts](#customscripts).
+Если вы не хотите делиться аналитикой с нами, вы можете отключить это любым из способов:
 
-С помощью метрики вы сможете узнать как разработчики взаимодействуют с вашим отчетом и с какого рода проблемами они сталкиваются.
-
-Отчет поддерживает следующие [цели для метрики][yandex-metrika-goals]:
-
--   **ACCEPT_SCREENSHOT** — было нажатие на кнопку _Accept_ для принятия скриншота;
--   **ACCEPT_OPENED_SCREENSHOTS** — было нажатие на кнопку _Accept opened_ для принятия скриншотов из открытых тестов.
-
-Пример настройки _Яндекс.Метрики_ в одном из проектов:
-
-```javascript
-module.exports = {
-    plugins: {
-        'html-reporter/testplane': {
-            customScripts: [
-                function(){(function(m,e,t,r,i,k,a){m[i]=m[i]<tr><td>function(){(m[i].a=m[i].a</td></tr>[]).push(arguments)}; m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}) (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym"); ym(56782912, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true })},
-
-                // другие скрипты...
-            ],
-            yandexMetrika: {
-                counterNumber: 1234567
+-   В конфиге
+    ```javascript
+    module.exports = {
+        plugins: {
+            "html-reporter/testplane": {
+                yandexMetrika: {
+                    enabled: false,
+                },
+                // другие настройки html-reporter...
             },
-
-            // другие настройки плагина...
+            // другие плагины Testplane...
         },
-
-        // другие плагины testplane...
-    },
-
-    // другие настройки testplane...
-};
-```
+        // другие настройки Testplane...
+    };
+    ```
+-   С помощью переменных окружения: `html_reporter_yandex_metrika_enabled=false` или просто `NO_ANALYTICS=true`
+-   С помощью аргументов CLI: `--html-reporter-yandex_metrika_enabled=false`
 
 ### Передача параметров через CLI {#setup_by_cli}
 
