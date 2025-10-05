@@ -90,6 +90,7 @@ body {
     --ifm-breadcrumb-color-active: theme("colors.indigo.600");
     --docsearch-searchbox-background: transparent !important;
     --max-width: 92rem;
+    --ifm-navbar-sidebar-width: 100vw;
 }
 
 /* Dark mode. */
@@ -113,6 +114,11 @@ html[data-theme-override="light"] {
     color: theme("colors.neutral.900") !important;
     --ifm-navbar-link-color: theme("colors.neutral.900");
     --ifm-navbar-link-hover-color: theme("colors.neutral.900");
+    --ifm-navbar-background-color: #fff;
+}
+
+.docs-wrapper .navbar__items {
+    @apply bg-white dark:bg-neutral-950;
 }
 
 .docs-wrapper .main-wrapper,
@@ -128,7 +134,7 @@ html[data-theme-override="light"] {
     transition: transform 0.25s ease-in-out;
     transform: translateY(0);
     will-change: transform;
-    @apply justify-center px-0 shadow-none dark:fill-white;
+    @apply justify-center px-0 text-neutral-600 shadow-none dark:fill-white dark:text-neutral-400;
 
     .navbar__inner {
         max-width: var(--max-width);
@@ -156,12 +162,32 @@ html[data-theme-override="light"] {
         }
     }
 
+    .navbar-sidebar {
+        @apply h-fit dark:bg-neutral-900;
+
+        .navbar-sidebar__item.menu {
+            padding: 10px 6px !important;
+        }
+
+        .color-mode-toggle {
+            @apply absolute top-[21px] right-6 h-fit;
+        }
+
+        .menu__link--sublist::after {
+            content: none;
+        }
+    }
+
+    .navbar-sidebar__backdrop {
+        @apply h-screen;
+    }
+
     .DocSearch-Button {
-        @apply h-8 w-80 rounded-lg bg-neutral-100 font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none dark:bg-neutral-800/50 dark:hover:bg-neutral-800/80;
+        @apply mr-6 h-8 scale-110 rounded-lg bg-transparent font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none md:scale-100 md:bg-neutral-100 md:text-neutral-500 lg:mr-0 lg:w-80 dark:bg-transparent dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:md:bg-neutral-800/50;
         font-family: Jost;
 
         svg {
-            @apply w-4 text-neutral-500;
+            @apply w-4 text-current;
         }
 
         .DocSearch-Button-Key {
@@ -180,7 +206,7 @@ html[data-theme-override="light"] {
     }
 
     .navbar__link {
-        @apply flex items-center font-medium text-neutral-600 after:border-t-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300;
+        @apply hidden items-center font-medium text-neutral-600 after:border-t-neutral-600 lg:flex dark:text-neutral-400 dark:hover:text-neutral-300;
 
         svg {
             display: inline;

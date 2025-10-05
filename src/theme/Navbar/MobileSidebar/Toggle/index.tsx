@@ -1,0 +1,23 @@
+import React from "react";
+import { useNavbarMobileSidebar } from "@docusaurus/theme-common/internal";
+import { translate } from "@docusaurus/Translate";
+import { EllipsisVertical } from "@gravity-ui/icons";
+
+export default function MobileSidebarToggle(): JSX.Element {
+    const { toggle, shown } = useNavbarMobileSidebar();
+    return (
+        <button
+            onClick={toggle}
+            aria-label={translate({
+                id: "theme.docs.sidebar.toggleSidebarButtonAriaLabel",
+                message: "Toggle navigation bar",
+                description: "The ARIA label for hamburger menu button of mobile navigation",
+            })}
+            aria-expanded={shown}
+            className="navbar__toggle clean-btn absolute right-2 z-999"
+            type="button"
+        >
+            <EllipsisVertical />
+        </button>
+    );
+}
