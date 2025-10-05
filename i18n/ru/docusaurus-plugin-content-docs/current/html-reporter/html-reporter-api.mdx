@@ -17,10 +17,11 @@ Html-reporter добавляет к объекту `testplane` объект `htm
 <tr><td>[extraItems](#extraitems)</td><td>Object</td><td>Дополнительные элементы, которые будут добавлены в бургер-меню отчета.</td></tr>
 <tr><td>[imagesSaver](#imagessaver)</td><td>Object</td><td>Интерфейс для сохранения изображений в хранилище пользователя.</td></tr>
 <tr><td>[reportsSaver](#reportssaver)</td><td>Object</td><td>Интерфейс для сохранения sqlite баз данных в хранилище пользователя.</td></tr>
+<tr><td>[snapshotsSaver](#snapshotssaver)</td><td>Object</td><td>Интерфейс для сохранения DOM-снапшотов в хранилище пользователя.</td></tr>
 <tr><td>[addExtraItem](#addextraitem)</td><td>Method</td><td>Добавляет дополнительный пункт в бургер-меню отчета.</td></tr>
 <tr><td>[downloadDatabases](#downloaddatabases)</td><td>Method</td><td>Скачивает все базы данных из переданных файлов типа _databaseUrls.json_.</td></tr>
 <tr><td>[mergeDatabases](#mergedatabases)</td><td>Method</td><td>Объединяет все переданные базы данных и сохраняет итоговый отчет по заданному пути.</td></tr>
-<tr><td>[getTestsTreeFromDatabase](#getteststreefromdatabase)</td><td>Method</td><td>Возвращает дерево тестов из переданной базы данных.</td></tr>
+<tr><td>[getTestsTreeFromDatabase](#getteststreefromdatabase)</td><td>Method</td><td>Асинхронно возвращает дерево тестов из переданной базы данных.</td></tr>
 
 </tbody>
 </table>
@@ -109,6 +110,42 @@ module.exports = (testplane, opts) => {
 };
 ```
 
+## snapshotsSaver
+
+Интерфейс для сохранения DOM-снапшотов в хранилище пользователя.
+
+### Пример использования {#snapshots_saver_usage_example}
+
+```javascript
+const MyStorage = require("my-storage");
+const myStorage = new MyStorage();
+
+module.exports = (testplane, opts) => {
+    testplane.on(testplane.events.INIT, async () => {
+        testplane.htmlReporter.snapshotsSaver = {
+            /**
+             * Сохранить снапшот в пользовательском хранилище.
+             * Функция может быть как асинхронной, так и синхронной.
+             * Функция должна возвращать путь или URL к сохраненному снапшоту.
+             * @property {String} localFilePath – путь к снапшоту на файловой системе
+             * @param {Object} options
+             * @param {String} options.destPath – путь к снапшоту в html-отчете
+             * @param {String} options.reportDir - путь к папке html-отчета
+             * @returns {String} путь или URL к снапшоту
+             */
+            saveSnapshot: async (localFilePath, options) => {
+                const { destPath, reportDir } = options;
+                const snapshotUrl = await myStorage.save(localFilePath, destPath, reportDir);
+
+                // ...
+
+                return snapshotUrl;
+            },
+        };
+    });
+};
+```
+
 ## addExtraItem
 
 Добавляет дополнительный пункт в виде ссылки в бургер-меню html-отчета.
@@ -177,12 +214,12 @@ await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
 
 ## getTestsTreeFromDatabase
 
-Возвращает дерево тестов из переданной базы данных.
+Асинхронно возвращает дерево тестов из переданной базы данных.
 
 ### Пример вызова {#get_tests_tree_from_database_call_example}
 
 ```javascript
-const dbTree = testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 ```
 
 ### Параметры вызова {#get_tests_tree_from_database_call_params}
@@ -192,8 +229,8 @@ const dbTree = testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 ### Пример использования {#get_tests_tree_from_database_usage_example}
 
 ```javascript
-function getSuccessTestRunIds({ testplane, mergedDbPath }) {
-    const dbTree = testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+async function getSuccessTestRunIds({ testplane, mergedDbPath }) {
+    const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 
     const successTestRunIds = [];
 

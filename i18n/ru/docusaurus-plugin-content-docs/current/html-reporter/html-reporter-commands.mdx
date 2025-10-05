@@ -61,6 +61,7 @@ npx html-reporter gui
 </thead>
 <tbody>
 <tr><td>-d, --destination &lt;folder></td><td>Путь к папке, в которую нужно сохранить итоговый отчет.</td></tr>
+<tr><td>-h, --header &lt;header></td><td>HTTP-заголовок для файлов databaseUrls.json из исходных путей.</td></tr>
 
 </tbody>
 </table>
@@ -68,8 +69,16 @@ npx html-reporter gui
 Пример использования:
 
 ```bash
-npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report
+npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report -h foo=bar
 ```
+
+HTTP-заголовки также можно передавать через переменную окружения — `html_reporter_headers` (она имеет более высокий приоритет, чем опция CLI `--header`). Пример:
+
+```bash
+html_reporter_headers='{"foo":"bar"}' npx hermione merge-reports path-to-database.db path-to-databaseUrls.json -d dest-report -h baz=qux
+```
+
+В этом вызове `path-to-databaseUrls.json` будет запрошен с заголовками: `{foo: 'bar', baz: 'qux'}`.
 
 ## remove-unused-screens
 
