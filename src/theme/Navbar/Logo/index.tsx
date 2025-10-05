@@ -5,7 +5,7 @@ import Link from "@docusaurus/Link";
 
 export default function NavbarLogo(): JSX.Element {
     return (
-        <div className="flex bg-white dark:bg-neutral-950">
+        <div className="flex">
             <TestplaneLogo className="h-8 w-8 dark:hidden" />
             <TestplaneLogoDark className="hidden h-8 w-8 dark:block" />
             <Link

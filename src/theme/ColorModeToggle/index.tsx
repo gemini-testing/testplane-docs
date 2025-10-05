@@ -159,7 +159,7 @@ function ColorModeToggle({ className, buttonClassName, onChange }: Props): JSX.E
             className={clsx(
                 styles.toggle,
                 className,
-                "text-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300",
+                "color-mode-toggle text-neutral-600 dark:text-neutral-400 dark:hover:text-neutral-300",
             )}
         >
             <button
