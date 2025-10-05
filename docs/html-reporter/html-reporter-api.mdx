@@ -17,10 +17,11 @@ Html-reporter adds an `htmlReporter` object to the `testplane` object with its o
 <tr><td>[extraItems](#extraitems)</td><td>Object</td><td>Additional elements to be added to the burger menu of the report.</td></tr>
 <tr><td>[imagesSaver](#imagessaver)</td><td>Object</td><td>Interface for saving images to the user's storage.</td></tr>
 <tr><td>[reportsSaver](#reportssaver)</td><td>Object</td><td>Interface for saving sqlite databases to the user's storage.</td></tr>
+<tr><td>[snapshotsSaver](#snapshotssaver)</td><td>Object</td><td>Interface for saving snapshots to the user's storage.</td></tr>
 <tr><td>[addExtraItem](#addextraitem)</td><td>Method</td><td>Adds an additional item to the burger menu of the report.</td></tr>
 <tr><td>[downloadDatabases](#downloaddatabases)</td><td>Method</td><td>Downloads all databases from the given files of the type _databaseUrls.json_.</td></tr>
 <tr><td>[mergeDatabases](#mergedatabases)</td><td>Method</td><td>Merges all given databases and saves the final report on the specified path.</td></tr>
-<tr><td>[getTestsTreeFromDatabase](#getteststreefromdatabase)</td><td>Method</td><td>Returns the test tree from the passed database.</td></tr>
+<tr><td>[getTestsTreeFromDatabase](#getteststreefromdatabase)</td><td>Method</td><td>Resolves the test tree from the passed database.</td></tr>
 
 </tbody>
 </table>
@@ -109,6 +110,42 @@ module.exports = (testplane, opts) => {
 };
 ```
 
+## snapshotsSaver
+
+Interface for saving DOM-snapshots to the user's storage.
+
+### Usage example
+
+```javascript
+const MyStorage = require("my-storage");
+const myStorage = new MyStorage();
+
+module.exports = (testplane, opts) => {
+    testplane.on(testplane.events.INIT, async () => {
+        testplane.htmlReporter.snapshotsSaver = {
+            /**
+             * Save snapshot to user storage.
+             * The function can be either asynchronous or synchronous.
+             * The function should return the path or URL to the saved snapshot.
+             * @property {String} localFilePath – the path to the snapshot on the file system
+             * @param {Object} options
+             * @param {String} options.destPath – the path to the snapshot in the html-report
+             * @param {String} options.reportDir - path to the html-report folder
+             * @returns {String} the path or URL to the snapshot
+             */
+            saveSnapshot: async (localFilePath, options) => {
+                const { destPath, reportDir } = options;
+                const snapshotUrl = await myStorage.save(localFilePath, destPath, reportDir);
+
+                // ...
+
+                return snapshotUrl;
+            },
+        };
+    });
+};
+```
+
 ## addExtraItem
 
 Adds an additional item to the burger menu of the report.
@@ -177,12 +214,12 @@ await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
 
 ## getTestsTreeFromDatabase
 
-Returns the test tree from the passed database.
+Resolves the test tree from the passed database.
 
 ### Example of a call {#get_tests_tree_from_database_call_example}
 
 ```javascript
-const dbTree = testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 ```
 
 ### Call parameters {#get_tests_tree_from_database_call_params}
@@ -192,8 +229,8 @@ The function takes one argument—the path to the database with the result of th
 ### Usage example {#get_tests_tree_from_database_usage_example}
 
 ```javascript
-function getSuccessTestRunIds({ testplane, mergedDbPath }) {
-    const dbTree = testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+async function getSuccessTestRunIds({ testplane, mergedDbPath }) {
+    const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 
     const successTestRunIds = [];
 

@@ -55,20 +55,37 @@ It creates a new html-report in the destination folder with data from all passed
 The `merge-reports` command supports the following required option:
 
 <table>
-<thead>
-<tr><td>**Option**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>-d, --destination &lt;folder></td><td>The path to the folder where you want to save the final report.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Option**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>-d, --destination &lt;folder></td>
+            <td>The path to the folder where you want to save the final report.</td>
+        </tr>
+        <tr>
+            <td>-h, --header &lt;header></td>
+            <td>Http header for databaseUrls.json files from source paths.</td>
+        </tr>
+    </tbody>
 </table>
 
 Usage example:
 
 ```bash
-npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report
+npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report -h foo=bar
 ```
+
+Http headers can also be send using the environment variable — `html_reporter_headers` (has a higher priority than the cli option `--header'). Example:
+
+```bash
+html_reporter_headers='{"foo":"bar"}' npx hermione merge-reports path-to-database.db path-to-databaseUrls.json -d dest-report -h baz=qux
+```
+
+In this call, the `path-to-databaseUrls.json` will be requested with headers: `{foo: 'bar', baz: 'qux'}`.
 
 ## remove-unused-screens
 
