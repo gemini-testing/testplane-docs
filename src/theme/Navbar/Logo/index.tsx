@@ -11,7 +11,7 @@ export default function NavbarLogo(): JSX.Element {
         <div
             className={clsx(
                 styles["logo-container"],
-                "logo-container flex bg-white/70 shadow-white/90 dark:bg-neutral-950/70 dark:shadow-neutral-950/90",
+                "logo-container flex lg:bg-white/70 lg:shadow-white/90 dark:lg:bg-neutral-950/70 dark:lg:shadow-neutral-950/90",
             )}
         >
             <TestplaneLogo className="h-8 w-8 dark:hidden" />
