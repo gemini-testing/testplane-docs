@@ -11,7 +11,6 @@ export default function IconClose({
     return (
         <Xmark
             className={className}
-            viewBox="0 0 15 15"
             width={width}
             height={height}
             {...restProps}
