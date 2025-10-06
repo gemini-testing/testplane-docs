@@ -118,7 +118,7 @@ html[data-theme-override="light"] {
 }
 
 .docs-wrapper .navbar__items {
-    @apply bg-white dark:bg-neutral-950;
+    // @apply bg-white dark:bg-neutral-950;
 }
 
 .docs-wrapper .main-wrapper,
@@ -128,6 +128,13 @@ html[data-theme-override="light"] {
     position: relative;
     translate: -50% 0;
     padding: 0 2rem;
+}
+
+.plugin-pages {
+    .logo-container {
+        box-shadow: none;
+        background: none;
+    }
 }
 
 .navbar {
@@ -266,7 +273,7 @@ html[data-theme-override="light"] {
             @apply m-0 h-8 w-8;
         }
         b {
-            @apply flex h-8 items-center rounded-lg px-2 font-mono hover:bg-neutral-100 dark:hover:bg-neutral-200/10;
+            @apply flex h-8 items-center rounded-lg px-2 font-mono font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-200/10;
         }
     }
 }

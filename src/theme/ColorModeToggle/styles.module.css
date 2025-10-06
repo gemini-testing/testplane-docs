@@ -1,7 +1,7 @@
 @reference '../../scss/custom.scss';
 
 .toggle {
-    @apply flex justify-center rounded-lg lg:hover:bg-neutral-100 dark:lg:hover:bg-neutral-300/10;
+    @apply flex justify-center rounded-lg;
     height: 21px;
     width: 21px;
 }
