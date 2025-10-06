@@ -165,12 +165,20 @@ html[data-theme-override="light"] {
     .navbar-sidebar {
         @apply h-fit dark:bg-neutral-900;
 
+        .navbar-sidebar__brand {
+            @apply relative;
+        }
+
+        .navbar-sidebar__items {
+            height: auto;
+        }
+
         .navbar-sidebar__item.menu {
             padding: 10px 6px !important;
         }
 
         .color-mode-toggle {
-            @apply absolute top-[21px] right-6 h-fit;
+            @apply absolute top-1/2 right-6 -translate-1/2;
         }
 
         .menu__link--sublist::after {
