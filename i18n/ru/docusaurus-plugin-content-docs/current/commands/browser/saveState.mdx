@@ -1,0 +1,47 @@
+import Admonition from "@theme/Admonition";
+
+# saveState
+
+## Обзор {#overview}
+
+Команда для сохранения состояния страницы (cookies, local и session storages).
+
+<Admonition type="warning">
+    Если вы используете `webdriver` automation protocol вы должны установить `webSocketUrl: true` в `desiredCapabilities` для браузера в конфиге.
+    Для `devtools` protocol не нужно дополнительных настроек.
+</Admonition>
+
+## Использование {#usage}
+
+Команда вернёт объект включающий cookie, localStorage и sessionStorage.
+Используя параметры вы можете выключить сохранение отдельных данных.
+Так же вы можете указать параметр `path` и получить файл с данными.
+После сохранения вы можете использовать результат в команде [restoreState](../restoreState).
+
+```typescript
+import type { SaveStateData } from "testplane";
+
+const stateDump: SaveStateData = await browser.saveState({
+    path: './stateDump.json',
+    cookies: true,
+    localStorage: true,
+    sessionStorage: true,
+});
+```
+
+## Примеры использования {#examples}
+
+Сохранение данных в файл.
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://github.com/gemini-testing/testplane");
+
+    await browser.saveState({
+        path: './stateDump.json',
+    });
+});
+```
+
+## Связанные команды {#related}
+
+-   [restoreState](../restoreState)

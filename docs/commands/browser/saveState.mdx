@@ -1,0 +1,47 @@
+import Admonition from "@theme/Admonition";
+
+# saveState
+
+## Overview {#overview}
+
+Browser command that save session state (cookies, local and session storages).
+
+<Admonition type="warning">
+    If you are using `webdriver` automation protocol you have to provide `webSocketUrl: true` in `desiredCapabilities` in config browser settings.
+    For `devtools` protocol don't need additional settings.
+</Admonition>
+
+## Usage {#usage}
+
+Command return state dump from page, it will include cookie, localStorage and sessionStorage.
+But using params you can disable some data.
+Also if you provide `path` param you can get dump in file.
+After save state you can use it in [restoreState](../restoreState) command.
+
+```typescript
+import type { SaveStateData } from "testplane";
+
+const stateDump: SaveStateData = await browser.saveState({
+    path: './stateDump.json',
+    cookies: true,
+    localStorage: true,
+    sessionStorage: true,
+});
+```
+
+## Usage Examples {#examples}
+
+Save state in file
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://github.com/gemini-testing/testplane");
+
+    await browser.saveState({
+        path: './stateDump.json',
+    });
+});
+```
+
+## Related Commands {#related}
+
+-   [restoreState](../restoreState)
