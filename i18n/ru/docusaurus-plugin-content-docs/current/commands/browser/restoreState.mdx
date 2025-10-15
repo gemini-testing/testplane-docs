@@ -5,8 +5,9 @@
 Команда для восстановления данных (cookies, local and session storages) из файла или объекта.
 
 <Admonition type="warning">
-    Если вы используете `webdriver` automation protocol вы должны установить `webSocketUrl: true` в `desiredCapabilities` для браузера в конфиге.
-    Для `devtools` protocol не нужно дополнительных настроек.
+    Если вы используете `webdriver` automation protocol вы должны установить `webSocketUrl: true` в
+    `desiredCapabilities` для браузера в конфиге. Для `devtools` protocol не нужно дополнительных
+    настроек.
 </Admonition>
 
 ## Использование {#usage}
@@ -30,11 +31,12 @@
     <tr><td>sessionStorage</td><td>Boolean</td><td>Включить восстановление sessionStorage (true по умолчанию).</td></tr>
 
     </tbody>
+
 </table>
 
 ```typescript
 await browser.restoreState({
-    path: './stateDump.json',
+    path: "./stateDump.json",
     data: stateDump,
     cookies: true,
     localStorage: true,
@@ -45,12 +47,13 @@ await browser.restoreState({
 ## Примеры использования {#examples}
 
 Восстановление данных из файла.
+
 ```typescript
 it("test", async ({ browser }) => {
     await browser.url("https://github.com/gemini-testing/testplane");
 
     await browser.restoreState({
-        path: './stateDump.json',
+        path: "./stateDump.json",
     });
 
     // Reload page for see auth result.

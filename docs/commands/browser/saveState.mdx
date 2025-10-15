@@ -7,8 +7,9 @@ import Admonition from "@theme/Admonition";
 Browser command that saves session state (cookies, local and session storages).
 
 <Admonition type="warning">
-    If you are using the `webdriver` automation protocol, you have to provide `webSocketUrl: true` in `desiredCapabilities` in config browser settings.
-    For the `devtools` protocol, you don't need additional settings.
+    If you are using the `webdriver` automation protocol, you have to provide `webSocketUrl: true`
+    in `desiredCapabilities` in config browser settings. For the `devtools` protocol, you don't need
+    additional settings.
 </Admonition>
 
 ## Usage {#usage}
@@ -22,7 +23,7 @@ After saving the state, you can use it in the [restoreState](../restoreState) co
 import type { SaveStateData } from "testplane";
 
 const stateDump: SaveStateData = await browser.saveState({
-    path: './stateDump.json',
+    path: "./stateDump.json",
     cookies: true,
     localStorage: true,
     sessionStorage: true,
@@ -42,17 +43,19 @@ const stateDump: SaveStateData = await browser.saveState({
     <tr><td>sessionStorage</td><td>Boolean</td><td>Enable save sessionStorage (true by default).</td></tr>
 
     </tbody>
+
 </table>
 
 ## Usage Examples {#examples}
 
 Save state in file.
+
 ```typescript
 it("test", async ({ browser }) => {
     await browser.url("https://github.com/gemini-testing/testplane");
 
     await browser.saveState({
-        path: './stateDump.json',
+        path: "./stateDump.json",
     });
 });
 ```

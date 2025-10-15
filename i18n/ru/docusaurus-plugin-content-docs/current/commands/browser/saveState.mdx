@@ -7,8 +7,9 @@ import Admonition from "@theme/Admonition";
 Команда для сохранения состояния страницы (cookies, local и session storages).
 
 <Admonition type="warning">
-    Если вы используете `webdriver` automation protocol вы должны установить `webSocketUrl: true` в `desiredCapabilities` для браузера в конфиге.
-    Для `devtools` protocol не нужно дополнительных настроек.
+    Если вы используете `webdriver` automation protocol вы должны установить `webSocketUrl: true` в
+    `desiredCapabilities` для браузера в конфиге. Для `devtools` protocol не нужно дополнительных
+    настроек.
 </Admonition>
 
 ## Использование {#usage}
@@ -22,7 +23,7 @@ import Admonition from "@theme/Admonition";
 import type { SaveStateData } from "testplane";
 
 const stateDump: SaveStateData = await browser.saveState({
-    path: './stateDump.json',
+    path: "./stateDump.json",
     cookies: true,
     localStorage: true,
     sessionStorage: true,
@@ -42,18 +43,19 @@ const stateDump: SaveStateData = await browser.saveState({
     <tr><td>sessionStorage</td><td>Boolean</td><td>Включить сохранение sessionStorage (true по умолчанию).</td></tr>
 
     </tbody>
-</table>
 
+</table>
 
 ## Примеры использования {#examples}
 
 Сохранение данных в файл.
+
 ```typescript
 it("test", async ({ browser }) => {
     await browser.url("https://github.com/gemini-testing/testplane");
 
     await browser.saveState({
-        path: './stateDump.json',
+        path: "./stateDump.json",
     });
 });
 ```
