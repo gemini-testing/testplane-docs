@@ -1,0 +1,67 @@
+import Admonition from "@theme/Admonition";
+
+# saveState
+
+## Overview {#overview}
+
+Browser command that saves session state (cookies, local and session storages).
+
+<Admonition type="warning">
+    If you are using the `webdriver` automation protocol, you have to provide `webSocketUrl: true`
+    in `desiredCapabilities` in config browser settings. For the `devtools` protocol, you don't need
+    additional settings.
+</Admonition>
+
+## Usage {#usage}
+
+Command return state dump from page; it will include cookie, localStorage, and sessionStorage.
+But using params, you can disable some data.
+Also, if you provide the `path` param, you can get a dump in a file.
+After saving the state, you can use it in the [restoreState](../restoreState) command.
+
+```typescript
+import type { SaveStateData } from "testplane";
+
+const stateDump: SaveStateData = await browser.saveState({
+    path: "./stateDump.json",
+    cookies: true,
+    localStorage: true,
+    sessionStorage: true,
+});
+```
+
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+    <tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+    </thead>
+    <tbody>
+    <tr><td>path</td><td>String</td><td>Path to file where state will be saved.</td></tr>
+    <tr><td>cookies</td><td>Boolean</td><td>Enable save cookies (true by default).</td></tr>
+    <tr><td>localStorage</td><td>Boolean</td><td>Enable save localStorage (true by default).</td></tr>
+    <tr><td>sessionStorage</td><td>Boolean</td><td>Enable save sessionStorage (true by default).</td></tr>
+    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Function for filtering cookies, receiving cookie objects, and returning boolean.</td></tr>
+
+    </tbody>
+
+</table>
+
+## Usage Examples {#examples}
+
+Save state in file.
+
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://github.com/gemini-testing/testplane");
+
+    await browser.saveState({
+        path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
+    });
+});
+```
+
+## Related Commands {#related}
+
+-   [restoreState](../restoreState)

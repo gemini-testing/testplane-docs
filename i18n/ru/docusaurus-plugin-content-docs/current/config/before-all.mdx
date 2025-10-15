@@ -1,0 +1,54 @@
+# beforeAll
+
+## Обзор {#overview}
+
+Данный параметр является хуком. Функция, заданная для данного параметра, будет автоматически вызвана до запуска тестов.
+
+Контекстом функции является конфиг Testplane. Так же функция принимает конфиг в аргументе.
+
+## Пример использования {#example}
+
+Пример логина и сохранения стейта сессии (куки, localStorage) для его последующего использования в тестах.
+
+```typescript title="testplane.config.ts"
+import { launchBrowser } from "testplane/unstable";
+
+export default {
+    // ...
+    browsers: {
+        chrome: {
+            headless: true,
+            desiredCapabilities: {
+                webSocketUrl: true,
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            headless: true,
+            desiredCapabilities: {
+                webSocketUrl: true,
+                browserName: "firefox",
+            },
+        },
+    },
+    beforeAll: async () => {
+        // launch a new browser with existing config
+        const browser = await launchBrowser(this.config.browsers.chrome);
+
+        await browser.url("https://example.com");
+
+        // do login things, type username/password etc.
+
+        // save dump with state (cookies, localStorage) for using in tests
+        await browser.saveState({
+            path: "./dump.json",
+        });
+
+        await browser.deleteSession();
+    },
+};
+```
+
+## Связанные хуки {#related}
+
+-   [afterAll](../after-all)
