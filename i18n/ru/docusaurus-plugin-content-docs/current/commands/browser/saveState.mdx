@@ -29,6 +29,22 @@ const stateDump: SaveStateData = await browser.saveState({
 });
 ```
 
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+    <tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+    </thead>
+    <tbody>
+    <tr><td>path</td><td>String</td><td>Путь где будет сохранён файл с данными.</td></tr>
+    <tr><td>cookies</td><td>Boolean</td><td>Включить сохранение кук (true по умолчанию).</td></tr>
+    <tr><td>localStorage</td><td>Boolean</td><td>Включить сохранение localStorage (true по умолчанию).</td></tr>
+    <tr><td>sessionStorage</td><td>Boolean</td><td>Включить сохранение sessionStorage (true по умолчанию).</td></tr>
+
+    </tbody>
+</table>
+
+
 ## Примеры использования {#examples}
 
 Сохранение данных в файл.

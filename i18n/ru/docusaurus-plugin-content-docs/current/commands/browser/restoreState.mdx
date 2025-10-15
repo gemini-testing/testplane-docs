@@ -13,8 +13,24 @@
 
 Вы можете восстановить данные из файла (используя параметр `path`) или из объекта (используя параметр`data`)
 Но если вы укажете оба параметра то данные восстановятся из файла.
-Так же вы можете указать параметры `cookies`, `localStorage` и `sessionStorage` что бы восстановить только нуд=жные данные.
-Данные для восстановления вы моежете получить из команды [saveState](../saveState).
+Так же вы можете указать параметры `cookies`, `localStorage` и `sessionStorage` что бы восстановить только нужные данные.
+Данные для восстановления вы можете получить из команды [saveState](../saveState).
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+    <tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+    </thead>
+    <tbody>
+    <tr><td>path</td><td>String</td><td>Путь к файлу с данными.</td></tr>
+    <tr><td>data</td><td>SaveStateData</td><td>Объект с данными.</td></tr>
+    <tr><td>cookies</td><td>Boolean</td><td>Включить восстановление кук (true по умолчанию).</td></tr>
+    <tr><td>localStorage</td><td>Boolean</td><td>Включить восстановление localStorage (true по умолчанию).</td></tr>
+    <tr><td>sessionStorage</td><td>Boolean</td><td>Включить восстановление sessionStorage (true по умолчанию).</td></tr>
+
+    </tbody>
+</table>
 
 ```typescript
 await browser.restoreState({

@@ -2,19 +2,19 @@
 
 ## Overview {#overview}
 
-Browser command that restore session state (cookies, local and session storages) from file or variable.
+Browser command that restores session state (cookies, local and session storages) from a file or variable.
 
 <Admonition type="warning">
-    If you are using `webdriver` automation protocol you have to provide `webSocketUrl: true` in `desiredCapabilities` in config browser settings.
-    For `devtools` protocol don't need additional settings.
+    If you are using the `webdriver` automation protocol, you have to provide `webSocketUrl: true` in `desiredCapabilities` in config browser settings.
+    For the `devtools` protocol, you don't need additional settings.
 </Admonition>
 
 ## Usage {#usage}
 
-You can restore state from file (using `path` param) or from object (using `data` param)
-But if you provide both, file have a highest priority.
-Also you can provide `cookies`, `localStorage` and `sessionStorage` params for restore only that what you need.
-Data for restore state you can get from [saveState](../saveState) command.
+You can restore state from file (using the `path` param) or from object (using the `data` param).
+But if you provide both, the file will have the highest priority.
+Also, you can provide `cookies`, `localStorage` and `sessionStorage` params to restore only what you need.
+Data for restore state you can get from the [saveState](../saveState) command.
 
 ```typescript
 await browser.restoreState({
@@ -26,9 +26,25 @@ await browser.restoreState({
 });
 ```
 
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+    <tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+    </thead>
+    <tbody>
+    <tr><td>path</td><td>String</td><td>Path to file with state.</td></tr>
+    <tr><td>data</td><td>SaveStateData</td><td>Object with state.</td></tr>
+    <tr><td>cookies</td><td>Boolean</td><td>Enable restore cookies (true by default).</td></tr>
+    <tr><td>localStorage</td><td>Boolean</td><td>Enable restore localStorage (true by default).</td></tr>
+    <tr><td>sessionStorage</td><td>Boolean</td><td>Enable restore sessionStorage (true by default).</td></tr>
+
+    </tbody>
+</table>
+
 ## Usage Examples {#examples}
 
-Restore state from file
+Restore state from file.
 ```typescript
 it("test", async ({ browser }) => {
     await browser.url("https://github.com/gemini-testing/testplane");
