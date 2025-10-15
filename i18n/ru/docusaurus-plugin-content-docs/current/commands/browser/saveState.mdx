@@ -41,6 +41,7 @@ const stateDump: SaveStateData = await browser.saveState({
     <tr><td>cookies</td><td>Boolean</td><td>Включить сохранение кук (true по умолчанию).</td></tr>
     <tr><td>localStorage</td><td>Boolean</td><td>Включить сохранение localStorage (true по умолчанию).</td></tr>
     <tr><td>sessionStorage</td><td>Boolean</td><td>Включить сохранение sessionStorage (true по умолчанию).</td></tr>
+    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td></tr>
 
     </tbody>
 
@@ -56,6 +57,7 @@ it("test", async ({ browser }) => {
 
     await browser.saveState({
         path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
     });
 });
 ```

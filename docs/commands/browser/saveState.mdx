@@ -41,6 +41,7 @@ const stateDump: SaveStateData = await browser.saveState({
     <tr><td>cookies</td><td>Boolean</td><td>Enable save cookies (true by default).</td></tr>
     <tr><td>localStorage</td><td>Boolean</td><td>Enable save localStorage (true by default).</td></tr>
     <tr><td>sessionStorage</td><td>Boolean</td><td>Enable save sessionStorage (true by default).</td></tr>
+    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Function for filtering cookies, receiving cookie objects, and returning boolean.</td></tr>
 
     </tbody>
 
@@ -56,6 +57,7 @@ it("test", async ({ browser }) => {
 
     await browser.saveState({
         path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
     });
 });
 ```

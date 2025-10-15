@@ -29,6 +29,7 @@
     <tr><td>cookies</td><td>Boolean</td><td>Включить восстановление кук (true по умолчанию).</td></tr>
     <tr><td>localStorage</td><td>Boolean</td><td>Включить восстановление localStorage (true по умолчанию).</td></tr>
     <tr><td>sessionStorage</td><td>Boolean</td><td>Включить восстановление sessionStorage (true по умолчанию).</td></tr>
+    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td></tr>
 
     </tbody>
 
@@ -54,6 +55,7 @@ it("test", async ({ browser }) => {
 
     await browser.restoreState({
         path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
     });
 
     // Reload page for see auth result.

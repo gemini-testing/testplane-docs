@@ -39,6 +39,7 @@ await browser.restoreState({
     <tr><td>cookies</td><td>Boolean</td><td>Enable restore cookies (true by default).</td></tr>
     <tr><td>localStorage</td><td>Boolean</td><td>Enable restore localStorage (true by default).</td></tr>
     <tr><td>sessionStorage</td><td>Boolean</td><td>Enable restore sessionStorage (true by default).</td></tr>
+    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Function for filtering cookies, receiving cookie objects, and returning boolean.</td></tr>
 
     </tbody>
 
@@ -54,6 +55,7 @@ it("test", async ({ browser }) => {
 
     await browser.restoreState({
         path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
     });
 
     // Reload page for see auth result.
