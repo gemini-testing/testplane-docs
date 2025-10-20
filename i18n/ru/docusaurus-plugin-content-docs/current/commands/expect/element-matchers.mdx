@@ -280,7 +280,9 @@ await expect(elem).toHaveId("elem");
 ```javascript
 await browser.url("https://testplane.io/");
 const elem = await browser.$(".container");
-await expect(elem).toHaveText("Fast, scalable and robust end-to-end web testing solution | Testplane");
+await expect(elem).toHaveText(
+    "Fast, scalable and robust end-to-end web testing solution | Testplane",
+);
 await expect(elem).toHaveText([
     "Fast, scalable and robust end-to-end web testing solution | Testplane",
     "Get Started",
