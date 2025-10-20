@@ -1,8 +1,8 @@
-# testplane-global-hook
+# @testplane/global-hook
 
 ## Обзор {#overview}
 
-Используйте плагин [testplane-global-hook][testplane-global-hook], чтобы вынести общую логику из своих тестов в специальные обработчки для `beforeEach` и `afterEach` хуков.
+Используйте плагин [@testplane/global-hook][testplane-global-hook], чтобы вынести общую логику из своих тестов в специальные обработчки для `beforeEach` и `afterEach` хуков.
 
 Часто, перед тем как запустить очередной testplane-тест, нужно выполнить определенную подготовительную работу, например:
 
@@ -19,7 +19,7 @@
 ## Установка {#install}
 
 ```bash
-npm install -D testplane-global-hook
+npm install -D @testplane/global-hook
 ```
 
 ## Настройка {#setup}
@@ -29,7 +29,7 @@ npm install -D testplane-global-hook
 ```javascript
 module.exports = {
     plugins: {
-        "testplane-global-hook": {
+        "@testplane/global-hook": {
             beforeEach: async function ({ browser }) {
                 await browser.deleteCookie(); // Например, мы хотим всегда очищать cookies перед запуском теста
             },
