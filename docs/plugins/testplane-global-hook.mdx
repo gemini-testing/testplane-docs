@@ -1,8 +1,8 @@
-# testplane-global-hook
+# @testplane/global-hook
 
 ## Overview {#overview}
 
-Use the [testplane-global-hook][testplane-global-hook] plugin to bring out the common logic from your tests into special handlers for `beforeEach` and `afterEach` hooks.
+Use the [@testplane/global-hook][testplane-global-hook] plugin to bring out the common logic from your tests into special handlers for `beforeEach` and `afterEach` hooks.
 
 Often, before running the next Testplane test, you need to do some preliminary setup, for example:
 
@@ -19,7 +19,7 @@ In order not to repeat these actions in each test, you can describe them in the 
 ## Install {#install}
 
 ```bash
-npm install -D testplane-global-hook
+npm install -D @testplane/global-hook
 ```
 
 ## Setup {#setup}
@@ -29,7 +29,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        "testplane-global-hook": {
+        "@testplane/global-hook": {
             beforeEach: async function ({ browser }) {
                 await browser.deleteCookie(); // Say, we want to always clear cookies before running a test
             },
