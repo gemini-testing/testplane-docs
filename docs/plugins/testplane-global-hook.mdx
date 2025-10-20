@@ -29,7 +29,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        "testplane-global-hook": {
+        "@testplane/global-hook": {
             beforeEach: async function ({ browser }) {
                 await browser.deleteCookie(); // Say, we want to always clear cookies before running a test
             },
