@@ -1,3 +1,5 @@
+import Admonition from "@theme/Admonition";
+
 # restoreState
 
 ## Обзор {#overview}
@@ -98,6 +100,50 @@ it("test", async ({ browser }) => {
 });
 ```
 
+Пример реализации аутентификации в тестах с использованием saveState/restoreState и хука beforeAll.
+
+```typescript
+import { ConfigInput, WdioBrowser } from "testplane";
+import { launchBrowser } from "testplane/unstable";
+
+export default {
+    gridUrl: "local",
+    beforeAll: async ({ config }) => {
+        const b = await launchBrowser(config.browsers["chrome"]!);
+
+        await b.url("https://our-site.com");
+        await b.$("input.login").setValue("user@example.com");
+        await b.$("input.password").setValue("password123");
+
+        await b.saveState({ path: "./.testplane/state.json" });
+        await b.deleteSession();
+    },
+    sets: {
+        /* ... */
+    },
+    browsers: {
+        chrome: {
+            headless: false,
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+    },
+    plugins: {
+        /* ... */
+        "@testplane/global-hook": {
+            enabled: true,
+            beforeEach: async ({ browser }: { browser: WdioBrowser }) => {
+                await browser.url("https://our-site.com");
+                await browser.restoreState({ path: "./.testplane/state.json" });
+            },
+        },
+    },
+} satisfies ConfigInput;
+```
+
 ## Связанные команды {#related}
 
 -   [saveState](../saveState)
+-   [afterAll](../../../config/after-all)
+-   [beforeAll](../../../config/before-all)
