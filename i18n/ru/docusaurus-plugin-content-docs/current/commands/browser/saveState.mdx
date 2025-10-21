@@ -27,17 +27,45 @@ const stateDump: SaveStateData = await browser.saveState({
 
 <table>
     <thead>
-    <tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Значение по умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
     </thead>
     <tbody>
-    <tr><td>path</td><td>`string`</td><td>Путь где будет сохранён файл с данными.</td></tr>
-    <tr><td>cookies</td><td>`boolean`</td><td>Включить сохранение кук (true по умолчанию).</td></tr>
-    <tr><td>localStorage</td><td>`boolean`</td><td>Включить сохранение localStorage (true по умолчанию).</td></tr>
-    <tr><td>sessionStorage</td><td>`boolean`</td><td>Включить сохранение sessionStorage (true по умолчанию).</td></tr>
-    <tr><td>cookieFilter</td><td>`(cookie: Cookie) => boolean`</td><td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td></tr>
-
+        <tr>
+            <td>path</td>
+            <td>`string`</td>
+            <td>`-`</td>
+            <td>Путь где будет сохранён файл с данными.</td>
+        </tr>
+        <tr>
+            <td>cookies</td>
+            <td>`boolean`</td>
+            <td>`екгу`</td>
+            <td>Включить сохранение кук (true по умолчанию).</td>
+        </tr>
+        <tr>
+            <td>localStorage</td>
+            <td>`boolean`</td>
+            <td>`екгу`</td>
+            <td>Включить сохранение localStorage (true по умолчанию).</td>
+        </tr>
+        <tr>
+            <td>sessionStorage</td>
+            <td>`boolean`</td>
+            <td>`екгу`</td>
+            <td>Включить сохранение sessionStorage (true по умолчанию).</td>
+        </tr>
+        <tr>
+            <td>cookieFilter</td>
+            <td>`(cookie: Cookie) => boolean`</td>
+            <td>`-`</td>
+            <td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td>
+        </tr>
     </tbody>
-
 </table>
 
 ## Примеры использования {#examples}
