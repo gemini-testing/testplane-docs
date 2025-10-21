@@ -14,6 +14,21 @@
 
 Данные для восстановления состояния можно получить с помощью команды [saveState](../saveState).
 
+<Admonition type="warning">
+    Вы должны находиться на той же странице, с которой были сохранены cookies. Вам нужно сначала
+    перейти на страницу, используйте команду [url](../url) перед восстановлением состояния.
+</Admonition>
+
+```typescript
+await browser.restoreState({
+    path: "./stateDump.json",
+    data: stateDump,
+    cookies: true,
+    localStorage: true,
+    sessionStorage: true,
+});
+```
+
 ## Параметры команды {#parameters}
 
 <table>
@@ -64,16 +79,6 @@
         </tr>
     </tbody>
 </table>
-
-```typescript
-await browser.restoreState({
-    path: "./stateDump.json",
-    data: stateDump,
-    cookies: true,
-    localStorage: true,
-    sessionStorage: true,
-});
-```
 
 ## Примеры использования {#examples}
 

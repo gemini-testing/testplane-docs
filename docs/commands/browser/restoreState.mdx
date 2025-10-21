@@ -1,3 +1,5 @@
+import Admonition from "@theme/Admonition";
+
 # restoreState
 
 ## Overview {#overview}
@@ -13,6 +15,11 @@ You can restore the browser state from either a file (using the `path` parameter
 You can optionally specify which storage types to restore using the `cookies`, `localStorage`, and `sessionStorage` parameters. This allows you to restore only the specific data you need.
 
 The state data for restoration can be obtained from the [saveState](../saveState) command.
+
+<Admonition type="warning">
+    You must be on the exact same page from which the cookies were originally saved. You need to
+    navigate to the page first, use the [url](../url) command before restoring state.
+</Admonition>
 
 ```typescript
 await browser.restoreState({
