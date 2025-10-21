@@ -1,23 +1,18 @@
-import Admonition from "@theme/Admonition";
-
 # restoreState
 
 ## Overview {#overview}
 
 Browser command that restores session state (cookies, local and session storages) from a file or variable.
 
-<Admonition type="warning">
-    If you are using the `webdriver` automation protocol, you have to provide `webSocketUrl: true`
-    in `desiredCapabilities` in config browser settings. For the `devtools` protocol, you don't need
-    additional settings.
-</Admonition>
-
 ## Usage {#usage}
 
-You can restore state from file (using the `path` param) or from object (using the `data` param).
-But if you provide both, the file will have the highest priority.
-Also, you can provide `cookies`, `localStorage` and `sessionStorage` params to restore only what you need.
-Data for restore state you can get from the [saveState](../saveState) command.
+You can restore the browser state from either a file (using the `path` parameter) or directly from an object (using the `data` parameter).
+
+**Important:** If you provide both `path` and `data` parameters, the file specified in `path` will take priority.
+
+You can optionally specify which storage types to restore using the `cookies`, `localStorage`, and `sessionStorage` parameters. This allows you to restore only the specific data you need.
+
+The state data for restoration can be obtained from the [saveState](../saveState) command.
 
 ```typescript
 await browser.restoreState({
@@ -36,12 +31,12 @@ await browser.restoreState({
     <tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
     </thead>
     <tbody>
-    <tr><td>path</td><td>String</td><td>Path to file with state.</td></tr>
-    <tr><td>data</td><td>SaveStateData</td><td>Object with state.</td></tr>
-    <tr><td>cookies</td><td>Boolean</td><td>Enable restore cookies (true by default).</td></tr>
-    <tr><td>localStorage</td><td>Boolean</td><td>Enable restore localStorage (true by default).</td></tr>
-    <tr><td>sessionStorage</td><td>Boolean</td><td>Enable restore sessionStorage (true by default).</td></tr>
-    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Function for filtering cookies, receiving cookie objects, and returning boolean.</td></tr>
+    <tr><td>path</td><td>`string`</td><td>Path to file with state.</td></tr>
+    <tr><td>data</td><td>`SaveStateData`</td><td>Object with state.</td></tr>
+    <tr><td>cookies</td><td>`boolean`</td><td>Enable restore cookies (true by default).</td></tr>
+    <tr><td>localStorage</td><td>`boolean`</td><td>Enable restore localStorage (true by default).</td></tr>
+    <tr><td>sessionStorage</td><td>`boolean`</td><td>Enable restore sessionStorage (true by default).</td></tr>
+    <tr><td>cookieFilter</td><td>`(cookie: Cookie) => boolean`</td><td>Function for filtering cookies, receiving cookie objects, and returning boolean.</td></tr>
 
     </tbody>
 

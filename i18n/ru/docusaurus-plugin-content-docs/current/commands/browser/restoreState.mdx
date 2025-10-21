@@ -1,23 +1,18 @@
-import Admonition from "@theme/Admonition";
-
 # restoreState
 
 ## Обзор {#overview}
 
 Команда для восстановления данных (cookies, local and session storages) из файла или объекта.
 
-<Admonition type="warning">
-    Если вы используете `webdriver` automation protocol вы должны установить `webSocketUrl: true` в
-    `desiredCapabilities` для браузера в конфиге. Для `devtools` protocol не нужно дополнительных
-    настроек.
-</Admonition>
-
 ## Использование {#usage}
 
-Вы можете восстановить данные из файла (используя параметр `path`) или из объекта (используя параметр`data`)
-Но если вы укажете оба параметра то данные восстановятся из файла.
-Так же вы можете указать параметры `cookies`, `localStorage` и `sessionStorage` что бы восстановить только нужные данные.
-Данные для восстановления вы можете получить из команды [saveState](../saveState).
+Вы можете восстановить состояние браузера из файла (с помощью параметра `path`) или непосредственно из объекта (с помощью параметра `data`).
+
+**Важно:** Если вы указали оба параметра `path` и `data`, приоритет будет у файла, указанного в `path`.
+
+При необходимости вы можете указать, какие типы данных восстановить, используя параметры `cookies`, `localStorage` и `sessionStorage`. Это позволяет восстановить только те данные, которые вам нужны.
+
+Данные для восстановления состояния можно получить с помощью команды [saveState](../saveState).
 
 ## Параметры команды {#parameters}
 
@@ -26,12 +21,12 @@ import Admonition from "@theme/Admonition";
     <tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
     </thead>
     <tbody>
-    <tr><td>path</td><td>String</td><td>Путь к файлу с данными.</td></tr>
-    <tr><td>data</td><td>SaveStateData</td><td>Объект с данными.</td></tr>
-    <tr><td>cookies</td><td>Boolean</td><td>Включить восстановление кук (true по умолчанию).</td></tr>
-    <tr><td>localStorage</td><td>Boolean</td><td>Включить восстановление localStorage (true по умолчанию).</td></tr>
-    <tr><td>sessionStorage</td><td>Boolean</td><td>Включить восстановление sessionStorage (true по умолчанию).</td></tr>
-    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td></tr>
+    <tr><td>path</td><td>`string`</td><td>Путь к файлу с данными.</td></tr>
+    <tr><td>data</td><td>`SaveStateData`</td><td>Объект с данными.</td></tr>
+    <tr><td>cookies</td><td>`boolean`</td><td>Включить восстановление кук (true по умолчанию).</td></tr>
+    <tr><td>localStorage</td><td>`boolean`</td><td>Включить восстановление localStorage (true по умолчанию).</td></tr>
+    <tr><td>sessionStorage</td><td>`boolean`</td><td>Включить восстановление sessionStorage (true по умолчанию).</td></tr>
+    <tr><td>cookieFilter</td><td>`(cookie: Cookie) => boolean`</td><td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td></tr>
 
     </tbody>
 

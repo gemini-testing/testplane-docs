@@ -1,23 +1,16 @@
-import Admonition from "@theme/Admonition";
-
 # saveState
 
 ## Overview {#overview}
 
 Browser command that saves session state (cookies, local and session storages).
 
-<Admonition type="warning">
-    If you are using the `webdriver` automation protocol, you have to provide `webSocketUrl: true`
-    in `desiredCapabilities` in config browser settings. For the `devtools` protocol, you don't need
-    additional settings.
-</Admonition>
-
 ## Usage {#usage}
 
-Command return state dump from page; it will include cookie, localStorage, and sessionStorage.
-But using params, you can disable some data.
-Also, if you provide the `path` param, you can get a dump in a file.
-After saving the state, you can use it in the [restoreState](../restoreState) command.
+This command returns a state of the page state, including cookies, localStorage, and sessionStorage.
+You can use parameters to exclude specific types of data if needed.
+
+If you provide the `path` parameter, the state dump will be saved to a file.
+The saved state can later be restored using the [restoreState](../restoreState) command.
 
 ```typescript
 import type { SaveStateData } from "testplane";
@@ -37,11 +30,11 @@ const stateDump: SaveStateData = await browser.saveState({
     <tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
     </thead>
     <tbody>
-    <tr><td>path</td><td>String</td><td>Path to file where state will be saved.</td></tr>
-    <tr><td>cookies</td><td>Boolean</td><td>Enable save cookies (true by default).</td></tr>
-    <tr><td>localStorage</td><td>Boolean</td><td>Enable save localStorage (true by default).</td></tr>
-    <tr><td>sessionStorage</td><td>Boolean</td><td>Enable save sessionStorage (true by default).</td></tr>
-    <tr><td>cookieFilter</td><td>(cookie: Cookie) => boolean</td><td>Function for filtering cookies, receiving cookie objects, and returning boolean.</td></tr>
+    <tr><td>path</td><td>`string`</td><td>Path to file where state will be saved.</td></tr>
+    <tr><td>cookies</td><td>`boolean`</td><td>Enable save cookies (true by default).</td></tr>
+    <tr><td>localStorage</td><td>`boolean`</td><td>Enable save localStorage (true by default).</td></tr>
+    <tr><td>sessionStorage</td><td>`boolean`</td><td>Enable save sessionStorage (true by default).</td></tr>
+    <tr><td>cookieFilter</td><td>`(cookie: Cookie) => boolean`</td><td>Function for filtering cookies, receiving cookie objects, and returning boolean.</td></tr>
 
     </tbody>
 

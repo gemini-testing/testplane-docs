@@ -8,43 +8,15 @@ The context of the function is the Testplane config. Also function receive confi
 
 ## Usage Example {#example}
 
-Here is an example of suing this hook for logout.
+Here is an example of using this hook to remove a file with a page state.
 
 ```typescript title="testplane.config.ts"
-import { launchBrowser } from "testplane/unstable";
+import * as fs from "fs";
 
 export default {
     // ...
-    browsers: {
-        chrome: {
-            headless: true,
-            desiredCapabilities: {
-                webSocketUrl: true,
-                browserName: "chrome",
-            },
-        },
-        firefox: {
-            headless: true,
-            desiredCapabilities: {
-                webSocketUrl: true,
-                browserName: "firefox",
-            },
-        },
-    },
     afterAll: async () => {
-        // launch a new browser with existing config
-        const browser = await launchBrowser(this.config.browsers.chrome);
-
-        await browser.url("https://example.com");
-
-        // login using saved state
-        await browser.restoreState({
-            path: "./dump.json",
-        });
-
-        // do logout things (press logout button etc.)
-
-        await browser.deleteSession();
+        await fs.unlink("./dump.json");
     },
 };
 ```
