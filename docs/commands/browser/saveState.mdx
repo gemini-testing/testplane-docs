@@ -1,0 +1,96 @@
+import Version from "../../_partials/specs/version-en.mdx";
+
+# saveState
+
+<Version version="8.33.0" />
+
+## Overview {#overview}
+
+Browser command that saves session state (cookies, local and session storages).
+
+## Usage {#usage}
+
+This command returns a state of the page state, including cookies, localStorage, and sessionStorage.
+You can use parameters to exclude specific types of data if needed.
+
+If you provide the `path` parameter, the state dump will be saved to a file.
+The saved state can later be restored using the [restoreState](../restoreState) command.
+
+```typescript
+import type { SaveStateData } from "testplane";
+
+const stateDump: SaveStateData = await browser.saveState({
+    path: "./stateDump.json",
+    cookies: true,
+    localStorage: true,
+    sessionStorage: true,
+});
+```
+
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>path</td>
+            <td>`string`</td>
+            <td>`-`</td>
+            <td>Path to file where state will be saved.</td>
+        </tr>
+        <tr>
+            <td>cookies</td>
+            <td>`boolean`</td>
+            <td>`true`</td>
+            <td>Enable save cookies.</td>
+        </tr>
+        <tr>
+            <td>localStorage</td>
+            <td>`boolean`</td>
+            <td>`true`</td>
+            <td>Enable save localStorage.</td>
+        </tr>
+        <tr>
+            <td>sessionStorage</td>
+            <td>`boolean`</td>
+            <td>`true`</td>
+            <td>Enable save sessionStorage.</td>
+        </tr>
+        <tr>
+            <td>cookieFilter</td>
+            <td>`(cookie: Cookie) => boolean`</td>
+            <td>`-`</td>
+            <td>
+                Function for filtering cookies, receiving cookie objects, and returning boolean.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+## Usage Examples {#examples}
+
+Save state in file.
+
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://github.com/gemini-testing/testplane");
+
+    await browser.saveState({
+        path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
+    });
+});
+```
+
+## Related Commands {#related}
+
+-   [restoreState](../restoreState)
+-   [afterAll](../../../config/after-all)
+-   [beforeAll](../../../config/before-all)

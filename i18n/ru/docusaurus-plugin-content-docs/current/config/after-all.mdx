@@ -1,0 +1,30 @@
+import Version from "../../../../../docs/_partials/specs/version-ru.mdx";
+
+# afterAll
+
+<Version version="8.33.0" />
+
+## Обзор {#overview}
+
+Данный параметр является хуком. Функция, заданная для данного параметра, будет автоматически вызвана после прохождения тестов.
+
+Контекстом функции является конфиг Testplane. Также функция принимает конфиг в аргументе.
+
+## Пример использования {#example}
+
+Пример удаления файла с состоянием страницы после выполнения тестов.
+
+```typescript title="testplane.config.ts"
+import * as fs from "fs";
+
+export default {
+    // ...
+    afterAll: async () => {
+        fs.unlinkSync("dump.json");
+    },
+};
+```
+
+## Связанные хуки {#related}
+
+-   [beforeAll](../before-all)

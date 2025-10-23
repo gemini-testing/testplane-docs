@@ -1,0 +1,94 @@
+import Version from "../../../../../../docs/_partials/specs/version-ru.mdx";
+
+# saveState
+
+<Version version="8.33.0" />
+
+## Обзор {#overview}
+
+Команда для сохранения состояния страницы (cookies, local и session storages).
+
+## Использование {#usage}
+
+Эта команда возвращает снимок состояния страницы, включая cookies, localStorage и sessionStorage.
+С помощью параметров вы можете при необходимости исключить определённые типы данных.
+
+Если вы укажете параметр `path`, снимок состояния будет сохранён в файл.
+Сохранённое состояние можно впоследствии восстановить с помощью команды [restoreState](../restoreState).
+
+```typescript
+import type { SaveStateData } from "testplane";
+
+const stateDump: SaveStateData = await browser.saveState({
+    path: "./stateDump.json",
+    cookies: true,
+    localStorage: true,
+    sessionStorage: true,
+});
+```
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Значение по умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>path</td>
+            <td>`string`</td>
+            <td>`-`</td>
+            <td>Путь где будет сохранён файл с данными.</td>
+        </tr>
+        <tr>
+            <td>cookies</td>
+            <td>`boolean`</td>
+            <td>`екгу`</td>
+            <td>Включить сохранение кук.</td>
+        </tr>
+        <tr>
+            <td>localStorage</td>
+            <td>`boolean`</td>
+            <td>`екгу`</td>
+            <td>Включить сохранение localStorage.</td>
+        </tr>
+        <tr>
+            <td>sessionStorage</td>
+            <td>`boolean`</td>
+            <td>`екгу`</td>
+            <td>Включить сохранение sessionStorage.</td>
+        </tr>
+        <tr>
+            <td>cookieFilter</td>
+            <td>`(cookie: Cookie) => boolean`</td>
+            <td>`-`</td>
+            <td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Примеры использования {#examples}
+
+Сохранение данных в файл.
+
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://github.com/gemini-testing/testplane");
+
+    await browser.saveState({
+        path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
+    });
+});
+```
+
+## Связанные команды {#related}
+
+-   [restoreState](../restoreState)
+-   [afterAll](../../../config/after-all)
+-   [beforeAll](../../../config/before-all)

@@ -1,0 +1,154 @@
+import Admonition from "@theme/Admonition";
+import Version from "../../_partials/specs/version-en.mdx";
+
+# restoreState
+
+<Version version="8.33.0" />
+
+## Overview {#overview}
+
+Browser command that restores session state (cookies, local and session storages) from a file or variable.
+
+## Usage {#usage}
+
+You can restore the browser state from either a file (using the `path` parameter) or directly from an object (using the `data` parameter).
+
+**Important:** If you provide both `path` and `data` parameters, the file specified in `path` will take priority.
+
+You can optionally specify which storage types to restore using the `cookies`, `localStorage`, and `sessionStorage` parameters. This allows you to restore only the specific data you need.
+
+The state data for restoration can be obtained from the [saveState](../saveState) command.
+
+<Admonition type="warning">
+    You must be on the exact same page from which the cookies were originally saved. You need to
+    navigate to the page first, use the [url](../url) command before restoring state.
+</Admonition>
+
+```typescript
+await browser.restoreState({
+    path: "./stateDump.json",
+    data: stateDump,
+    cookies: true,
+    localStorage: true,
+    sessionStorage: true,
+});
+```
+
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>path</td>
+            <td>`string`</td>
+            <td>`-`</td>
+            <td>Path to file with state.</td>
+        </tr>
+        <tr>
+            <td>data</td>
+            <td>`SaveStateData`</td>
+            <td>`-`</td>
+            <td>Object with state.</td>
+        </tr>
+        <tr>
+            <td>cookies</td>
+            <td>`boolean`</td>
+            <td>`true`</td>
+            <td>Enable restore cookies.</td>
+        </tr>
+        <tr>
+            <td>localStorage</td>
+            <td>`boolean`</td>
+            <td>`true`</td>
+            <td>Enable restore localStorage.</td>
+        </tr>
+        <tr>
+            <td>sessionStorage</td>
+            <td>`boolean`</td>
+            <td>`true`</td>
+            <td>Enable restore sessionStorage.</td>
+        </tr>
+        <tr>
+            <td>cookieFilter</td>
+            <td>`(cookie: Cookie) => boolean`</td>
+            <td>`-`</td>
+            <td>
+                Function for filtering cookies, receiving cookie objects, and returning boolean.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+## Usage Examples {#examples}
+
+Restore state from file.
+
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://github.com/gemini-testing/testplane");
+
+    await browser.restoreState({
+        path: "./stateDump.json",
+        cookieFilter: ({ domain }) => domain === ".example.com",
+    });
+
+    // Reload page for see auth result.
+    await browser.refresh();
+});
+```
+
+Example of implementing authentication in tests with saveState/restoreState and beforeAll hook.
+
+```typescript
+import { ConfigInput, WdioBrowser } from "testplane";
+import { launchBrowser } from "testplane/unstable";
+
+export default {
+    gridUrl: "local",
+    beforeAll: async ({ config }) => {
+        const b = await launchBrowser(config.browsers["chrome"]!);
+
+        await b.url("https://our-site.com");
+        await b.$("input.login").setValue("user@example.com");
+        await b.$("input.password").setValue("password123");
+
+        await b.saveState({ path: "./.testplane/state.json" });
+        await b.deleteSession();
+    },
+    sets: {
+        /* ... */
+    },
+    browsers: {
+        chrome: {
+            headless: false,
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+    },
+    plugins: {
+        /* ... */
+        "@testplane/global-hook": {
+            enabled: true,
+            beforeEach: async ({ browser }: { browser: WdioBrowser }) => {
+                await browser.url("https://our-site.com");
+                await browser.restoreState({ path: "./.testplane/state.json" });
+            },
+        },
+    },
+} satisfies ConfigInput;
+```
+
+## Related Commands {#related}
+
+-   [saveState](../saveState)
+-   [afterAll](../../../config/after-all)
+-   [beforeAll](../../../config/before-all)
