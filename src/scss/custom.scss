@@ -182,6 +182,8 @@ html[data-theme-override="light"] {
 
         .navbar-sidebar__item.menu {
             padding: 10px 6px !important;
+            // 60px is the height of navbar on mobile
+            height: calc(100vh - 60px);
         }
 
         .color-mode-toggle {
