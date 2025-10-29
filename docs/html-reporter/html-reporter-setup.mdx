@@ -37,7 +37,7 @@ import ConfigExamples from "/docs/_partials/html-reporter-config-examples.mdx";
 <tr><td>[plugins](#plugins)</td><td>`Plugin[]`</td><td>`[]`</td><td>A list of plugins with their settings.</td></tr>
 <tr><td>[customScripts](#customscripts)</td><td>`AnyFunction[]`</td><td>`[]`</td><td>A list of functions that implement custom scripts. For example, Yandex.Metrika scripts or a Bug.</td></tr>
 <tr><td>[yandexMetrika](#yandexmetrika)</td><td>`YandexMetrika`</td><td>*see below*</td><td>[Yandex.Metrika][yandex-metrika].</td></tr>
-<tr><td>[generateBadge](#badgeformatter)</td><td>`BadgeFormatter`</td><td>`null`</td><td>A callback that is called after every test run. It receives the test result and returns a list of badges.</td></tr>
+<tr><td>[generateBadges](#generatebadges)</td><td>`GenerateBadges`</td><td>`null`</td><td>A callback that is called after every test run. It receives the test result and returns a list of badges.</td></tr>
 
 </tbody>
 </table>
@@ -291,7 +291,7 @@ If you don't want to share analytics with us, you can disable it in any of the f
 -   Using environment variables: `html_reporter_yandex_metrika_enabled=false` or simply `NO_ANALYTICS=true`
 -   Using CLI arguments: `--html-reporter-yandex_metrika_enabled=false`
 
-### generateBadge
+### generateBadges
 
 <Version version="11.4.0" />
 
@@ -305,7 +305,7 @@ Usage example: here we set the ticket name and URL, the branch name.
     plugins: {
         "html-reporter/testplane": {
             //...
-            generateBadge: (test) => [
+            generateBadges: (test) => [
                 {
                     title: test.meta.issueTitle,
                     icon: 'LogoYandexTracker',

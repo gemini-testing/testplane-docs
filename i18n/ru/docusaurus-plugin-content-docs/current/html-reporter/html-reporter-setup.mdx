@@ -35,7 +35,7 @@ import ConfigExamples from "../_partials/html-reporter-config-examples.mdx";
 <tr><td>[plugins](#plugins)</td><td>`Plugin[]`</td><td>`[]`</td><td>Список плагинов с их настройками.</td></tr>
 <tr><td>[customScripts](#customscripts)</td><td>`AnyFunction[]`</td><td>`[]`</td><td>Список функций, реализующих кастомные скрипты. Например, скрипты Яндекс.Метрики или Жучка.</td></tr>
 <tr><td>[yandexMetrika](#yandexmetrika)</td><td>`YandexMetrika`</td><td>*см. ниже*</td><td>[Яндекс.Метрика][yandex-metrika].</td></tr>
-<tr><td>[generateBadge](#badgeformatter)</td><td>`BadgeFormatter`</td><td>`null`</td><td>Колбэк, который вызывается после каждого запуска теста. Он получает результат теста и возвращает список бейджей.</td></tr>
+<tr><td>[generateBadges](#generatebadges)</td><td>`GenerateBadges`</td><td>`null`</td><td>Колбэк, который вызывается после каждого запуска теста. Он получает результат теста и возвращает список бейджей.</td></tr>
 
 </tbody>
 </table>
@@ -289,7 +289,7 @@ customScripts: [
 -   С помощью переменных окружения: `html_reporter_yandex_metrika_enabled=false` или просто `NO_ANALYTICS=true`
 -   С помощью аргументов CLI: `--html-reporter-yandex_metrika_enabled=false`
 
-### generateBadge
+### generateBadges
 
 <Version version="11.4.0" />
 
@@ -303,7 +303,7 @@ customScripts: [
     plugins: {
         "html-reporter/testplane": {
             //...
-            generateBadge: (test) => [
+            generateBadges: (test) => [
                 {
                     title: test.meta.issueTitle,
                     icon: 'LogoYandexTracker',
