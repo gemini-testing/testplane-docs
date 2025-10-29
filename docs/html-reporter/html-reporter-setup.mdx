@@ -1,6 +1,8 @@
+import Version from "../_partials/specs/version.mdx";
+
 ---
-sidebar_position: 2
----
+
+## sidebar_position: 2
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
@@ -35,6 +37,7 @@ import ConfigExamples from "/docs/_partials/html-reporter-config-examples.mdx";
 <tr><td>[plugins](#plugins)</td><td>`Plugin[]`</td><td>`[]`</td><td>A list of plugins with their settings.</td></tr>
 <tr><td>[customScripts](#customscripts)</td><td>`AnyFunction[]`</td><td>`[]`</td><td>A list of functions that implement custom scripts. For example, Yandex.Metrika scripts or a Bug.</td></tr>
 <tr><td>[yandexMetrika](#yandexmetrika)</td><td>`YandexMetrika`</td><td>*see below*</td><td>[Yandex.Metrika][yandex-metrika].</td></tr>
+<tr><td>[generateBadges](#generatebadges)</td><td>`GenerateBadges`</td><td>`null`</td><td>A callback that is called after every test run. It receives the test result and returns a list of badges.</td></tr>
 
 </tbody>
 </table>
@@ -288,6 +291,82 @@ If you don't want to share analytics with us, you can disable it in any of the f
 -   Using environment variables: `html_reporter_yandex_metrika_enabled=false` or simply `NO_ANALYTICS=true`
 -   Using CLI arguments: `--html-reporter-yandex_metrika_enabled=false`
 
+### generateBadges
+
+<Version version="11.4.0" />
+
+A callback that is called after every test run. It receives the test result and returns a list of badges.
+
+Usage example: here we set the issue name and URL, the branch name.
+
+```typescript title="testplane.config.ts"
+{
+    // other Testplane config...
+    plugins: {
+        "html-reporter/testplane": {
+            //...
+            generateBadges: (test) => [
+                {
+                    title: test.meta.issueTitle,
+                    icon: 'LogoYandexTracker',
+                    url: test.meta.issueUrl,
+                },
+                {
+                    title: test.meta.branch,
+                    icon: 'BranchesRight',
+                },
+            ]
+        }
+    }
+}
+```
+
+An example of a test where you can set metadata.
+
+```typescript title="testplane.config.ts"
+describe("badges", () => {
+    it("badge example", async ({ browser }) => {
+        await browser.setMeta("issueTitle", "ticket-1234");
+        await browser.setMeta("issueUrl", "https://example.com");
+        await browser.setMeta("branch", "master");
+
+        await browser.pause(3000);
+    });
+});
+```
+
+#### Badge params
+
+<table>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`title`</td>
+            <td>`string`</td>
+            <td>
+                Optional parameter. Displayed badge title. If not provided, the badge will not
+                render.
+            </td>
+        </tr>
+        <tr>
+            <td>`icon`</td>
+            <td>`string`</td>
+            <td>Optional parameter. Name of icon from [GravityUI][gravity-ui-icons].</td>
+        </tr>
+        <tr>
+            <td>`url`</td>
+            <td>`string`</td>
+            <td>Optional parameter. Url of badge.</td>
+        </tr>
+    </tbody>
+</table>
+
 ### Passing parameters via the CLI {#setup_by_cli}
 
 All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--html-reporter-` for command line options and `html_reporter_` for environment variables.
@@ -328,3 +407,4 @@ Files that are created during the execution of tests:
 [how-to-create-counter]: https://yandex.ru/support/metrica/general/creating-counter.html
 [merge-reports]: ../html-reporter-commands#merge-reports
 [http-server]: https://github.com/http-party/http-server#http-server-a-simple-static-http-server
+[gravity-ui-icons]: https://gravity-ui.com/ru/icons

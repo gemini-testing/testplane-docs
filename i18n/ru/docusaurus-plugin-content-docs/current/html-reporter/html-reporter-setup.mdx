@@ -1,6 +1,8 @@
+import Version from "../_partials/specs/version.mdx";
+
 ---
-sidebar_position: 2
----
+
+## sidebar_position: 2
 
 import Admonition from "@theme/Admonition";
 import ConfigExamples from "../_partials/html-reporter-config-examples.mdx";
@@ -33,6 +35,7 @@ import ConfigExamples from "../_partials/html-reporter-config-examples.mdx";
 <tr><td>[plugins](#plugins)</td><td>`Plugin[]`</td><td>`[]`</td><td>Список плагинов с их настройками.</td></tr>
 <tr><td>[customScripts](#customscripts)</td><td>`AnyFunction[]`</td><td>`[]`</td><td>Список функций, реализующих кастомные скрипты. Например, скрипты Яндекс.Метрики или Жучка.</td></tr>
 <tr><td>[yandexMetrika](#yandexmetrika)</td><td>`YandexMetrika`</td><td>*см. ниже*</td><td>[Яндекс.Метрика][yandex-metrika].</td></tr>
+<tr><td>[generateBadges](#generatebadges)</td><td>`GenerateBadges`</td><td>`null`</td><td>Функция, который вызывается после каждого запуска теста. Он получает результат теста и возвращает список бейджей.</td></tr>
 
 </tbody>
 </table>
@@ -285,6 +288,82 @@ customScripts: [
     ```
 -   С помощью переменных окружения: `html_reporter_yandex_metrika_enabled=false` или просто `NO_ANALYTICS=true`
 -   С помощью аргументов CLI: `--html-reporter-yandex_metrika_enabled=false`
+
+### generateBadges
+
+<Version version="11.4.0" />
+
+Функция, который вызывается после каждого запуска теста. Он получает результат теста и возвращает список бейджей.
+
+Пример использования: здесь мы задаём имя задачи со ссылкой на неё и название ветки.
+
+```typescript title="testplane.config.ts"
+{
+    // other Testplane config...
+    plugins: {
+        "html-reporter/testplane": {
+            //...
+            generateBadges: (test) => [
+                {
+                    title: test.meta.issueTitle,
+                    icon: 'LogoYandexTracker',
+                    url: test.meta.issueUrl,
+                },
+                {
+                    title: test.meta.branch,
+                    icon: 'BranchesRight',
+                },
+            ]
+        }
+    }
+}
+```
+
+Пример установки метаданных в тесте.
+
+```typescript title="testplane.config.ts"
+describe("badges", () => {
+    it("badge example", async ({ browser }) => {
+        await browser.setMeta("issueTitle", "ticket-1234");
+        await browser.setMeta("issueUrl", "https://example.com");
+        await browser.setMeta("branch", "master");
+
+        await browser.pause(3000);
+    });
+});
+```
+
+#### Badge params
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`title`</td>
+            <td>`string`</td>
+            <td>
+                Опциональный параметр. Отображаемое имя бейджа, но если не передать то бейдж не
+                будет показываться.
+            </td>
+        </tr>
+        <tr>
+            <td>`icon`</td>
+            <td>`string`</td>
+            <td>Опциональный параметр. Имя иконки из [GravityUI][gravity-ui-icons].</td>
+        </tr>
+        <tr>
+            <td>`url`</td>
+            <td>`string`</td>
+            <td>Опциональный параметр. Ссылка, открываемая при нажатии.</td>
+        </tr>
+    </tbody>
+</table>
 
 ### Передача параметров через CLI {#setup_by_cli}
 
