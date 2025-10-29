@@ -297,7 +297,7 @@ If you don't want to share analytics with us, you can disable it in any of the f
 
 A callback that is called after every test run. It receives the test result and returns a list of badges.
 
-Usage example: here we set the ticket name and URL, the branch name.
+Usage example: here we set the issue name and URL, the branch name.
 
 ```typescript title="testplane.config.ts"
 {
@@ -349,7 +349,10 @@ describe("badges", () => {
         <tr>
             <td>`title`</td>
             <td>`string`</td>
-            <td>Required parameter. Displayed badge title.</td>
+            <td>
+                Optional parameter. Displayed badge title. If not provided, the badge will not
+                render.
+            </td>
         </tr>
         <tr>
             <td>`icon`</td>
