@@ -12,6 +12,11 @@ Use the `assertView` command to take a screenshot for a specific test state and 
     WebDriverIO][webdriverio-api].
 </Admonition>
 
+<Admonition type="info">
+    Automatically calls the [waitForStaticToLoad][wait-for-static-to-load] command before taking a
+    screenshot.
+</Admonition>
+
 ## Usage {#usage}
 
 ```typescript
@@ -113,3 +118,4 @@ it("should assert view with given options", async ({ browser }) => {
 [webdriverio-api]: https://webdriver.io/docs/api
 [browsers-tolerance]: ../../../config/browsers#tolerance
 [browsers-antialiasing-tolerance]: ../../../config/browsers#antialiasing_tolerance
+[wait-for-static-to-load]: ../waitForStaticToLoad
