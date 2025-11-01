@@ -11,6 +11,11 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
     Эта команда реализована внутри Testplane, в [API WebDriverIO][webdriverio-api] её нет.
 </Admonition>
 
+<Admonition type="info">
+    Автоматически вызывает команду [waitForStaticToLoad][wait-for-static-to-load] перед снятием
+    скриншота.
+</Admonition>
+
 ## Использование {#usage}
 
 ```typescript
@@ -111,3 +116,4 @@ it("should assert view with given options", async ({ browser }) => {
 [webdriverio-api]: https://webdriver.io/docs/api
 [browsers-tolerance]: ../../../config/browsers#tolerance
 [browsers-antialiasing-tolerance]: ../../../config/browsers#antialiasing_tolerance
+[wait-for-static-to-load]: ../waitForStaticToLoad
