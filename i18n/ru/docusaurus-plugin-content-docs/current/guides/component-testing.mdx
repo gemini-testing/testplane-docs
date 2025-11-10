@@ -66,6 +66,19 @@ export default {
 };
 ```
 
+также добавьте параметр компиляции `"jsx": "react-jsx"` в ваш файл tsconfig.json:
+
+```typescript title="tsconfig.json"
+{
+    "compilerOptions": {
+        "types": [
+            // ...
+        ],
+        "jsx": "react-jsx"
+    }
+}
+```
+
 ### Шаг 4: Написание теста
 
 Чтобы проверить правильную конфигурацию, мы можем написать самый простой тест, в котором выводим значение document в консоль без использования команды [browser.execute][browser-execute]:
@@ -132,6 +145,8 @@ function Component() {
         </div>
     );
 }
+
+export default Component;
 ```
 
 Полностью работающие примеры можно найти [здесь][testplane-examples-component-testing].
