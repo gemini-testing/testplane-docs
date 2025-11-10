@@ -70,6 +70,19 @@ export const {
 }
 ```
 
+also add the `"jsx": "react-jsx"` compile option to your tsconfig.json:
+
+```typescript title="tsconfig.json"
+{
+    "compilerOptions": {
+        "types": [
+            // ...
+        ],
+        "jsx": "react-jsx"
+    }
+}
+```
+
 ### Step 4: Write a test
 
 To check the correct configuration, we can write the simplest test in which we output the `document` value to the console without using the [browser.execute][browser-execute] command:
@@ -136,6 +149,8 @@ function Component() {
         </div>
     );
 }
+
+export default Component;
 ```
 
 A fully working examples can be found [here][testplane-examples-component-testing].
