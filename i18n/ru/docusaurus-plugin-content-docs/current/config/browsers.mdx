@@ -1025,6 +1025,63 @@ export = {
 };
 ```
 
+## Selectivity {#selectivity}
+
+Эта секция позволяет конфигурировать селективность запуска Testplane, избегая запуска тех тестов, для которых ничего не поменялось.
+
+Секция имеет следующие параметры:
+
+<table>
+    <thead>
+        <tr>
+            <td>**Параметр**</td>
+            <td>**Тип**</td>
+            <td>**По&nbsp;умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`enabled`</td>
+            <td>`boolean`</td>
+            <td>`false`</td>
+            <td>Включает селективность запуска тестов.</td>
+        </tr>
+        <tr>
+            <td>`sourceRoot`</td>
+            <td>`string`</td>
+            <td>`""`</td>
+            <td>Конфигурирует путь к корню файлов исходного кода.</td>
+        </tr>
+        <tr>
+            <td>`testDependenciesPath`</td>
+            <td>`string`</td>
+            <td>`".testplane/selectivity"`</td>
+            <td>Путь к директории, куда будут сохраняться данные о зависимостях тестов.</td>
+        </tr>
+        <tr>
+            <td>`compression`</td>
+            <td>`"none" | "gz" | "br" | "zstd"`</td>
+            <td>`"gz"`</td>
+            <td>Тип сжатия, применяемый к данным о зависимостях тестов.</td>
+        </tr>
+        <tr>
+            <td>`disableSelectivityPatterns`</td>
+            <td>`string[]`</td>
+            <td>`[]`</td>
+            <td>
+                Список паттернов, при изменении файлов по которым селективность должна отключаться.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<Admonition type="info">
+    В `disableSelectivityPatterns` не стоит указывать `node_modules` - это приведет к ощутимому
+    замедлению. Вместо этого, рекомендуется указать конфигурационные файлы Testplane и исходный код
+    серверной части приложения.
+</Admonition>
+
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
 [html-reporter]: ../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
