@@ -88,6 +88,7 @@ const sidebars: SidebarsConfig = {
             items: [
                 { type: "doc", id: "html-reporter/html-reporter-api" },
                 { type: "doc", id: "html-reporter/html-reporter-events" },
+                { type: "doc", id: "html-reporter/html-reporter-plugins-api" },
             ],
         },
     ],

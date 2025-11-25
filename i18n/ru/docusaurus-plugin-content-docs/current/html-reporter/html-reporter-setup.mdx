@@ -1,11 +1,10 @@
-import Version from "../_partials/specs/version.mdx";
-
 ---
-
-## sidebar_position: 2
+sidebar_position: 2
+---
 
 import Admonition from "@theme/Admonition";
 import ConfigExamples from "../_partials/html-reporter-config-examples.mdx";
+import Version from "../_partials/specs/version.mdx";
 
 # Конфигурация
 
@@ -238,13 +237,103 @@ throw err;
 
 ### pluginsEnabled
 
-Включить плагины для `html-reporter`.
+Включить плагины для `html-reporter`. По умолчанию: `false`.
 
 ### plugins
 
-Список плагинов с их настройками.
+Список плагинов с их настройками. По умолчанию: `[]`.
 
-Смотрите подробнее в разделе «[Плагины для отчета](../html-reporter-plugins)».
+Плагины позволяют расширять интерфейс отчета собственными UI-компонентами. Подробнее о разработке плагинов — в разделе «[Разработка плагинов](../html-reporter-plugins)».
+
+#### Использование с пресетом {#plugins-with-preset}
+
+Если плагин предоставляет пресет конфигурации, подключение выглядит так:
+
+```typescript title="testplane.config.ts"
+import myPlugin from "my-plugin-package";
+
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            pluginsEnabled: true,
+            plugins: myPlugin({
+                /* опции плагина */
+            }),
+        },
+    },
+};
+```
+
+#### Ручная конфигурация {#plugins-manual-config}
+
+Плагины можно настроить вручную, указав массив объектов:
+
+```typescript title="testplane.config.ts"
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            pluginsEnabled: true,
+            plugins: [
+                {
+                    name: "my-plugin-package",
+                    component: "MyPluginComponent",
+                    point: "result_meta",
+                    position: "after",
+                    config: {
+                        /* опции */
+                    },
+                },
+            ],
+        },
+    },
+};
+```
+
+#### Параметры плагина {#plugin-params}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Параметр**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>`string`</td>
+            <td>Обязательный. Имя npm-пакета плагина.</td>
+        </tr>
+        <tr>
+            <td>component</td>
+            <td>`string`</td>
+            <td>Имя React-компонента, экспортируемого из плагина.</td>
+        </tr>
+        <tr>
+            <td>point</td>
+            <td>`string`</td>
+            <td>
+                Точка расширения — место в интерфейсе для размещения компонента. См. [точки
+                расширения](../html-reporter-plugins-api#extension-points).
+            </td>
+        </tr>
+        <tr>
+            <td>position</td>
+            <td>`string`</td>
+            <td>Позиция относительно точки расширения: `"wrap"`, `"before"` или `"after"`.</td>
+        </tr>
+        <tr>
+            <td>config</td>
+            <td>`object`</td>
+            <td>Объект конфигурации, передаваемый в плагин через `pluginOptions.pluginConfig`.</td>
+        </tr>
+    </tbody>
+</table>
+
+Плагин с указанным только `name` может использоваться для добавления серверного middleware без UI-компонента.
 
 ### customScripts
 
