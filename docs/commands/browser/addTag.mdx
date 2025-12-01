@@ -1,0 +1,35 @@
+import Version from "../../_partials/specs/version.mdx";
+
+# addTag
+
+<Version version="8.37.0" />
+
+## Overview {#overview}
+
+Use the `addTag` command to add a tag (or multiple tags) to a test during execution.
+
+## Usage {#usage}
+
+```typescript
+await browser.addTag("one");
+await browser.addTag(["first", "second"]);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>tag</td>
+            <td>`string | string[]`</td>
+            <td>Required parameter. A single tag string or an array of tag strings to add.</td>
+        </tr>
+    </tbody>
+</table>

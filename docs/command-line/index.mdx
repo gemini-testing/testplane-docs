@@ -21,6 +21,7 @@ Main command to run tests.
     -s, --set <set>                  run tests only in the specified set
     -r, --require <module>           require module
     --grep <grep>                    run only tests matching the pattern
+    --tag <tag>                      run only tests matching the pattern
     --reporter <name>                test reporters
     --update-refs                    update screenshot references or gather them if they do not exist ("assertView" command)
     --inspect [inspect]              nodejs inspector on [=[host:]port]
@@ -134,6 +135,48 @@ You can run tests inside "nested path" suite without running tests inside "other
 testplane --grep "nested path"
 testplane --grep "with nested path"
 testplane --grep "test with nested path"
+```
+
+#### Tag {#testplane-tag}
+
+Run only tests, which matches the tag pattern.
+
+##### Example {#testplane-tag-example}
+
+You can assign tags to a test using the `{tag: string | string[]}` parameter.
+You can also add tags dynamically during test execution with the [addTag][add-tag] command,
+but tests tagged this way cannot be filtered at launch.
+
+```ts
+describe("test", {tag: "all"}, () => {
+    describe("with", {tag: "desktop"}, () => {
+        describe("nested path", {tag: "smoke"}, () => {
+            await browser.addTag("some");
+            ...
+        });
+        describe("other path", {tag: "slow"}, () => {
+            ...
+        })
+    });
+    describe("with", {tag: "mobile"}, () => {
+        describe("nested path", {tag: "smoke"}, () => {
+            ...
+        });
+        describe("other path", {tag: "slow"}, () => {
+            ...
+        })
+    });
+});
+```
+
+You can use tags to run tests and combine them with logical operators & (and), | (or), and ! (not).
+
+```bash
+testplane --tag "desktop"
+testplane --tag "mobile"
+testplane --tag "mobile&smoke"
+testplane --tag "desktop|slow"
+testplane --tag "!slow"
 ```
 
 #### Update refs {#testplane-update-refs}
@@ -700,5 +743,6 @@ TESTPLANE_SETS=desktop,touch testplane
 
 [html-reporter]: ../html-reporter/html-reporter-setup
 [assert-view]: ../commands/browser/assertView
+[add-tag]: ../commands/browser/addTag
 [switch-to-repl]: ../commands/browser/switchToRepl
 [webdriver-vs-cdp]: ../reference/webdriver-vs-cdp

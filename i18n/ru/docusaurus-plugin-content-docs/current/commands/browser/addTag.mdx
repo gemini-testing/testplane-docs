@@ -1,0 +1,35 @@
+import Version from "../../_partials/specs/version.mdx";
+
+# addTag
+
+<Version version="8.37.0" />
+
+## Обзор {#overview}
+
+Используйте команду `addTag`, чтобы добавить один или несколько тегов к тесту во время его выполнения.
+
+## Использование {#usage}
+
+```typescript
+await browser.addTag("one");
+await browser.addTag(["first", "second"]);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>tag</td>
+            <td>`string | string[]`</td>
+            <td>Обязательный параметр. Одна строка или массив строк.</td>
+        </tr>
+    </tbody>
+</table>
