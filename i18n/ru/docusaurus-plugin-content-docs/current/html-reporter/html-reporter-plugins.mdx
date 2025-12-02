@@ -2,11 +2,11 @@ import Admonition from "@theme/Admonition";
 
 # Разработка плагинов
 
-Плагины позволяют добавлять собственные UI-компоненты в интерфейс HTML Reporter. Например, вы можете показать статистику стабильности теста или добавить кнопку для интеграции с внешним сервисом. В HTML Reporter есть несколько точек расширения, в которых может отображаться UI плагина — например, на панели настроек или на странице результатов прогона теста.
+Плагины позволяют добавлять собственные UI-компоненты в интерфейс HTML Reporter. Например, вы можете показать статистику стабильности теста или добавить кнопку для интеграции с внешним сервисом. В HTML Reporter есть несколько точек расширения, в которых может отображаться UI плагина — например, на панели настроек или на странице результатов запуска теста.
 
 ## Быстрый старт
 
-Полностью рабочий плагин, в котором настроена сборка и используются основные возможности плагинной системы, доступен в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/).
+Пример плагина, в котором настроена сборка и используются основные возможности плагинной системы, доступен в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/).
 
 Мы рекомендуем использовать этот пример как шаблон для своего плагина.
 
@@ -74,17 +74,17 @@ __testplane_html_reporter_register_plugin__([
 
 Для корректной работы React и хуков критично, чтобы зависимости не дублировались, а везде использовались одни и те же экземпляры — и в HTML Reporter, и в плагине.
 
-HTML Reporter ряд зависимостей, доступных для переиспользования, включая React и Gravity UI.
+HTML Reporter предоставляет плагинам ряд зависимостей, которые можно переиспользовать, включая React и Gravity UI.
 
 Чтобы переиспользовать эти зависимости, нужно указать их в `external` в конфигурации Vite.
 
 #### Пример конфигурации Vite
 
-На практике нужные характеристики бандла достигаются с помощью сборки через Vite с `external` зависимостями и специальной обёрткой, пример можно посмотреть в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/ui/vite.config.ts).
+На практике нужные характеристики бандла достигаются с помощью сборки через Vite с `external` зависимостями и специальной обёрткой. Пример конфига можно посмотреть в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/ui/vite.config.ts).
 
 ### 2. Реализация компонента
 
-В зависимости от того, какая точка расширения используется, HTML Reporter может передавать в props некоторые данные, например, текущий результат прогона теста (см. подробнее в справочнике по Plugins SDK):
+В зависимости от того, какая точка расширения используется, HTML Reporter может передавать в props некоторые данные, например, текущий результат запуска теста (см. подробнее в справочнике по Plugins SDK):
 
 ```tsx title="ui/Plugin.tsx"
 import { Button } from "@gravity-ui/uikit";
@@ -194,11 +194,11 @@ const data = useSelector(state => state.plugins.myPlugin?.byResultId[result.id])
 ```typescript title="server/index.ts"
 import type { Router } from "express";
 
-export = function (router: Router) {
+export default function (router: Router) {
     router.get("/data", (req, res) => {
         res.json({ value: 42 });
     });
-};
+}
 ```
 
 Этот эндпоинт будет доступен по адресу `/plugin-routes/my-plugin/data`.
