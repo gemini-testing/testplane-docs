@@ -1,301 +1,255 @@
-# Плагины для отчета
+import Admonition from "@theme/Admonition";
 
-## Обзор {#overview}
+# Разработка плагинов
 
-Используйте опцию `plugins` в конфиге плагина `html-reporter`, чтобы расширить функциональность отчета с помощью собственных плагинов к отчету.
+Плагины позволяют добавлять собственные UI-компоненты в интерфейс HTML Reporter. Например, вы можете показать статистику стабильности теста или добавить кнопку для интеграции с внешним сервисом. В HTML Reporter есть несколько точек расширения, в которых может отображаться UI плагина — например, на панели настроек или на странице результатов запуска теста.
 
-Чтобы ваши плагины в отчете заработали, включите опцию [pluginsEnabled][plugins-enabled] в конфиге плагина `html-reporter`, установив её значение в `true`.
+## Быстрый старт
 
-Список плагинов задается в виде массива с их описаниями. По умолчанию список считается пустым: `[]`.
+Пример плагина, в котором настроена сборка и используются основные возможности плагинной системы, доступен в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/).
 
-Плагины позволяют добавить в отчет собственные UI-компоненты (как для статического отчета, так и для GUI-режима), а также серверные «ручки» _(routes)_ (для GUI-режима).
+Мы рекомендуем использовать этот пример как шаблон для своего плагина.
 
-## Настройка {#setup}
+## Как работают плагины
 
-Описание плагинов выглядит следующим образом:
+Плагины подключаются к HTML Reporter в конфиге, например:
 
-```javascript
-plugins: [
-    {
-        name: "plugin-name",
-        component: "PluginReactComponentName",
-        point: "extension-point-name",
-        position: "wrap",
-        config: { param: "value" },
+```typescript title="testplane.config.ts"
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            pluginsEnabled: true,
+            plugins: [
+                {
+                    name: "my-plugin-package",
+                    component: "MyPlugin",
+                    point: "result_meta",
+                    position: "after",
+                },
+            ],
+        },
     },
-    {
-        name: "plugin-name",
-        component: "AnotherPluginReactComponentName",
-        point: "extension-point-name",
-        position: "before",
-    },
-
-    // ...
-];
+};
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+В этом случае HTML Reporter будет искать плагин в npm-пакете `my-plugin-package`, а именно:
 
-<table>
-<thead>
-<tr><td>**Параметр**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>[name](#name)</td><td>String</td><td>Обязательный параметр. Имя пакета с плагином для отчета. Предполагается, что плагин можно будет подключить с помощью _require(name)_.</td></tr>
-<tr><td>[component](#component)</td><td>String</td><td>Имя React-компонента из плагина.</td></tr>
-<tr><td>[point](#point)</td><td>String</td><td>Имя точки расширения в плагине _html-reporter_.</td></tr>
-<tr><td>[position](#position)</td><td>String</td><td>Определяет способ, с помощью которого компонент будет размещен в точке расширения.</td></tr>
-<tr><td>[config](#config)</td><td>Object</td><td>Конфигурация плагина.</td></tr>
+-   В `my-plugin-package/plugin.js` HTML Reporter будет искать реализацию компонента `MyPlugin`, который будет отображаться в точке расширения `result_meta`
+-   В `my-plugin-package/middleware.js` HTML Reporter будет искать реализацию серверных эндпоинтов
 
-</tbody>
-</table>
+Поэтому типичный плагин состоит из трёх частей:
 
-Плагин, для которого задан только параметр `name`, может быть использован для переопределения существующей мидлвари GUI-сервера.
-
-Плагин может определять больше одного компонента. Каждый компонент может быть применен к нескольким точкам расширения и/или несколько раз к одной и той же точке (с отдельными конфигурационными записями). Порядок применения компонентов определяется порядком конфигурации.
-
-### name
-
-Обязательный параметр. Имя пакета с плагином для отчета. Предполагается, что плагин можно будет подключить с помощью _require(name)_.
-
-### component
-
-Имя React-компонента из плагина.
-
-### point
-
-Имя точки расширения в плагине _html-reporter_.
-
-Определяет конкретное месторасположение указанного компонента внутри пользовательского интерфейса html-отчета.
-
-Подробнее смотрите в разделе «Точки расширения».
-
-### position
-
-Определяет способ, с помощью которого компонент будет размещен в точке расширения пользовательского интерфейса html-отчета.
-
-Доступны следующие значение:
-
-<table>
-<thead>
-<tr><td>**Значение**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>wrap</td><td>обернуть точку расширения в UI</td></tr>
-<tr><td>before</td><td>разместить компонент перед точкой расширения</td></tr>
-<tr><td>after</td><td>разместить компонент после точки расширения</td></tr>
-
-</tbody>
-</table>
-
-### config
-
-Конфигурация плагина.
-
-## Код плагинов для отчета {#plugins_code}
-
-Примеры плагинов можно [посмотреть в функциональных тестах][html-reporter-plugins].
-
-Плагин `html-reporter` — это объект с некоторым набором React-компонентов, заданных в виде его ключей, и необязательным ключом `reducers` с массивом redux-редьюсеров для управления состоянием компонентов, которые позже объединяются с помощью [reduce-reducers][reduce-reducers].
-
-Ожидается, что плагин для отчета будет иметь следующие модульные файлы в корне своего пакета: `plugin.js` и/или `middleware.js`.
-
-### plugin.js
-
-Опциональный модуль. Файл, который должен экспортировать объект (или набор именованных экспортов) или функцию, возвращающую такой объект или массив с некоторой определенной структурой.
-
-Можно повторно использовать зависимости `html-reporter` в плагинах (React, Redux и др.). Для этого из модуля должен быть экспортирован массив со списком необходимых зависимостей, за которым следует функция, с переданными ей соответствующими зависимостями, и возвращающая сам плагин.
-
-Например:
-
-```javascript
-import "plugin-styles.css";
-
-export default [
-    "react",
-    function (React, options) {
-        class PluginComponent extends React.Component {
-            // реализация компонента
-        }
-
-        return {
-            PluginComponent,
-            reducers: [],
-        };
-    },
-];
+```
+my-plugin/
+├── ui/                     # UI плагина — собирается в бандл plugin.js с помощью Vite
+├── server/                 # Серверная часть плагина (опционально) — входная точка ожидается в файле middleware.js
+└── preset-for-config/      # Пресет для удобного подключения (опционально)
 ```
 
-Стили для плагина должны загружаться вместе с `plugin.js`, и итоговый файл должен быть одним бандлом.
+## Создание UI плагина
 
-Значение, экспортируемое из `plugin.js`, должно передаваться в `__testplane_html_reporter_register_plugin__`.
+### 1. Настройка сборки
 
-Это можно сделать двумя способами.
+#### Формат выходного файла
 
-Например, настроить сборку _webpack_ так, чтобы она создавала соответствующую библиотеку `jsonp`:
+Результатом сборки UI плагина должен быть 1 файл — бандл `plugin.js` следующего формата:
 
-```javascript
-// ...
-output: {
-    filename: 'plugin.js',
-    path: __dirname,
-    library: '__testplane_html_reporter_register_plugin__',
-    libraryTarget: 'jsonp'
-},
-// ...
-```
-
-Или передать значение, экспортируемое из `plugin.js`, явно:
-
-```javascript
+```javascript title="ui/build/plugin.js"
 __testplane_html_reporter_register_plugin__([
     "react",
     function (React, options) {
         // ...
-        return { PluginComponent };
+        return { MyPlugin, reducers: [] };
     },
 ]);
 ```
 
-### middleware.js
+Файл должен содержать только вызов функции `__testplane_html_reporter_register_plugin__`.
 
-Опциональный модуль. Экспортирует функцию, принимающую `Router` от [express][express]. Ожидается, что «ручки» плагина будут подключены к роутеру. А роутер затем подключается к «ручке» `/plugin-routes/:pluginName/`.
+Единственный аргумент функции — массив. В нём декларируются нужные плагину зависимости (доступные зависимости см. в [справочнике по Plugins SDK][plugins-sdk-reference]), последний элемент массива — функция, она будет вызвана с перечисленными зависимостями и должна вернуть объект с компонентом и редьюсерами.
 
-```javascript
-module.exports = function (pluginRouter) {
-    pluginRouter.get("/plugin-route", function (req, res) {
-        // реализация «ручки»
-    });
+Подробнее о том, с чем именно вызывается эта функция, см. в [исходном коде HTML Reporter](https://github.com/gemini-testing/html-reporter/blob/885b2208e3fa2aeb1888d4a674e302b072c67e26/lib/static/modules/load-plugin.js#L107).
+
+#### Переиспользование зависимостей
+
+Для корректной работы React и хуков критично, чтобы зависимости не дублировались, а везде использовались одни и те же экземпляры — и в HTML Reporter, и в плагине.
+
+HTML Reporter предоставляет плагинам ряд зависимостей, которые можно переиспользовать, включая React и Gravity UI.
+
+Чтобы переиспользовать эти зависимости, нужно указать их в `external` в конфигурации Vite.
+
+#### Пример конфигурации Vite
+
+На практике нужные характеристики бандла достигаются с помощью сборки через Vite с `external` зависимостями и специальной обёрткой. Пример конфига можно посмотреть в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/ui/vite.config.ts).
+
+### 2. Реализация компонента
+
+В зависимости от того, какая точка расширения используется, HTML Reporter может передавать в props некоторые данные, например, текущий результат запуска теста (см. подробнее в справочнике по Plugins SDK):
+
+```tsx title="ui/Plugin.tsx"
+import { Button } from "@gravity-ui/uikit";
+
+export const MyPlugin = ({ result }: { result: { id: string; suitePath: string[] } }) => {
+    const fullName = result.suitePath.join(" ");
+
+    return (
+        <div>
+            <div>Test Full Name: {fullName}</div>
+            <Button onClick={() => window.open(`example-tms.com/test/${result.id}`, "_blank")}>
+                Open test in TMS
+            </Button>
+        </div>
+    );
 };
 ```
 
-Затем «ручки» могут быть вызваны из React-компонентов плагина, определенных в `plugin.js `. Для удобства имя плагина всегда передается с опциями под названием `pluginName`, когда для экспорта используется функция или массив функций:
+Главный файл плагина можно организовать так:
 
-```javascript
-export default ['react', 'axios', function(React, axios, { pluginName, pluginConfig, actions, actionNames, selectors }) {
-    class PluginComponent extends React.Component {
-        // ... где-то внутри компонента ...
-        const result = await axios.get(`/plugin-routes/${pluginName}/plugin-route`);
+```typescript title="ui/index.tsx"
+import { MyPlugin } from "./Plugin";
+
+export default {
+    MyPlugin,
+    reducers: [],
+};
+```
+
+При разработке плагинов рекомендуется использовать Gravity UI и компоненты из Plugins SDK для визуальной консистентности с остальной частью интерфейса HTML Reporter.
+
+#### Работа с Redux (опционально)
+
+Для хранения и получения данных плагина используйте Redux.
+
+##### Создание actions
+
+Определите типы действий с уникальным префиксом:
+
+```typescript title="ui/actions.ts"
+export const actions = {
+    LOADING: "plugins/myPlugin/loading",
+    LOADED: "plugins/myPlugin/loaded",
+    ERROR: "plugins/myPlugin/error",
+} as const;
+```
+
+##### Создание thunk для запросов
+
+Для асинхронных операций используйте thunk-действия:
+
+```typescript title="ui/actions.ts"
+export const fetchData = (resultId: string) => async dispatch => {
+    dispatch({ type: actions.LOADING, payload: { resultId } });
+
+    const endpoint = `${pluginOptions.pluginServerEndpointPrefix}/data`;
+    const { data } = await axios.get(endpoint);
+
+    dispatch({ type: actions.LOADED, payload: { resultId, data } });
+};
+```
+
+Глобальная переменная `pluginOptions.pluginServerEndpointPrefix` содержит базовый URL для запросов к серверу плагина.
+
+##### Создание reducer
+
+Reducer обновляет состояние плагина. Используйте Immer для иммутабельных обновлений:
+
+```typescript title="ui/reducers.ts"
+import produce from "immer";
+
+export default produce((draft, action) => {
+    if (!draft.plugins.myPlugin) {
+        draft.plugins.myPlugin = { byResultId: {} };
     }
 
-    return {
-        PluginComponent,
-        reducers: []
-    };
+    switch (action.type) {
+        case actions.LOADING: {
+            const { resultId } = action.payload;
+            draft.plugins.myPlugin.byResultId[resultId] = {
+                ...defaultResultState,
+                status: "loading",
+            };
+            break;
+        }
+        // ...
+    }
+});
+```
+
+##### Чтение состояния
+
+Используйте `useSelector` для чтения данных из store:
+
+```tsx
+const data = useSelector(state => state.plugins.myPlugin?.byResultId[result.id]);
+```
+
+Подробнее о структуре Redux store см. в [исходном коде HTML Reporter](https://github.com/gemini-testing/html-reporter/blob/885b2208e3fa2aeb1888d4a674e302b072c67e26/lib/static/new-ui/types/store.ts#L257).
+
+Имя компонента (`MyPlugin`) должно совпадать с полем `component` в конфигурации плагина.
+
+### 3. Серверная часть (опционально)
+
+Серверная часть получает Express Router с префиксом `/plugin-routes/{plugin-name}/`:
+
+```typescript title="server/index.ts"
+import type { Router } from "express";
+
+export default function (router: Router) {
+    router.get("/data", (req, res) => {
+        res.json({ value: 42 });
+    });
 }
 ```
 
-В этом примере также можно увидеть следующие свойства:
+Этот эндпоинт будет доступен по адресу `/plugin-routes/my-plugin/data`.
 
-<table>
-<thead>
-<tr><td>**Свойство**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>pluginName</td><td>имя плагина</td></tr>
-<tr><td>pluginConfig</td><td>конфигурация плагина</td></tr>
-<tr><td>actions</td><td>Redux-действия</td></tr>
-<tr><td>actionNames</td><td>имена действий в _html-reporter_, которые используются в Redux-действиях, чтобы иметь возможность подписаться на события отчета</td></tr>
-<tr><td>selectors</td><td>закэшированные селекторы отчета, которые были созданы с помощью библиотеки [reselect][redux-reselect]</td></tr>
+Рекомендуется получать адрес серверной части из глобальной переменной `pluginOptions.pluginServerEndpointPrefix`, так название плагина трансформируется на стороне HTML Reporter и может не совпадать с именем пакета.
 
-</tbody>
-</table>
+### 4. Пресет конфигурации (опционально)
 
-### Доступные зависимости {#available_deps}
+Пресет упрощает подключение плагина для пользователей:
 
-В плагинах доступны следующие зависимости:
+```typescript title="preset-for-config/index.ts"
+import { ExtensionPointName } from "html-reporter/plugins-sdk";
 
--   [react][react]
--   [redux][redux]
--   [react-redux][react-redux]
--   [lodash][lodash]
--   [prop-types][prop-types]
--   [classnames][classnames]
--   [semantic-ui-react][semantic-ui-react]
--   [react-markdown][react-markdown]
--   [reduce-reducers][reduce-reducers]
--   [immer][immer]
--   [reselect][redux-reselect]
--   [axios][axios]
-
-### Доступные компоненты {#available_components}
-
-#### `<Details />`
-
-Компонент, с помощью которого можно переключать отображение контента (аналог ката).
-
-Пример использования:
-
-```javascript
-// ...внутри вашего React-компонента
-
-render() {
-    return <Details
-        title='Some title'
-        content='Some content' // контент, который будет появляться по нажатию на заголовок
-        extendClassNames='some_class_name' // можно добавить свои css-классы к компоненту
-        onClick={() => console.log('clicked')} // а также свой обработчик
-    />
-}
+export = function (config = {}) {
+    return [
+        {
+            name: "my-plugin-package",
+            component: "MyPlugin",
+            point: ExtensionPointName.ResultMeta,
+            position: "after",
+            config,
+        },
+    ];
+};
 ```
 
-где:
+Благодаря пресету вместо того, чтобы указывать в конфиге полный дескриптор плагина, пользователи смогут импортировать этот объект и использовать его.
 
-<table>
-<thead>
-<tr><td>**Свойство**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>title</td><td>String или JSX.Element</td><td>Обязательный параметр. Заголовок, описывающий информацию, скрытую под ним.</td></tr>
-<tr><td>content</td><td>Function или String или String[] или JSX.Element</td><td>Обязательный параметр. Контент, который будет появляться по нажатию на заголовок.</td></tr>
-<tr><td>extendClassNames</td><td>String или String[]</td><td>Css-классы, которые нужно добавить к компоненту. Необязательный параметр.</td></tr>
-<tr><td>onClick</td><td>Function</td><td>Обработчик, который будет вызван по нажатию на заголовок. Необязательный параметр.</td></tr>
+### 5. Подключение плагина
 
-</tbody>
-</table>
+После публикации пользователи подключают плагин так:
 
-## Точки расширения {#extension_points}
+```typescript title="testplane.config.ts"
+import myPlugin from "my-plugin-package";
 
-Точки расширения — это места в пользовательском интерфейсе отчета, которые доступны для расширения с помощью React-компонентов, экспортируемых _плагинами для отчета_.
-
-Каждая точка расширения может передавать определенные props'ы компонентам плагина в зависимости от самой точки. Поскольку некоторые плагины могут полагаться на конкретное размещение и, следовательно, на конкретные props'ы, то можно ограничить компоненты плагина определенными точками расширения, указав статическое свойство `point` для таких компонентов плагина:
-
-```javascript
-class PluginComponent extends React.Component {
-    static point = "result";
-    // ...
-}
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            pluginsEnabled: true,
+            plugins: myPlugin(),
+        },
+    },
+};
 ```
 
-В данный момент доступны следующие точки расширения:
+### Дополнительные материалы
 
-<table>
-<thead>
-<tr><td>**Точка**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>result</td><td>Позволяет расширить каждый результат теста. Добавляет props'ы _resultId_ и _testName_ в компонент плагина.</td></tr>
-<tr><td>result_meta</td><td>Позволяет расширить мета-информацию для каждого результата теста. Добавляет props'ы _resultId_ и _testName_ в компонент плагина.</td></tr>
-<tr><td>menu-bar</td><td>Позволяет расширить меню.</td></tr>
-<tr><td>root</td><td>Позволяет добавить такие плавающие элементы, как модальное окно или попап.</td></tr>
+-   [API-справочник](../html-reporter-plugins-api) — зависимости, компоненты SDK, точки расширения
+-   [Конфигурация плагинов](../html-reporter-setup#plugins) — параметры подключения
+-   [Пример плагина][example-plugin] — полный рабочий код
 
-</tbody>
-</table>
-
-Точка расширения может быть расширена более чем одним компонентом. В этом случае порядок применения компонентов определяется порядком настройки плагинов. Каждый следующий компонент применяется ко всем ранее составленным компонентам в точке расширения.
-
-[plugins-enabled]: ../html-reporter-setup#pluginsenabled
-[html-reporter-plugins]: https://github.com/gemini-testing/html-reporter/blob/master/test/func/fixtures/plugins
-[reduce-reducers]: https://github.com/redux-utilities/reduce-reducers
-[express]: https://github.com/expressjs/express
-[redux-reselect]: https://github.com/reduxjs/reselect
-[react]: https://github.com/facebook/react
-[redux]: https://github.com/reduxjs/redux
-[react-redux]: https://github.com/reduxjs/react-redux
-[lodash]: https://github.com/lodash/lodash
-[prop-types]: https://github.com/facebook/prop-types
-[classnames]: https://github.com/JedWatson/classnames
-[semantic-ui-react]: https://github.com/Semantic-Org/Semantic-UI-React
-[react-markdown]: https://github.com/remarkjs/react-markdown
-[immer]: https://github.com/immerjs/immer
-[axios]: https://github.com/axios/axios
+[example-plugin]: https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example
+[gravity-ui]: https://gravity-ui.com/
+[plugins-sdk-reference]: ../html-reporter-plugins-api

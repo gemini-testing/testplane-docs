@@ -1,13 +1,12 @@
-import Version from "../_partials/specs/version.mdx";
-
 ---
-
-## sidebar_position: 2
+sidebar_position: 2
+---
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import Admonition from "@theme/Admonition";
 import ConfigExamples from "/docs/_partials/html-reporter-config-examples.mdx";
+import Version from "../_partials/specs/version.mdx";
 
 # Configuration
 
@@ -240,13 +239,103 @@ See more in the section "[Customizing GUI](../html-reporter-custom-gui)".
 
 ### pluginsEnabled
 
-Enable plugins for `html-reporter`.
+Enable plugins for `html-reporter`. Default: `false`.
 
 ### plugins
 
-A list of plugins with their settings.
+A list of plugins with their settings. Default: `[]`.
 
-See more details in the section "[Plugins](../html-reporter-plugins)".
+Plugins allow you to extend the report interface with custom UI components. For more information about developing plugins, see the section "[Developing Plugins](../html-reporter-plugins)".
+
+#### Using with Preset {#plugins-with-preset}
+
+If the plugin provides a configuration preset, the connection looks like this:
+
+```typescript title="testplane.config.ts"
+import myPlugin from "my-plugin-package";
+
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            pluginsEnabled: true,
+            plugins: myPlugin({
+                /* plugin options */
+            }),
+        },
+    },
+};
+```
+
+#### Manual Configuration {#plugins-manual-config}
+
+Plugins can be configured manually by specifying an array of objects:
+
+```typescript title="testplane.config.ts"
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            pluginsEnabled: true,
+            plugins: [
+                {
+                    name: "my-plugin-package",
+                    component: "MyPluginComponent",
+                    point: "result_meta",
+                    position: "after",
+                    config: {
+                        /* options */
+                    },
+                },
+            ],
+        },
+    },
+};
+```
+
+#### Plugin Parameters {#plugin-params}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>`string`</td>
+            <td>Required. The name of the plugin npm package.</td>
+        </tr>
+        <tr>
+            <td>component</td>
+            <td>`string`</td>
+            <td>The name of the React component exported from the plugin.</td>
+        </tr>
+        <tr>
+            <td>point</td>
+            <td>`string`</td>
+            <td>
+                Extension point — the place in the interface for the component. See [extension
+                points](../html-reporter-plugins-api#extension-points).
+            </td>
+        </tr>
+        <tr>
+            <td>position</td>
+            <td>`string`</td>
+            <td>Position relative to the extension point: `"wrap"`, `"before"`, or `"after"`.</td>
+        </tr>
+        <tr>
+            <td>config</td>
+            <td>`object`</td>
+            <td>Configuration object passed to the plugin via `pluginOptions.pluginConfig`.</td>
+        </tr>
+    </tbody>
+</table>
+
+A plugin with only `name` specified can be used to add server middleware without a UI component.
 
 ### customScripts
 

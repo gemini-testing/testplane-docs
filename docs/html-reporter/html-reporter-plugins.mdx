@@ -1,301 +1,255 @@
-# HTML Reporter Plugins
+import Admonition from "@theme/Admonition";
 
-## Overview {#overview}
+# Developing Plugins
 
-Use the `plugins` option in the `html-reporter` plugin config to extend the functionality of the report using your own plugins to the report.
+Plugins allow you to add custom UI components to the HTML Reporter interface. For example, you can display test stability statistics or add a button for integration with an external service. HTML Reporter has several extension points where the plugin UI can be displayed — for example, on the settings panel or on the test result page.
 
-To make your plugins work in the report, enable the [pluginsEnabled][plugins-enabled] option in the `html-reporter` plugin config by setting its value to `true`.
+## Quick Start
 
-The list of plugins is set as an array with their descriptions. By default, the list is considered empty: `[]`.
+A fully working plugin with configured build and using the main features of the plugin system is available in the [HTML Reporter repository](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/).
 
-Plugins allow you to add your own UI components to the report (both for a static report and for GUI mode), as well as server "handles" _(routes)_ (for GUI mode).
+We recommend using this example as a template for your plugin.
 
-## Setup {#setup}
+## How Plugins Work
 
-The description of plugins looks like this:
+Plugins are connected to HTML Reporter in the config, for example:
 
-```javascript
-plugins: [
-    {
-        name: "plugin-name",
-        component: "PluginReactComponentName",
-        point: "extension-point-name",
-        position: "wrap",
-        config: { param: "value" },
+```typescript title="testplane.config.ts"
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            pluginsEnabled: true,
+            plugins: [
+                {
+                    name: "my-plugin-package",
+                    component: "MyPlugin",
+                    point: "result_meta",
+                    position: "after",
+                },
+            ],
+        },
     },
-    {
-        name: "plugin-name",
-        component: "AnotherPluginReactComponentName",
-        point: "extension-point-name",
-        position: "before",
-    },
-
-    // ...
-];
+};
 ```
 
-### Description of configuration parameters {#setup_description}
+In this case, HTML Reporter will look for the plugin in the npm package `my-plugin-package`, specifically:
 
-<table>
-<thead>
-<tr><td>**Parameter**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>[name](#name)</td><td>String</td><td>Required parameter. The name of the package with the plugin for the report. It is assumed that the plugin can be connected using _require(name)_.</td></tr>
-<tr><td>[component](#component)</td><td>String</td><td>The name of the React component from the plugin.</td></tr>
-<tr><td>[point](#point)</td><td>String</td><td>The name of the extension point in the _html-reporter_ plugin.</td></tr>
-<tr><td>[position](#position)</td><td>String</td><td>Defines the method by which the component will be placed at the extension point.</td></tr>
-<tr><td>[config](#config)</td><td>Object</td><td>Plugin configuration.</td></tr>
+-   In `my-plugin-package/plugin.js` HTML Reporter will look for the implementation of the `MyPlugin` component, which will be displayed at the `result_meta` extension point
+-   In `my-plugin-package/middleware.js` HTML Reporter will look for the implementation of server endpoints
 
-</tbody>
-</table>
+Therefore, a typical plugin consists of three parts:
 
-A plugin for which only the `name` parameter is set can be used to override an existing GUI server middleware.
-
-A plugin can define more than one component. Each component can be applied to multiple extension points and/or multiple times to the same point (with separate configuration entries). The order in which components are applied is determined by the configuration order.
-
-### name
-
-Required parameter. The name of the package with the plugin for the report. It is assumed that the plugin can be connected using _require(name)_.
-
-### component
-
-The name of the React component from the plugin.
-
-### point
-
-The name of the extension point in the _html-reporter_ plugin.
-
-Defines the specific location of the specified component inside the html-reporter user interface.
-
-For more information, see the section "[Extension points](#extension_points)".
-
-### position
-
-Defines the method by which the component will be placed at the extension point of the html-report user interface.
-
-The following values are available:
-
-<table>
-<thead>
-<tr><td>**Value**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>wrap</td><td>wrap the extension point in the UI</td></tr>
-<tr><td>before</td><td>place the component before the extension point</td></tr>
-<tr><td>after</td><td>place the component after the extension point</td></tr>
-
-</tbody>
-</table>
-
-### config
-
-Plugin configuration.
-
-## Plugin code for the report {#plugins_code}
-
-Examples of plugins can be [viewed in functional tests][html-reporter-plugins].
-
-The `html-reporter` plugin is an object with some set of React components specified as its keys, and an optional `reducers` key with an array of redux-reducers to control the state of components, which are later combined using [reduce-reducers][reduce-reducers].
-
-The plugin for the report is expected to have the following module files in the root of its package: `plugin.js` and/or `middleware.js`.
-
-### plugin.js
-
-Optional module. A file that should export an object (or a set of named exports) or a function that returns such an object or array with some specific structure.
-
-You can reuse the `html-reporter` dependencies in plugins (React, Redux, etc.). To do this, an array with a list of necessary dependencies must be exported from the module, followed by a function with the corresponding dependencies passed to it, and returning the plugin itself.
-
-For example:
-
-```javascript
-import "plugin-styles.css";
-
-export default [
-    "react",
-    function (React, options) {
-        class PluginComponent extends React.Component {
-            // component implementation
-        }
-
-        return {
-            PluginComponent,
-            reducers: [],
-        };
-    },
-];
+```
+my-plugin/
+├── ui/                     # Plugin UI — built into plugin.js bundle using Vite
+├── server/                 # Server part of the plugin (optional) — entry point expected in middleware.js
+└── preset-for-config/      # Preset for convenient connection (optional)
 ```
 
-Styles for the plugin must be loaded together with `plugin.js`, and the resulting file should be one bundle.
+## Creating Plugin UI
 
-Value exported from `plugin.js`, should be passed to `__testplane_html_reporter_register_plugin__`.
+### 1. Build Setup
 
-There are two ways to do this.
+#### Output File Format
 
-For example, configure the build by _webpack_ so that it creates the corresponding `jsonp` library:
+The result of building the plugin UI should be 1 file — a `plugin.js` bundle in the following format:
 
-```javascript
-// ...
-output: {
-    filename: 'plugin.js',
-    path: __dirname,
-    library: '__testplane_html_reporter_register_plugin__',
-    libraryTarget: 'jsonp'
-},
-// ...
-```
-
-Or pass the value exported from `plugin.js`, clearly:
-
-```javascript
+```javascript title="ui/build/plugin.js"
 __testplane_html_reporter_register_plugin__([
     "react",
     function (React, options) {
         // ...
-        return { PluginComponent };
+        return { MyPlugin, reducers: [] };
     },
 ]);
 ```
 
-### middleware.js
+The file should contain only a call to the `__testplane_html_reporter_register_plugin__` function.
 
-Optional module. Exports a function that accepts `Router` from [express][express]. It is expected that the "routes" of the plugin will be connected to the router. And the router then connects to the "route" `/plugin-routes/:PluginName/`.
+The only argument of the function is an array. It declares the dependencies needed by the plugin (see available dependencies in the [Plugins SDK reference][plugins-sdk-reference]). The last element of the array is a function that will be called with the listed dependencies and should return an object with the component and reducers.
 
-```javascript
-module.exports = function (pluginRouter) {
-    pluginRouter.get("/plugin-route", function (req, res) {
-        // "route" implementation
+For more details on what exactly this function is called with, see the [HTML Reporter source code](https://github.com/gemini-testing/html-reporter/blob/885b2208e3fa2aeb1888d4a674e302b072c67e26/lib/static/modules/load-plugin.js#L107).
+
+#### Reusing Dependencies
+
+For React and hooks to work correctly, it is critical that dependencies are not duplicated, and the same instances are used everywhere — both in HTML Reporter and in the plugin.
+
+HTML Reporter provides a number of dependencies available for reuse, including React and Gravity UI.
+
+To reuse these dependencies, you need to specify them in `external` in the Vite configuration.
+
+#### Vite Configuration Example
+
+In practice, the required bundle characteristics are achieved by building through Vite with `external` dependencies and a special wrapper. You can see an example in the [HTML Reporter repository](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/ui/vite.config.ts).
+
+### 2. Component Implementation
+
+Depending on which extension point is used, HTML Reporter may pass some data in props, for example, the current test run result (see more in the Plugins SDK reference):
+
+```tsx title="ui/Plugin.tsx"
+import { Button } from "@gravity-ui/uikit";
+
+export const MyPlugin = ({ result }: { result: { id: string; suitePath: string[] } }) => {
+    const fullName = result.suitePath.join(" ");
+
+    return (
+        <div>
+            <div>Test Full Name: {fullName}</div>
+            <Button onClick={() => window.open(`example-tms.com/test/${result.id}`, "_blank")}>
+                Open test in TMS
+            </Button>
+        </div>
+    );
+};
+```
+
+The main plugin file can be organized like this:
+
+```typescript title="ui/index.tsx"
+import { MyPlugin } from "./Plugin";
+
+export default {
+    MyPlugin,
+    reducers: [],
+};
+```
+
+When developing plugins, it is recommended to use Gravity UI and components from the Plugins SDK for visual consistency with the rest of the HTML Reporter interface.
+
+#### Working with Redux (Optional)
+
+Use Redux to store and retrieve plugin data.
+
+##### Creating Actions
+
+Define action types with a unique prefix:
+
+```typescript title="ui/actions.ts"
+export const actions = {
+    LOADING: "plugins/myPlugin/loading",
+    LOADED: "plugins/myPlugin/loaded",
+    ERROR: "plugins/myPlugin/error",
+} as const;
+```
+
+##### Creating Thunk for Requests
+
+Use thunk actions for asynchronous operations:
+
+```typescript title="ui/actions.ts"
+export const fetchData = (resultId: string) => async dispatch => {
+    dispatch({ type: actions.LOADING, payload: { resultId } });
+
+    const endpoint = `${pluginOptions.pluginServerEndpointPrefix}/data`;
+    const { data } = await axios.get(endpoint);
+
+    dispatch({ type: actions.LOADED, payload: { resultId, data } });
+};
+```
+
+The global variable `pluginOptions.pluginServerEndpointPrefix` contains the base URL for requests to the plugin server.
+
+##### Creating Reducer
+
+The reducer updates the plugin state. Use Immer for immutable updates:
+
+```typescript title="ui/reducers.ts"
+import produce from "immer";
+
+export default produce((draft, action) => {
+    if (!draft.plugins.myPlugin) {
+        draft.plugins.myPlugin = { byResultId: {} };
+    }
+
+    switch (action.type) {
+        case actions.LOADING: {
+            const { resultId } = action.payload;
+            draft.plugins.myPlugin.byResultId[resultId] = {
+                ...defaultResultState,
+                status: "loading",
+            };
+            break;
+        }
+        // ...
+    }
+});
+```
+
+##### Reading State
+
+Use `useSelector` to read data from the store:
+
+```tsx
+const data = useSelector(state => state.plugins.myPlugin?.byResultId[result.id]);
+```
+
+For more details on the Redux store structure, see the [HTML Reporter source code](https://github.com/gemini-testing/html-reporter/blob/885b2208e3fa2aeb1888d4a674e302b072c67e26/lib/static/new-ui/types/store.ts#L257).
+
+The component name (`MyPlugin`) must match the `component` field in the plugin configuration.
+
+### 3. Server Part (Optional)
+
+The server part receives an Express Router with the prefix `/plugin-routes/{plugin-name}/`:
+
+```typescript title="server/index.ts"
+import type { Router } from "express";
+
+export = function (router: Router) {
+    router.get("/data", (req, res) => {
+        res.json({ value: 42 });
     });
 };
 ```
 
-Then the "routes" can be called from the React components of the plugin defined in `plugin.js`. For convenience, the plugin name is always passed with options called `pluginName` when a function or an array of functions is used for export:
+This endpoint will be available at `/plugin-routes/my-plugin/data`.
 
-```javascript
-export default ['react', 'axios', function(React, axios, { pluginName, pluginConfig, actions, actionNames, selectors }) {
-    class PluginComponent extends React.Component {
-        // ... somewhere inside the component ...
-        const result = await axios.get(`/plugin-routes/${pluginName}/plugin-route`);
-    }
+It is recommended to get the server part address from the global variable `pluginOptions.pluginServerEndpointPrefix`, as the plugin name is transformed on the HTML Reporter side and may not match the package name.
 
-    return {
-        PluginComponent,
-        reducers: []
-    };
-}
+### 4. Configuration Preset (Optional)
+
+The preset simplifies plugin connection for users:
+
+```typescript title="preset-for-config/index.ts"
+import { ExtensionPointName } from "html-reporter/plugins-sdk";
+
+export = function (config = {}) {
+    return [
+        {
+            name: "my-plugin-package",
+            component: "MyPlugin",
+            point: ExtensionPointName.ResultMeta,
+            position: "after",
+            config,
+        },
+    ];
+};
 ```
 
-In this example, you can also see the following properties:
+Thanks to the preset, instead of specifying the full plugin descriptor in the config, users can import this object and use it.
 
-<table>
-<thead>
-<tr><td>**Property**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>pluginName</td><td>plugin name</td></tr>
-<tr><td>pluginConfig</td><td>plugin configuration</td></tr>
-<tr><td>actions</td><td>Redux-actions</td></tr>
-<tr><td>actionNames</td><td>action names in _html-reporter_ that are used in Redux-actions, allow to subscribe to report events</td></tr>
-<tr><td>selectors</td><td>cached report selectors that were created using the [reselect][redux-reselect] library</td></tr>
+### 5. Connecting the Plugin
 
-</tbody>
-</table>
+After publishing, users connect the plugin like this:
 
-### Available dependencies {#available_deps}
+```typescript title="testplane.config.ts"
+import myPlugin from "my-plugin-package";
 
-The following dependencies are available in plugins:
-
--   [react][react]
--   [redux][redux]
--   [react-redux][react-redux]
--   [lodash][lodash]
--   [prop-types][prop-types]
--   [classnames][classnames]
--   [semantic-ui-react][semantic-ui-react]
--   [react-markdown][react-markdown]
--   [reduce-reducers][reduce-reducers]
--   [immer][immer]
--   [reselect][redux-reselect]
--   [axios][axios]
-
-### Available components {#available_components}
-
-#### `<Details />`
-
-A component with which you can switch the display of content.
-
-Usage example:
-
-```javascript
-// ...inside your React component
-
-render() {
-    return <Details
-        title='Some title'
-        content='Some content' // content that will appear by clicking on the title
-        extendClassNames='some_class_name' // you can add your own css classes to the component
-        onClick={() => console.log('clicked')} // as well as your handler
-    />
-}
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            pluginsEnabled: true,
+            plugins: myPlugin(),
+        },
+    },
+};
 ```
 
-where:
+### Additional Materials
 
-<table>
-<thead>
-<tr><td>**Property**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>title</td><td>String or JSX.Element</td><td>Required parameter. A header describing the information hidden under it.</td></tr>
-<tr><td>content</td><td>Function or String or String[] or JSX.Element</td><td>Required parameter. The content that will appear when you click on the title.</td></tr>
-<tr><td>extendClassNames</td><td>String or String[]</td><td>CSS classes to add to the component. Optional parameter.</td></tr>
-<tr><td>onClick</td><td>Function</td><td>The handler that will be called by clicking on the header. Optional parameter.</td></tr>
+-   [API Reference](../html-reporter-plugins-api) — dependencies, SDK components, extension points
+-   [Plugin Configuration](../html-reporter-setup#plugins) — connection parameters
+-   [Plugin Example][example-plugin] — full working code
 
-</tbody>
-</table>
-
-## Extension points {#extension_points}
-
-Extension points are places in the user interface of the report that are available for extension using React components exported by _plugins for the report_.
-
-Each extension point can pass certain props to plugin components depending on the point itself. Since some plugins may rely on a specific placement and, therefore, on specific props, it is possible to restrict plugin components to certain extension points by specifying a static `point` property for such plugin components:
-
-```javascript
-class PluginComponent extends React.Component {
-    static point = "result";
-    // ...
-}
-```
-
-The following extension points are currently available:
-
-<table>
-<thead>
-<tr><td>**Point**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>result</td><td>Allows you to extend each test result. Adds the _resultId_ and _testName_ props to the plugin component.</td></tr>
-<tr><td>result_meta</td><td>Allows you to extend the meta information for each test result. Adds the _resultId_ and _testName_ props to the plugin component.</td></tr>
-<tr><td>menu-bar</td><td>Allows you to extend the menu.</td></tr>
-<tr><td>root</td><td>Allows you to add floating elements such as a modal window or a popup.</td></tr>
-
-</tbody>
-</table>
-
-An extension point can be extended by more than one component. In this case, the order in which components are applied is determined by the order in which plugins are configured. Each subsequent component is applied to all previously composed components at the extension point.
-
-[plugins-enabled]: ../html-reporter-setup#pluginsenabled
-[html-reporter-plugins]: https://github.com/gemini-testing/html-reporter/blob/master/test/func/fixtures/plugins/.testplane.conf.js
-[reduce-reducers]: https://github.com/redux-utilities/reduce-reducers
-[express]: https://github.com/expressjs/express
-[redux-reselect]: https://github.com/reduxjs/reselect
-[react]: https://github.com/facebook/react
-[redux]: https://github.com/reduxjs/redux
-[react-redux]: https://github.com/reduxjs/react-redux
-[lodash]: https://github.com/lodash/lodash
-[prop-types]: https://github.com/facebook/prop-types
-[classnames]: https://github.com/JedWatson/classnames
-[semantic-ui-react]: https://github.com/Semantic-Org/Semantic-UI-React
-[react-markdown]: https://github.com/remarkjs/react-markdown
-[immer]: https://github.com/immerjs/immer
-[axios]: https://github.com/axios/axios
+[example-plugin]: https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example
+[gravity-ui]: https://gravity-ui.com/
+[plugins-sdk-reference]: ../html-reporter-plugins-api
