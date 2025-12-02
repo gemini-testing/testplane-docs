@@ -15,6 +15,23 @@ await browser.addTag("one");
 await browser.addTag(["first", "second"]);
 ```
 
+Also, the tag object now has the following methods: to add a tag, get a list of tags, and check if a tag exists.
+You can use it in your plugin where you have access to test objects.
+
+```typescript
+type TestTag = {
+    title: string;
+    dynamic?: boolean;
+};
+
+function addTag(tag: string | string[]): void;
+function hasTag(tag: string): boolean;
+function getTag(): TestTag[];
+```
+
+`getTag` returns an array of the tag objects mentioned above.
+Each object has a `title` and a `dynamic` field, which indicates that the tag was added during the test.
+
 ## Command Parameters {#parameters}
 
 <table>
