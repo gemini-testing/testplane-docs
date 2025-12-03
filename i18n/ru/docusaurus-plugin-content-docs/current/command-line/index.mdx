@@ -1,4 +1,5 @@
 import Admonition from "@theme/Admonition";
+import Version from "../_partials/specs/version.mdx";
 
 # CLI {#cli}
 
@@ -21,7 +22,7 @@ import Admonition from "@theme/Admonition";
     -s, --set <set>                  run tests only in the specified set
     -r, --require <module>           require module
     --grep <grep>                    run only tests matching the pattern
-    --tag <tag>                      run only tests matching the pattern
+    --tag <tag>                      run only tests with specified tags
     --reporter <name>                test reporters
     --update-refs                    update screenshot references or gather them if they do not exist ("assertView" command)
     --inspect [inspect]              nodejs inspector on [=[host:]port]
@@ -139,18 +140,20 @@ testplane --grep "test with nested path"
 
 #### Tag {#testplane-tag}
 
-Запуск только тестов соответствующих паттерну:
+<Version version="8.37.0" />
+
+Запуск только тестов, соответствующих паттерну.
 
 ##### Example {#testplane-tag-example}
 
-Вы можете назначить теги тесту с помощью параметра `{tag: string | string[]}`.
-Также вы можете добавлять теги динамически во время выполнения теста с помощью команды [assertTag][add-tag],
-однако тесты, помеченные таким образом, нельзя отфильтровать при запуске.
+Вы можете назначить теги тесту с помощью второго параметре `describe` или `it` (пример ниже).
+Также вы можете добавлять теги динамически во время выполнения теста с помощью команды [addTag][add-tag],
+но вы не можете использовать динамически добавленные теги для фильтрации тестов при запуске.
 
 ```ts
 describe("test", {tag: "all"}, () => {
     describe("with", {tag: "desktop"}, () => {
-        describe("nested path", {tag: "smoke"}, () => {
+        describe("nested path", {tag: ["smoke", "slow"]}, () => {
             await browser.addTag("some");
             ...
         });
