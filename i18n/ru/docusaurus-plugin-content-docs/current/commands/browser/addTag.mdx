@@ -1,0 +1,52 @@
+import Version from "../../_partials/specs/version.mdx";
+
+# addTag
+
+<Version version="8.37.0" />
+
+## Обзор {#overview}
+
+Используйте команду `addTag`, чтобы добавить один или несколько тегов к тесту во время его выполнения.
+
+## Использование {#usage}
+
+```typescript
+await browser.addTag("one");
+await browser.addTag(["first", "second"]);
+```
+
+Также, объект теста теперь имеет методы для добавления тега, получения списка тегов и проверки существования тега.
+Вы можете использовать это в своём плагине где у вас есть доступ к объектам тестов.
+
+```typescript
+type TestTag = {
+    title: string;
+    dynamic?: boolean;
+};
+
+function addTag(tag: string | string[]): void;
+function hasTag(tag: string): boolean;
+function getTag(): TestTag[];
+```
+
+Метод `getTag` возвращает массив объектов тегов, которые были упомянуты выше.
+Каждый объект имеет поле `title` и поле `dynamic`, которое указывает на то, что тег был добавлен в процессе теста.
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>tag</td>
+            <td>`string | string[]`</td>
+            <td>Обязательный параметр. Название тега или тегов.</td>
+        </tr>
+    </tbody>
+</table>
