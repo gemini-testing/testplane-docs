@@ -1,0 +1,20 @@
+---
+title: Test run selectivity
+slug: selectivity-intro
+hide_table_of_contents: false
+date: 2025-12-03T14:00
+---
+
+Testplane now supports test run selectivity — the ability to automatically run only those tests whose dependency files have changed.
+
+<!-- truncate -->
+
+Selectivity allows you to significantly speed up the testing process by running only relevant tests instead of the entire suite. Testplane tracks each test’s dependencies on project files — both the test code itself and the code executed in the browser — and, when a file changes, runs only those tests that depend on it.
+
+### How to use
+
+Learn more in our guide [How to configure selectivity when running tests](/docs/v8/guides/selectivity).
+
+### Conclusion
+
+Upgrade to Testplane version 8.36.0 or higher and try selectivity in your projects! If you encounter any issues, feel free to open an [issue on GitHub](https://github.com/gemini-testing/testplane/issues) — we’ll be happy to help!

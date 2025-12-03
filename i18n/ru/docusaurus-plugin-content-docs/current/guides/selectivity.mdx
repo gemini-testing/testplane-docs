@@ -1,0 +1,228 @@
+import Admonition from "@theme/Admonition";
+
+# Как настроить селективность при запуске тестов
+
+## Введение
+
+Селективность позволяет значительно ускорить процесс тестирования, запуская только релевантные тесты вместо всего набора. Testplane отслеживает зависимости каждого теста от файлов проекта — как код самих тестов, так и код, выполняемый в браузере — и при изменении файла запускает только те тесты, которые от него зависят.
+
+## Как это работает?
+
+При первом запуске с включенной селективностью Testplane собирает информацию о зависимостях каждого теста:
+
+-   какие модули Node.js были загружены во время выполнения теста;
+-   какие файлы исходного кода были выполнены в браузере.
+
+После изменения файла при следующем запуске будут выполнены только те тесты, которые зависят от измененного файла. Это значительно экономит время, особенно в больших проектах с большим количеством тестов.
+
+<Admonition type="info">
+    Если хотя бы один тест упадет, то при следующем прогоне будут запущены все те же тесты —
+    Testplane "запомнит" новое состояние только после полностью успешного прогона.
+</Admonition>
+
+## Настройка
+
+Для включения селективности достаточно добавить в конфигурацию Testplane секцию [`selectivity`](/docs/v8/config/browsers#selectivity) с параметром `enabled: true`:
+
+```typescript
+// testplane.config.ts
+export default {
+    // ... Остальные настройки
+    selectivity: {
+        enabled: true,
+    },
+} satisfies import("testplane").ConfigInput;
+```
+
+## Пример использования
+
+Включим селективность в проекте с браузерами `chrome` и `firefox`. Также для удобства настроим [devServer][dev-server]:
+
+```ts
+// testplane.config.ts
+const DEV_SERVER_PORT = 3050;
+
+export default {
+    baseUrl: `http://127.0.0.1:${DEV_SERVER_PORT}`,
+    // ... Остальные настройки
+    devServer: {
+        command: `npm run dev -- --port=${DEV_SERVER_PORT}`,
+        reuseExisting: true,
+        readinessProbe: {
+            url: `http://127.0.0.1:${DEV_SERVER_PORT}`,
+        },
+    },
+    selectivity: {
+        enabled: true,
+    },
+} satisfies import("testplane").ConfigInput;
+```
+
+Также включим генерацию SourceMap в конфиге используемого Webpack:
+
+```js
+// webpack.config.js
+module.exports = (env, argv) => {
+  return {
+    // ...
+    // Используем несколько входных точек
+    entry: {
+      main: './js/home.js',
+      about: './js/about.js',
+      contact: './js/contact.js',
+      shared: './js/shared.js'
+    },
+    // Включаем генерацию SourceMap
+    // Подходят как внешние (`source-map`), так и встроенные (`inline-source-map`)
+    devtool: 'source-map',
+    output: {
+        // Указываем шаблон, по которому Webpack будет сохранять пути до файлов исходного кода
+        // Подойдут также значения `"[resource-path]"` или `"[absolute-resource-path]"`
+        devtoolModuleFilenameTemplate: "webpack://[resource-path]",
+    },
+```
+
+Для примера будем использовать проект на чистом JavaScript без React со следующей файловой структурой:
+
+```
+.
+|____css
+| |____home.css
+| |____shared.css
+| |____about.css
+|____js
+| |____about.js
+| |____home.js
+| |____main.js
+| |____contact.js
+| |____shared.js
+|____index.html
+|____about.html
+|____contact.html
+|____webpack.config.js
+|____testplane.config.ts
+|____testplane-tests
+| |____example.testplane.ts
+| |____tsconfig.json
+|____package.json
+|____package-lock.json
+```
+
+Напишем следующие тесты:
+
+```ts
+describe("test examples", () => {
+    it("main page", async ({ browser }) => {
+        await browser.url("/");
+    });
+
+    it("main page with navigation to about page", async ({ browser }) => {
+        await browser.url("/");
+        await browser.$("#about-link").click();
+    });
+
+    it("main page with navigation to contact page", async ({ browser }) => {
+        await browser.url("/");
+        await browser.$("#contact-link").click();
+    });
+
+    it("contact page", async ({ browser }) => {
+        await browser.url("/contact");
+    });
+});
+```
+
+И запустим Testplane. Для наглядности будем использовать переменную среды `DEBUG=testplane:selectivity`.
+
+При первом запуске Testplane запустит все тесты и запишет их зависимости:
+
+![Лог первого запуска](/img/docs/guides/selectivity/first-run.png)
+
+Попробуем запустить еще раз. Поскольку изменения отсутствуют, запуск всех тестов будет пропущен:
+
+![Лог без изменений](/img/docs/guides/selectivity/no-changes.png)
+
+Теперь попробуем внести изменение в пару файлов исходного кода, выполняемых в браузере. Будет запущен только один тест, который затрагивает измененные файлы. Запуск остальных тестов будет пропущен селективностью:
+
+![Лог запуска одного теста](/img/docs/guides/selectivity/single-test-run.png)
+
+Аналогично с селективностью кода теста: опишем файл `./testplane-tests/my-module.ts`:
+
+```ts
+export const foo = () => {
+    throw new Error("bar");
+};
+```
+
+И добавим его использование в файл с тестами:
+
+```ts
+import { foo } from "./my-module";
+
+describe("test examples", () => {
+    it("main page", async ({ browser }) => {
+        foo();
+        await browser.url("/");
+    });
+    // Остальные тесты
+});
+```
+
+Теперь Testplane при обработке файла с тестом заметит, что теперь тестовый файл зависит от другого файла, что значит, что функциональность может поменяться, поэтому все тесты в этом файле будут запущены:
+
+![Лог упавших тестлв](/img/docs/guides/selectivity/test-fail.png)
+
+Но из-за того, что тесты упали, новое состояние не было сохранено, из-за чего повторный запуск тестов приведет к повторному запуску все тех же тестов.
+
+## Важные особенности
+
+### Сбор браузерных зависимостей
+
+Testplane записывает браузерные зависимости только в браузере Chrome, поскольку сбор зависимостей работает по [Chrome Devtools Protocol](/docs/v8/reference/webdriver-vs-cdp). Однако, если у вас несколько браузеров (например, Chrome и Firefox), то Firefox сможет использовать список браузерных зависимостей теста, собранных браузером Chrome.
+
+### Требование SourceMap
+
+Для корректной работы селективности **обязательна генерация SourceMap**. Благодаря SourceMap браузер может понять, к какому исходному файлу относится выполняемый код. Если SourceMap для файла с кодом не будет сгенерирован, Testplane не сможет определить, к какому файлу исходного кода относится выполняемый код, и селективность не будет работать корректно.
+
+### Серверный код и disableSelectivityPatterns
+
+Testplane не имеет возможности отслеживать код, выполняемый на стороне вашего сервера, вне зависимости от языка, на котором он написан. Поэтому серверный код рекомендуется добавить в параметр `disableSelectivityPatterns` — любое изменение в файлах, попадающих под эти паттерны, будет отключать селективность и запускать все тесты.
+
+В случае использования [reactStrictMode](https://nextjs.org/docs/pages/api-reference/config/next-config-js/reactStrictMode) фреймворка [Next.js](https://nextjs.org/), отрисовка страниц также и в браузере позволит Testplane учесть эти файлы, как если бы это было обычное SPA-приложение. Однако код, выполняемый исключительно на сервере (такой как обработка API-запросов), не будет учтен селективностью Testplane.
+
+Также в `disableSelectivityPatterns` стоит добавить файлы конфигурации Testplane (например, `testplane.config.ts`), так как их изменение может повлиять на поведение любого теста.
+
+<Admonition type="warning">
+    Не добавляйте `node_modules` в `disableSelectivityPatterns` — это приведет к значительному
+    замедлению. Testplane самостоятельно учитывает используемые модули из `node_modules`.
+</Admonition>
+
+Пример настройки `disableSelectivityPatterns`:
+
+```typescript
+selectivity: {
+    enabled: true,
+    disableSelectivityPatterns: [
+        "testplane.config.ts",
+        "backend/**/*.py",  // серверный код на Python
+        "server/**/*.go",   // серверный код на Go
+    ]
+}
+```
+
+### Отключение селективности вручную
+
+При указании иных способов фильтрации при запуске Testplane (таких как указание пути до файла с тестом или использование опций `--grep` и `--set`) селективность автоматически отключается.
+
+Также можно отключить селективность вручную с помощью переменной среды:
+
+```bash
+testplane_selectivity_enabled=false # отключить
+```
+
+## Конфигурация
+
+Дополнительная информация о конфигурации селективности описана в разделе [browsers-selectivity][selectivity-config] документации.
+
+[dev-server]: ../../config/dev-server
+[selectivity-config]: ../../config/browsers#selectivity
