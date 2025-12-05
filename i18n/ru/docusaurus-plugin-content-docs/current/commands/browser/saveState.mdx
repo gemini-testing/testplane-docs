@@ -69,6 +69,15 @@ const stateDump: SaveStateData = await browser.saveState({
             <td>`-`</td>
             <td>Функция для фильтрации кук, принимает объект куки и возвращает boolean.</td>
         </tr>
+        <tr>
+            <td>keepFile</td>
+            <td>`boolean`</td>
+            <td>`false`</td>
+            <td>
+                Сохранять файл состояния после завершения тестов (по умолчанию он удаляется).
+                <Version version="8.38.0" />
+            </td>
+        </tr>
     </tbody>
 </table>
 
