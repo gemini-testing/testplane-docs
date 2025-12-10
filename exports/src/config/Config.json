@@ -1,0 +1,20 @@
+{
+    "Config": {
+        "properties": {},
+        "methods": {
+            "mergeWith": {
+                "comment": {
+                    "blockTags": [],
+                    "modifierTags": {},
+                    "summary": [
+                        {
+                            "kind": "text",
+                            "text": "This method is used in subrocesses to merge a created config\nin a subrocess with a config from the main process"
+                        }
+                    ]
+                }
+            }
+        },
+        "accessors": {}
+    }
+}

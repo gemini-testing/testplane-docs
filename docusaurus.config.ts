@@ -94,6 +94,7 @@ const config: Config = {
                     label: "UI",
                 },
                 { to: "/blog", label: "Blog", position: "left" },
+                { to: "/docs/v8/api", label: "API reference", position: "left" },
                 {
                     type: "docsVersionDropdown",
                     position: "right",
@@ -205,6 +206,22 @@ const config: Config = {
                 counterID: "97719088",
                 webvisor: true,
                 trackHash: true,
+            },
+        ],
+        // [
+        //     'docusaurus-plugin-typedoc',
+        //     {
+        //         id: "ru",
+        //         lang: "ru",
+        //         out: "docs/api"
+        //     },
+        // ],        
+        [
+            'docusaurus-plugin-typedoc',
+            {
+                id: "en",
+                lang: "en",
+                out: "i18n/en/docusaurus-plugin-content-docs/current/api"
             },
         ],
     ],

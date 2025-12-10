@@ -10,7 +10,12 @@
     "test": "npm run lint && npm run typecheck",
     "typecheck": "tsc",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "clone-testplane": "node clone-testplane.js",
+    "docs:generate:template": "npx typedoc .testplane/src/ --generate-json exports",
+    "docs:generate:ru": "npx typedoc .testplane/src/ --generate-from-json ./exports --out docs/api --lang ru",
+    "docs:generate:en": "npx typedoc .testplane/src/ --out i18n/en/docusaurus-plugin-content-docs/current/api",
+    "docs:generate": "npm run docs:generate:en && npm run docs:generate:ru"
   },
   "dependencies": {
     "@docusaurus/core": "3.4.0",
@@ -42,6 +47,7 @@
     "@tailwindcss/postcss": "4.1.13",
     "autoprefixer": "10.4.19",
     "docusaurus-plugin-sass": "0.2.5",
+    "docusaurus-plugin-typedoc": "1.0.5",
     "eslint": "8.57.0",
     "eslint-config-gemini-testing": "3.0.0",
     "eslint-config-prettier": "9.1.0",
@@ -55,6 +61,10 @@
     "storybook": "8.0.5",
     "tailwindcss": "4.1.13",
     "typed.js": "2.1.0",
+    "typedoc": "0.26.5",
+    "typedoc-plugin-localization": "3.0.5",
+    "typedoc-plugin-markdown": "4.2.4",
+    "typedoc-plugin-rename-defaults": "0.7.1",
     "typescript": "5.4.3",
     "typescript-eslint": "7.4.0",
     "zustand": "4.5.2"

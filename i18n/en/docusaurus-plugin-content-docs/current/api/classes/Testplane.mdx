@@ -1,0 +1,613 @@
+# Testplane
+
+## Extends
+
+- `BaseTestplane`
+
+## Constructors
+
+### new Testplane()
+
+```ts
+new Testplane(config?): Testplane
+```
+
+#### Parameters
+
+• **config?**: `string` \| [`ConfigInput`](../type-aliases/ConfigInput.mdx)
+
+#### Returns
+
+[`Testplane`](Testplane.mdx)
+
+#### Defined in
+
+[src/testplane.ts:64](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L64)
+
+## Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| `on` | `MasterEventHandler`\<[`Testplane`](Testplane.mdx)\> | [src/testplane.ts:54](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L54) |
+| `once` | `MasterEventHandler`\<[`Testplane`](Testplane.mdx)\> | [src/testplane.ts:55](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L55) |
+| `prependListener` | `MasterEventHandler`\<[`Testplane`](Testplane.mdx)\> | [src/testplane.ts:56](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L56) |
+
+## Accessors
+
+### config
+
+```ts
+get config(): Config
+```
+
+#### Returns
+
+[`Config`](Config.mdx)
+
+#### Defined in
+
+[src/base-testplane.ts:52](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/base-testplane.ts#L52)
+
+***
+
+### errors
+
+```ts
+get errors(): {
+  AbortOnReconnectError: typeof AbortOnReconnectError;
+  AssertViewError: typeof AssertViewError;
+  CancelledError: typeof CancelledError;
+  ClientBridgeError: typeof ClientBridgeError;
+  CoreError: typeof CoreError;
+  HeightViewportError: typeof HeightViewportError;
+  ImageDiffError: typeof ImageDiffError;
+  NoRefImageError: typeof NoRefImageError;
+  OffsetViewportError: typeof OffsetViewportError;
+  TestplaneInternalError: typeof TestplaneInternalError;
+}
+```
+
+#### Returns
+
+```ts
+{
+  AbortOnReconnectError: typeof AbortOnReconnectError;
+  AssertViewError: typeof AssertViewError;
+  CancelledError: typeof CancelledError;
+  ClientBridgeError: typeof ClientBridgeError;
+  CoreError: typeof CoreError;
+  HeightViewportError: typeof HeightViewportError;
+  ImageDiffError: typeof ImageDiffError;
+  NoRefImageError: typeof NoRefImageError;
+  OffsetViewportError: typeof OffsetViewportError;
+  TestplaneInternalError: typeof TestplaneInternalError;
+}
+```
+
+##### AbortOnReconnectError
+
+```ts
+AbortOnReconnectError: typeof AbortOnReconnectError;
+```
+
+##### AssertViewError
+
+```ts
+AssertViewError: typeof AssertViewError;
+```
+
+##### CancelledError
+
+```ts
+CancelledError: typeof CancelledError;
+```
+
+##### ClientBridgeError
+
+```ts
+ClientBridgeError: typeof ClientBridgeError;
+```
+
+##### CoreError
+
+```ts
+CoreError: typeof CoreError;
+```
+
+##### HeightViewportError
+
+```ts
+HeightViewportError: typeof HeightViewportError;
+```
+
+##### ImageDiffError
+
+```ts
+ImageDiffError: typeof ImageDiffError;
+```
+
+##### NoRefImageError
+
+```ts
+NoRefImageError: typeof NoRefImageError;
+```
+
+##### OffsetViewportError
+
+```ts
+OffsetViewportError: typeof OffsetViewportError;
+```
+
+##### TestplaneInternalError
+
+```ts
+TestplaneInternalError: typeof TestplaneInternalError;
+```
+
+#### Defined in
+
+[src/base-testplane.ts:60](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/base-testplane.ts#L60)
+
+***
+
+### events
+
+```ts
+get events(): {
+  AFTER_FILE_READ: MasterEvents.AFTER_FILE_READ;
+  AFTER_TESTS_READ: MasterEvents.AFTER_TESTS_READ;
+  BEFORE_FILE_READ: MasterEvents.BEFORE_FILE_READ;
+  BEGIN: "begin";
+  CLI: "cli";
+  END: "end";
+  ERROR: "err";
+  EXIT: "exit";
+  INFO: "info";
+  INIT: MasterEvents.INIT;
+  NEW_BROWSER: "newBrowser";
+  NEW_WORKER_PROCESS: "newWorkerProcess";
+  RETRY: "retry";
+  RUNNER_END: "endRunner";
+  RUNNER_START: "startRunner";
+  SESSION_END: "endSession";
+  SESSION_START: "startSession";
+  SUITE_BEGIN: "beginSuite";
+  SUITE_END: "endSuite";
+  TEST_BEGIN: "beginTest";
+  TEST_END: "endTest";
+  TEST_FAIL: "failTest";
+  TEST_PASS: "passTest";
+  TEST_PENDING: "pendingTest";
+  UPDATE_REFERENCE: "updateReference";
+  WARNING: "warning";
+}
+```
+
+#### Returns
+
+```ts
+{
+  AFTER_FILE_READ: MasterEvents.AFTER_FILE_READ;
+  AFTER_TESTS_READ: MasterEvents.AFTER_TESTS_READ;
+  BEFORE_FILE_READ: MasterEvents.BEFORE_FILE_READ;
+  BEGIN: "begin";
+  CLI: "cli";
+  END: "end";
+  ERROR: "err";
+  EXIT: "exit";
+  INFO: "info";
+  INIT: MasterEvents.INIT;
+  NEW_BROWSER: "newBrowser";
+  NEW_WORKER_PROCESS: "newWorkerProcess";
+  RETRY: "retry";
+  RUNNER_END: "endRunner";
+  RUNNER_START: "startRunner";
+  SESSION_END: "endSession";
+  SESSION_START: "startSession";
+  SUITE_BEGIN: "beginSuite";
+  SUITE_END: "endSuite";
+  TEST_BEGIN: "beginTest";
+  TEST_END: "endTest";
+  TEST_FAIL: "failTest";
+  TEST_PASS: "passTest";
+  TEST_PENDING: "pendingTest";
+  UPDATE_REFERENCE: "updateReference";
+  WARNING: "warning";
+}
+```
+
+##### AFTER\_FILE\_READ
+
+```ts
+readonly AFTER_FILE_READ: "afterFileRead" = MasterEvents.AFTER_FILE_READ;
+```
+
+##### AFTER\_TESTS\_READ
+
+```ts
+readonly AFTER_TESTS_READ: "afterTestsRead" = MasterEvents.AFTER_TESTS_READ;
+```
+
+##### BEFORE\_FILE\_READ
+
+```ts
+readonly BEFORE_FILE_READ: "beforeFileRead" = MasterEvents.BEFORE_FILE_READ;
+```
+
+##### BEGIN
+
+```ts
+readonly BEGIN: "begin" = "begin";
+```
+
+##### CLI
+
+```ts
+readonly CLI: "cli" = "cli";
+```
+
+##### END
+
+```ts
+readonly END: "end" = "end";
+```
+
+##### ERROR
+
+```ts
+readonly ERROR: "err" = "err";
+```
+
+##### EXIT
+
+```ts
+readonly EXIT: "exit" = "exit";
+```
+
+##### INFO
+
+```ts
+readonly INFO: "info" = "info";
+```
+
+##### INIT
+
+```ts
+readonly INIT: "init" = MasterEvents.INIT;
+```
+
+##### NEW\_BROWSER
+
+```ts
+readonly NEW_BROWSER: "newBrowser" = "newBrowser";
+```
+
+##### NEW\_WORKER\_PROCESS
+
+```ts
+readonly NEW_WORKER_PROCESS: "newWorkerProcess" = "newWorkerProcess";
+```
+
+##### RETRY
+
+```ts
+readonly RETRY: "retry" = "retry";
+```
+
+##### RUNNER\_END
+
+```ts
+readonly RUNNER_END: "endRunner" = "endRunner";
+```
+
+##### RUNNER\_START
+
+```ts
+readonly RUNNER_START: "startRunner" = "startRunner";
+```
+
+##### SESSION\_END
+
+```ts
+readonly SESSION_END: "endSession" = "endSession";
+```
+
+##### SESSION\_START
+
+```ts
+readonly SESSION_START: "startSession" = "startSession";
+```
+
+##### SUITE\_BEGIN
+
+```ts
+readonly SUITE_BEGIN: "beginSuite" = "beginSuite";
+```
+
+##### SUITE\_END
+
+```ts
+readonly SUITE_END: "endSuite" = "endSuite";
+```
+
+##### TEST\_BEGIN
+
+```ts
+readonly TEST_BEGIN: "beginTest" = "beginTest";
+```
+
+##### TEST\_END
+
+```ts
+readonly TEST_END: "endTest" = "endTest";
+```
+
+##### TEST\_FAIL
+
+```ts
+readonly TEST_FAIL: "failTest" = "failTest";
+```
+
+##### TEST\_PASS
+
+```ts
+readonly TEST_PASS: "passTest" = "passTest";
+```
+
+##### TEST\_PENDING
+
+```ts
+readonly TEST_PENDING: "pendingTest" = "pendingTest";
+```
+
+##### UPDATE\_REFERENCE
+
+```ts
+readonly UPDATE_REFERENCE: "updateReference" = "updateReference";
+```
+
+##### WARNING
+
+```ts
+readonly WARNING: "warning" = "warning";
+```
+
+#### Defined in
+
+[src/base-testplane.ts:56](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/base-testplane.ts#L56)
+
+## Methods
+
+### addTestToRun()
+
+```ts
+addTestToRun(test, browserId): boolean
+```
+
+#### Parameters
+
+• **test**: [`Test`](Test.mdx)
+
+• **browserId**: `string`
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/testplane.ts:149](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L149)
+
+***
+
+### emitAndWait()
+
+```ts
+emitAndWait(event, ...args): Promise<unknown[]>
+```
+
+#### Parameters
+
+• **event**: `string` \| `symbol`
+
+• ...**args**: `unknown`[]
+
+#### Returns
+
+`Promise`\<`unknown`[]\>
+
+#### Defined in
+
+[src/events/async-emitter/index.ts:5](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/events/async-emitter/index.ts#L5)
+
+***
+
+### extendCli()
+
+```ts
+extendCli(parser): void
+```
+
+#### Parameters
+
+• **parser**: `Command`
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/testplane.ts:72](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L72)
+
+***
+
+### halt()
+
+```ts
+halt(err, timeout): void
+```
+
+#### Parameters
+
+• **err**: `Error`
+
+• **timeout**: `number` = `60000`
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/testplane.ts:204](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L204)
+
+***
+
+### intercept()
+
+```ts
+intercept(event, handler): this
+```
+
+#### Parameters
+
+• **event**: [`InterceptedEvent`](../type-aliases/InterceptedEvent.mdx)
+
+• **handler**: [`InterceptHandler`](../type-aliases/InterceptHandler.mdx)
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/base-testplane.ts:64](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/base-testplane.ts#L64)
+
+***
+
+### isFailed()
+
+```ts
+isFailed(): boolean
+```
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/testplane.ts:184](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L184)
+
+***
+
+### isWorker()
+
+```ts
+isWorker(): boolean
+```
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/testplane.ts:200](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L200)
+
+***
+
+### readTests()
+
+```ts
+readTests(testPaths, __namedParameters): Promise<TestCollection>
+```
+
+#### Parameters
+
+• **testPaths**: `string`[]
+
+• **\_\_namedParameters**: `Partial`\<[`ReadTestsOpts`](../interfaces/ReadTestsOpts.mdx)\> = `{}`
+
+#### Returns
+
+`Promise`\<[`TestCollection`](TestCollection.mdx)\>
+
+#### Defined in
+
+[src/testplane.ts:153](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L153)
+
+***
+
+### run()
+
+```ts
+run(testPaths, __namedParameters): Promise<boolean>
+```
+
+#### Parameters
+
+• **testPaths**: `string`[] \| [`TestCollection`](TestCollection.mdx)
+
+• **\_\_namedParameters**: `Partial`\<[`RunOpts`](../interfaces/RunOpts.mdx)\> = `{}`
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+#### Defined in
+
+[src/testplane.ts:86](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/testplane.ts#L86)
+
+***
+
+### create()
+
+#### create(this, config)
+
+```ts
+static create<T>(this, config?): T
+```
+
+##### Type Parameters
+
+• **T** *extends* `BaseTestplane`
+
+##### Parameters
+
+• **this**: `ConstructorWithOptionalConfig`\<`T`\>
+
+• **config?**: `string` \| [`ConfigInput`](../type-aliases/ConfigInput.mdx)
+
+##### Returns
+
+`T`
+
+##### Defined in
+
+[src/base-testplane.ts:24](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/base-testplane.ts#L24)
+
+#### create(this, config)
+
+```ts
+static create<T>(this, config): T
+```
+
+##### Type Parameters
+
+• **T** *extends* `BaseTestplane`
+
+##### Parameters
+
+• **this**: `ConstructorWithStringParam`\<`T`\>
+
+• **config**: `string`
+
+##### Returns
+
+`T`
+
+##### Defined in
+
+[src/base-testplane.ts:26](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/base-testplane.ts#L26)

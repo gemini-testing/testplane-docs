@@ -1,0 +1,721 @@
+# Suite
+
+## Extends
+
+- `ConfigurableTestObject`
+
+## Constructors
+
+### new Suite()
+
+```ts
+new Suite(__namedParameters): Suite
+```
+
+#### Parameters
+
+• **\_\_namedParameters**: `SuiteOpts` = `...`
+
+#### Returns
+
+[`Suite`](Suite.mdx)
+
+#### Overrides
+
+`ConfigurableTestObject.constructor`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:20](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L20)
+
+## Properties
+
+| Property | Modifier | Type | Default value | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ | ------ |
+| `parent` | `public` | `null` \| [`Suite`](Suite.mdx) | `null` | `ConfigurableTestObject.parent` | [src/test-reader/test-object/test-object.ts:6](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L6) |
+
+## Accessors
+
+### afterEachHooks
+
+```ts
+get afterEachHooks(): Hook[]
+```
+
+#### Returns
+
+`Hook`[]
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:95](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L95)
+
+***
+
+### beforeEachHooks
+
+```ts
+get beforeEachHooks(): Hook[]
+```
+
+#### Returns
+
+`Hook`[]
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:91](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L91)
+
+***
+
+### browserId
+
+```ts
+get browserId(): string
+```
+
+```ts
+set browserId(id): void
+```
+
+#### Parameters
+
+• **id**: `string`
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+`ConfigurableTestObject.browserId`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:93](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L93)
+
+***
+
+### browserVersion
+
+```ts
+get browserVersion(): undefined | string
+```
+
+```ts
+set browserVersion(version): void
+```
+
+#### Parameters
+
+• **version**: `string`
+
+#### Returns
+
+`undefined` \| `string`
+
+#### Inherited from
+
+`ConfigurableTestObject.browserVersion`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:101](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L101)
+
+***
+
+### disabled
+
+```ts
+get disabled(): boolean
+```
+
+```ts
+set disabled(val): void
+```
+
+#### Parameters
+
+• **val**: `boolean`
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+`ConfigurableTestObject.disabled`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:69](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L69)
+
+***
+
+### file
+
+```ts
+get file(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+`ConfigurableTestObject.file`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:45](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L45)
+
+***
+
+### hasBrowserVersionOverwritten
+
+```ts
+get hasBrowserVersionOverwritten(): boolean
+```
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+`ConfigurableTestObject.hasBrowserVersionOverwritten`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:105](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L105)
+
+***
+
+### id
+
+```ts
+get id(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+`ConfigurableTestObject.id`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:41](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L41)
+
+***
+
+### pending
+
+```ts
+get pending(): boolean
+```
+
+```ts
+set pending(val): void
+```
+
+#### Parameters
+
+• **val**: `boolean`
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+`ConfigurableTestObject.pending`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:53](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L53)
+
+***
+
+### root
+
+```ts
+get root(): boolean
+```
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:79](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L79)
+
+***
+
+### silentSkip
+
+```ts
+get silentSkip(): boolean
+```
+
+```ts
+set silentSkip(val): void
+```
+
+#### Parameters
+
+• **val**: `boolean`
+
+#### Returns
+
+`boolean`
+
+#### Inherited from
+
+`ConfigurableTestObject.silentSkip`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:77](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L77)
+
+***
+
+### skipReason
+
+```ts
+get skipReason(): string
+```
+
+```ts
+set skipReason(reason): void
+```
+
+#### Parameters
+
+• **reason**: `string`
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+`ConfigurableTestObject.skipReason`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:61](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L61)
+
+***
+
+### suites
+
+```ts
+get suites(): Suite[]
+```
+
+#### Returns
+
+[`Suite`](Suite.mdx)[]
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:83](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L83)
+
+***
+
+### tests
+
+```ts
+get tests(): Test[]
+```
+
+#### Returns
+
+[`Test`](Test.mdx)[]
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:87](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L87)
+
+***
+
+### timeout
+
+```ts
+get timeout(): number
+```
+
+```ts
+set timeout(timeout): void
+```
+
+#### Parameters
+
+• **timeout**: `number`
+
+#### Returns
+
+`number`
+
+#### Inherited from
+
+`ConfigurableTestObject.timeout`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:85](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L85)
+
+***
+
+### title
+
+```ts
+get title(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+`ConfigurableTestObject.title`
+
+#### Defined in
+
+[src/test-reader/test-object/test-object.ts:16](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L16)
+
+## Methods
+
+### addAfterEachHook()
+
+```ts
+addAfterEachHook(hook): this
+```
+
+#### Parameters
+
+• **hook**: `Hook`
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:41](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L41)
+
+***
+
+### addBeforeEachHook()
+
+```ts
+addBeforeEachHook(hook): this
+```
+
+#### Parameters
+
+• **hook**: `Hook`
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:37](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L37)
+
+***
+
+### addSuite()
+
+```ts
+addSuite(suite): this
+```
+
+#### Parameters
+
+• **suite**: [`Suite`](Suite.mdx)
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:29](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L29)
+
+***
+
+### addTest()
+
+```ts
+addTest(test): this
+```
+
+#### Parameters
+
+• **test**: [`Test`](Test.mdx)
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:33](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L33)
+
+***
+
+### afterEach()
+
+```ts
+afterEach(fn): this
+```
+
+#### Parameters
+
+• **fn**: `TestFunction`\<[`TestFunctionCtx`](../interfaces/TestFunctionCtx.mdx)\>
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:49](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L49)
+
+***
+
+### assign()
+
+```ts
+assign(src): this
+```
+
+#### Parameters
+
+• **src**: `this`
+
+#### Returns
+
+`this`
+
+#### Inherited from
+
+`ConfigurableTestObject.assign`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:20](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L20)
+
+***
+
+### beforeEach()
+
+```ts
+beforeEach(fn): this
+```
+
+#### Parameters
+
+• **fn**: `TestFunction`\<[`TestFunctionCtx`](../interfaces/TestFunctionCtx.mdx)\>
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:45](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L45)
+
+***
+
+### disable()
+
+```ts
+disable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+`ConfigurableTestObject.disable`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:31](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L31)
+
+***
+
+### eachTest()
+
+```ts
+eachTest(cb): void
+```
+
+#### Parameters
+
+• **cb**
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:60](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L60)
+
+***
+
+### enable()
+
+```ts
+enable(): void
+```
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+`ConfigurableTestObject.enable`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:36](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L36)
+
+***
+
+### filterTests()
+
+```ts
+filterTests(cb): this
+```
+
+#### Parameters
+
+• **cb**
+
+#### Returns
+
+`this`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:70](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L70)
+
+***
+
+### fullTitle()
+
+```ts
+fullTitle(): string
+```
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+`ConfigurableTestObject.fullTitle`
+
+#### Defined in
+
+[src/test-reader/test-object/test-object.ts:30](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L30)
+
+***
+
+### getTests()
+
+```ts
+getTests(): Test[]
+```
+
+#### Returns
+
+[`Test`](Test.mdx)[]
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:65](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L65)
+
+***
+
+### skip()
+
+```ts
+skip(__namedParameters): void
+```
+
+#### Parameters
+
+• **\_\_namedParameters**: `SkipData`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+`ConfigurableTestObject.skip`
+
+#### Defined in
+
+[src/test-reader/test-object/configurable-test-object.ts:26](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/configurable-test-object.ts#L26)
+
+***
+
+### titlePath()
+
+```ts
+titlePath(): string[]
+```
+
+#### Returns
+
+`string`[]
+
+#### Inherited from
+
+`ConfigurableTestObject.titlePath`
+
+#### Defined in
+
+[src/test-reader/test-object/test-object.ts:20](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/test-object.ts#L20)
+
+***
+
+### create()
+
+```ts
+static create<T>(this, opts): T
+```
+
+#### Type Parameters
+
+• **T** *extends* [`Suite`](Suite.mdx)
+
+#### Parameters
+
+• **this**
+
+• **opts**: `SuiteOpts`
+
+#### Returns
+
+`T`
+
+#### Defined in
+
+[src/test-reader/test-object/suite.ts:15](https://github.com/gemini-testing/testplane/blob/526dd31893cff211e94897f157309c868ebe6c97/src/test-reader/test-object/suite.ts#L15)
