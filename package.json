@@ -41,6 +41,7 @@
     "@svgr/webpack": "8.1.0",
     "@tailwindcss/postcss": "4.1.13",
     "autoprefixer": "10.4.19",
+    "docusaurus": "1.14.7",
     "docusaurus-plugin-sass": "0.2.5",
     "eslint": "8.57.0",
     "eslint-config-gemini-testing": "3.0.0",
