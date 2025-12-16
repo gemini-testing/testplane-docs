@@ -1017,6 +1017,64 @@ export = {
 };
 ```
 
+## Selectivity {#selectivity}
+
+This section allows you to configure Testplane's selective test execution, avoiding the launch of tests for which nothing has changed.
+
+The section has the following parameters:
+
+<table>
+    <thead>
+        <tr>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`enabled`</td>
+            <td>`boolean`</td>
+            <td>`false`</td>
+            <td>Enables selective test execution.</td>
+        </tr>
+        <tr>
+            <td>`sourceRoot`</td>
+            <td>`string`</td>
+            <td>`""`</td>
+            <td>Configures the path to the root of the source code files.</td>
+        </tr>
+        <tr>
+            <td>`testDependenciesPath`</td>
+            <td>`string`</td>
+            <td>`".testplane/selectivity"`</td>
+            <td>The path to the directory where test dependency data will be saved.</td>
+        </tr>
+        <tr>
+            <td>`compression`</td>
+            <td>`"none" | "gz" | "br" | "zstd"`</td>
+            <td>`"gz"`</td>
+            <td>The compression type applied to the test dependency data.</td>
+        </tr>
+        <tr>
+            <td>`disableSelectivityPatterns`</td>
+            <td>`string[]`</td>
+            <td>`[]`</td>
+            <td>
+                A list of patterns. If a file matching one of these patterns is changed, selectivity
+                will be disabled.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<Admonition type="info">
+    You should not specify `node_modules` in `disableSelectivityPatterns`, as this will cause a
+    significant slowdown. Instead, it is recommended to specify Testplane configuration files and
+    the application's backend source code.
+</Admonition>
+
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
 [html-reporter]: ../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
