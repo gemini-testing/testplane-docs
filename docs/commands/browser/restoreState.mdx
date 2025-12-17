@@ -84,6 +84,12 @@ await browser.restoreState({
                 Function for filtering cookies, receiving cookie objects, and returning boolean.
             </td>
         </tr>
+        <tr>
+            <td>refresh</td>
+            <td>`boolean`</td>
+            <td>`true`</td>
+            <td>Refresh page after restore state.</td>
+        </tr>
     </tbody>
 </table>
 
@@ -99,9 +105,6 @@ it("test", async ({ browser }) => {
         path: "./stateDump.json",
         cookieFilter: ({ domain }) => domain === ".example.com",
     });
-
-    // Reload page for see auth result.
-    await browser.refresh();
 });
 ```
 

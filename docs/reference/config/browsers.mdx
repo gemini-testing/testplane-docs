@@ -4,6 +4,7 @@ import BrowsersExample from "@site/docs/reference/config/_partials/examples/_bro
 import DesiredCapabilitiesExample from "@site/docs/reference/config/_partials/examples/_browsers-desired-capabilities.mdx";
 import SessionEnvFlags from "@site/docs/reference/config/_partials/examples/_browsers-session-env-flags.mdx";
 import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
+import Version from "../../_partials/specs/version.mdx";
 
 # browsers
 
@@ -1076,6 +1077,57 @@ The section has the following parameters:
     the application's backend source code.
 </Admonition>
 
+### stateOpts {#state_opts}
+
+<Version version="8.38.0" />
+
+Default settings for state commands.
+
+You can set parameters once and then use state commands ([saveState][saveState], [restoreState][restoreState], [getState][getState]) without specifying options.
+However, if you explicitly provide parameters for a command, they will have the highest priority.
+
+<table>
+    <thead>
+        <tr>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`stateOpts`</td>
+            <td>`StateOpts`</td>
+            <td>`undefined`</td>
+            <td>Default options for state commands.</td>
+        </tr>
+    </tbody>
+</table>
+
+```typescript
+type StateOpts = {
+    path?: string;
+
+    cookies?: boolean;
+    localStorage?: boolean;
+    sessionStorage?: boolean;
+
+    cookieFilter?: (cookie: Cookie) => boolean;
+    keepFile?: boolean;
+};
+```
+
+Example of a valid configuration:
+
+```typescript
+export = {
+    stateOpts: {
+        path: "stateDump.json",
+    },
+};
+```
+
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
 [html-reporter]: ../../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
@@ -1091,3 +1143,6 @@ The section has the following parameters:
 [how-to-use-cdp]: ../../../guides/how-to-use-cdp
 [testplane-also-in-helper]: ../../testplane-helper
 [time-travel]: ../../../basic-guides/time-travel
+[saveState]: ../../../commands/browser/saveState
+[restoreState]: ../../../commands/browser/restoreState
+[getState]: ../../../commands/browser/getState

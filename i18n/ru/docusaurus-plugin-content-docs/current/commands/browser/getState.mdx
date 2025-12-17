@@ -1,0 +1,56 @@
+import Version from "../../_partials/specs/version.mdx";
+
+# getState
+
+<Version version="8.38.0" />
+
+## Обзор {#overview}
+
+Эта команда возвращает состояние страницы из файла, ранее сохраненного с помощью команды [saveState][saveState].
+
+## Использование {#usage}
+
+```typescript
+import type { SaveStateData } from "testplane";
+
+const stateDump: SaveStateData = await browser.getState({
+    path: "./stateDump.json",
+});
+```
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Значение по умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>path</td>
+            <td>`string`</td>
+            <td>`-`</td>
+            <td>Путь к файлу с состоянием.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Usage Examples {#examples}
+
+Save state in file.
+
+```typescript
+it("test", async ({ browser }) => {
+    const stateData = await browser.getState({
+        path: "./stateDump.json",
+    });
+});
+```
+
+## Related Commands {#related}
+
+-   [saveState](../saveState)

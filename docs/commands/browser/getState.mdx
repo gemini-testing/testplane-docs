@@ -1,0 +1,56 @@
+import Version from "../../_partials/specs/version.mdx";
+
+# getState
+
+<Version version="8.38.0" />
+
+## Overview {#overview}
+
+A browser command that restores the session state from a file which previously saved using the [saveState][saveState] command.
+
+## Usage {#usage}
+
+```typescript
+import type { SaveStateData } from "testplane";
+
+const stateDump: SaveStateData = await browser.getState({
+    path: "./stateDump.json",
+});
+```
+
+## Command Parameters {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>path</td>
+            <td>`string`</td>
+            <td>`-`</td>
+            <td>Path to file with state.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Usage Examples {#examples}
+
+Save state in file.
+
+```typescript
+it("test", async ({ browser }) => {
+    const stateData = await browser.getState({
+        path: "./stateDump.json",
+    });
+});
+```
+
+## Related Commands {#related}
+
+-   [saveState](../saveState)

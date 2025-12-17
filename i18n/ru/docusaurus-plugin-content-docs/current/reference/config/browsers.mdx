@@ -4,6 +4,7 @@ import BrowsersExample from "@site/docs/reference/config/_partials/examples/_bro
 import DesiredCapabilitiesExample from "@site/docs/reference/config/_partials/examples/_browsers-desired-capabilities.mdx";
 import SessionEnvFlags from "@site/docs/reference/config/_partials/examples/_browsers-session-env-flags.mdx";
 import AssertViewOptions from "@site/docs/_partials/specs/assert-view-options.mdx";
+import Version from "@site/docs/_partials/specs/version.mdx";
 
 # browsers
 
@@ -514,14 +515,14 @@ const defaultOpenAndWaitOpts = {
 
 <table>
     <thead>
-        <tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+    <tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
     </thead>
     <tbody>
-        <tr><td>[`meta`](#meta)</td><td>`Record<string, any>`</td><td>_N/A_</td><td>Дополнительные данные, которые будут возвращаться командой _getMeta()_.</td></tr>
-        <tr><td>[`takeScreenshotOnFails`](#take_screenshot_on_fails)</td><td>`ScreenshotOnFails`</td><td>`{ testFail: true, assertViewFail: true }`</td><td>Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении теста, а также при падении команды _assertView_.</td></tr>
-        <tr><td>[`takeScreenshotOnFailsMode`](#take_screenshot_on_fails_mode)</td><td>`"viewport" | "fullpage"`</td><td>`"fullpage"`</td><td>Режим снятия скриншота при падении теста.</td></tr>
-        <tr><td>[`takeScreenshotOnFailsTimeout`](#take_screenshot_on_fails_timeout)</td><td>`number`</td><td>`5000`</td><td>Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении теста, в мс.</td></tr>
-        <tr><td>[`saveHistoryMode`](#save_history_mode)</td><td>`"all" | "none" | "onlyFailed"`</td><td>`"all"`</td><td>Сохранять историю всех выполненных команд.</td></tr>
+    <tr><td>[`meta`](#meta)</td><td>`Record<string, any>`</td><td>_N/A_</td><td>Дополнительные данные, которые будут возвращаться командой _getMeta()_.</td></tr>
+    <tr><td>[`takeScreenshotOnFails`](#take_screenshot_on_fails)</td><td>`ScreenshotOnFails`</td><td>`{ testFail: true, assertViewFail: true }`</td><td>Определяет снимать ли скриншот страницы браузера _(Page Screenshot)_ при падении теста, а также при падении команды _assertView_.</td></tr>
+    <tr><td>[`takeScreenshotOnFailsMode`](#take_screenshot_on_fails_mode)</td><td>`"viewport" | "fullpage"`</td><td>`"fullpage"`</td><td>Режим снятия скриншота при падении теста.</td></tr>
+    <tr><td>[`takeScreenshotOnFailsTimeout`](#take_screenshot_on_fails_timeout)</td><td>`number`</td><td>`5000`</td><td>Таймаут для снятия скриншота страницы браузера _(Page Screenshot)_ при падении теста, в мс.</td></tr>
+    <tr><td>[`saveHistoryMode`](#save_history_mode)</td><td>`"all" | "none" | "onlyFailed"`</td><td>`"all"`</td><td>Сохранять историю всех выполненных команд.</td></tr>
     </tbody>
 </table>
 
@@ -833,14 +834,14 @@ const defaultAssertViewOpts = {
 
 <table>
     <thead>
-        <tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
+    <tr><td>**Параметр**</td><td>**Тип**</td><td>**По&nbsp;умолчанию**</td><td>**Описание**</td></tr>
     </thead>
     <tbody>
-        <tr><td>[`agent`](#agent)</td><td>`object`</td><td>`null`</td><td>Позволяет задать свои [агенты][got-agent] для запросов по _http, https, http2_.</td></tr>
-        <tr><td>[`headers`](#headers)</td><td>`Record<string, string>`</td><td>`null`</td><td>Позволяет настроить [заголовки][got-headers], которые будут передаваться в каждом запросе к WebDriver.</td></tr>
-        <tr><td>[`transformRequest`](#transform_request)</td><td>`TransformRequestFn`</td><td>`null`</td><td>Позволяет перехватывать и преобразовывать [опции][got-options] http-запроса перед запросом к WebDriver.</td></tr>
-        <tr><td>[`transformResponse`](#transform_response)</td><td>`TransformResponseFn`</td><td>`null`</td><td>Позволяет перехватывать и преобразовывать [http-ответ][got-response], полученный от WebDriver.</td></tr>
-        <tr><td>[`strictSSL`](#strict_ssl)</td><td>`boolean`</td><td>`null`</td><td>Должен ли SSL-сертификат быть действительным.</td></tr>
+    <tr><td>[`agent`](#agent)</td><td>`object`</td><td>`null`</td><td>Позволяет задать свои [агенты][got-agent] для запросов по _http, https, http2_.</td></tr>
+    <tr><td>[`headers`](#headers)</td><td>`Record<string, string>`</td><td>`null`</td><td>Позволяет настроить [заголовки][got-headers], которые будут передаваться в каждом запросе к WebDriver.</td></tr>
+    <tr><td>[`transformRequest`](#transform_request)</td><td>`TransformRequestFn`</td><td>`null`</td><td>Позволяет перехватывать и преобразовывать [опции][got-options] http-запроса перед запросом к WebDriver.</td></tr>
+    <tr><td>[`transformResponse`](#transform_response)</td><td>`TransformResponseFn`</td><td>`null`</td><td>Позволяет перехватывать и преобразовывать [http-ответ][got-response], полученный от WebDriver.</td></tr>
+    <tr><td>[`strictSSL`](#strict_ssl)</td><td>`boolean`</td><td>`null`</td><td>Должен ли SSL-сертификат быть действительным.</td></tr>
     </tbody>
 </table>
 
@@ -1079,6 +1080,57 @@ export = {
     серверной части приложения.
 </Admonition>
 
+### stateOpts {#state_opts}
+
+<Version version="8.38.0" />
+
+Настройки по умолчанию для команд состояния.
+
+Вы можете задать параметры один раз и затем использовать команды состояния (([saveState][saveState], [restoreState][restoreState], [getState][getState])) без указания опций.
+Однако если вы явно укажете параметры для команды, они будут иметь высший приоритет.
+
+<table>
+    <thead>
+        <tr>
+            <td>**Параметр**</td>
+            <td>**Тип**</td>
+            <td>**По&nbsp;умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`stateOpts`</td>
+            <td>`StateOpts`</td>
+            <td>`undefined`</td>
+            <td>Настройки по умолчанию для команд состояния.</td>
+        </tr>
+    </tbody>
+</table>
+
+```typescript
+type StateOpts = {
+    path?: string;
+
+    cookies?: boolean;
+    localStorage?: boolean;
+    sessionStorage?: boolean;
+
+    cookieFilter?: (cookie: Cookie) => boolean;
+    keepFile?: boolean;
+};
+```
+
+Пример валидной конфигурации:
+
+```typescript
+export = {
+    stateOpts: {
+        path: "stateDump.json",
+    },
+};
+```
+
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
 [html-reporter]: ../../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
@@ -1094,3 +1146,6 @@ export = {
 [how-to-use-cdp]: ../../../guides/how-to-use-cdp
 [testplane-also-in-helper]: ../../testplane-helper
 [time-travel]: ../../../basic-guides/time-travel
+[saveState]: .../../../../../commands/browser/saveState
+[restoreState]: .../../../../../commands/browser/restoreState
+[getState]: .../../../../../commands/browser/getState
