@@ -1,12 +1,10 @@
-# Написание тестов
+# Написание теста
 
-## Пример
+## Первый тест
 
-Чтобы узнать, как написать тест, ознакомьтесь с примером:
+Чтобы узнать, как написать тест, откройте файл `example.testplane.ts` в папке `testplane-tests`:
 
 ```javascript
-testplane-tests/example.testplane.ts
-
 describe("test examples", () => {
     it("docs search test", async ({browser}) => {
         await browser.openAndWait("https://testplane.io/");
@@ -31,18 +29,8 @@ describe("test examples", () => {
         await expect(fileSearchResultsItems.length).toBeGreaterThan(1);
     });
 });
+
 ```
-Файл с тестом находится в папке `testplane-tests`.
-
-## Базовый синтаксис
-
-### Группировка тестов
-
-
-
-### Поле `describe`
-
-Чтобы написать тест, необходимо 
 
 
 Далее введите в терминале команду:
