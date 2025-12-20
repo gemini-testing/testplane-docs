@@ -41,14 +41,14 @@ describe("suite", function () {
 
 ## Решение 2: Browser Version Changer
 
-Можно воспользоваться плагином [hermione-browser-version-changer][hermione-browser-version-changer], который позволяет определять версию браузера для конкретного теста на основе специального словаря _(store)_ и предикатов для всех доступных в проекте версий браузеров.
+Можно воспользоваться плагином [@testplane/browser-version-changer][hermione-browser-version-changer], который позволяет определять версию браузера для конкретного теста на основе специального словаря _(store)_ и предикатов для всех доступных в проекте версий браузеров.
 
 Пример использования плагина:
 
 ```javascript
 module.exports = {
     plugins: {
-        "hermione-browser-version-changer": {
+        "@testplane/browser-version-changer": {
             enabled: true,
             initStore: async () => {
                 // Подготавливаем словарь с произвольными признаками для разметки

@@ -1,3 +1,8 @@
+---
+unlisted: true
+sidebar_class_name: hidden
+---
+
 import Admonition from "@theme/Admonition";
 
 # How to Hide Scrollbars Using Chrome DevTools Protocol
@@ -11,7 +16,7 @@ Read details in the section “[How to use CDP in Testplane][how-to-use-cdp]”
 
 </Admonition>
 
-One of the reasons for test failures when testing layouts using screenshots is the presence of scrollbars in the browser at the moment the screenshot is taken. You can read more about this problem and some ways to solve it [here](../how-to-hide-scrollbars). This problem arises particularly often in tests with mobile emulation.
+One of the reasons for test failures when testing layouts using screenshots is the presence of scrollbars in the browser at the moment the screenshot is taken. You can read more about this problem and some ways to solve it [here](../visual-checks-best-practices/hiding-scrollbars). This problem arises particularly often in tests with mobile emulation.
 
 CDP has a special method [Emulation.setScrollbarsHidden][set-scrollbars-hidden] that allows hiding the scrollbar. However, _puppeteer_ lacks a wrapper for this method. Therefore, we will use the [CDPSession.send][cdp-session-send] method to execute the [Emulation.setScrollbarsHidden][set-scrollbars-hidden] command.
 
@@ -39,7 +44,7 @@ it("should hide scrollbar", async function ({ browser }) {
 
 ## Useful Links {#useful_links}
 
-Also, read our recipe “[How to Hide Scrollbars from Screenshots](../how-to-hide-scrollbars)”.
+Also, read our recipe “[How to Hide Scrollbars from Screenshots](../visual-checks-best-practices/hiding-scrollbars)”.
 
 There you will also learn about the [hermione-hide-scrollbars](../../plugins/hermione-hide-scrollbars) plugin, which is implemented based on the [Emulation.setScrollbarsHidden][set-scrollbars-hidden] method and which you can use to disable scrollbars in CI for all tests in specific browsers.
 

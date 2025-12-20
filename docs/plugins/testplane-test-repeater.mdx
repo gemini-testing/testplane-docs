@@ -101,6 +101,28 @@ The plugin also adds a special `--repeat` option to Testplane's [CLI][cli], with
 npx testplane --repeat 5
 ```
 
+## Usage Examples {#usage}
+
+Below are examples of test runs, in which they were run 21 times (1 primary + 20 retries) to check their stability.
+
+### Example of Broken Tests
+
+As seen in the screenshot, the tests were run 21 times and never completed successfully:
+
+![Broken Test](/img/docs/guides/how-to-check-test-stability.total-failure.png)
+
+### Example of Stable Test
+
+Here, on the contrary, all runs were successful:
+
+![Stable Test](/img/docs/guides/how-to-check-test-stability.total-success.png)
+
+### Example of Unstable Tests
+
+In the next screenshot, the first test is almost non-functional – out of 21 attempts, the test passed only once. The second test is quite stable, although 2 failures out of 21 is still not 100% stability. The developer may try to understand why the test fails occasionally.
+
+![Unstable Test](/img/docs/guides/how-to-check-test-stability.unstable-test.png)
+
 ## Useful links {#useful_links}
 
 -   [@testplane/test-repeater plugin sources][testplane-test-repeater]

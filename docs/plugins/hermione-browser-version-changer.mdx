@@ -1,13 +1,13 @@
-# hermione-browser-version-changer
+# @testplane/browser-version-changer
 
 ## Overview {#overview}
 
-Use the `hermione-browser-version-changer` plugin to manage the definition of the browser version for tests.
+Use the `@testplane/browser-version-changer` plugin to manage the definition of the browser version for tests.
 
 ## Install {#install}
 
 ```bash
-npm install -D hermione-browser-version-changer
+npm install -D @testplane/browser-version-changer
 ```
 
 ## Setup {#setup}
@@ -17,7 +17,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        'hermione-browser-version-changer': {
+        '@testplane/browser-version-changer': {
             enabled: true,
             initStore: async () => {
                 return {
@@ -97,8 +97,8 @@ testplane_browser_version_changer_enabled=false npx testplane
 
 ## Useful links {#useful_links}
 
--   [hermione-browser-version-changer plugin sources][hermione-browser-version-changer]
+-   [@testplane/browser-version-changer plugin sources][hermione-browser-version-changer]
 
-[hermione-browser-version-changer]: https://github.com/gemini-testing/hermione-browser-version-changer
+[@testplane/browser-version-changer]: https://github.com/gemini-testing/hermione-browser-version-changer
 [noop]: https://lodash.com/docs/4.17.15#noop
 [lodash]: https://lodash.com/

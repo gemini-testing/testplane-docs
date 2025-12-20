@@ -39,7 +39,7 @@ And that’s not all.
 ### Fast Test Execution {#fast}
 
 -   thanks to [parallelism within Testplane][testplane-workers];
--   scale using [testplane-chunks][testplane-chunks];
+-   scale using [@testplane/chunks][testplane-chunks];
 -   [reusing sessions][sessions-reuse];
 -   session caching with browsers;
 -   20,000 tests in 10 minutes.
@@ -91,11 +91,11 @@ And that’s not all.
 -   available [extension points][html-reporter-extension-points] in the Testplane report;
 -   [extend the Testplane CLI from your plugin][testplane-cli], adding new commands and options.
 
-[assert-view-opts]: ./config/browsers#assert_view_opts
+[assert-view-opts]: ./reference/config/browsers#assert_view_opts
 [assert-view]: ./commands/browser/assertView
 [commands]: ./commands/overview
 [create-testplane]: https://github.com/gemini-testing/create-testplane
-[defaults]: ./config/browsers#timeouts
+[defaults]: ./reference/config/browsers#timeouts
 [how-to-check-test-stability]: ./guides/how-to-check-test-stability
 [how-to-read-browser-logs]: ./guides/how-to-read-browser-logs
 [how-to-run-test-in-file]: ./guides/how-to-run-specified-test#solution_1
@@ -108,12 +108,12 @@ And that’s not all.
 [html-reporter-plugins]: ./html-reporter/html-reporter-plugins
 [html-reporter]: ./html-reporter/html-reporter-setup
 [mocha]: https://mochajs.org
-[patterns-on-reject]: ./config/system#patterns_on_reject
+[patterns-on-reject]: ./reference/config/system#patterns_on_reject
 [plugins]: https://github.com/gemini-testing/
-[prepare-browser]: ./config/prepare-browser
+[prepare-browser]: ./reference/config/prepare-browser
 [retry-limiter]: ./plugins/retry-limiter
 [retry-progressive]: ./plugins/testplane-retry-progressive
-[sessions-reuse]: ./config/browsers#tests_per_session
+[sessions-reuse]: ./reference/config/browsers#tests_per_session
 [sharp]: https://github.com/lovell/sharp
 [testplane-chunks]: ./plugins/testplane-chunks
 [testplane-cli]: ./reference/testplane-events#cli
@@ -121,6 +121,6 @@ And that’s not all.
 [testplane-option-grep]: ./guides/how-to-run-specified-test#solution_2
 [testplane-plugins-profiler]: https://github.com/gemini-testing/testplane-plugins-profiler
 [testplane-profiler]: https://github.com/gemini-testing/testplane-profiler
-[testplane-sets]: ./config/sets
-[testplane-workers]: ./config/system#workers
+[testplane-sets]: ./reference/config/sets
+[testplane-workers]: ./reference/config/system#workers
 [webdriverio-api]: https://webdriver.io/docs/api

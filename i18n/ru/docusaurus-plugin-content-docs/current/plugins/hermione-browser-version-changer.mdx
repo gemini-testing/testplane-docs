@@ -1,13 +1,13 @@
-# hermione-browser-version-changer
+# @testplane/browser-version-changer
 
 ## Обзор {#overview}
 
-Используйте плагин [hermione-browser-version-changer][hermione-browser-version-changer], чтобы управлять определением версии браузера для тестов.
+Используйте плагин [@testplane/browser-version-changer][hermione-browser-version-changer], чтобы управлять определением версии браузера для тестов.
 
 ## Установка {#install}
 
 ```bash
-npm install -D hermione-browser-version-changer
+npm install -D @testplane/browser-version-changer
 ```
 
 ## Настройка {#setup}
@@ -17,7 +17,7 @@ npm install -D hermione-browser-version-changer
 ```javascript
 module.exports = {
     plugins: {
-        "hermione-browser-version-changer": {
+        "@testplane/browser-version-changer": {
             enabled: true,
             initStore: async () => {
                 return {
@@ -97,7 +97,7 @@ testplane_browser_version_changer_enabled=false npx testplane ...
 
 ## Полезные ссылки {#useful_links}
 
--   [Исходники плагина hermione-browser-version-changer][hermione-browser-version-changer]
+-   [Исходники плагина @testplane/browser-version-changer][hermione-browser-version-changer]
 
-[hermione-browser-version-changer]: https://github.com/gemini-testing/hermione-browser-version-changer
+[@testplane/browser-version-changer]: https://github.com/gemini-testing/hermione-browser-version-changer
 [noop]: https://lodash.com/docs/4.17.15#noop

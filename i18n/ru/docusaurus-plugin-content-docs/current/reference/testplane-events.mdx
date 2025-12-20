@@ -1158,7 +1158,7 @@ testplane.on(testplane.events.TEST_PENDING, test => {
 
 **sync | master | can be intercepted**
 
-Событие `RETRY` триггерится, если тест упал, но ушел на повторный прогон, так называемый «ретрай». Возможности повторного прогона теста определяются настройками [retry][browsers-retry] и [shouldRetry][browsers-should-retry] в конфиге testplane. Также на это могут влиять плагины testplane, если они модифицируют «на лету» указанные выше настройки. Смотрите для примера плагины [retry-limiter][retry-limiter] и [testplane-retry-progressive][testplane-retry-progressive].
+Событие `RETRY` триггерится, если тест упал, но ушел на повторный прогон, так называемый «ретрай». Возможности повторного прогона теста определяются настройками [retry][browsers-retry] и [shouldRetry][browsers-should-retry] в конфиге testplane. Также на это могут влиять плагины testplane, если они модифицируют «на лету» указанные выше настройки. Смотрите для примера плагины [@testplane/retry-limiter][retry-limiter] и [testplane-retry-progressive][testplane-retry-progressive].
 
 Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
 
@@ -1552,7 +1552,7 @@ module.exports = (testplane, opts) => {
 ```javascript
 module.exports = {
     // тесты будут запускаться в локальном браузере,
-    // см. https://testplane.io/ru/docs/v8/guides/local-browsers/
+    // см. https://testplane.io/ru/docs/v8/basic-guides/managing-browsers/
     gridUrl: "http://localhost:4444/wd/hub",
     // указываем путь к dev-серверу
     baseUrl: "http://localhost:3000",

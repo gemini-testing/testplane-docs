@@ -1,0 +1,751 @@
+import Admonition from "@theme/Admonition";
+import Version from "../_partials/specs/version.mdx";
+
+# CLI {#cli}
+
+## `testplane` command
+
+Main command to run tests.
+
+```bash
+> testplane --help
+
+  Usage: testplane [options] [command] [paths...]
+
+  Run tests
+
+  Options:
+
+    -V, --version                    output the version number
+    -c, --config <path>              path to configuration file
+    -b, --browser <browser>          run tests only in specified browser
+    -s, --set <set>                  run tests only in the specified set
+    -r, --require <module>           require module
+    --grep <grep>                    run only tests matching the pattern
+    --tag <tag>                      run only tests with specified tags
+    --reporter <name>                test reporters
+    --update-refs                    update screenshot references or gather them if they do not exist ("assertView" command)
+    --inspect [inspect]              nodejs inspector on [=[host:]port]
+    --inspect-brk [inspect-brk]      nodejs inspector with break at the start
+    --repl [type]                    run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
+    --repl-before-test [type]        open repl interface before test run (default: false)
+    --repl-on-fail [type]            open repl interface on test fail only (default: false)
+    --devtools                       switches the browser to the devtools mode with using CDP protocol
+    --local                          use automatically downloaded browsers and drivers, provided by Testplane
+    --keep-browser                   do not close browser session after test completion
+    --keep-browser-on-fail           do not close browser session when test fails
+    -h, --help                       output usage information
+```
+
+For example,
+
+```bash
+npx testplane --config ./config.js --reporter flat --browser firefox --grep name
+```
+
+### Options {#testplane-options}
+
+#### Version {#testplane-version}
+
+Print current `testplane` version.
+
+```bash
+testplane --version
+```
+
+#### Config {#testplane-config}
+
+Use custom configuration file.
+
+```bash
+testplane --config ./local.testplane.config.ts
+```
+
+#### Browser {#testplane-browser}
+
+Run tests only in specified browser.
+
+```bash
+testplane --browser chrome
+```
+
+#### Set {#testplane-set}
+
+Run tests only in the specified set.
+
+```bash
+testplane --set desktop
+```
+
+#### Require {#testplane-require}
+
+Load external modules, locally existing in your machine, before running `testplane`. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane --require ./tsconfig-register-paths.js
+```
+
+#### Reporter {#testplane-reporter}
+
+Can be used to set one of the following reporters:
+
+-   `flat` - all information about failed and retried tests would be grouped by browsers at the end of the report;
+-   `plain` - information about fails and retries would be placed after each test;
+-   `jsonl` - displays detailed information about each test result in [jsonl](https://jsonlines.org/) form.
+
+Default is `flat`.
+
+Information about test results is displayed to the command line by default. But there is an ability to redirect the output to a file:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}'
+```
+
+You can also specify multiple reporters:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --reporter flat
+```
+
+Aside these terminal reporters, you can use [html-reporter][html-reporter] plugin in order to generate html reports.
+
+#### Grep {#testplane-grep}
+
+Run only tests, which full name matches the pattern.
+
+##### Example {#testplane-grep-example}
+
+If you have some tests:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+You can run tests inside "nested path" suite without running tests inside "other path" suite with any of these variants:
+
+```bash
+testplane --grep "nested path"
+testplane --grep "with nested path"
+testplane --grep "test with nested path"
+```
+
+#### Tag {#testplane-tag}
+
+<Version version="8.37.0" />
+
+Run only tests, which matches the tag pattern.
+
+##### Example {#testplane-tag-example}
+
+You can assign tags to a test using the second parameter of `describe` ot `it` (see example below).
+You can also add tags dynamically during test execution with the [addTag][add-tag] command,
+but you can not use dynamic tags to filter tests at launch.
+
+```ts
+describe("test", {tag: "all"}, () => {
+    describe("with", {tag: "desktop"}, () => {
+        describe("nested path", {tag: ["smoke", "slow"]}, () => {
+            await browser.addTag("some");
+            ...
+        });
+        describe("other path", {tag: "slow"}, () => {
+            ...
+        })
+    });
+    describe("with", {tag: "mobile"}, () => {
+        describe("nested path", {tag: "smoke"}, () => {
+            ...
+        });
+        describe("other path", {tag: "slow"}, () => {
+            ...
+        })
+    });
+});
+```
+
+You can use tags to run tests and combine them with logical operators & (and), | (or), and ! (not).
+
+```bash
+testplane --tag "desktop"
+testplane --tag "mobile"
+testplane --tag "mobile&smoke"
+testplane --tag "desktop|slow"
+testplane --tag "!slow"
+```
+
+#### Update refs {#testplane-update-refs}
+
+Run tests, updating all screenshot references, created by [assertView][assert-view] command.
+
+```bash
+testplane --update-refs
+```
+
+<Admonition type="info">
+    Recommended way to update screenshots is using [html-reporter][html-reporter] plugin.
+</Admonition>
+
+#### Inspect {#testplane-inspect}
+
+Runs Testplane tests using [nodejs inspector](https://nodejs.org/en/docs/inspector).
+
+```bash
+testplane --inspect
+```
+
+<Admonition type="info">
+    In the debugging mode, only one worker is started and all tests are performed only in it. Use
+    this mode with option `sessionsPerBrowser=1` in order to debug tests one at a time.
+</Admonition>
+
+#### Inspect break {#testplane-inspect-brk}
+
+The same as [Inspect](#testplane-inspect), but with breakpoint at the start.
+
+```bash
+testplane --inspect-brk
+```
+
+#### REPL {#testplane-repl}
+
+Enables a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). It also disables test duration timeout. Can be used by specifying following CLI options:
+
+-   `--repl` - in this mode, only one test in one browser should be run, otherwise an error is thrown. REPL interface does not start automatically, so you need to call [switchToRepl][switch-to-repl] command in the test code;
+-   `--repl-before-test` - the same as `--repl` option except that REPL interface opens automatically before run test;
+-   `--repl-on-fail` - the same as `--repl` option except that REPL interface opens automatically on test fail.
+
+```bash
+testplane --repl --grep 'my test name' --browser chrome
+```
+
+<Admonition type="info">
+    More information about Testplane REPL mode can be found in [switchToRepl][switch-to-repl]
+    command documentation.
+</Admonition>
+
+#### Keep browser {#testplane-keep-browser}
+
+-   `--keep-browser` - in this mode, the browser will not close after the tests complete; the console will output information on how to connect to the remaining browser instance.
+-   `--keep-browser-on-fail` - the same as the `--keep-browser` option, but the browser will only remain open if the tests fail.
+
+Example of console output with connection information to the browser:
+
+```
+[15:44:38 +0700] Testplane run has finished, but the browser won't be closed, because you passed the --keep-browser argument.
+[15:44:38 +0700] You may attach to this browser using the following capabilities:
+[15:44:38 +0700] {
+  "sessionId": "c69958b3f85b851f7bf83f27bb026d58",
+  "sessionCaps": {
+    "acceptInsecureCerts": false,
+    ...
+  },
+  "driverPid": 31745
+}
+[15:44:38 +0700] ✓ test example #0 [chrome:c69958b3f85b851f7bf83f27bb026d58, pid:31744] - 1676ms
+
+```
+
+#### Devtools {#testplane-devtools}
+
+Runs Testplane tests using [devtools automation protocol][webdriver-vs-cdp].
+
+```bash
+testplane --devtools
+```
+
+#### Help {#testplane-help}
+
+Prints out information about options and commands. Testplane Plugins can add their own commands and options.
+
+For example, [html-reporter][html-reporter] adds `gui` command.
+
+```bash
+testplane --help
+```
+
+## `list-tests` command
+
+Command to get list of tests in one of available formats (`list` or `tree`).
+
+```bash
+> testplane list-tests --help
+
+  Usage: list-tests [options] [paths...]
+
+  Lists all tests info in one of available formats
+
+  Options:
+
+    -c, --config <path>        path to configuration file
+    -b, --browser <browser>    list tests only in specified browser
+    -s, --set <set>            list tests only in the specified set
+    -r, --require <module>     require module
+    --grep <grep>              list only tests matching the pattern
+    --ignore <file-path>       exclude paths from tests read
+    --silent [type]            flag to disable events emitting while reading tests (default: false)
+    --output-file <file-path>  save results to specified file
+    --formatter [name]         return tests in specified format (default: list)
+    -h, --help                 output usage information
+```
+
+For example,
+
+```
+npx testplane list-tests --config ./config.js --browser firefox --grep name --formatter tree
+```
+
+### Options {#list-tests-options}
+
+#### Config {#list-tests-config}
+
+Use custom configuration file.
+
+```bash
+testplane list-tests --config ./local.testplane.config.ts
+```
+
+#### Browser {#list-tests-browser}
+
+List tests only in specified browser.
+
+```bash
+testplane list-tests --browser chrome
+```
+
+#### Set {#list-tests-set}
+
+List tests only in the specified set.
+
+```bash
+testplane list-tests --set desktop
+```
+
+#### Require {#list-tests-require}
+
+Load external modules, locally existing in your machine, before listing `testplane` tests. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane list-tests --require ./tsconfig-register-paths.js
+```
+
+#### Grep {#list-tests-grep}
+
+List only tests, which full name matches the pattern.
+
+##### Example {#list-tests-grep-example}
+
+If you have some tests:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+You can list tests inside "nested path" suite without listing tests inside "other path" suite with any of these variants:
+
+```bash
+testplane list-tests --grep "nested path"
+testplane list-tests --grep "with nested path"
+testplane list-tests --grep "test with nested path"
+```
+
+#### Silent {#list-tests-silent}
+
+List tests silently (without emitting events).
+
+```bash
+testplane list-tests --silent
+```
+
+#### Output file {#list-tests-output-file}
+
+Save listed tests to specified file.
+
+```bash
+testplane list-tests --output-file "./tests.json"
+```
+
+#### Formatter {#list-tests-formatter}
+
+List tests in specified format. Available formatters: `list` (default) and `tree`.
+
+##### List formatter {#list-tests-formatter-list}
+
+List tests in `list` format.
+
+```bash
+testplane list-tests --formatter "list"
+```
+
+For following tests:
+
+```typescript title="example.testplane.ts"
+describe("suite1", () => {
+    it("test1", () => {});
+});
+
+it("test2", () => {});
+```
+
+Returns the following output:
+
+```json
+[
+    {
+        "id": "d2b3179",
+        "titlePath": [
+            "suite",
+            "test1"
+        ],
+        "browserIds": [
+            "yandex",
+            "chrome"
+        ],
+        "file": "tests/example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+    {
+        "id": "5a105e8",
+        "titlePath": [
+            "test1"
+        ],
+        "browserIds": [
+            "yandex",
+            "chrome"
+        ],
+        "file": "tests/example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+]
+```
+
+Here, we got plain list of unique tests, where:
+
+-   `id` (`String`) - unique identifier of the test;
+-   `titlePath` (`String[]`) - full name of the test. Each element of the array is the title of a suite or test. To get the full title, you need just join `titlePath` with single whitespace;
+-   `browserIds` (`String[]`) - list of browsers in which the test will be launched;
+-   `file` (`String`) - path to the file relative to the working directory;
+-   `pending` (`Boolean`) - flag that means if the test is disabled or not;
+-   `skipReason` (`String`) - the reason why the test was disabled.
+
+##### Tree formatter {#list-tests-formatter-tree}
+
+List tests in `tree` format.
+
+```bash
+testplane list-tests --formatter "tree"
+```
+
+For following tests:
+
+```typescript title="example.testplane.ts"
+describe("suite1", () => {
+    it("test1", () => {});
+});
+
+it("test2", () => {});
+```
+
+Returns the following output:
+
+```json
+[
+    {
+        "id": "36749990",
+        "title": "suite1",
+        "line": 1,
+        "column": 1,
+        "file": "example.testplane.ts",
+        "suites": [],
+        "tests": [
+            {
+                "id": "d2b3179",
+                "title": "test1",
+                "line": 2,
+                "column": 5,
+                "browserIds": ["yandex", "chrome"]
+            }
+        ],
+        "pending": false,
+        "skipReason": ""
+    },
+    {
+        "id": "5a105e8",
+        "title": "test2",
+        "line": 5,
+        "column": 1,
+        "browserIds": ["yandex", "chrome"],
+        "file": "example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+]
+```
+
+Here, we got list of unique tests in the form of a tree structure (with parent suites), where `Suite` has following options:
+
+-   `id` (`String`) - unique identifier of the suite;
+-   `title` (`String`) - unique identifier of the suite;
+-   `line` (`Number`) - line on which the suite was called;
+-   `column` (`Number`) - column on which the suite was called;
+-   `file` (`String`, only in topmost suite) - path to the file relative to the working directory;
+-   `suites` (`Suite[]`, exists only in suite) - list of child suites;
+-   `tests` (`Test[]`) - list of tests;
+-   `pending` (`Boolean`) - flag that means if the test is disabled or not;
+-   `skipReason` (`String`) - the reason why the test was disabled.
+
+And `Test` has following options:
+
+-   `id` (`String`) - unique identifier of the test;
+-   `title` (`String`) - unique identifier of the test;
+-   `line` (`Number`) - line on which the test was called;
+-   `column` (`Number`) - column on which the test was called;
+-   `browserIds` (`String[]`) - list of browsers in which the test will be launched;
+-   `file` (`String`, only in tests without parent suites) - path to the file relative to the working directory;
+-   `pending` (`Boolean`) - flag that means if the test is disabled or not;
+-   `skipReason` (`String`) - the reason why the test was disabled.
+
+#### Help {#list-tests-help}
+
+Prints out information about options and commands. Testplane Plugins can add their own commands and options.
+
+For example, [html-reporter][html-reporter] adds `gui` command.
+
+```bash
+testplane list-tests --help
+```
+
+## `list-browsers` command
+
+Command to get all browsers from the config.
+
+```bash
+> npx testplane list-browsers --help
+
+  Usage: list-browsers [options]
+
+  Lists all browsers from the config
+
+  Options:
+
+    --type [type]      return browsers in specified type ('tags': browserName and browserVersion, 'ids': browserId from config) (default: tags)
+    --format [format]  return browsers in specified format ('json' / 'plain') (default: json)
+    -h, --help         output usage information
+```
+
+For example,
+
+```
+npx testplane list-browsers --type ids --format plain
+```
+
+### Options {#list-browsers-options}
+
+#### Type {#list-browsers-type}
+
+Specify type of output data: browserId from config or browserName with browserVersion.
+
+```bash
+testplane list-browsers --type tags
+```
+
+#### Format {#list-browsers-format}
+
+Specify format of output data: plain text or json.
+
+```bash
+testplane list-browsers --format json
+```
+
+#### Example {#list-browsers-example}
+
+If you have the following "browsers" section in your [Testplane config](/docs/v8/reference/config/main):
+
+```json
+{
+    "my-chrome": { "desiredCapabilities": { "browserName": "chrome", "browserVersion": "130.0" } },
+    "my-safari": { "desiredCapabilities": { "browserName": "safari" } }
+}
+```
+
+The following commands will provide corresponding result:
+| Command | Result |
+|:--------------------------------------------------:|:----------------------------------------------------------------------------:|
+| `testplane list-browsers --type ids --format plain` | `my-chrome my-safari` |
+| `testplane list-browsers --type ids --format json` | `["my-chrome","my-safari"]` |
+| `testplane list-browsers --type tags --format plain` | `chrome@130.0 safari` |
+| `testplane list-browsers --type tags --format json` | `[{"browserName":"chrome","browserVersion":"130.0"},{"browserName":"safari"}]` |
+
+#### Help {#list-browsers-help}
+
+Prints out information about the command and its options.
+
+```bash
+testplane list-browsers --help
+```
+
+## The `config` Command
+
+This command is used to retrieve all configuration values of Testplane, including default values and overridden by environment variables ones.
+
+```bash
+> npx testplane config --help
+
+  Usage: config [options]
+
+  Outputs Testplane config (including default and overriden by environment variables values)
+
+  Options:
+
+    -c, --config <path>  path to configuration file
+    --space <count>      white spaces count to insert into the JSON output (default: 0)
+    -h, --help           output usage information
+```
+
+For example:
+
+```bash
+npx testplane config --space 4
+```
+
+### Options {#config-options}
+
+#### Space {#config-space}
+
+Specify the number of spaces used for formatting the human-readable output of the command.
+
+```bash
+testplane config --space 4
+```
+
+#### Help {#config-help}
+
+Outputs information about the command and its options.
+
+```bash
+testplane config --help
+```
+
+## `install-deps` command {#install-deps}
+
+This command is a part of the guide [How to launch Testplane in the local browser](/docs/v8/basic-guides/managing-browsers).
+
+Use the `install-deps` command to download all browsers, specified in [Testplane config](/docs/v8/reference/config/main).
+
+If this command is launched on supported ubuntu version, all missing necessary ubuntu packages would be downloaded too.
+
+### Usage {#usage}
+
+```bash
+npx testplane install-deps
+```
+
+### Command arguments {#arguments}
+
+You can also specify, which browsers are need to be downloaded.
+
+For example, if you have browsers "chrome-dark", "firefox-dark" described in <a href="/docs/v8/reference/config/main">Testplane config</a>, you can use the following command to only download these two browsers:
+
+```bash
+npx testplane install-deps chrome-dark firefox-dark
+```
+
+Using browser names with versions in a format like `<browserName>@<browserVersion>` is also supported:
+
+```bash
+npx testplane install-deps chrome@130 firefox@104
+```
+
+### Installation directory {#directory}
+
+By default, browsers and drivers are downloaded to ".testplane" directory at home directory.
+
+You can specify other path by setting `TESTPLANE_BROWSERS_PATH` env variable:
+
+```bash
+TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
+TESTPLANE_BROWSERS_PATH=~/.testplane npx testplane install-deps
+```
+
+## Overriding settings {#overriding-settings}
+
+All options can be overridden via command-line flags or environment variables with the following priorities, by descending:
+
+-   A command-line option;
+
+-   An environment variable;
+
+-   A config file value;
+
+-   The default value.
+
+### Overriding with CLI option {#overriding-cli-settings}
+
+To override a config setting with a CLI option, convert the full option path to `--kebab-case`.
+
+For example, to override config's `baseUrl` property:
+
+```bash
+testplane path/to/mytest.js --base-url http://example.com
+```
+
+It also works for nested properties. Example of overriding `browsers.firefox.sessionsPerBrowser` value (assuming you have defined browser with id "firefox"):
+
+```bash
+testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
+```
+
+### Overriding with environment variable {#overriding-env-settings}
+
+To override a setting with an environment variable, convert its full path to `snake_case` and add the `testplane_` prefix.
+
+Examples of overriding the same `baseUrl` and `browsers.firefox.sessionsPerBrowser` values using environment variables instead of CLI options:
+
+```bash
+testplane_base_url=http://example.com testplane path/to/mytest.js
+testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
+```
+
+Besides overriding config values, there also two extra environment variables: "TESTPLANE_SKIP_BROWSERS" and "TESTPLANE_SETS":
+
+#### TESTPLANE_SKIP_BROWSERS
+
+Skip the browsers specified in the config by passing the browser IDs. Multiple browser IDs should be separated by commas
+(spaces after commas are allowed).
+
+```bash
+TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
+```
+
+#### TESTPLANE_SETS
+
+Runs only specified sets (CLI option `--set` alternative).
+
+```bash
+TESTPLANE_SETS=desktop,touch testplane
+```
+
+[html-reporter]: ../../html-reporter/html-reporter-setup
+[assert-view]: ../../commands/browser/assertView
+[add-tag]: ../../commands/browser/addTag
+[switch-to-repl]: ../../commands/browser/switchToRepl
+[webdriver-vs-cdp]: ../webdriver-vs-cdp

@@ -29,7 +29,7 @@
     },
     "link.item.label.Testplane config": {
         "message": "Конфиг Testplane",
-        "description": "The label of footer link with label=Testplane config linking to /docs/v8/config/main"
+        "description": "The label of footer link with label=Testplane config linking to /docs/v8/reference/config/main"
     },
     "link.item.label.Testplane UI": {
         "message": "Testplane UI",

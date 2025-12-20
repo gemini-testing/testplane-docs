@@ -1,0 +1,89 @@
+import Admonition from "@theme/Admonition";
+
+# Emulation
+
+## CPU Performance
+
+<Admonition type="warning">
+
+This feature only works with browsers supporting _Chrome DevTools Protocol (CDP)_.
+
+</Admonition>
+
+The CPU speed on mobile devices is significantly slower than on computers. Therefore, to emulate CPU speed in _puppeteer_, there is a method called [emulateCPUThrottling][emulate-cpu-throttling].
+
+### Example: Slowing Down CPU Speed by 8x {#example}
+
+Let's use this method to slow down CPU speed by 8 times:
+
+```javascript
+it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
+    // Get puppeteer instance
+    const puppeteer = await browser.getPuppeteer();
+
+    // Get the first open page (considering it to be currently active)
+    const [page] = await puppeteer.pages();
+
+    // Slow down the CPU speed by 8 times
+    await page.emulateCPUThrottling(8);
+
+    await browser.url("https://yandex.ru");
+});
+```
+
+[emulate-cpu-throttling]: https://pptr.dev/api/puppeteer.page.emulatecputhrottling
+[cdp-session-send]: https://pptr.dev/api/puppeteer.cdpsession.send
+[emulation-set-cpu-throttling-rate]: https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setCPUThrottlingRate
+
+## Network Bandwidth
+
+<Admonition type="warning">
+
+This feature only works with browsers supporting _Chrome DevTools Protocol (CDP)_.
+
+</Admonition>
+
+A large number of users access services from mobile devices where internet speed can be quite slow or may even drop out intermittently. In _webdriverio_, we can limit network bandwidth using the [throttle][throttle] method, thereby testing the website's behavior under various network conditions.
+
+Besides custom settings, the [throttle][throttle] method supports the following ready-made presets:
+
+-   offline | online
+-   GPRS
+-   Regular2G | Good2G
+-   Regular3G | Good3G
+-   Regular4G
+-   DSL
+-   WiFi
+
+### Example 1: Emulating a 2G Connection {#example_1}
+
+Let's emulate a 2G connection and open yandex.ru in Chrome with phone emulation:
+
+```javascript
+it("should open yandex.ru with emulation of 2G-connection", async function ({ browser }) {
+    // Emulate a 2G connection
+    await browser.throttle("Good2G");
+
+    await browser.url("https://yandex.ru");
+});
+```
+
+### Example 2: Emulating a Network with Given Characteristics {#example_2}
+
+We can also emulate a connection with specific characteristics:
+
+```javascript
+it("should open yandex.ru with emulation of custom connection", async function ({ browser }) {
+    // Emulate a network connection with specified characteristics
+    await browser.throttle({
+        offline: false, // emulate offline state
+        downloadThroughput: (10 * 1024) / 8, // max download bandwidth (byte/sec)
+        uploadThroughput: (10 * 1024) / 8, // max upload bandwidth (byte/sec)
+        latency: 10, // min latency from sending the request to receiving the response headers
+    });
+
+    await browser.url("https://yandex.ru");
+});
+```
+
+[throttle]: ../../commands/browser/throttle

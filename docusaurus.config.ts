@@ -89,6 +89,12 @@ const config: Config = {
                 },
                 {
                     type: "docSidebar",
+                    sidebarId: "api",
+                    position: "left",
+                    label: "API",
+                },
+                {
+                    type: "docSidebar",
                     sidebarId: "ui",
                     position: "left",
                     label: "UI",
@@ -140,7 +146,7 @@ const config: Config = {
                         },
                         {
                             label: "Testplane config",
-                            href: "/docs/v8/config/main",
+                            href: "/docs/v8/reference/config/main",
                         },
                         {
                             label: "Testplane UI",
