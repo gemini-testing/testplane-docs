@@ -84,7 +84,7 @@
         "description": "The label for the doc item Testplane MCP in sidebar mainSidebar"
     },
     "sidebar.mainSidebar.category.Plugins Reference": {
-        "message": "Справочник по плагинам",
+        "message": "Плагины",
         "description": "The label for category Plugins Reference in sidebar mainSidebar"
     },
     "sidebar.ui.category.API": {

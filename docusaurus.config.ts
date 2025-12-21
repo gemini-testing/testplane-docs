@@ -310,6 +310,36 @@ const config: Config = {
                         from: "/docs/v8/config/system",
                         to: "/docs/v8/reference/config/system",
                     },
+
+                    // Removed pages redirects
+                    {
+                        from: "/docs/v8/guides/how-to-check-test-stability",
+                        to: "/docs/v8/plugins/testplane-test-repeater",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-hide-scrollbars-by-cdp",
+                        to: "/docs/v8/guides/visual-checks-best-practices/hiding-scrollbars",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-manage-cpu-performance",
+                        to: "/docs/v8/basic-guides/emulation",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-manage-network-bandwidth",
+                        to: "/docs/v8/basic-guides/emulation",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-optimize-test-code",
+                        to: "/docs/v8/basic-guides/setup-and-teardown",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-run-specified-test",
+                        to: "/docs/v8/quickstart/running-tests",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-skip-test-in-browsers",
+                        to: "/docs/v8/reference/testplane-helper",
+                    },
                 ],
             },
         ],

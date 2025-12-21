@@ -41,3 +41,15 @@ it.only("Оставление отзыва", async function () {
     // код теста...
 });
 ```
+
+## Запуск тестов несколько раз {#running_tests_multiple_times}
+
+Иногда может быть полезным запустить один и тот же тест несколько раз — например, для проверки стабильности. Плагин [@testplane/test-repeater][testplane-test-repeater] позволяет запустить тесты заданное количество раз.
+
+После установки и включения плагина вы можете запустить тесты нужное количество раз, используя следующую команду:
+
+```bash
+npx testplane --test-repeater-repeat 5 --grep 'Имя теста'
+```
+
+[testplane-test-repeater]: ../../plugins/testplane-test-repeater

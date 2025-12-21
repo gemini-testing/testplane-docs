@@ -29,7 +29,7 @@ export default {
 };
 ```
 
-If you have problems with types, add types obviously to `tsconfig.json`
+If you have problems with types, add types explicitly to `tsconfig.json`
 
 ```json
 {
@@ -41,7 +41,7 @@ If you have problems with types, add types obviously to `tsconfig.json`
 
 ## Usage
 
-After configuring, you will be able to use the search by selectors from `testing-library`, as described in the [official documentation](https://testing-library.com/docs/queries/about/). For example, searching for an element by its text:
+You can search by selectors from `testing-library` as described in the [official docs](https://testing-library.com/docs/queries/about/). For example, here's how to search for an element by its text:
 
 ```javascript
 it("example", async ({ browser }) => {
@@ -53,7 +53,7 @@ it("example", async ({ browser }) => {
 });
 ```
 
-This feature will also be available in the context of found elements:
+You can also use testing-library queries on elements:
 
 ```javascript
 it("example", async ({ browser }) => {

@@ -41,3 +41,15 @@ it.only("Leaving a review", async function () {
     // Test code...
 });
 ```
+
+## Running a Test N Times {#running_tests_multiple_times}
+
+You might want to run the same test multiple times, for example, to check test stability. Use the [@testplane/test-repeater][testplane-test-repeater] plugin to run tests a specified number of times.
+
+After installing and enabling the plugin, you can run the test multiple times like this:
+
+```bash
+npx testplane --test-repeater-repeat 5 --grep 'Test name'
+```
+
+[testplane-test-repeater]: ../../plugins/testplane-test-repeater

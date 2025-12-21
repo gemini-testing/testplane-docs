@@ -1,3 +1,7 @@
 {
-    "label": "Config"
+    "label": "Config",
+    "link": {
+        "type": "doc",
+        "id": "reference/config/main"
+    }
 }
