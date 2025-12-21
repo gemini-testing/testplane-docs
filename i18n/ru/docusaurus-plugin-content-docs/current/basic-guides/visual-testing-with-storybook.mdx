@@ -1,6 +1,6 @@
 import Admonition from "@theme/Admonition";
 
-# Скриншотное тестирование со Storybook
+# Визуальное тестирование со Storybook
 
 [Storybook][storybook] — это инструмент для разработки пользовательских интерфейсов на основе компонентов. Он позволяет разработчикам независимо визуализировать компоненты в различных состояниях в изолированной от остальных компонентов среде.
 Такой "шоурум" идеально подходит для скриншотного тестирования ваших компонентов, т.к. за счет этой изолированной среды такие тесты получаются в разы стабильнее и быстрее, чем вариант с e2e.
@@ -12,7 +12,7 @@ import Admonition from "@theme/Admonition";
 
 ### Шаг 1: Установка необходимых зависимостей
 
-Если в Вашем проекте еще нет `Testplane`, то рекомендуем ознакомиться с разделом [quickstart][quickstart] или выполнить в директории Вашего проекта команду ниже:
+Если в Вашем проекте еще нет Testplane, рекомендуем ознакомиться с разделом [быстрого старта][quickstart] или выполнить в директории Вашего проекта команду ниже:
 
 ```bash
 npm init testplane@latest
@@ -192,10 +192,10 @@ export default {
 
 [build-stories]: https://storybook.js.org/docs/6.4/configure/overview#feature-flags
 [html-reporter]: ../../html-reporter/html-reporter-setup/
-[isolation]: ../../config/browsers/#isolation
+[isolation]: ../../reference/config/browsers/#isolation
 [play-function]: https://storybook.js.org/docs/writing-stories/play-function
 [plugin-link]: ../plugins/testplane-storybook.mdx
 [quickstart]: ../../quickstart
 [storybook]: https://storybook.js.org
 [testplane-storybook]: https://github.com/gemini-testing/testplane-storybook
-[tests-per-session]: ../../config/browsers/#tests_per_session
+[tests-per-session]: ../../reference/config/browsers/#tests_per_session

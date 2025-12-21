@@ -200,7 +200,7 @@ html[data-theme-override="light"] {
     }
 
     .DocSearch-Button {
-        @apply mr-6 h-8 scale-110 rounded-lg bg-transparent font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none md:scale-100 md:bg-neutral-100 md:text-neutral-500 lg:mr-0 lg:w-80 dark:bg-transparent dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:md:bg-neutral-800/50;
+        @apply mr-6 h-8 w-40 scale-110 rounded-lg bg-transparent font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none md:scale-100 md:bg-neutral-100 md:text-neutral-500 lg:mr-0 xl:w-80 dark:bg-transparent dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:md:bg-neutral-800/50;
         font-family: Jost;
 
         svg {

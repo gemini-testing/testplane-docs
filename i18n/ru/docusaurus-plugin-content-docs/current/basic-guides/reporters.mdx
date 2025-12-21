@@ -1,0 +1,173 @@
+# Репортеры
+
+## Простой отчет {#testplane_report}
+
+По умолчанию Testplane выводит в консоль следующую сводку:
+
+```bash
+Total: 1812 Passed: 1792 Failed: 0 Skipped: 20 Retries: 47
+```
+
+## Stat Reporter {#stat_reporter_report}
+
+Если вы добавите в свой проект плагин [stat-reporter][stat-reporter], то получите более подробный отчет о результатах прогона в консоли после завершения всех тестов. Например:
+
+```bash
+┌──────────────────────┬────────┬───────┬────────┬────────┬─────────┬─────────┬──────────┐
+│ Browser              │ Status │ Tests │ Passed │ Failed │ Skipped │ Retries │ Duration │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ firefox              │ passed │ 25    │ 24     │ 0      │ 1       │ 0       │ 01:02    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-desktop       │ passed │ 466   │ 464    │ 0      │ 2       │ 4       │ 07:40    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ ipad                 │ passed │ 24    │ 23     │ 0      │ 1       │ 0       │ 01:27    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ iphone               │ passed │ 376   │ 372    │ 0      │ 4       │ 7       │ 07:12    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-phone         │ passed │ 427   │ 421    │ 0      │ 6       │ 14      │ 07:32    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ iphone-dark          │ passed │ 74    │ 72     │ 0      │ 2       │ 4       │ 02:18    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ searchapp-phone      │ passed │ 319   │ 317    │ 0      │ 2       │ 9       │ 10:00    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ safari13             │ passed │ 15    │ 13     │ 0      │ 2       │ 4       │ 02:42    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-desktop-1920  │ passed │ 3     │ 3      │ 0      │ 0       │ 0       │ 00:57    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ iphoneX              │ passed │ 3     │ 3      │ 0      │ 0       │ 0       │ 00:36    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-desktop-dark  │ passed │ 77    │ 77     │ 0      │ 0       │ 5       │ 01:33    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ yandex-browser-phone │ passed │ 1     │ 1      │ 0      │ 0       │ 0       │ 00:28    │
+├──────────────────────┼────────┼───────┼────────┼────────┼─────────┼─────────┼──────────┤
+│ chrome-grid-720      │ passed │ 2     │ 2      │ 0      │ 0       │ 0       │ 00:49    │
+└──────────────────────┴────────┴───────┴────────┴────────┴─────────┴─────────┴──────────┘
+```
+
+В отличие от простого репортера, отчет плагина `stat-reporter` разбивает результаты по браузерам. Он также отображает максимальное время выполнения _(Duration)_ в минутах и секундах и результат прогона тестов _(Status)_ в каждом браузере.
+
+Такой отчет позволяет лучше понять, в каких браузерах возникли проблемы, а именно: где больше всего упало тестов или резко возросло время выполнения.
+
+Плагин `stat-reporter` также позволяет генерировать отчеты в форматах HTML или JSON. Подробности см. в [описании плагина][stat-reporter].
+
+Однако по своим возможностям плагин [stat-reporter][stat-reporter] значительно уступает плагину [html-reporter][html-reporter], который предоставляет гораздо более продвинутые способы работы с тестами и результатами их прогона.
+
+## JSON Reporter {#json_reporter_report}
+
+Установите плагин [json-reporter][json-reporter], чтобы получить JSON-отчет с результатами тестов в следующем формате:
+
+```json
+{
+    "Main Page should send correct headers.chrome-138": {
+        "suitePath": ["Main Page", "should send correct headers"],
+        "fullName": "Main Page should send correct headers",
+        "browserId": "chrome-138",
+        "file": "tests/main-page/headers.testplane.js",
+        "duration": 2539,
+        "meta": {
+            "pid": 32410,
+            "browserVersion": "138.0",
+            "testXReqId": "e96e1911-db41-44a2-9980-fe78f16bb6b4",
+            "url": "https://ya.ru/"
+        },
+        "startTime": 1766063685666,
+        "url": "/",
+        "status": "fail",
+        "errorReason": {
+            "message": "Cannot read properties of undefined (reading 'headers')",
+            "stack": "TypeError: Cannot read properties of undefined (reading 'headers')\n    at Object.<anonymous> (/dev/hermione-playground/tests/main-page/headers.testplane.js:69:26)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)"
+        },
+        "retries": []
+    }
+}
+```
+
+## HTML Reporter {#html_reporter_report}
+
+Testplane HTML Reporter — постоянно развивающийся многофункциональный интерфейс для работы с тестами. Он позволяет:
+
+-   фильтровать тесты по статусу завершения;
+-   группировать тесты по ошибкам или любому параметру из метаданных теста;
+-   просматривать различия в скриншотах 6 различными способами;
+-   просматривать все повторы или ошибки в тестах отдельно.
+
+![](/img/docs/html-reporter/html-reporter-demo.png)
+
+Помимо статических отчетов, HTML Reporter имеет интерактивный GUI-режим, позволяющий запускать тесты, работать с визуальными проверками и многое другое. Узнайте больше о Testplane UI в [специальном разделе документации](../../html-reporter/overview).
+
+## Создание собственного отчета
+
+Testplane легко кастомизируется — вы можете создавать собственные плагины и отчеты для своих нужд.
+
+Так может выглядеть базовый отчет:
+
+```typescript title="reporter.ts"
+import fs from "fs";
+import type Testplane from "testplane";
+import type { TestResult } from "testplane";
+
+interface ReporterConfig {
+    enabled?: boolean;
+    path?: string;
+}
+
+interface TestInfo {
+    name: string;
+    status: string;
+}
+
+export = (testplane: Testplane, opts: ReporterConfig = {}): void => {
+    if (testplane.isWorker()) return;
+
+    const config = {
+        enabled: opts.enabled !== false,
+        path: opts.path || "test-results.json",
+    };
+
+    if (!config.enabled) return;
+
+    const results: TestInfo[] = [];
+
+    testplane.on(testplane.events.TEST_PASS, (test: TestResult) => {
+        results.push({ name: test.fullTitle(), status: "passed" });
+    });
+
+    testplane.on(testplane.events.TEST_FAIL, (test: TestResult) => {
+        results.push({ name: test.fullTitle(), status: "failed" });
+    });
+
+    testplane.on(testplane.events.RUNNER_END, () => {
+        fs.writeFileSync(config.path, JSON.stringify(results, null, 2));
+        console.log(`✓ Сохранено ${results.length} результатов тестов в ${config.path}`);
+    });
+};
+```
+
+Чтобы использовать только что созданный отчет, вам нужно добавить его в файл `testplane.config.ts`:
+
+```typescript title="testplane.config.ts"
+export default {
+    plugins: {
+        "./my-reporter": {
+            enabled: true,
+            path: "./reports/my-results.json",
+        },
+    },
+};
+```
+
+## Ключевые слова {#keywords}
+
+-   stat-reporter
+-   json-reporter
+-   html-reporter
+-   gui
+
+## Полезные ссылки {#useful_links}
+
+-   [Плагин stat-reporter][stat-reporter]
+-   [Плагин html-reporter][html-reporter]
+
+[stat-reporter]: ../../plugins/stat-reporter
+[json-reporter]: https://github.com/gemini-testing/json-reporter
+[html-reporter]: ../../html-reporter/html-reporter-setup

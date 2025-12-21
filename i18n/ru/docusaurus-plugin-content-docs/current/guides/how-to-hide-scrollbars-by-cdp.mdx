@@ -1,3 +1,8 @@
+---
+unlisted: true
+sidebar_class_name: hidden
+---
+
 import Admonition from "@theme/Admonition";
 
 # Как скрывать скроллбары с помощью Chrome DevTools Protocol
@@ -11,7 +16,7 @@ import Admonition from "@theme/Admonition";
 
 </Admonition>
 
-Одна из причин падений тестов при тестировании верстки с помощью скриншотов — это появление скроллбара в браузере в момент снятия скриншота. Подробнее об этой проблеме и некоторых способах её решения, вы можете прочитать [здесь](../how-to-hide-scrollbars). Особенно часто эта проблема возникает в тестах с мобильной эмуляцией.
+Одна из причин падений тестов при тестировании верстки с помощью скриншотов — это появление скроллбара в браузере в момент снятия скриншота. Подробнее об этой проблеме и некоторых способах её решения, вы можете прочитать [здесь](./visual-checks-best-practices/hiding-scrollbars.mdx). Особенно часто эта проблема возникает в тестах с мобильной эмуляцией.
 
 В CDP есть специальный метод [Emulation.setScrollbarsHidden][set-scrollbars-hidden], который позволяет скрыть скроллбар. Однако в _puppeteer_ отсутствует обертка над этим методом. Поэтому мы воспользуемся методом [CDPSession.send][cdp-session-send], чтобы выполнить команду [Emulation.setScrollbarsHidden][set-scrollbars-hidden].
 
@@ -39,7 +44,7 @@ it("should hide scrollbar", async function ({ browser }) {
 
 ## Полезные ссылки {#useful_links}
 
-Читайте также наш рецепт «[Как убрать скроллбары из скриншотов](../how-to-hide-scrollbars)».
+Читайте также наш рецепт «[Как убрать скроллбары из скриншотов](./visual-checks-best-practices/hiding-scrollbars.mdx)».
 
 Там же вы узнаете про плагин [hermione-hide-scrollbars](../../plugins/hermione-hide-scrollbars), который реализован на основе метода [Emulation.setScrollbarsHidden][set-scrollbars-hidden] и который вы можете использовать, чтобы отключить скроллбары в CI для всех тестов в конкретных браузерах.
 

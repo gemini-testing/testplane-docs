@@ -213,6 +213,106 @@ const config: Config = {
                 trackHash: true,
             },
         ],
+        [
+            "@docusaurus/plugin-client-redirects",
+            {
+                redirects: [
+                    // Guides moved to Basic Guides
+                    {
+                        from: "/docs/v8/guides/component-testing",
+                        to: "/docs/v8/basic-guides/component-testing",
+                    },
+                    {
+                        from: "/docs/v8/guides/custom-commands",
+                        to: "/docs/v8/basic-guides/custom-commands",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-debug-test",
+                        to: "/docs/v8/basic-guides/debugging-tests",
+                    },
+                    {
+                        from: "/docs/v8/guides/local-browsers",
+                        to: "/docs/v8/basic-guides/managing-browsers",
+                    },
+                    {
+                        from: "/docs/v8/guides/how-to-get-report",
+                        to: "/docs/v8/basic-guides/reporters",
+                    },
+                    {
+                        from: "/docs/v8/guides/time-travel",
+                        to: "/docs/v8/basic-guides/time-travel",
+                    },
+
+                    // Visual Testing moved to Basic Guides
+                    {
+                        from: "/docs/v8/visual-testing/with-storybook",
+                        to: "/docs/v8/basic-guides/visual-testing-with-storybook",
+                    },
+                    {
+                        from: "/docs/v8/visual-testing/visual-testing-intro",
+                        to: "/docs/v8/basic-guides/visual-testing",
+                    },
+
+                    // Guides restructured
+                    {
+                        from: "/docs/v8/guides/how-to-hide-scrollbars",
+                        to: "/docs/v8/guides/visual-checks-best-practices/hiding-scrollbars",
+                    },
+
+                    // Command Line moved to Reference
+                    {
+                        from: "/docs/v8/command-line",
+                        to: "/docs/v8/reference/cli",
+                    },
+
+                    // Config moved to Reference/Config
+                    {
+                        from: "/docs/v8/config/after-all",
+                        to: "/docs/v8/reference/config/after-all",
+                    },
+                    {
+                        from: "/docs/v8/config/before-all",
+                        to: "/docs/v8/reference/config/before-all",
+                    },
+                    {
+                        from: "/docs/v8/config/browsers",
+                        to: "/docs/v8/reference/config/browsers",
+                    },
+                    {
+                        from: "/docs/v8/config/dev-server",
+                        to: "/docs/v8/reference/config/dev-server",
+                    },
+                    {
+                        from: "/docs/v8/config/last-failed",
+                        to: "/docs/v8/reference/config/last-failed",
+                    },
+                    {
+                        from: "/docs/v8/config/main",
+                        to: "/docs/v8/reference/config/main",
+                    },
+                    {
+                        from: "/docs/v8/config/plugins",
+                        to: "/docs/v8/reference/config/plugins",
+                    },
+                    {
+                        from: "/docs/v8/config/prepare-browser",
+                        to: "/docs/v8/reference/config/prepare-browser",
+                    },
+                    {
+                        from: "/docs/v8/config/prepare-environment",
+                        to: "/docs/v8/reference/config/prepare-environment",
+                    },
+                    {
+                        from: "/docs/v8/config/sets",
+                        to: "/docs/v8/reference/config/sets",
+                    },
+                    {
+                        from: "/docs/v8/config/system",
+                        to: "/docs/v8/reference/config/system",
+                    },
+                ],
+            },
+        ],
     ],
 };
 

@@ -75,10 +75,7 @@ import AssertViewOptions from "@site/docs/_partials/specs/assert-view-options.md
             <td>[`automationProtocol`](#automation_protocol)</td>
             <td>`string`</td>
             <td>`"webdriver"`</td>
-            <td>
-                Протокол общения с браузером. См. [WebDriver vs
-                CDP](../../reference/webdriver-vs-cdp).
-            </td>
+            <td>Протокол общения с браузером. См. [WebDriver vs CDP](../../webdriver-vs-cdp).</td>
         </tr>
         <tr>
             <td>[`sessionEnvFlags`](#session_env_flags)</td>
@@ -162,7 +159,7 @@ URL грида (адрес, на котором слушает ChromeDriver/Sele
 
 ### automationProtocol {#automation_protocol}
 
-Протокол общения с браузером. Доступные значения: `webdriver` и `devtools`. См. также [WebDriver vs CDP](../../reference/webdriver-vs-cdp). По умолчанию: `webdriver`.
+Протокол общения с браузером. Доступные значения: `webdriver` и `devtools`. См. также [WebDriver vs CDP](../../webdriver-vs-cdp). По умолчанию: `webdriver`.
 
 ### sessionEnvFlags {#session_env_flags}
 
@@ -492,7 +489,7 @@ interface FailedTestData {
 
 ### openAndWaitOpts {#open-and-wait-opts}
 
-Позволяет задать опции, которые нужно использовать при вызове команды [`browser.openAndWait`](../../commands/browser/openAndWait).
+Позволяет задать опции, которые нужно использовать при вызове команды [`browser.openAndWait`](../../../commands/browser/openAndWait).
 
 По умолчанию:
 
@@ -1083,7 +1080,7 @@ export = {
 </Admonition>
 
 [desired-caps]: https://github.com/SeleniumHQ/selenium/wiki/DesiredCapabilities
-[html-reporter]: ../../html-reporter/html-reporter-setup
+[html-reporter]: ../../../html-reporter/html-reporter-setup
 [got]: https://github.com/sindresorhus/got/
 [got-agent]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#agent
 [got-headers]: https://github.com/sindresorhus/got/blob/main/documentation/2-options.md#headers
@@ -1093,7 +1090,7 @@ export = {
 [read-tests]: ../browsers
 [sauce-labs]: https://saucelabs.com
 [system-mocha-opts]: ../system#mocha_opts
-[element-wait-until]: ../../commands/element/waitUntil
-[how-to-use-cdp]: ../../guides/how-to-use-cdp
-[testplane-also-in-helper]: ../../guides/how-to-skip-test-in-browsers#solution_4
-[time-travel]: ../../guides/time-travel
+[element-wait-until]: ../../../commands/element/waitUntil
+[how-to-use-cdp]: ../../../guides/how-to-use-cdp
+[testplane-also-in-helper]: ../../../guides/how-to-skip-test-in-browsers#solution_4
+[time-travel]: ../../../basic-guides/time-travel
