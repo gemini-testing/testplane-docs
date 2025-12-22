@@ -3,16 +3,16 @@ import TabItem from "@theme/TabItem";
 
 import Admonition from "@theme/Admonition";
 
-# url-decorator
+# @testplane/url-decorator
 
 ## Overview {#overview}
 
-Use the [url-decorator][url-decorator] plugin to automatically add the necessary query parameters to the urls in Testplane tests.
+Use the [@testplane/url-decorator][url-decorator] plugin to automatically add the necessary query parameters to the urls in Testplane tests.
 
 ## Install {#install}
 
 ```bash
-npm install -D url-decorator
+npm install -D @testplane/url-decorator
 ```
 
 ## Setup {#setup}
@@ -22,7 +22,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        "url-decorator": {
+        "@testplane/url-decorator": {
             enabled: true,
             url: {
                 query: [
@@ -69,7 +69,7 @@ The `url` parameter is an object with a `query` field, the value of which can be
 ```javascript
     module.exports = {
         plugins: {
-            'url-decorator': {
+            '@testplane/url-decorator': {
                 enabled: true,
                 url: {
                     query: [
@@ -104,7 +104,7 @@ The `url` parameter is an object with a `query` field, the value of which can be
 ```javascript
     module.exports = {
         plugins: {
-            'url-decorator': {
+            '@testplane/url-decorator': {
                 enabled: true,
                 url: {
                     query: {
@@ -323,7 +323,6 @@ Then your test will open the url of the following form: `http://localhost/test/?
 
 ## Useful links {#useful_links}
 
--   [url-decorator plugin sources][url-decorator]
+-   [@testplane/url-decorator plugin sources][url-decorator]
 
 [url-decorator]: https://github.com/gemini-testing/url-decorator
-[internal-url-decorator]: ../../plugins/internal-url-decorator

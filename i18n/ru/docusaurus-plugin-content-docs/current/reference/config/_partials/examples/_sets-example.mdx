@@ -1,0 +1,27 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            /*...*/
+        },
+        firefox: {
+            /*...*/
+        },
+        iphone: {
+            /*...*/
+        },
+    },
+    sets: {
+        common: {
+            files: "tests/common/*.testplane.ts",
+        },
+        desktop: {
+            files: ["tests/desktop/*.testplane.ts", "tests/common/*.testplane.ts"],
+            ignoreFiles: ["**/screens/**"],
+            browsers: ["chrome", "firefox"],
+        },
+    },
+} satisfies ConfigInput;
+```

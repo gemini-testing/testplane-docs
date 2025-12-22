@@ -1,0 +1,55 @@
+---
+sidebar_position: 3
+---
+
+# Running Tests
+
+Use the `npx testplane` command to run all tests in your project.
+
+## Running a Specific File {#running_a_specific_file}
+
+If you want to run a whole group of tests located in a specific file, specify the path to this file as an input parameter for testplane:
+
+```bash
+npx testplane src/features/Reviews/Reviews.test/MyReview/MyReview.a11y@touch-phone.testplane.js
+```
+
+## The `--grep` Option {#the_grep_option}
+
+If you want to run a specific test, use the `--grep` option by providing the full name of the test as its value:
+
+```bash
+npx testplane --grep "Accessibility Leaving a review"
+```
+
+## The `.only` Directive {#the_only_directive}
+
+You can also use the `.only` directive for a suite of tests (`describe`) or a specific test (`it`), similar to what is implemented in `mocha` (see the [exclusive tests](https://mochajs.org/#exclusive-tests) section):
+
+For example:
+
+```javascript
+describe.only("Accessibility", function () {
+    // Test suite...
+});
+```
+
+or
+
+```javascript
+it.only("Leaving a review", async function () {
+    // Test code...
+});
+```
+
+## Running a Test N Times {#running_tests_multiple_times}
+
+You might want to run the same test multiple times, for example, to check test stability. Use the [@testplane/test-repeater][testplane-test-repeater] plugin to run tests a specified number of times.
+
+After installing and enabling the plugin, you can run the test multiple times like this:
+
+```bash
+npx testplane --test-repeater-repeat 5 --grep 'Test name'
+```
+
+[testplane-test-repeater]: ../../plugins/testplane-test-repeater

@@ -1553,7 +1553,7 @@ module.exports = (testplane, opts) => {
 ```javascript
 module.exports = {
     // tests will be run in a local browser,
-    // see https://testplane.io/docs/v8/guides/local-browsers/
+    // see https://testplane.io/docs/v8/basic-guides/managing-browsers/
     gridUrl: "local",
     // specify the path to the dev server
     baseUrl: "http://localhost:3000",
@@ -1799,12 +1799,12 @@ A more detailed [implementation][testplane-profiler-index] can be found in the [
 [commander-options]: https://github.com/tj/commander.js#options
 [cli-wiki]: https://en.wikipedia.org/wiki/Command-line_interface
 [testplane-run]: ../testplane-api#testplane_run
-[system]: ../../config/system
-[system-workers]: ../../config/system#workers
-[system-tests-per-worker]: ../../config/system#tests_per_worker
-[browser-tests-per-session]: ../../config/browsers#tests_per_session
-[browser-sessions-per-browser]: ../../config/browsers#sessions_per_browser
-[skip-in]: ../../guides/how-to-skip-test-in-browsers
+[system]: ../config/system
+[system-workers]: ../config/system#workers
+[system-tests-per-worker]: ../config/system#tests_per_worker
+[browser-tests-per-session]: ../config/browsers#tests_per_session
+[browser-sessions-per-browser]: ../config/browsers#sessions_per_browser
+[skip-in]: ../testplane-helper
 [sigterm]: https://en.wikipedia.org/wiki/Signal_(Unix)
 [testplane-test-repeater-index]: https://github.com/gemini-testing/testplane-test-repeater/blob/master/lib/index.js
 [testplane-test-repeater]: https://github.com/gemini-testing/testplane-test-repeater
@@ -1818,8 +1818,8 @@ A more detailed [implementation][testplane-profiler-index] can be found in the [
 [hermione-hide-scrollbars]: https://github.com/gemini-testing/hermione-hide-scrollbars
 [hermione-hide-scrollbars-index]: https://github.com/gemini-testing/hermione-hide-scrollbars/blob/master/index.js
 [vnc]: https://en.wikipedia.org/wiki/Virtual_Network_Computing
-[browsers-retry]: ../../config/browsers#retry
-[browsers-should-retry]: ../../config/browsers#should_retry
+[browsers-retry]: ../config/browsers#retry
+[browsers-should-retry]: ../config/browsers#should_retry
 [retry-limiter]: ../../plugins/retry-limiter
 [testplane-retry-progressive]: ../../plugins/testplane-retry-progressive
 [error-object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error

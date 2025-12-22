@@ -1,0 +1,77 @@
+import Admonition from "@theme/Admonition";
+import PluginsExample from "@site/docs/reference/config/_partials/examples/_plugins-example.mdx";
+import RegisterWorkersExample from "@site/docs/reference/config/_partials/examples/_plugins-register-workers.mdx";
+
+# plugins
+
+## Обзор {#overview}
+
+С помощью раздела `plugins` вы можете подключить к Testplane внешние плагины, которые расширят доступную функциональность.
+
+Например, плагины [html-reporter][html-reporter] или [@testplane/safari-commands](https://github.com/gemini-testing/testplane-safari-commands).
+
+Плагин — это модуль, который экспортирует одну функцию, принимающую следующие аргументы:
+
+-   инстанс Testplane
+-   опции плагина из конфига Testplane
+
+Все плагины будут загружены до того, как Testplane запустит тесты.
+
+<Admonition type="tip">
+    Выбирая название для плагина, добавьте к нему префикс _testplane-_. Тогда такой плагин будет
+    проще искать.
+</Admonition>
+
+Если имя плагина начинается с префикса `testplane-`, то этот префикс можно опустить при добавлении плагина в раздел `plugins`. Если на файловой системе будут находиться модули с обоими именами: _testplane-some-module_ и _some-module_, то предпочтение будет отдано модулю с префиксом `testplane-`.
+
+## Схематичный пример {#example}
+
+<PluginsExample />
+
+## Свойства инстанса testplane {#testplane_instance}
+
+<table>
+    <thead>
+        <tr>
+            <td>`config`</td>
+            <td>Конфиг, который используется в test runner'е. Может быть изменен.</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`events`</td>
+            <td>Список событий, на которые можно подписаться.</td>
+        </tr>
+    </tbody>
+</table>
+
+Детальнее о событиях можно узнать на [соответствующей странице](../../testplane-events).
+
+## Параллельное исполнение плагинов
+
+У раннера есть метод `registerWorkers`, с помощью которого можно зарегистрировать кастомные методы для запуска в воркерах Testplane.
+
+Метод `registerWorkers` принимает 2 аргумента:
+
+-   `workerFilepath` — путь к файлу с функциями, строка с абсолютным путем.
+-   `exportedMethods` — имена экспортируемых методов, массив строк.
+
+Метод возвращает объект с методами, перечисленными в `exportedMethods`, которые возвращают промисы с результатами.
+
+Обратите внимание, что файл в `workerFilepath` должен экспортировать объект с соответствующими методами.
+
+Пример:
+
+<RegisterWorkersExample />
+
+## Полезные плагины
+
+Экосистема Testplane насчитывает десятки плагинов. Вот некоторые из них:
+
+-   [html-reporter](https://github.com/gemini-testing/html-reporter)
+-   [@testplane/safari-commands](https://github.com/gemini-testing/testplane-safari-commands)
+-   [@testplane/headless-chrome](https://github.com/gemini-testing/testplane-headless-chrome)
+-   ...и многие другие, которые можно найти в [gemini-testing](https://github.com/search?q=topic%3Atestplane-plugin+org%3Agemini-testing&type=Repositories).
+
+[html-reporter]: ../../../html-reporter/html-reporter-setup
+[testplane-test-repeater]: ../../plugins/testplane-test-repeater

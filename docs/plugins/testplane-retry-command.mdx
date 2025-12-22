@@ -1,15 +1,15 @@
 import Admonition from "@theme/Admonition";
 
-# testplane-retry-command
+# @testplane/retry-command
 
 ## Overview {#overview}
 
-Use the `testplane-retry-command` plugin to retry commands at low level.
+Use the [`@testplane/retry-command`][testplane-retry-command] plugin to retry commands at low level.
 
 ## Install {#install}
 
 ```bash
-npm install -D testplane-retry-command
+npm install -D @testplane/retry-command
 ```
 
 ## Setup {#setup}
@@ -19,7 +19,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        "testplane-retry-command": {
+        "@testplane/retry-command": {
             enabled: true,
             rules: [
                 {

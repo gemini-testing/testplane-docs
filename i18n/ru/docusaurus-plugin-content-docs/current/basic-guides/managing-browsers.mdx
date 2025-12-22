@@ -1,0 +1,98 @@
+import Admonition from "@theme/Admonition";
+
+# Браузеры
+
+## Введение
+
+Testplane позволяет автоматически загружать браузеры, описанные в [Конфиге Testplane](/docs/v8/reference/config/main).
+
+Также, если Testplane используется на поддерживаемой версии Ubuntu, аналогичным образом загрузятся и необходимые для запуска браузеров deb пакеты.
+
+Запуск тестов на локальном браузере может, например, помочь отладить проблему, воспроизводящуюся при запуске на удаленном гриде, но использование локальных браузеров при скриншотном тестировании не рекомендуется, так как скриншоты будут отличаться в зависимости от версии операционной системы.
+
+## Установка зависимостей
+
+В проекте c Testplane можно выполнить команду `npx testplane install-deps`. Эта команда загрузит необходимые браузеры ( `chrome` и `firefox`) и вебдрайверы к ним (`chrome`, `firefox` и `edge`).
+
+Также можно загрузить лишь необходимые бразуеры, описанные в конфиге. Например, если описан браузер `chrome-dark`, то загрузить только его можно командой `npx testplane install-deps chrome-dark`.
+
+Больше об этой команде можно прочитать на соответствующей странице: [install-deps](/docs/v8/reference/cli#install-deps)
+
+## Запуск тестов
+
+Запускать тесты на локальных браузерах можно с [CLI опцией](/docs/v8/reference/cli) `--local`, либо с [gridUrl](/docs/v8/reference/config/browsers/#grid_url): "local" в [конфиге Testplane](/docs/v8/reference/config/main). Например:
+
+```bash
+npx testplane --local
+```
+
+Так для поддерживаемых браузеров будут автоматически запущены соответствующие вебдрайвер процессы, и Testplane будет использовать эти локально запущенные драйверы с локально загруженными браузерами.
+
+При необходимости, браузеры будут загружены перед запуском, так что отдельный запуск команды `install-deps` не обязателен, особенно если хочется быстро запустить тест только в одном браузере.
+
+## Отладка тестов
+
+При включении `debug` в конфиге, логи вебдрайвера с префиксом будут выводиться в stdout/stderr:
+
+```typescript
+export default {
+    // ... остальные настройки Testplane
+    system: {
+        debug: true,
+    },
+};
+```
+
+От избыточных логов `webdriverio` можно избавиться, установив нужный уровень переменной среды `WDIO_LOG_LEVEL`.
+
+Например, так будет выглядеть запуск со включенным через переменную среды дебагом, уровнем логгирования webdriverio `error` в локальном браузере, имеющем browserId `chrome` в конфиге:
+
+```bash
+testplane_system_debug=true WDIO_LOG_LEVEL=error npx testplane --local -b chrome
+```
+
+И логи вебдрайвера будут выглядеть примерно следующим образом:
+
+```plaintext
+$ testplane_system_debug=true WDIO_LOG_LEVEL=error npx testplane --local -b chrome
+[chromedriver@130] Starting ChromeDriver 130.0.6723.116 (6ac35f94ae3d01152cf1946c896b0678e48f8ec4-refs/branch-heads/6723@{#1764}) on port 43415
+[chromedriver@130] Only local connections are allowed.
+[chromedriver@130] Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[chromedriver@130] ChromeDriver was started successfully on port 43415.
+```
+
+## Поддержка браузеров {#browser-support}
+
+Ниже представлена таблица поддерживаемых браузеров:
+
+| Браузер | Авто-загрузка | Авто-загрузка драйвера | Запуск webdriver |
+| ------- | ------------- | ---------------------- | ---------------- |
+| Chrome  | +             | +                      | +                |
+| Firefox | +             | +                      | +                |
+| Edge    | -             | +                      | +                |
+| Safari  | -             | +                      | +                |
+
+Поддерживаемые версии браузеров в зависимости от ОС:
+
+|   ОС    | Windows | MacOs | Ubuntu 20 | Ubuntu 22 | Ubuntu 24 |
+| :-----: | ------- | ----- | --------- | --------- | --------- |
+| Chrome  | 73+     | 73+   | 73+       | 73+       | 73+       |
+| Firefox | 60+     | 60+   | 60+       | 91+       | 126+      |
+|  Edge   | \*      | \*    | \*        | \*        | \*        |
+| Safari  | -       | \*    | -         | -         | -         |
+
+> `*` — авто-загрузка браузера не поддерживается, но если браузер установлен пользователем, Testplane будет использовать установленную версию.
+
+Для виртуальных сред браузер может быть запущен только в фоновом режиме. Также может потребоваться CLI аргумент "--no-sandbox" для браузера "chrome":
+
+```typescript
+{
+    // другие настройки браузера chrome
+    headless: true,
+    desiredCapabilities: {
+        browserName: "chrome",
+        browserVersion: "130.0",
+        "goog:chromeOptions": { args: ["--no-sandbox"] }
+    }
+}
+```

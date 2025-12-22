@@ -12,9 +12,9 @@ Testplane is now able to automatically download browsers for running tests local
 
 <!-- truncate -->
 
-Previously, Testplane with the webdriver automation protocol could only be launched locally with a manually started [selenium-standalone](https://github.com/webdriverio/selenium-standalone). Now, it is enough to specify `gridUrl: "local"` in the [Testplane Config](/docs/v8/config/main) or run tests with the [CLI option](/docs/v8/command-line) `--local`. In this case, if necessary, the corresponding browsers and web drivers will be downloaded before running the tests, and they will also be launched for further use in these tests.
+Previously, Testplane with the webdriver automation protocol could only be launched locally with a manually started [selenium-standalone](https://github.com/webdriverio/selenium-standalone). Now, it is enough to specify `gridUrl: "local"` in the [Testplane Config](/docs/v8/reference/config/main) or run tests with the [CLI option](/docs/v8/reference/cli) `--local`. In this case, if necessary, the corresponding browsers and web drivers will be downloaded before running the tests, and they will also be launched for further use in these tests.
 
-You can also download the browsers and their web drivers separately using the [install-deps](/docs/v8/command-line#install-deps) command.
+You can also download the browsers and their web drivers separately using the [install-deps](/docs/v8/reference/cli#install-deps) command.
 
 Example of running tests on local browser with webdriver automation protocol:
 
@@ -25,4 +25,4 @@ Example of running tests on local browser with webdriver automation protocol:
 
 ### How to use?
 
-Learn more about this in our documentation [How to Run Testplane in a Local Browser](/docs/v8/guides/local-browsers).
+Learn more about this in our documentation [How to Run Testplane in a Local Browser](/docs/v8/basic-guides/managing-browsers).

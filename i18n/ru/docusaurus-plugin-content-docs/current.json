@@ -40,11 +40,11 @@
         "description": "The label for category mock in sidebar mainSidebar"
     },
     "sidebar.mainSidebar.category.Guides": {
-        "message": "Рецепты",
+        "message": "Руководства",
         "description": "The label for category Guides in sidebar mainSidebar"
     },
     "sidebar.mainSidebar.category.Migrations": {
-        "message": "Руководства по миграции",
+        "message": "Миграции",
         "description": "The label for category Migrations in sidebar mainSidebar"
     },
     "sidebar.mainSidebar.category.Reference": {
@@ -62,5 +62,37 @@
     "sidebar.mainSidebar.category.Сomparison": {
         "message": "Сравнение",
         "description": "The label for category Comparison in sidebar mainSidebar"
+    },
+    "sidebar.api.link.Testplane Commands": {
+        "message": "Команды Testplane",
+        "description": "The label for the link Testplane Commands in sidebar api"
+    },
+    "sidebar.api.category.Config": {
+        "message": "Конфигурация",
+        "description": "The label for the link Testplane Commands in sidebar api"
+    },
+    "sidebar.mainSidebar.category.Getting Started": {
+        "message": "Начало работы",
+        "description": "The label for category Getting Started in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Advanced Guides": {
+        "message": "Продвинутые руководства",
+        "description": "The label for category Advanced Guides in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.doc.Testplane MCP": {
+        "message": "Testplane MCP",
+        "description": "The label for the doc item Testplane MCP in sidebar mainSidebar"
+    },
+    "sidebar.mainSidebar.category.Plugins Reference": {
+        "message": "Плагины",
+        "description": "The label for category Plugins Reference in sidebar mainSidebar"
+    },
+    "sidebar.ui.category.API": {
+        "message": "API",
+        "description": "The label for category API in sidebar ui"
+    },
+    "sidebar.mainSidebar.category.Visual Testing Best Practices": {
+        "message": "Лучшие практики визуальных проверок",
+        "description": "The label for category Visual Testing Best Practices in sidebar mainSidebar"
     }
 }

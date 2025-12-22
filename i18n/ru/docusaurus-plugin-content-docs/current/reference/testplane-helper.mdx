@@ -1,0 +1,63 @@
+# Глобальный объект testplane
+
+## testplane.skip.in
+
+Эта директива позволяет пропустить тест в определённом браузере. Например, чтобы пропустить тест в `IE8`, можно сделать так:
+
+```javascript
+describe("feature", function () {
+    testplane.skip.in("ie8", "it cannot work in this browser");
+    it("nowaday functionality", function () {
+        // ...
+    });
+});
+```
+
+При использовании директивы `testplane.skip.in` вы увидите в отчете сообщение о том, что запуск в соответствующем браузере был пропущен.
+
+Чтобы пропустить запуск тестов без уведомлений в отчете, вы можете передать хелперу специальный флаг `silent` в качестве третьего аргумента:
+
+```javascript
+testplane.skip.in("ie8", "skipReason", { silent: true });
+```
+
+## testplane.skip.notIn
+
+Эта директива позволяет запускать тест только в определённом браузере, например, в `Chrome`:
+
+```javascript
+describe("feature", function () {
+    testplane.skip.notIn("chrome", "it should work only in Chrome");
+    it("specific functionality", function () {
+        // ...
+    });
+});
+```
+
+Аналогично, чтобы избавиться от уведомлений в отчете, вы можете передать хелперу специальный флаг `silent` в качестве третьего аргумента:
+
+```javascript
+testplane.skip.notIn("chrome", "skipReason", { silent: true });
+```
+
+## testplane.only.in / testplane.only.notIn
+
+Эти директивы позволяют запускать тест только в определённом браузере, логика которых противоположна директивам `testplane.skip.in` и `testplane.skip.notIn`. Кроме того, эти директивы по умолчанию не создают никаких уведомлений в отчёте:
+
+```javascript
+testplane.only.in("chrome"); // запустить тест только в Chrome
+```
+
+```javascript
+testplane.only.notIn("ie8"); // запустить тест во всех браузерах кроме IE8
+```
+
+## testplane.also.in
+
+Если вы внедряете новый браузер и вам нужно запустить его только в нескольких тестах из тысяч, использование директивы `.skip.in` может быть неудобным. Вы можете использовать опцию браузера [passive][passive-option] и директиву `.also.in`:
+
+```javascript
+testplane.also.in("ie8"); // запустить тест в пассивном браузере IE8
+```
+
+[passive-option]: ../config/browsers#passive

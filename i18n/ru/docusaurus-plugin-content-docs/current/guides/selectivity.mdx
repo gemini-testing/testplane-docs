@@ -1,6 +1,6 @@
 import Admonition from "@theme/Admonition";
 
-# Как настроить селективность при запуске тестов
+# Селективность
 
 ## Введение
 
@@ -22,7 +22,7 @@ import Admonition from "@theme/Admonition";
 
 ## Настройка
 
-Для включения селективности достаточно добавить в конфигурацию Testplane секцию [`selectivity`](/docs/v8/config/browsers#selectivity) с параметром `enabled: true`:
+Для включения селективности достаточно добавить в конфигурацию Testplane секцию [`selectivity`](/docs/v8/reference/config/browsers#selectivity) с параметром `enabled: true`:
 
 ```typescript
 // testplane.config.ts
@@ -224,5 +224,5 @@ testplane_selectivity_enabled=false # отключить
 
 Дополнительная информация о конфигурации селективности описана в разделе [browsers-selectivity][selectivity-config] документации.
 
-[dev-server]: ../../config/dev-server
-[selectivity-config]: ../../config/browsers#selectivity
+[dev-server]: ../../reference/config/dev-server
+[selectivity-config]: ../../reference/config/browsers#selectivity

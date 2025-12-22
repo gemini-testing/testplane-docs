@@ -1,0 +1,166 @@
+import Admonition from "@theme/Admonition";
+import DevServerExample from "@site/docs/reference/config/_partials/examples/_dev-server-example.mdx";
+
+# devServer
+
+С помощью секции `devServer` можно запускать сервер, на который будут ходить тесты. Запуск происходит во время инициализации Testplane на событие INIT.
+
+<Admonition type="warning">
+Секция devServer отвечает только за поднятие сервера.
+
+Стоит учитывать, что описание devServer секции не изменяет `baseUrl`, который нужно указывать правильно вручную.
+
+</Admonition>
+
+## Пример использования {#example}
+
+<DevServerExample />
+
+## Справка по секции devServer
+
+<table>
+    <thead>
+    <tr>
+        <td>**Параметр**</td>
+        <td>**Тип**</td>
+        <td>**По&nbsp;умолчанию**</td>
+        <td>**Описание**</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>[`command`](#command)</td>
+        <td>`string`</td>
+        <td>_N/A_</td>
+        <td>
+            Команда для запуска dev сервера. Если не указана, dev сервер не будет запущен.
+        </td>
+    </tr>
+    <tr>
+        <td>[`reuseExisting`](#reuseexisting)</td>
+        <td>`boolean`</td>
+        <td>`false`</td>
+        <td>
+            Переиспользовать уже запущенный dev сервер вместо создания нового. Требует указания свойства "url" в секции "readinessProbe".
+            Эта проверка готовности будет использоваться для проверки того, что сервер готов к работе.
+        </td>
+    </tr>
+    <tr>
+        <td>[`env`](#env)</td>
+        <td>`Record<string, string>`</td>
+        <td>`{}`</td>
+        <td>
+            Переменные окружения, которые должны быть переданы процессу с dev сервером, в дополнение к `process.env` основного процесса.
+        </td>
+    </tr>
+    <tr>
+        <td>[`args`](#args)</td>
+        <td>`string[]`</td>
+        <td>`[]`</td>
+        <td>
+            Аргументы, которые должны быть переданы процессу с dev сервером.
+        </td>
+    </tr>
+    <tr>
+        <td>[`cwd`](#cwd)</td>
+        <td>`string`</td>
+        <td>_Ближайшая директория с package.json относительно конфига Testplane_</td>
+        <td>
+            Рабочая директория dev сервера.
+        </td>
+    </tr>
+    <tr>
+        <td>[`logs`](#logs)</td>
+        <td>`boolean`</td>
+        <td>`true`</td>
+        <td>
+            Включает стриминг логов dev сервера в консоль с префиксом `[dev server]`.
+        </td>
+    </tr>
+    <tr>
+        <td>[`readinessProbe`](#readiness-probe)</td>
+        <td>`(devServer: ChildProcess) => Promise<void/> | ReadinessProbeOpts`</td>
+        <td>`null`</td>
+        <td>
+            Проверка, что сервер готов принимать запросы. Если не указана, проверка отключена.
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+### command {#command}
+
+Команда для запуска dev сервера. Если не указана, dev сервер не будет запущен.
+
+### reuseExisting {#reuseexisting}
+
+Переиспользовать уже запущенный dev сервер вместо создания нового. Когда эта опция включена, Testplane проверит, доступен ли сервер по указанному URL, прежде чем пытаться запустить новый.
+
+Эта опция требует указания свойства `url` в секции `readinessProbe`, которое будет использоваться для проверки того, что сервер готов и доступен.
+
+### env {#env}
+
+Переменные окружения, которые должны быть переданы процессу с dev сервером, в дополнение к `process.env` основного процесса.
+
+### args {#args}
+
+Аргументы, которые должны быть переданы процессу с dev сервером.
+
+### cwd {#cwd}
+
+Рабочая директория dev сервера.
+
+### logs {#logs}
+
+Включает стриминг логов dev сервера в консоль с префиксом `[dev server]`
+
+### readinessProbe {#readiness-probe}
+
+Проверка, что сервер готов принимать запросы. Если не указана, проверка отключена.
+
+Если передана асинхронная функция, Testplane дождется, пока результирующий промис будет отрезолвлен. Тип функции:
+
+```typescript
+type readinessProbeFn = (devServer: ChildProcess) => Promise<void>;
+```
+
+Может быть передан объект `ReadinessProbeOpts`:
+
+<table>
+    <thead>
+    <tr>
+        <td>**Параметр**</td>
+        <td>**Тип**</td>
+        <td>**По&nbsp;умолчанию**</td>
+        <td>**Описание**</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>`url`</td>
+        <td>`string`</td>
+        <td>_N/A_</td>
+        <td>
+            URL, по которому Testplane может проверить, что сервер готов принимать запросы. Проверка отключается, если он не указан.
+        </td>
+    </tr>
+    <tr>
+        <td>`isReady`</td>
+        <td>`(fetchResponse => bool | Promise<bool>)`</td>
+        <td>_Функция, которая возвращает `true`, если статус ответа сервера 2xx_</td>
+        <td>
+            Предикат, определяющий готовность сервера по ответу на запрос к `url`.
+        </td>
+    </tr>
+    <tr>
+        <td>`timeouts`</td>
+        <td>`ReadinessProbeTimeouts`</td>
+        <td>_см. описание_</td>
+        <td>
+            - `waitServerTimeout` — таймаут на ожидание готовности сервера в мс. По умолчанию: `60_000`.
+            - `probeRequestTimeout` — таймаут одного запроса на проверку готовности в мс. По умолчанию: `10_000`.
+            - `probeRequestInterval` — интервал между проверками в мс. По умолчанию: `1_000`.
+        </td>
+    </tr>
+    </tbody>
+</table>

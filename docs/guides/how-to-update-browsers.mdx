@@ -3,7 +3,7 @@ import TabItem from "@theme/TabItem";
 
 import Admonition from "@theme/Admonition";
 
-# How to Update Browsers in Large Projects
+# Updating Browsers at Scale
 
 ## Problem
 
@@ -41,14 +41,14 @@ The drawback of this approach is that you need to manually change the test files
 
 ## Solution 2: Browser Version Changer
 
-You can use the [hermione-browser-version-changer][hermione-browser-version-changer] plugin, which allows you to define the browser version for a specific test based on a special dictionary _(store)_ and predicates for all available browser versions in the project.
+You can use the [@testplane/browser-version-changer][hermione-browser-version-changer] plugin, which allows you to define the browser version for a specific test based on a special dictionary _(store)_ and predicates for all available browser versions in the project.
 
 Example usage of the plugin:
 
 ```javascript
 module.exports = {
     plugins: {
-        "hermione-browser-version-changer": {
+        "@testplane/browser-version-changer": {
             enabled: true,
             initStore: async () => {
                 // Prepare a dictionary with arbitrary tags for labeling
@@ -86,7 +86,7 @@ module.exports = {
 
 The provided example is very conditional, and it is possible that in your project you won’t even need to use a _store_, and checking the test against a given regex pattern will be sufficient.
 
-[hermione-browser-version-changer]: ../../plugins/hermione-browser-version-changer
+[@testplane/browser-version-changer]: ../../plugins/hermione-browser-version-changer
 [testplane]: https://github.com/gemini-testing/testplane
 [html-reporter]: ../../html-reporter/html-reporter-setup
 [gh-issues]: https://github.com/gemini-testing/testplane/issues/

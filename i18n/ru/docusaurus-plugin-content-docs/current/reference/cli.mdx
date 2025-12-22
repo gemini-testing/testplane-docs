@@ -1,0 +1,752 @@
+import Admonition from "@theme/Admonition";
+import Version from "../_partials/specs/version.mdx";
+
+# CLI {#cli}
+
+## Команда `testplane`
+
+Основная команда для запуска тестов.
+
+```bash
+> testplane --help
+
+  Usage: testplane [options] [command] [paths...]
+
+  Run tests
+
+  Options:
+
+    -V, --version                    output the version number
+    -c, --config <path>              path to configuration file
+    -b, --browser <browser>          run tests only in specified browser
+    -s, --set <set>                  run tests only in the specified set
+    -r, --require <module>           require module
+    --grep <grep>                    run only tests matching the pattern
+    --tag <tag>                      run only tests with specified tags
+    --reporter <name>                test reporters
+    --update-refs                    update screenshot references or gather them if they do not exist ("assertView" command)
+    --inspect [inspect]              nodejs inspector on [=[host:]port]
+    --inspect-brk [inspect-brk]      nodejs inspector with break at the start
+    --repl [type]                    run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
+    --repl-before-test [type]        open repl interface before test run (default: false)
+    --repl-on-fail [type]            open repl interface on test fail only (default: false)
+    --devtools                       switches the browser to the devtools mode with using CDP protocol
+    --local                          use automatically downloaded browsers and drivers, provided by Testplane
+    --keep-browser                   do not close browser session after test completion
+    --keep-browser-on-fail           do not close browser session when test fails
+    -h, --help                       output usage information
+```
+
+Например,
+
+```bash
+npx testplane --config ./config.js --reporter flat --browser firefox --grep name
+```
+
+### Опции {#testplane-options}
+
+#### Version {#testplane-version}
+
+Вывести текущую версию `testplane`.
+
+```bash
+testplane --version
+```
+
+#### Config {#testplane-config}
+
+Использовать пользовательский файл конфигурации.
+
+```bash
+testplane --config ./local.testplane.config.ts
+```
+
+#### Browser {#testplane-browser}
+
+Запускать тесты только в указанном браузере.
+
+```bash
+testplane --browser chrome
+```
+
+#### Set {#testplane-set}
+
+Запускать тесты только в указанном наборе.
+
+```bash
+testplane --set desktop
+```
+
+#### Require {#testplane-require}
+
+Загрузить внешние модули, локально существующие на вашей машине, перед запуском `testplane`. Это полезно для загрузчиков, таких как ECMAScript модули через [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane --require ./tsconfig-register-paths.js
+```
+
+#### Reporter {#testplane-reporter}
+
+Может использоваться для установки одного из следующих репортеров:
+
+-   `flat` - вся информация о неудачных и повторно выполненных тестах будет сгруппирована по браузерам в конце отчета;
+-   `plain` - информация о сбоях и повторениях будет размещена после каждого теста;
+-   `jsonl` - отображает подробную информацию о каждом результате теста в формате [jsonl](https://jsonlines.org/).
+
+По умолчанию используется `flat`.
+
+Информация о результатах тестов выводится в командную строку по умолчанию. Но есть возможность перенаправить вывод в файл:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}'
+```
+
+Вы также можете указать несколько репортеров:
+
+```bash
+testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --reporter flat
+```
+
+Помимо этих терминальных репортеров, вы можете использовать плагин [html-reporter][html-reporter], чтобы генерировать HTML-отчеты.
+
+#### Grep {#testplane-grep}
+
+Запускать только тесты, полное название которых совпадает с шаблоном.
+
+##### Пример {#testplane-grep-example}
+
+Если у вас есть некоторые тесты:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+Вы можете запустить тесты внутри "nested path" набора, не запуская тесты внутри "other path" набора, с любым из этих вариантов:
+
+```bash
+testplane --grep "nested path"
+testplane --grep "with nested path"
+testplane --grep "test with nested path"
+```
+
+#### Tag {#testplane-tag}
+
+<Version version="8.37.0" />
+
+Запуск только тестов, соответствующих паттерну.
+
+##### Example {#testplane-tag-example}
+
+Вы можете назначить теги тесту с помощью второго параметре `describe` или `it` (пример ниже).
+Также вы можете добавлять теги динамически во время выполнения теста с помощью команды [addTag][add-tag],
+но вы не можете использовать динамически добавленные теги для фильтрации тестов при запуске.
+
+```ts
+describe("test", {tag: "all"}, () => {
+    describe("with", {tag: "desktop"}, () => {
+        describe("nested path", {tag: ["smoke", "slow"]}, () => {
+            await browser.addTag("some");
+            ...
+        });
+        describe("other path", {tag: "slow"}, () => {
+            ...
+        })
+    });
+    describe("with", {tag: "mobile"}, () => {
+        describe("nested path", {tag: "smoke"}, () => {
+            ...
+        });
+        describe("other path", {tag: "slow"}, () => {
+            ...
+        })
+    });
+});
+```
+
+Вы можете использовать теги для запуска тестов, комбинируя их с логическими операторами & (и), | (или) и ! (не).
+
+```bash
+testplane --tag "desktop"
+testplane --tag "mobile"
+testplane --tag "mobile&smoke"
+testplane --tag "desktop|slow"
+testplane --tag "!slow"
+```
+
+#### Update-refs {#testplane-update-refs}
+
+Запуск тестов с обновлением всех ссылок на скриншоты, созданных командой [assertView][assert-view].
+
+```bash
+testplane --update-refs
+```
+
+<Admonition type="info">
+    Рекомендуемый способ обновления скриншотов - использование плагина
+    [html-reporter][html-reporter].
+</Admonition>
+
+#### Inspect {#testplane-inspect}
+
+Запускает тесты Testplane с использованием [инспектора nodejs](https://nodejs.org/en/docs/inspector).
+
+```bash
+testplane --inspect
+```
+
+<Admonition type="info">
+    В режиме отладки запускается только один рабочий и все тесты выполняются только в нём.
+    Используйте этот режим с опцией `sessionsPerBrowser=1`, чтобы отлаживать тесты поодиночке.
+</Admonition>
+
+#### Inspect break {#testplane-inspect-brk}
+
+То же, что и [Инспекция](#testplane-inspect), но с точкой останова в начале.
+
+```bash
+testplane --inspect-brk
+```
+
+#### REPL {#testplane-repl}
+
+Включает [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). Также отключает ограничение времени выполнения теста. Можно использовать, указав следующие опции CLI:
+
+-   `--repl` - в этом режиме следует запускать только один тест в одном браузере, иначе будет выбрасываться ошибка. Интерфейс REPL не запускается автоматически, поэтому вам нужно вызвать команду [switchToRepl][switch-to-repl] в коде теста;
+-   `--repl-before-test` - то же, что и опция `--repl`, за исключением того, что интерфейс REPL открывается автоматически перед запуском теста;
+-   `--repl-on-fail` - то же, что и опция `--repl`, за исключением того, что интерфейс REPL открывается автоматически при сбое теста.
+
+```bash
+testplane --repl --grep 'my test name' --browser chrome
+```
+
+<Admonition type="info">
+    Более подробная информация о режиме REPL в Testplane доступна в документации команды
+    [switchToRepl][switch-to-repl].
+</Admonition>
+
+#### Keep browser {#testplane-keep-browser}
+
+-   `--keep-browser` - в этом режиме браузер не закроется по завершению выполнения тестов, в консоли будет выведена информация как подключиться к оставшемуся браузеру
+-   `--keep-browser-on-fail` - то же, что и опция `--keep-browser`, только браузер останется только в том случае, если тесты завершатся неуспешно
+
+Пример вывода в консоли c информацией для подключения к браузеру
+
+```
+[15:44:38 +0700] Testplane run has finished, but the browser won't be closed, because you passed the --keep-browser argument.
+[15:44:38 +0700] You may attach to this browser using the following capabilities:
+[15:44:38 +0700] {
+  "sessionId": "c69958b3f85b851f7bf83f27bb026d58",
+  "sessionCaps": {
+    "acceptInsecureCerts": false,
+    ...
+  },
+  "driverPid": 31745
+}
+[15:44:38 +0700] ✓ test example #0 [chrome:c69958b3f85b851f7bf83f27bb026d58, pid:31744] - 1676ms
+
+```
+
+#### Devtools {#testplane-devtools}
+
+Запускает тесты Testplane с использованием [протокола автоматизации devtools][webdriver-vs-cdp].
+
+```bash
+testplane --devtools
+```
+
+#### Help {#testplane-help}
+
+Выводит информацию о параметрах и командах. Плагины Testplane могут добавлять свои собственные команды и параметры.
+
+Например, [html-reporter][html-reporter] добавляет команду `gui`.
+
+```bash
+testplane --help
+```
+
+## Команда `list-tests`
+
+Команда для получения списка тестов в одном из доступных форматов (`list` или `tree`).
+
+```bash
+> testplane list-tests --help
+
+  Использование: list-tests [опции] [пути...]
+
+  Выводит информацию о всех тестах в одном из доступных форматов
+
+  Опции:
+
+    -c, --config <path>        путь к файлу конфигурации
+    -b, --browser <browser>    выводит тесты только в указанном браузере
+    -s, --set <set>            выводит тесты только в указанном наборе
+    -r, --require <module>     подключить модуль
+    --grep <grep>              выводит только тесты, соответствующие шаблону
+    --ignore <file-path>       исключить пути из чтения тестов
+    --silent [type]            флаг отключения генерации событий во время чтения тестов (по умолчанию: false)
+    --output-file <file-path>  сохранить результаты в указанный файл
+    --formatter [name]         вернуть тесты в указанном формате (по умолчанию: list)
+    -h, --help                 вывести информацию об использовании
+```
+
+Например,
+
+```
+npx testplane list-tests --config ./config.js --browser firefox --grep name --formatter tree
+```
+
+### Опции {#list-tests-options}
+
+#### Config {#list-tests-config}
+
+Использовать пользовательский файл конфигурации.
+
+```bash
+testplane list-tests --config ./local.testplane.config.ts
+```
+
+#### Browser {#list-tests-browser}
+
+Выводит тесты только в указанном браузере.
+
+```bash
+testplane list-tests --browser chrome
+```
+
+#### Set {#list-tests-set}
+
+Выводит тесты только в указанном наборе.
+
+```bash
+testplane list-tests --set desktop
+```
+
+#### Require {#list-tests-require}
+
+Загрузить внешние модули, локально существующие на вашей машине, перед выводом тестов `testplane`. Это полезно для загрузчиков, таких как ECMAScript модули через [esm](https://www.npmjs.com/package/esm).
+
+```bash
+testplane list-tests --require ./tsconfig-register-paths.js
+```
+
+#### Grep {#list-tests-grep}
+
+Выводит только тесты, полное название которых совпадает с шаблоном.
+
+##### Пример {#list-tests-grep-example}
+
+Если у вас есть некоторые тесты:
+
+```ts
+describe("test", () => {
+    describe("with", () => {
+        describe("nested path", () => {
+            ...
+        });
+        describe("other path", () => {
+            ...
+        })
+    });
+});
+```
+
+Вы можете вывести тесты внутри "nested path" набора, не включая тесты внутри "other path" набора, с любым из этих вариантов:
+
+```bash
+testplane list-tests --grep "nested path"
+testplane list-tests --grep "with nested path"
+testplane list-tests --grep "test with nested path"
+```
+
+#### Silent {#list-tests-silent}
+
+Выводит тесты без генерации событий.
+
+```bash
+testplane list-tests --silent
+```
+
+#### Output file {#list-tests-output-file}
+
+Сохранить список тестов в указанный файл.
+
+```bash
+testplane list-tests --output-file "./tests.json"
+```
+
+#### Formatter {#list-tests-formatter}
+
+Выводит тесты в указанном формате. Доступные форматтеры: `list` (по умолчанию) и `tree`.
+
+##### List formatter {#list-tests-formatter-list}
+
+Выводит тесты в формате `list`.
+
+```bash
+testplane list-tests --formatter "list"
+```
+
+Для следующих тестов:
+
+```typescript title="example.testplane.ts"
+describe("suite1", () => {
+    it("test1", () => {});
+});
+
+it("test2", () => {});
+```
+
+Возвращает следующий вывод:
+
+```json
+[
+    {
+        "id": "d2b3179",
+        "titlePath": [
+            "suite",
+            "test1"
+        ],
+        "browserIds": [
+            "yandex",
+            "chrome"
+        ],
+        "file": "tests/example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+    {
+        "id": "5a105e8",
+        "titlePath": [
+            "test1"
+        ],
+        "browserIds": [
+            "yandex",
+            "chrome"
+        ],
+        "file": "tests/example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+]
+```
+
+Здесь у нас есть плоский список уникальных тестов, где:
+
+-   `id` (`String`) - уникальный идентификатор теста;
+-   `titlePath` (`String[]`) - полное название теста. Каждый элемент массива - название набора или теста. Чтобы получить полное название, нужно просто соединить `titlePath` с одним пробелом;
+-   `browserIds` (`String[]`) - список браузеров, в которых будет запускаться тест;
+-   `file` (`String`) - путь к файлу относительно рабочей директории;
+-   `pending` (`Boolean`) - флаг, означающий, что тест отключен или нет;
+-   `skipReason` (`String`) - причина, по которой тест был отключен.
+
+##### Tree formatter {#list-tests-formatter-tree}
+
+Выводит тесты в формате `tree`.
+
+```bash
+testplane list-tests --formatter "tree"
+```
+
+Для следующих тестов:
+
+```typescript title="example.testplane.ts"
+describe("suite1", () => {
+    it("test1", () => {});
+});
+
+it("test2", () => {});
+```
+
+Возвращает следующий вывод:
+
+```json
+[
+    {
+        "id": "36749990",
+        "title": "suite1",
+        "line": 1,
+        "column": 1,
+        "file": "example.testplane.ts",
+        "suites": [],
+        "tests": [
+            {
+                "id": "d2b3179",
+                "title": "test1",
+                "line": 2,
+                "column": 5,
+                "browserIds": ["yandex", "chrome"]
+            }
+        ],
+        "pending": false,
+        "skipReason": ""
+    },
+    {
+        "id": "5a105e8",
+        "title": "test2",
+        "line": 5,
+        "column": 1,
+        "browserIds": ["yandex", "chrome"],
+        "file": "example.testplane.ts",
+        "pending": false,
+        "skipReason": ""
+    }
+]
+```
+
+Здесь у нас есть список уникальных тестов в виде структуры дерева (с родительскими наборами), где `Suite` имеет следующие опции:
+
+-   `id` (`String`) - уникальный идентификатор набора;
+-   `title` (`String`) - заголовок набора;
+-   `line` (`Number`) - строка, в которой был вызван набор;
+-   `column` (`Number`) - столбец, в котором был вызван набор;
+-   `file` (`String`, только в верхнем наборе) - путь к файлу относительно рабочей директории;
+-   `suites` (`Suite[]`, существует только в наборе) - список вложенных наборов;
+-   `tests` (`Test[]`) - список тестов;
+-   `pending` (`Boolean`) - флаг, означающий, что тест отключен или нет;
+-   `skipReason` (`String`) - причина, по которой тест был отключен.
+
+И `Test` имеет следующие опции:
+
+-   `id` (`String`) - уникальный идентификатор теста;
+-   `title` (`String`) - заголовок теста;
+-   `line` (`Number`) - строка, в которой был вызван тест;
+-   `column` (`Number`) - столбец, в котором был вызван тест;
+-   `browserIds` (`String[]`) - список браузеров, в которых будет запущен тест;
+-   `file` (`String`, только в тестах без родительских наборов) - путь к файлу относительно рабочей директории;
+-   `pending` (`Boolean`) - флаг, означающий, что тест отключен или нет;
+-   `skipReason` (`String`) - причина, по которой тест был отключен.
+
+#### Help {#list-tests-help}
+
+Выводит информацию о параметрах и командах. Плагины Testplane могут добавлять свои собственные команды и параметры.
+
+Например, [html-reporter][html-reporter] добавляет команду `gui`.
+
+```bash
+testplane list-tests --help
+```
+
+## Команда `list-browsers`
+
+Команда для получения всех браузеров из конфигурации.
+
+```bash
+> npx testplane list-browsers --help
+
+  Usage: list-browsers [options]
+
+  Lists all browsers from the config
+
+  Options:
+
+    --type [type]      return browsers in specified type ('tags': browserName and browserVersion, 'ids': browserId from config) (default: tags)
+    --format [format]  return browsers in specified format ('json' / 'plain') (default: json)
+    -h, --help         output usage information
+```
+
+Например,
+
+```
+npx testplane list-browsers --type ids --format plain
+```
+
+### Опции {#list-browsers-options}
+
+#### Type {#list-browsers-type}
+
+Укажите тип выводимых данных: browserId из конфигурации или browserName с browserVersion.
+
+```bash
+testplane list-browsers --type tags
+```
+
+#### Format {#list-browsers-format}
+
+Укажите формат выводимых данных: обычный текст или json.
+
+```bash
+testplane list-browsers --format json
+```
+
+#### Пример {#list-browsers-example}
+
+Если у вас имеется следующий раздел "browsers" в вашей конфигурации [Testplane](/docs/v8/reference/config/main):
+
+```json
+{
+    "my-chrome": { "desiredCapabilities": { "browserName": "chrome", "browserVersion": "130.0" } },
+    "my-safari": { "desiredCapabilities": { "browserName": "safari" } }
+}
+```
+
+Следующие команды произведут соответствующий результат:
+
+|                       Команда                        |                                   Результат                                    |
+| :--------------------------------------------------: | :----------------------------------------------------------------------------: |
+| `testplane list-browsers --type ids --format plain`  |                             `my-chrome my-safari`                              |
+|  `testplane list-browsers --type ids --format json`  |                          `["my-chrome","my-safari"]`                           |
+| `testplane list-browsers --type tags --format plain` |                             `chrome@130.0 safari`                              |
+| `testplane list-browsers --type tags --format json`  | `[{"browserName":"chrome","browserVersion":"130.0"},{"browserName":"safari"}]` |
+
+#### Help {#list-browsers-help}
+
+Выводит информацию команде и ее опциях.
+
+```bash
+testplane list-browsers --help
+```
+
+## Команда `config`
+
+Команда для получения всех значений конфигурации Testplane, включая значения по умолчанию и перезаписанные значения с помощью переменных среды.
+
+```bash
+> npx testplane config --help
+
+  Usage: config [options]
+
+  Outputs Testplane config (including default and overriden by environment variables values)
+
+  Options:
+
+    -c, --config <path>  path to configuration file
+    --space <count>      white spaces count to insert into the JSON output (default: 0)
+    -h, --help           output usage information
+```
+
+Например:
+
+```bash
+npx testplane config --space 4
+```
+
+### Опции {#config-options}
+
+#### Space {#config-space}
+
+Укажите количество пробелов, используемых для форматирования человекочитаемого вывода команды.
+
+```bash
+testplane config --space 4
+```
+
+#### Help {#config-help}
+
+Выводит информацию команде и ее опциях.
+
+```bash
+testplane config --help
+```
+
+## Команда `install-deps` {#install-deps}
+
+Эта команда является частью рецепта [Как запустить Testplane в локальном браузере](/docs/v8/basic-guides/managing-browsers).
+
+Используйте команду `install-deps`, чтобы загрузить все браузеры, указанные в [конфиге Testplane](/docs/v8/reference/config/main).
+
+Если эта команда запущена на поддерживаемой версии Ubuntu, также будут загружены все отсутствующие необходимые пакеты Ubuntu.
+
+### Использование {#usage}
+
+```bash
+npx testplane install-deps
+```
+
+### Аргументы команды {#arguments}
+
+Вы можете также указать, какие браузеры нужно загрузить.
+
+Например, если у вас описаны браузеры "chrome-dark", "firefox-dark" в <a href="/docs/v8/reference/config/main">конфигурации Testplane</a>, вы можете использовать следующую команду для загрузки только этих двух браузеров:
+
+```bash
+npx testplane install-deps chrome-dark firefox-dark
+```
+
+Поддерживается также использование названий браузеров с версиями в формате `<browserName>@<browserVersion>`:
+
+```bash
+npx testplane install-deps chrome@130 firefox@104
+```
+
+### Директория установки {#directory}
+
+По умолчанию браузеры и драйверы загружаются в директорию ".testplane" в домашней директории.
+
+Вы можете указать другой путь, установив переменную среды `TESTPLANE_BROWSERS_PATH`:
+
+```bash
+TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
+TESTPLANE_BROWSERS_PATH=~/.testplane npx testplane install-deps
+```
+
+## Переопределение настроек {#overriding-settings}
+
+Все параметры можно переопределить с помощью флагов командной строки или переменных окружения с приоритетами в следующем порядке по убыванию:
+
+-   Опция командной строки;
+
+-   Переменная окружения;
+
+-   Значение в файле конфигурации;
+
+-   Значение по умолчанию.
+
+### Переопределение с помощью CLI опции {#overriding-cli-settings}
+
+Чтобы переопределить настройку в конфигурации с помощью опции CLI, преобразуйте полный путь параметра в `--kebab-case`.
+
+Например, чтобы переопределить свойство `baseUrl` в конфигурации:
+
+```bash
+testplane path/to/mytest.js --base-url http://example.com
+```
+
+Это также работает для вложенных свойств. Пример переопределения значения `browsers.firefox.sessionsPerBrowser` (предполагается, что у вас определен браузер с идентификатором "firefox"):
+
+```bash
+testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
+```
+
+### Переопределение с помощью переменной окружения {#overriding-env-settings}
+
+Чтобы переопределить настройку с помощью переменной окружения, преобразуйте её полный путь в `snake_case` и добавьте префикс `testplane_`.
+
+Примеры переопределения значений `baseUrl` и `browsers.firefox.sessionsPerBrowser` с использованием переменных окружения вместо опций CLI:
+
+```bash
+testplane_base_url=http://example.com testplane path/to/mytest.js
+testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
+```
+
+Кроме переопределения значений конфигурации, существуют также две дополнительные переменные окружения: "TESTPLANE_SKIP_BROWSERS" и "TESTPLANE_SETS":
+
+#### TESTPLANE_SKIP_BROWSERS
+
+Пропустить браузеры, указанные в конфигурации, путем передачи идентификаторов браузеров. Несколько идентификаторов браузеров должны быть разделены запятыми (после запятых разрешены пробелы).
+
+```bash
+TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
+```
+
+#### TESTPLANE_SETS
+
+Запускает только указанные наборы (альтернатива опции CLI `--set`).
+
+```bash
+TESTPLANE_SETS=desktop,touch testplane
+```
+
+[html-reporter]: ../../html-reporter/html-reporter-setup
+[assert-view]: ../../commands/browser/assertView
+[add-tag]: ../../commands/browser/addTag
+[switch-to-repl]: ../../commands/browser/switchToRepl
+[webdriver-vs-cdp]: ../webdriver-vs-cdp

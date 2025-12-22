@@ -1,10 +1,10 @@
 import Admonition from "@theme/Admonition";
 
-# testplane-chunks
+# @testplane/chunks
 
 ## Overview {#overview}
 
-Use the [testplane-chunks][testplane-chunks] plugin to run tests in parallel.
+Use the [@testplane/chunks][testplane-chunks] plugin to run tests in parallel.
 
 If your project has a large number of tests and at the same time there is not enough performance of concrete CI servers to perform all these tests on one server in an acceptable time, then this plugin is for you.
 
@@ -12,13 +12,13 @@ The plugin allows you to run tests in parallel on multiple servers. Thereby spee
 
 ### What does this plugin do then? {#what_does_plugin_do}
 
-The `testplane-chunks` plugin splits **always in the same way** your tests into a given number of chunks and gives Testplane to run only the chunk that you specified. The key here is _"always in the same way"_. That is, the operation of splitting into chunks is [idempotent][idempotence].
+The `@testplane/chunks` plugin splits **always in the same way** your tests into a given number of chunks and gives Testplane to run only the chunk that you specified. The key here is _"always in the same way"_. That is, the operation of splitting into chunks is [idempotent][idempotence].
 
 ### What gives idempotence? {#what_does_idempotence_give}
 
 You can setup your CI so as to reuse the results of test runs from separate chunks during a general restart. This will allow you to save time when restarting all tests, since only those chunks that have failed tests will be run.
 
-For example, your project has 1 thousand tests. You have split these tests into 10 chunks of 100 tests each. This means that when you run tests in your pull request, you will have 10 testplanes running simultaneously on 10 servers. Each Testplane will perform 100 tests. In some of these runs, the tests may fail. For example, 2 out of 10 chunks have failed. You decide to restart the test run, hoping that this time the tests will pass. So, when you restart Testplane with the number of the failed chunk, you can be absolutely sure that the `testplane-chunks` plugin will generate exactly the same batch of tests for Testplane as in its last launch.
+For example, your project has 1 thousand tests. You have split these tests into 10 chunks of 100 tests each. This means that when you run tests in your pull request, you will have 10 testplanes running simultaneously on 10 servers. Each Testplane will perform 100 tests. In some of these runs, the tests may fail. For example, 2 out of 10 chunks have failed. You decide to restart the test run, hoping that this time the tests will pass. So, when you restart Testplane with the number of the failed chunk, you can be absolutely sure that the `@testplane/chunks` plugin will generate exactly the same batch of tests for Testplane as in its last launch.
 
 <Admonition type="warning">
     When organizing the restart of tests in your CI, remember that in order to **re-use** runs of
@@ -45,7 +45,7 @@ Use the [merge-reports][merge-reports] command, which [html-reporter][html-repor
 ## Install {#install}
 
 ```bash
-npm install -D testplane-chunks
+npm install -D @testplane/chunks
 ```
 
 ## Setup {#setup}
@@ -55,7 +55,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 ```javascript
 module.exports = {
     plugins: {
-        "testplane-chunks": {
+        "@testplane/chunks": {
             count: 7, // Split tests to 7 chunks
             run: 1, // Run 1st chunk
         },
@@ -102,7 +102,7 @@ testplane_chunks_count=10 testplane_chunks_run=1 npx testplane ...
 
 ## Useful links {#useful_links}
 
--   [testplane-chunks plugin sources][testplane-chunks]
+-   [@testplane/chunks plugin sources][testplane-chunks]
 -   [What is idempotence?][idempotence]
 
 [html-reporter]: ../../html-reporter/html-reporter-setup

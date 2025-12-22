@@ -1,0 +1,116 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import Admonition from "@theme/Admonition";
+import AddElementCommandExample from "@site/docs/reference/config/_partials/examples/_prepare-browser-add-element-command.mdx";
+
+# Custom Commands
+
+Testplane allows you to enhance your test suites by adding custom commands. These commands can streamline repetitive tasks, encapsulate complex actions, and improve code readability.
+
+<Admonition title="What you'll learn">
+
+-   How to add custom commands to the browser object.
+-   How to add custom commands to elements.
+-   Ways to overwrite existing commands.
+-   Make custom commands work in a TypeScript environment.
+
+</Admonition>
+
+## Adding Custom Commands to the Browser Object
+
+<Admonition type="tip">
+    A good place to add all of your custom commands is
+    [`prepareBrowser`](../reference/config/prepare-browser.mdx) hook.
+</Admonition>
+
+To add a custom command to the `browser` object, use the `addCommand` method. Here's how you can define a command that retrieves both the URL and title of the current page:
+
+```typescript
+browser.addCommand("getUrlAndTitle", async function () {
+    // this in the context of custom commands points to browser object
+    return {
+        url: await this.getUrl(),
+        title: await this.getTitle(),
+    };
+});
+```
+
+You can then use this custom command in your tests:
+
+```typescript
+it("should fetch URL and title", async function () {
+    const result = await browser.getUrlAndTitle();
+    console.log(result); // { url: 'https://example.com', title: 'Example Domain' }
+});
+```
+
+## Adding Custom Commands to Elements
+
+Custom commands can also be added to element instances. For instance, to create a command that gets element position:
+
+<AddElementCommandExample />
+
+Note the last, third parameter is set to `true` — it means that this command should be added to element instances.
+
+## Overwriting Existing Commands
+
+There might be scenarios where you need to modify the behavior of existing commands. Testplane allows you to overwrite these commands using the `overwriteCommand` method. For example, to add logging to the `click` command:
+
+```typescript
+browser.overwriteCommand("click", async function (this: WebdriverIO.Element, origClick, options) {
+    console.log("Element clicked:", this.selector);
+    await origClick(options);
+});
+```
+
+In this example, before executing the original `click` function, a message is logged to the console.
+
+## Using Custom Commands with TypeScript
+
+To ensure TypeScript recognizes your custom commands, you need to augment the WebdriverIO types. To do that, follow these simple steps:
+
+1.  Create a `custom-commands.d.ts` file in your project.
+
+2.  Make sure TypeScript compiler "sees" this file during build: you might need to include it in your `tsconfig.json`.
+
+3.  Write your type definitions as follows. Note that there are two file contexts in TypeScript: module and ambient. If you have at least one import/export in your file, the file is in "module" mode, otherwise it's in ambient. Choose declaration style accordingly.
+
+<Tabs>
+    <TabItem value="module" label="Module mode" default>
+
+            ```typescript
+            import 'webdriverio'; // Can be any import, not necessarily webdriverio
+
+            declare global {
+                declare namespace WebdriverIO {
+                    interface Browser {
+                        customCommand: (arg: any) => Promise<void>
+                    }
+
+                    interface Element {
+                        elementCustomCommand: (arg: any) => Promise<void>
+                    }
+                }
+            }
+            ```
+
+        </TabItem>
+        <TabItem value="ambient" label="Ambient mode">
+
+            ```typescript
+            declare namespace WebdriverIO {
+                interface Browser {
+                    customCommand: (arg: any) => Promise<void>
+                }
+
+                interface Element {
+                    elementCustomCommand: (arg: any) => Promise<void>
+                }
+            }
+            ```
+
+        </TabItem>
+
+</Tabs>
+
+This declaration extends the `Browser` and `Element` interfaces to include your custom commands, allowing TypeScript to recognize them without errors.
