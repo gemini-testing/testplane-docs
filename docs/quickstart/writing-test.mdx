@@ -5,8 +5,6 @@
 Чтобы узнать, как написать тест, ознакомьтесь с примером:
 
 ```javascript
-testplane-tests/example.testplane.ts
-
 describe("test examples", () => {
     it("docs search test", async ({browser}) => {
         await browser.openAndWait("https://testplane.io/");
@@ -32,50 +30,252 @@ describe("test examples", () => {
     });
 });
 ```
-Файл с тестом находится в папке `testplane-tests`.
+Файл с `example.testplane.ts` находится в папке `testplane-tests`.
 
 ## Базовый синтаксис
 
-### Группировка тестов
+### Навигация
 
-
-
-### Поле `describe`
-
-Чтобы написать тест, необходимо 
-
-
-Далее введите в терминале команду:
-
-```bash
-npx testplane
+Для перемещения по страницам используйте метод `await browser.url()`. Testplane предоставляет методы для типичных навигационных действий: обновление страницы, переход назад/вперед по истории браузера. Все методы навигации являются асинхронными и должны использоваться с `await`:
+```javascript
+it('page navigation', async ({browser}) => {
+    // Открыть URL - базовый метод для загрузки страницы
+    await browser.url('https://example.com');
+});
 ```
-
-## Creating a Test {#test_creation}
-
-Navigate to the `tests/example.testplane.js` file with a test. Here you can see a test example or write your own. For example,
+Если на странице имеются элементы, которые отображаются с задержкой, для корректного выполнения тестов укажите явное ожидание:
 
 ```javascript
-describe("github", async function () {
-    it("should find testplane", async function ({ browser }) {
-        await browser.url("https://github.com/gemini-testing/testplane");
-        const elem = await browser.$("#readme h1");
+await browser.url("");
+await browser.$('h1').waitForExist({ timeout: 5000 });
+const title = await browser.$('h1').getText();
+```
 
-        await expect(elem).toHaveText("Testplane");
+Либо используйте команду:
+
+```javascript
+await browser.openAndWait("");
+```
+Команда `await browser.openAndWait()` по умолчанию дожидается загрузки всех необходимых элементов на странице.
+
+### Селекторы
+
+Testplane поддерживает различные стратегии поиска элементов: `CSS` селекторы (самые распространенные), текстовые селекторы (по содержимому), `XPath` для сложных запросов. Метод `$()` возвращает первый найденный элемент, а `$$()` - массив всех подходящих элементов:
+
+```javascript
+it('different selectors', async ({browser}) => {
+    // CSS селекторы - стандартный способ поиска элементов
+    await browser.$('.class-name');  // По классу
+    await browser.$('#id-name');     // По ID
+    
+    // Текстовый селектор - поиск элемента с точным совпадением текста
+    // Знак = означает точное совпадение
+    const link = await browser.$('a=Click me');
+    
+    // Частичное совпадение текста - знак * означает "содержит"
+    const button = await browser.$('button*=Submit');
+    
+    // XPath - мощный язык запросов для сложных поисков
+    await browser.$('//button[@type="submit"]');
+    
+    // Поиск нескольких элементов - возвращает массив
+    const items = await browser.$$('.list-item');
+    console.log(items.length);  // Количество найденных элементов
+});
+```
+
+### Взаимодействия с элементами
+
+Для поиска элементов используйте метод `$()` (один элемент) или `$$()` (множество элементов). После нахождения элемента можно выполнить различные действия: клик, ввод текста, двойной клик. Метод `setValue()` очищает поле и вводит новое значение, а `addValue()` добавляет текст к существующему:
+
+```javascript
+it('clicks and text input', async ({browser}) => {
+    // Найти элемент по CSS селектору и выполнить клик
+    const button = await browser.$('.submit-button');
+    await button.click();
+    
+    // Найти поле ввода и установить значение (предварительно очистив поле)
+    const input = await browser.$('#username');
+    await input.setValue('my-username');
+    
+    // Очистить поле вручную и добавить текст к существующему содержимому
+    await input.clearValue();
+    await input.addValue('new-text');
+    
+    // Двойной клик - полезно для выделения текста или специальных действий
+    await button.doubleClick();
+    
+    // Клик правой кнопкой мыши - для вызова контекстного меню
+    await button.click({button: 'right'});
+});
+```
+
+### Assertions
+
+Testplane использует `expect API` из `WebdriverIO` для проверки состояния элементов и страницы. Все `assertions` асинхронные и автоматически ждут выполнения условия в течение заданного таймаута. Можно инвертировать проверку с помощью `.not`:
+
+```javascript
+it('element checks', async ({browser}) => {
+    const element = await browser.$('.message');
+    
+    // Проверка видимости элемента - элемент должен быть в DOM и visible
+    await expect(element).toBeDisplayed();
+    // Инверсия - элемент не должен быть виден
+    await expect(element).not.toBeDisplayed();
+    
+    // Проверка существования в DOM - элемент есть в разметке
+    await expect(element).toExist();
+    
+    // Проверка текстового содержимого элемента
+    await expect(element).toHaveText('Expected text');  // Точное совпадение
+    await expect(element).toHaveTextContaining('partial');  // Частичное совпадение
+    
+    // Проверка атрибутов элемента
+    await expect(element).toHaveAttribute('href', '/link');  // Точное значение
+    await expect(element).toHaveAttributeContaining('class', 'active');  // Частичное
+    
+    // Проверка значения input/textarea элементов
+    const input = await browser.$('input');
+    await expect(input).toHaveValue('value');
+    
+    // Проверка URL текущей страницы
+    await expect(browser).toHaveUrl('https://example.com/page');  // Полный URL
+    await expect(browser).toHaveUrlContaining('/page');  // Часть URL
+    
+    // Проверка заголовка страницы (тег <title>)
+    await expect(browser).toHaveTitle('Page Title');
+});
+```
+
+### Хуки
+
+Хуки позволяют выполнять код до или после тестов, что полезно для подготовки тестового окружения и очистки. `before/after` выполняются один раз для всего блока `describe`, а `beforeEach/afterEach` - перед/после каждого теста:
+
+```javascript
+describe('Tests with hooks', () => {
+    // Выполняется один раз перед всеми тестами в блоке
+    // Используется для глобальной настройки, например, авторизации
+    before(async ({browser}) => {
+        await browser.url('/setup');
+    });
+    
+    // Выполняется один раз после всех тестов
+    // Полезно для финальной очистки ресурсов
+    after(async ({browser}) => {
+        // cleanup code
+    });
+    
+    // Выполняется перед каждым тестом
+    // Гарантирует чистое начальное состояние для каждого теста
+    beforeEach(async ({browser}) => {
+        await browser.url('/');
+    });
+    
+    // Выполняется после каждого теста
+    // Очистка состояния между тестами (cookies, localStorage и т.д.)
+    afterEach(async ({browser}) => {
+        await browser.deleteCookies();
+    });
+    
+    it('test 1', async ({browser}) => {
+        // beforeEach -> test 1 -> afterEach
+    });
+    
+    it('test 2', async ({browser}) => {
+        // beforeEach -> test 2 -> afterEach
     });
 });
 ```
 
-## Running a Test {#test_running}
+### Ожидания
 
-Now you can run the tests:
+Явные ожидания необходимы для работы с динамическим контентом, который загружается или изменяется асинхронно. Testplane автоматически ждет появления элементов, но для сложных сценариев можно использовать специальные методы ожидания:
 
-```bash
-npx testplane
+```javascript
+it('waiting for elements', async ({browser}) => {
+    const element = await browser.$('.dynamic-content');
+    
+    // Ждать пока элемент станет видимым (display !== none, visibility !== hidden)
+    // Таймаут по умолчанию можно переопределить
+    await element.waitForDisplayed({timeout: 5000});
+    
+    // Ждать появления элемента в DOM (может быть невидимым)
+    await element.waitForExist();
+    
+    // Ждать пока элемент станет кликабельным (видим и enabled)
+    // Полезно для кнопок, которые могут быть disabled
+    await element.waitForClickable();
+    
+    // Кастомное условие ожидания с помощью waitUntil
+    // Функция проверяется повторно до истечения таймаута
+    await browser.waitUntil(
+        async () => {
+            const text = await element.getText();
+            return text === 'Loaded';
+        },
+        {
+            timeout: 5000,
+            timeoutMsg: 'Text did not appear'  // Кастомное сообщение об ошибке
+        }
+    );
+});
 ```
 
-or launch the GUI mode and run the test through the browser interface
+### Работа с формами
 
-```bash
-npx testplane gui
+Testplane предоставляет специальные методы для работы с различными элементами форм. Чекбоксы и радио-кнопки управляются через клик. Для выпадающих списков `(<select>)` есть удобные методы выбора опций по видимому тексту или значению атрибута:
+
+```javascript
+it('form filling', async ({browser}) => {
+    // Ввод в текстовое поле - стандартный способ заполнения input элементов
+    await browser.$('#email').setValue('test@example.com');
+    
+    // Работа с чекбоксом - клик переключает состояние checked/unchecked
+    const checkbox = await browser.$('#agree');
+    await checkbox.click();
+    
+    // Выбор радио-кнопки - поиск по значению value и клик
+    await browser.$('input[value="option1"]').click();
+    
+    // Работа с выпадающим списком - несколько способов выбора опции
+    const select = await browser.$('#country');
+    // Выбор по видимому тексту в списке
+    await select.selectByVisibleText('Russia');
+    // Выбор по значению атрибута value
+    await select.selectByAttribute('value', 'ru');
+});
 ```
+
+### Работа с JavaScript кодом
+
+Иногда нужно выполнить произвольный JavaScript код в контексте страницы - например, для работы с `localStorage`, вызова функций или манипуляции `DOM` напрямую. Метод `execute()` выполняет код в браузере и может возвращать результат:
+
+```javascript
+it('executing custom JS', async ({browser}) => {
+    await browser.url('/');
+    
+    // Выполнить JavaScript в контексте браузера
+    // Код выполняется на странице, а не в Node.js
+    await browser.execute(() => {
+        window.localStorage.setItem('key', 'value');
+    });
+    
+    // Передача аргументов и получение результата
+    // Аргументы передаются после функции и доступны внутри нее
+    const result = await browser.execute((a, b) => {
+        return a + b;
+    }, 2, 3);
+    console.log(result); // 5 - результат выполнения в браузере
+    
+    // Выполнение кода на конкретном элементе
+    // Элемент передается как WebElement и доступен в функции
+    const element = await browser.$('.element');
+    await browser.execute((el) => {
+        el.style.border = '2px solid red';  // Манипуляция стилями напрямую
+    }, element);
+});
+```
+
+
+
+
