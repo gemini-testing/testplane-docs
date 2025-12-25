@@ -71,6 +71,15 @@ const stateDump: SaveStateData = await browser.saveState({
                 Function for filtering cookies, receiving cookie objects, and returning boolean.
             </td>
         </tr>
+        <tr>
+            <td>keepFile</td>
+            <td>`boolean`</td>
+            <td>`false`</td>
+            <td>
+                Keep the state file after tests finish (it is deleted by default).{" "}
+                <Version version="8.40.0" />
+            </td>
+        </tr>
     </tbody>
 </table>
 
