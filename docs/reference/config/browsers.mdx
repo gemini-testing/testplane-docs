@@ -1077,9 +1077,9 @@ The section has the following parameters:
     the application's backend source code.
 </Admonition>
 
-### stateOpts {#state_opts}
+## stateOpts {#state_opts}
 
-<Version version="8.38.0" />
+<Version version="8.40.0" />
 
 Default settings for state commands.
 
@@ -1108,11 +1108,9 @@ However, if you explicitly provide parameters for a command, they will have the 
 ```typescript
 type StateOpts = {
     path?: string;
-
     cookies?: boolean;
     localStorage?: boolean;
     sessionStorage?: boolean;
-
     cookieFilter?: (cookie: Cookie) => boolean;
     keepFile?: boolean;
 };

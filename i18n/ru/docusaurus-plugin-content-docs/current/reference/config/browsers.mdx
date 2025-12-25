@@ -1080,13 +1080,13 @@ export = {
     серверной части приложения.
 </Admonition>
 
-### stateOpts {#state_opts}
+## stateOpts {#state_opts}
 
-<Version version="8.38.0" />
+<Version version="8.40.0" />
 
 Настройки по умолчанию для команд состояния.
 
-Вы можете задать параметры один раз и затем использовать команды состояния (([saveState][saveState], [restoreState][restoreState], [getState][getState])) без указания опций.
+Вы можете задать параметры один раз и затем использовать команды состояния ([saveState][saveState], [restoreState][restoreState], [getState][getState]) без указания опций.
 Однако если вы явно укажете параметры для команды, они будут иметь высший приоритет.
 
 <table>
@@ -1111,11 +1111,9 @@ export = {
 ```typescript
 type StateOpts = {
     path?: string;
-
     cookies?: boolean;
     localStorage?: boolean;
     sessionStorage?: boolean;
-
     cookieFilter?: (cookie: Cookie) => boolean;
     keepFile?: boolean;
 };
