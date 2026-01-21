@@ -1,5 +1,7 @@
 # Селекторы
 
+## Введение
+
 Testplane предоставляет множество способов для поиска элементов на странице браузера с помощью селекторов. Для этого используются библиотеки `WebDriverIO` и `testing-library`. Селекторы позволяют точно идентифицировать элементы интерфейса, что необходимо для автоматизации тестирования.
 
 ## WebDriverIO
@@ -45,7 +47,7 @@ const isDisplayed = await loginForm.isDisplayed();
 
 #### По типу атрибута
 
-Для поиска элемента по атрибуту, используйте селектор вида `input[type="name"]`.
+Для поиска элемента по атрибуту, используйте селектор вида `"input[type="name"]"`.
 
 ```javascript
 // Поиск всех чекбоксов
@@ -73,7 +75,7 @@ const csrfValue = await hiddenField.getValue();
 
 #### CSS-селекторы по атрибуту data-testid
 
-Для поиска элементов, которые помечены дял тестирования, используйте селекторы по атрибуту `data-testid`.
+Для поиска элементов, которые помечены дял тестирования, используйте селекторы по атрибуту `"data-testid"`.
 
 ```javascript
 // Поиск элемента по data-testid
@@ -126,7 +128,7 @@ const activeTab = await browser.$("ul.tabs > li.active > a[href^="#"]");
 
 #### CSS-псевдоселекторы
 
-Псевдоселекторы позволяют выбирать элементы на основе их положения или состояния.
+Для выбора элементов на основе их положения или состояния, используйте псевдоселекторы.
 
 ```javascript
 // Первый элемент списка
@@ -163,7 +165,7 @@ const checkedBoxes = await browser.$$("input[type="checkbox"]:checked");
 
 #### По тексту элемента
 
-Чтобы найти элемент по содержащемуся в нем тексту, используйте селектор `//element[text()="text"]`.
+Чтобы найти элемент по содержащемуся в нем тексту, используйте селектор `"//element[text()="text"]"`.
 
 ```javascript
 // Точное совпадение текста
@@ -194,7 +196,7 @@ const link = await browser.$("//a[contains(translate(text(), "АБВГДЕЁЖЗ
 
 #### По атрибутам
 
-Для поиска элемента по атрибуту, используйте селектор вида `//element[@type="atribute"]`.
+Для поиска элемента по атрибуту, используйте селектор вида `"//element[@type="atribute"]"`.
 
 ```javascript
 // Поиск по одному атрибуту
@@ -230,7 +232,7 @@ const notDisabledButton = await browser.$("//button[not(@disabled)]");
 
 #### Навигация по DOM
 
-Исползуя XPath, вы можете навигировать по DOM-дереву.
+С помощью XPath вы можете навигировать по DOM-дереву.
 
 ```javascript
 // Прямой родитель
@@ -298,7 +300,7 @@ const everyThird = await browser.$$("//div[@class="grid-item"][position() mod 3 
 
 ### Селекторы по Link Text
 
-Селекторы по содержащемуся внутри тексту позволяют находить ссылки `(<a>)` по их тексту. Используйте `="text"`, чтобы найти элемент с точным текстом и `*="text"` для поиска по частичному совпадению текста.
+Селекторы по содержащемуся внутри тексту позволяют находить ссылки `(<a>)` по их тексту. Используйте `"=text"`, чтобы найти элемент с точным текстом и `"*=text"` для поиска по частичному совпадению текста.
 
 ```javascript
 // Полное совпадение текста ссылки
@@ -424,7 +426,7 @@ const slotElements = await customElement.shadow$$(".slot-item");
 
 ## Testing-library
 
-Testing Library — это адаптер популярной философии Testing Library для Testplane. Она предоставляет селекторы, ориентированные на пользовательский опыт (как пользователи находят элементы).
+Testing Library — это адаптер популярной философии Testing Library для Testplane. Он предоставляет селекторы, ориентированные на пользовательский опыт (как пользователи находят элементы).
 
 ### ByRole
 
@@ -458,7 +460,7 @@ await userEvent.click(agreeCheckbox);
 
 ### ByLabelText
 
-Для поиска элементов форм по тексту их меток (`label`), используйте метод `getByLabelText`.
+Для поиска элементов форм по тексту их меток (`"label"`), используйте метод `getByLabelText`.
 
 ```javascript
 import { screen } from "@testing-library/dom";
@@ -482,7 +484,7 @@ await userEvent.type(passwordInput, "secure123");
 
 ### ByPlaceholderText
 
-Чтобы найти поле ввода по тексту `placeholder`, используйте селектор `getByPlaceholderText`.
+Чтобы найти поле ввода по тексту `placeholder`, используйте метод `getByPlaceholderText`.
 
 ```javascript
 import { screen } from "@testing-library/dom";
@@ -570,7 +572,7 @@ expect(logo).toHaveAttribute("src", "/images/logo.png");
 
 ### ByTitle
 
-Чтобы найти элемент по атрибуту title, используйте метод getByTitle.
+Чтобы найти элемент по атрибуту `title`, используйте метод `getByTitle`.
 
 ```javascript
 import { screen } from "@testing-library/dom";
