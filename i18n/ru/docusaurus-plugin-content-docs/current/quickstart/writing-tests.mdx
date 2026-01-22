@@ -10,16 +10,17 @@ draft: true
 Блок `describe` предназначен для группировки связанных тестов.
 
 ```javascript
-describe('Название группы тестов', () => {
-    it('описание того, что должно произойти', async ({browser}) => {
+describe("Название группы тестов", () => {
+    it("описание того, что должно произойти", async ({ browser }) => {
         // Тело теста
-});
+    });
 });
 ```
+
 В блоке `it` описываются тестовые сценарии.
 
 ```javascript
-it('описание того, что должно произойти', async ({browser}) => {
+it("описание того, что должно произойти", async ({ browser }) => {
     // Тело теста
 });
 ```
@@ -30,7 +31,7 @@ it('описание того, что должно произойти', async ({
 
 ```javascript
 describe("test examples", () => {
-    it("docs search test", async ({browser}) => {
+    it("docs search test", async ({ browser }) => {
         await browser.openAndWait("https://testplane.io/");
 
         // Find by tag name
@@ -64,12 +65,13 @@ describe("test examples", () => {
 ```javascript
 await browser.url("https://testplane.io/ru/");
 ```
+
 Если на странице имеются элементы, которые отображаются с задержкой, для корректного выполнения тестов укажите явное ожидание:
 
 ```javascript
 await browser.url("https://testplane.io/ru/");
-await browser.$('h1').waitForExist({ timeout: 5000 });
-const title = await browser.$('h1').getText();
+await browser.$("h1").waitForExist({ timeout: 5000 });
+const title = await browser.$("h1").getText();
 ```
 
 Либо используйте команду:
@@ -77,6 +79,7 @@ const title = await browser.$('h1').getText();
 ```javascript
 await browser.openAndWait("https://testplane.io/ru/");
 ```
+
 Команда `await browser.openAndWait()` по умолчанию дожидается загрузки всех необходимых элементов на странице.
 
 ### Селекторы
@@ -87,26 +90,26 @@ Testplane поддерживает различные стратегии пои�
 const assert = require("assert");
 
 describe("tests", () => {
-    it("Проверка отображения главной страницы", async ({browser}) => {
+    it("Проверка отображения главной страницы", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const title = await browser.getTitle();
         assert.ok(title.includes("Testplane"));
     });
 
-    it("Проверка наличия логотипа на главной странице", async ({browser}) => {
+    it("Проверка наличия логотипа на главной странице", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const logo = await browser.$("a.navbar__brand");
         const isDisplayed = await logo.isDisplayed();
         assert.strictEqual(isDisplayed, true);
     });
 
-    it("Проверка навигационного меню", async ({browser}) => {
+    it("Проверка навигационного меню", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const menuItems = await browser.$$("nav.navbar a.navbar__item");
         assert.ok(menuItems.length > 0);
     });
 
-    it("Проверка наличия поля поиска", async ({browser}) => {
+    it("Проверка наличия поля поиска", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const searchButton = await browser.$("button.DocSearch");
         const isExisting = await searchButton.isExisting();
@@ -123,16 +126,16 @@ describe("tests", () => {
 const assert = require("assert");
 
 describe("tests, () => {
-    
+
     it("Пример клика - открытие поиска", async ({browser}) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // Клик по кнопке поиска
         const searchButton = await browser.$("button.DocSearch");
         await searchButton.waitForClickable({timeout: 5000});
         await searchButton.click();
         await browser.pause(1000);
-        
+
         // Проверяем, что модальное окно поиска появилось
         const searchModal = await browser.$(".DocSearch-Modal");
         const isDisplayed = await searchModal.isDisplayed();
@@ -141,19 +144,19 @@ describe("tests, () => {
 
     it("Пример ввода текста - поиск по документации", async ({browser}) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // Открываем поиск
         const searchButton = await browser.$("button.DocSearch");
         await searchButton.waitForClickable({timeout: 5000});
         await searchButton.click();
         await browser.pause(500);
-        
+
         // Вводим текст в поле поиска
         const searchInput = await browser.$("input.DocSearch-Input");
         await searchInput.waitForDisplayed({timeout: 5000});
         await searchInput.setValue("browser");
         await browser.pause(1000);
-        
+
         // Проверяем, что текст введен
         const inputValue = await searchInput.getValue();
         assert.strictEqual(inputValue, "browser");
@@ -161,17 +164,17 @@ describe("tests, () => {
 
     it("Пример двойного клика - выделение текста заголовка", async ({browser}) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // Находим заголовок на главной странице
         const heading = await browser.$("h1");
         await heading.waitForDisplayed({timeout: 5000});
         await heading.scrollIntoView();
         await browser.pause(500);
-        
+
         // Двойной клик по заголовку
         await heading.doubleClick();
         await browser.pause(500);
-        
+
         // Проверяем, что элемент существует и отображается
         const isDisplayed = await heading.isDisplayed();
         assert.strictEqual(isDisplayed, true);
@@ -187,66 +190,65 @@ describe("tests, () => {
 const assert = require("assert");
 
 describe("tests", () => {
-
-    it("WebdriverIO assert - проверка URL", async ({browser}) => {
+    it("WebdriverIO assert - проверка URL", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // WebdriverIO expect для browser
         await expect(browser).toHaveUrl("https://testplane.io/ru/");
     });
 
-    it("WebdriverIO assert - проверка существования элемента", async ({browser}) => {
+    it("WebdriverIO assert - проверка существования элемента", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const logo = await browser.$("a.navbar__brand");
-        
+
         // WebdriverIO expect для элемента
         await expect(logo).toExist();
     });
 
-    it("WebdriverIO assert - проверка видимости элемента", async ({browser}) => {
+    it("WebdriverIO assert - проверка видимости элемента", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const searchButton = await browser.$("button.DocSearch");
-        
+
         // WebdriverIO expect
         await expect(searchButton).toBeDisplayed();
     });
 
     // Примеры с Jest ассертами
-    it("Jest assert - проверка заголовка страницы", async ({browser}) => {
+    it("Jest assert - проверка заголовка страницы", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const title = await browser.getTitle();
-        
+
         // Jest expect
         expect(title).toContain("Testplane");
     });
 
-    it("Jest assert - проверка количества элементов", async ({browser}) => {
+    it("Jest assert - проверка количества элементов", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const menuItems = await browser.$$("nav.navbar a.navbar__item");
-        
+
         // Jest expect
         expect(menuItems.length).toBeGreaterThan(0);
     });
 
-    it("Jest assert - проверка атрибута элемента", async ({browser}) => {
+    it("Jest assert - проверка атрибута элемента", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const docsLink = await browser.$("a[href='/ru/docs/v8/']");
         const href = await docsLink.getAttribute("href");
-        
+
         // Jest expect
         expect(href).toBe("/ru/docs/v8/");
     });
 
-    it("Jest assert - проверка URL с регулярным выражением", async ({browser}) => {
+    it("Jest assert - проверка URL с регулярным выражением", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const currentUrl = await browser.getUrl();
-        
+
         // Jest expect с regex
         expect(currentUrl).toMatch(/testplane\.io/);
     });
@@ -257,39 +259,37 @@ describe("tests", () => {
 
 Хуки в Testplane — это специальные функции, которые автоматически выполняются в определенные моменты жизненного цикла тестов. Они позволяют подготовить окружение перед тестами и очистить его после выполнения. По умолчанию доступны два вида хуков — `beforeEach` и `afterEach`, первый выполняется перед каждым тестом, а второй после.
 
-
 ```javascript
 const assert = require("assert");
 
 describe("Примеры работы с хуками", () => {
-    
     // beforeEach - выполняется перед каждым тестом
-    beforeEach(async ({browser}) => {
+    beforeEach(async ({ browser }) => {
         console.log("--- Выполняется BEFOREEACH - перед каждым тестом ---");
         await browser.url("https://testplane.io/ru/");
         await browser.pause(500);
     });
 
     // afterEach - выполняется после каждого теста
-    afterEach(async ({browser}) => {
+    afterEach(async ({ browser }) => {
         console.log("--- Выполняется AFTEREACH - после каждого теста ---");
         const currentUrl = await browser.getUrl();
         console.log("Текущий URL:", currentUrl);
         // Можно делать скриншоты, очищать данные и т.д.
     });
 
-    it("Тест 1 - проверка заголовка", async ({browser}) => {
+    it("Тест 1 - проверка заголовка", async ({ browser }) => {
         const title = await browser.getTitle();
         assert.ok(title.includes("Testplane"));
     });
 
-    it("Тест 2 - проверка логотипа", async ({browser}) => {
+    it("Тест 2 - проверка логотипа", async ({ browser }) => {
         const logo = await browser.$("a.navbar__brand");
         const isDisplayed = await logo.isDisplayed();
         assert.strictEqual(isDisplayed, true);
     });
 
-    it("Тест 3 - проверка поиска", async ({browser}) => {
+    it("Тест 3 - проверка поиска", async ({ browser }) => {
         const searchButton = await browser.$("button.DocSearch");
         const isExisting = await searchButton.isExisting();
         assert.strictEqual(isExisting, true);
@@ -297,40 +297,38 @@ describe("Примеры работы с хуками", () => {
 });
 
 describe("Пример вложенных describe с хуками", () => {
-    
-    beforeEach(async ({browser}) => {
+    beforeEach(async ({ browser }) => {
         console.log("--- OUTER BEFOREEACH ---");
         await browser.url("https://testplane.io/ru/");
     });
 
-    afterEach(async ({browser}) => {
+    afterEach(async ({ browser }) => {
         console.log("--- OUTER AFTEREACH ---");
     });
 
-    it("Внешний тест", async ({browser}) => {
+    it("Внешний тест", async ({ browser }) => {
         const title = await browser.getTitle();
         assert.ok(title.length > 0);
     });
 
     describe("Внутренний блок тестов", () => {
-        
-        beforeEach(async ({browser}) => {
+        beforeEach(async ({ browser }) => {
             console.log("--- INNER BEFOREEACH ---");
             // Сначала выполнится outer beforeEach, потом этот
             await browser.url("https://testplane.io/ru/docs/v8/");
         });
 
-        afterEach(async ({browser}) => {
+        afterEach(async ({ browser }) => {
             console.log("--- INNER AFTEREACH ---");
             // Сначала выполнится этот afterEach, потом outer
         });
 
-        it("Внутренний тест 1", async ({browser}) => {
+        it("Внутренний тест 1", async ({ browser }) => {
             const currentUrl = await browser.getUrl();
             assert.ok(currentUrl.includes("docs"));
         });
 
-        it("Внутренний тест 2", async ({browser}) => {
+        it("Внутренний тест 2", async ({ browser }) => {
             const heading = await browser.$("h1");
             const isDisplayed = await heading.isDisplayed();
             assert.strictEqual(isDisplayed, true);
@@ -347,69 +345,68 @@ describe("Пример вложенных describe с хуками", () => {
 const assert = require("assert");
 
 describe("Примеры ожиданий в Testplane", () => {
-    
-    it("Ожидание появления и кликабельности элемента", async ({browser}) => {
+    it("Ожидание появления и кликабельности элемента", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // Ожидаем, что кнопка поиска появится на странице
         const searchButton = await browser.$("button.DocSearch");
         await searchButton.waitForDisplayed({
             timeout: 5000,
-            timeoutMsg: "Кнопка поиска не появилась в течение 5 секунд"
+            timeoutMsg: "Кнопка поиска не появилась в течение 5 секунд",
         });
-        
+
         // Ожидаем, что элемент станет кликабельным
         await searchButton.waitForClickable({
             timeout: 3000,
-            timeoutMsg: "Кнопка поиска не стала кликабельной"
+            timeoutMsg: "Кнопка поиска не стала кликабельной",
         });
-        
+
         await searchButton.click();
-        
+
         // Ожидаем появления модального окна поиска
         const searchModal = await browser.$(".DocSearch-Modal");
-        await searchModal.waitForDisplayed({timeout: 3000});
-        
+        await searchModal.waitForDisplayed({ timeout: 3000 });
+
         const isDisplayed = await searchModal.isDisplayed();
         assert.strictEqual(isDisplayed, true);
     });
 
-    it("Ожидание изменения текста элемента", async ({browser}) => {
+    it("Ожидание изменения текста элемента", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const heading = await browser.$("h1");
-        
+
         // Ожидаем, что элемент будет существовать
         await heading.waitForExist({
             timeout: 5000,
-            timeoutMsg: "Заголовок не найден на странице"
+            timeoutMsg: "Заголовок не найден на странице",
         });
-        
+
         // Ожидаем, что у элемента будет определенный текст
         await heading.waitUntil(
-            async function() {
+            async function () {
                 const text = await this.getText();
                 return text.length > 0;
             },
             {
                 timeout: 5000,
-                timeoutMsg: "Текст заголовка не появился"
-            }
+                timeoutMsg: "Текст заголовка не появился",
+            },
         );
-        
+
         const text = await heading.getText();
         assert.ok(text.length > 0);
     });
 
-    it("Ожидание с использованием browser.waitUntil для проверки URL", async ({browser}) => {
+    it("Ожидание с использованием browser.waitUntil для проверки URL", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         const docsLink = await browser.$("a[href='/ru/docs/v8/']");
-        await docsLink.waitForExist({timeout: 5000});
-        
+        await docsLink.waitForExist({ timeout: 5000 });
+
         // Используем JavaScript click для надежности
-        await browser.execute((el) => el.click(), docsLink);
-        
+        await browser.execute(el => el.click(), docsLink);
+
         // Ожидаем изменения URL с помощью browser.waitUntil
         await browser.waitUntil(
             async () => {
@@ -418,10 +415,10 @@ describe("Примеры ожиданий в Testplane", () => {
             },
             {
                 timeout: 5000,
-                timeoutMsg: "URL не изменился на страницу документации"
-            }
+                timeoutMsg: "URL не изменился на страницу документации",
+            },
         );
-        
+
         const finalUrl = await browser.getUrl();
         assert.ok(finalUrl.includes("docs"));
     });
@@ -436,81 +433,80 @@ Testplane предоставляет специальные методы для 
 const assert = require("assert");
 
 describe("Примеры работы с формами в Testplane", () => {
-
-    it("Работа с чекбоксами через клик", async ({browser}) => {
+    it("Работа с чекбоксами через клик", async ({ browser }) => {
         // Для демонстрации используем страницу с формой
         await browser.url("https://the-internet.herokuapp.com/checkboxes");
-        
+
         const checkbox1 = await browser.$("#checkboxes input:nth-child(1)");
-        await checkbox1.waitForDisplayed({timeout: 5000});
-        
+        await checkbox1.waitForDisplayed({ timeout: 5000 });
+
         // Проверяем начальное состояние
         let isSelected = await checkbox1.isSelected();
         assert.strictEqual(isSelected, false);
-        
+
         // Кликаем для выбора
         await checkbox1.click();
         isSelected = await checkbox1.isSelected();
         assert.strictEqual(isSelected, true);
-        
+
         // Кликаем еще раз для снятия выбора
         await checkbox1.click();
         isSelected = await checkbox1.isSelected();
         assert.strictEqual(isSelected, false);
     });
 
-    it("Работа с радио—кнопками через клик", async ({browser}) => {
+    it("Работа с радио—кнопками через клик", async ({ browser }) => {
         await browser.url("https://the-internet.herokuapp.com/");
-        
+
         // Переходим на страницу с примерами
         const link = await browser.$("a[href='/forgot_password']");
         await link.click();
-        
+
         // Работа с полем email (как пример радио-кнопок)
         const emailInput = await browser.$("#email");
-        await emailInput.waitForDisplayed({timeout: 5000});
+        await emailInput.waitForDisplayed({ timeout: 5000 });
         await emailInput.setValue("test@example.com");
-        
+
         const value = await emailInput.getValue();
         assert.ok(value.includes("test@example.com"));
     });
 
-    it("Работа с выпадающим списком (select) — выбор по тексту", async ({browser}) => {
+    it("Работа с выпадающим списком (select) — выбор по тексту", async ({ browser }) => {
         await browser.url("https://the-internet.herokuapp.com/dropdown");
-        
+
         const dropdown = await browser.$("#dropdown");
-        await dropdown.waitForDisplayed({timeout: 5000});
-        
+        await dropdown.waitForDisplayed({ timeout: 5000 });
+
         // Выбор опции по видимому тексту
         await dropdown.selectByVisibleText("Option 1");
-        
+
         // Проверяем выбранное значение
         let selectedValue = await dropdown.getValue();
         assert.strictEqual(selectedValue, "1");
-        
+
         // Получаем текст выбранной опции
         let selectedText = await dropdown.$("option:checked").getText();
         assert.strictEqual(selectedText, "Option 1");
     });
 
-    it("Отправка формы и проверка результата", async ({browser}) => {
+    it("Отправка формы и проверка результата", async ({ browser }) => {
         await browser.url("https://the-internet.herokuapp.com/login");
-        
+
         // Заполняем форму
         const usernameInput = await browser.$("#username");
         const passwordInput = await browser.$("#password");
         const submitButton = await browser.$("button[type='submit']");
-        
+
         await usernameInput.setValue("tomsmith");
         await passwordInput.setValue("SuperSecretPassword!");
-        
+
         // Отправляем форму
         await submitButton.click();
-        
+
         // Ждем появления сообщения об успехе
         const successMessage = await browser.$("#flash");
-        await successMessage.waitForDisplayed({timeout: 5000});
-        
+        await successMessage.waitForDisplayed({ timeout: 5000 });
+
         const messageText = await successMessage.getText();
         assert.ok(messageText.includes("You logged into a secure area!"));
     });
@@ -525,21 +521,20 @@ describe("Примеры работы с формами в Testplane", () => {
 const assert = require("assert");
 
 describe("Примеры работы с JavaScript кодом", () => {
-    
-    it("Выполнение JavaScript кода в контексте страницы", async ({browser}) => {
+    it("Выполнение JavaScript кода в контексте страницы", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // Пример 1: Получение данных из localStorage
         await browser.execute(() => {
             localStorage.setItem("testKey", "testValue");
             localStorage.setItem("userName", "John Doe");
         });
-        
+
         const storageValue = await browser.execute(() => {
             return localStorage.getItem("testKey");
         });
         assert.strictEqual(storageValue, "testValue");
-        
+
         // Пример 2: Манипуляция DOM — изменение текста элемента
         const newText = await browser.execute(() => {
             const heading = document.querySelector("h1");
@@ -550,20 +545,20 @@ describe("Примеры работы с JavaScript кодом", () => {
             }
             return "";
         });
-        
+
         const modifiedHeading = await browser.$("h1");
         const currentText = await modifiedHeading.getText();
         assert.strictEqual(currentText, "Измененный заголовок");
-        
+
         // Пример 3: Вызов функции с параметрами
-        const sum = await browser.execute((a, b) => {
-            return a + b;
-        }, 5, 10);
+        const sum = await browser.execute(
+            (a, b) => {
+                return a + b;
+            },
+            5,
+            10,
+        );
         assert.strictEqual(sum, 15);
     });
 });
 ```
-
-
-
-

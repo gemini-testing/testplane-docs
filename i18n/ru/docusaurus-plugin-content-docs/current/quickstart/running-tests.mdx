@@ -26,26 +26,26 @@ npx testplane gui
 const assert = require("assert");
 
 describe("tests", () => {
-    it("Проверка отображения главной страницы", async ({browser}) => {
+    it("Проверка отображения главной страницы", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const title = await browser.getTitle();
         assert.ok(title.includes("Testplane"));
     });
 
-    it("Проверка наличия логотипа на главной странице", async ({browser}) => {
+    it("Проверка наличия логотипа на главной странице", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const logo = await browser.$("a.navbar__brand");
         const isDisplayed = await logo.isDisplayed();
         assert.strictEqual(isDisplayed, true);
     });
 
-    it("Проверка навигационного меню", async ({browser}) => {
+    it("Проверка навигационного меню", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const menuItems = await browser.$$("nav.navbar a.navbar__item");
         assert.ok(menuItems.length > 0);
     });
 
-    it("Проверка наличия поля поиска", async ({browser}) => {
+    it("Проверка наличия поля поиска", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const searchButton = await browser.$("button.DocSearch");
         const isExisting = await searchButton.isExisting();
@@ -53,11 +53,13 @@ describe("tests", () => {
     });
 });
 ```
+
 В таком случае выполните команду:
 
 ```bash
 testplane --grep "Проверка наличия поля поиска"
 ```
+
 В кавычках вам необходимо передать содержимое скобок ключевого слова `it`.
 
 ### Запуск тестов в конкретных браузерах
@@ -65,11 +67,9 @@ testplane --grep "Проверка наличия поля поиска"
 По умолчанию тесты запускаются в тех браузерах, которые указаны в файле `testplane.config.ts`.
 
 ```javascript
-browsers: [
-    "chrome",
-    "firefox"
-]
+browsers: ["chrome", "firefox"];
 ```
+
 При выполнении команды `npx testplane` тесты запустятся в браузерах Google Chrome и Mozila Firefox.
 
 ```bash
@@ -89,20 +89,20 @@ testplane --browser chrome
 ```javascript
 // tests/browser-specific.test.js
 describe("Browser specific tests", () => {
-    it("should work in all browsers", async ({browser}) => {
+    it("should work in all browsers", async ({ browser }) => {
         await browser.url("https://example.com");
     });
 
     // Пропустить тест в Safari
     testplane.skip.in("safari", "Feature not supported in Safari");
-    it("should work only in Chrome and Firefox", async ({browser}) => {
+    it("should work only in Chrome and Firefox", async ({ browser }) => {
         await browser.url("https://example.com");
         // ... тело теста
     });
 
     // Запустить только в Chrome
     testplane.only.in("chrome");
-    it("should work only in Chrome", async ({browser}) => {
+    it("should work only in Chrome", async ({ browser }) => {
         await browser.url("https://example.com");
         // ... тело теста
     });
@@ -119,7 +119,6 @@ testplane ../testplane-tests/example.testplane.ts
 ```
 
 Где `../testplane-tests/example.testplane.ts` это путь к файлу с тестами.
-
 
 ### Режим пользовательского интерфейса
 
@@ -142,27 +141,26 @@ testplane ../testplane-tests/example.testplane.ts
 В Testplane имеется встроенный инструмент для отладки — `browser.debug`.
 
 ```javascript
-it('отладка с паузой', async ({browser}) => {
+it("отладка с паузой", async ({ browser }) => {
     // Открываем тестируемую страницу
-    await browser.url('/page');
-    
+    await browser.url("/page");
+
     // browser.debug() останавливает выполнение теста
     // и открывает интерактивную консоль (REPL - Read-Eval-Print Loop)
     await browser.debug();
-    
+
     // После вызова debug() тест приостанавливается
     // В консоли можно вводить команды WebdriverIO в реальном времени:
-    
+
     // Примеры команд, которые можно вводить в REPL:
     // > await browser.$('.button').click()  - кликнуть по кнопке
     // > await browser.getTitle()            - получить заголовок страницы
     // > await browser.$$('.items')          - найти все элементы
     // > .exit                               - выйти из режима отладки
-    
-    // Этот код выполнится только после выхода из debug()
-    await browser.$('.button').click();
-});
 
+    // Этот код выполнится только после выхода из debug()
+    await browser.$(".button").click();
+});
 ```
 
 ### Отладка через Testplane UI
@@ -174,4 +172,3 @@ it('отладка с паузой', async ({browser}) => {
 И находить нестабильные тесты, медленные тесты или другие проблемы с помощью опций "сортировка" и "группировка".
 
 ![](/gif/docs/ui/analytics.gif)
-
