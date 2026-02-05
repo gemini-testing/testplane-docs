@@ -28,6 +28,8 @@ it("описание того, что должно произойти", async ({
 После установки testplane, вы можете ознакомиться с примером теста, для этого перейдите в папку `testplane-tests` и откройте файл `example.testplane.ts`.
 
 ```javascript
+const assert = require("assert");
+
 describe("test examples", () => {
     it("docs search test", async ({ browser }) => {
         await browser.openAndWait("https://testplane.io/");
