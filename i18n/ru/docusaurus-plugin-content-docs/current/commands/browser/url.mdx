@@ -41,7 +41,7 @@ console.log(await browser.getUrl()); // выведет: "https://webdriver.io"
 **baseUrlResolutions.js**
 
 ```javascript
-// Пусть baseUrl = http://example.com/site
+// Пусть baseUrl = http://example.com/site/ важно указывать слэш в конце
 
 // При указании полного URL-адреса итоговый URL будет https://webdriver.io
 await browser.url("https://webdriver.io");
