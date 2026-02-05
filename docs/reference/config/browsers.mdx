@@ -151,6 +151,7 @@ Base URL of the service being tested. Allows for more convenient use of the `bro
 
 -   if the target address starts with `/`, `baseUrl` without the path part will be added at the beginning.
 -   if the target address does not start with `/`, the entire `baseUrl` will be added at the beginning.
+-   it is important whether `/` exists (or not). [See more][url-resolve].
 
 Default: `http://localhost`.
 
@@ -1195,3 +1196,4 @@ export = {
 [saveState]: ../../../commands/browser/saveState
 [restoreState]: ../../../commands/browser/restoreState
 [getState]: ../../../commands/browser/getState
+[url-resolve]: https://nodejs.org/api/url.html#urlresolvefrom-to
