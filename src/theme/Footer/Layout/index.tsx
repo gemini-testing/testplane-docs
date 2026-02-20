@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import type { Props } from "@theme/Footer/Layout";
 import GithubIcon from "@site/static/icons/github.svg";
+import SourceCraftIcon from "@site/static/icons/sourcecraft-light-theme.svg";
 import TestplaneLogo from "@site/static/img/logo.svg";
 import TestplaneLogoDark from "@site/static/img/logo-dark.svg";
 import { LogoStackOverflow, LogoTelegram } from "@gravity-ui/icons";
@@ -10,15 +11,19 @@ export default function FooterLayout({ links, copyright }: Props): JSX.Element {
 
     const SOCIAL_LINKS = [
         {
-            icon: GithubIcon,
+            icon: <GithubIcon className="h-full w-full" />,
             href: "https://github.com/gemini-testing/testplane",
         },
         {
-            icon: LogoStackOverflow,
+            icon: <SourceCraftIcon className="h-full w-full scale-150" />,
+            href: "https://sourcecraft.dev/testplane/testplane",
+        },
+        {
+            icon: <LogoStackOverflow className="h-full w-full" />,
             href: "https://stackoverflow.com/questions/tagged/testplane",
         },
         {
-            icon: LogoTelegram,
+            icon: <LogoTelegram className="h-full w-full" />,
             href: "https://t.me/testplane",
         },
     ];
@@ -34,7 +39,7 @@ export default function FooterLayout({ links, copyright }: Props): JSX.Element {
                 <div className="mt-4 flex items-center">
                     <div className="">{copyright}</div>
                     <div className="ml-1 flex items-center">
-                        {SOCIAL_LINKS.map(({ icon: Icon, href }, index) => (
+                        {SOCIAL_LINKS.map(({ icon, href }, index) => (
                             <a
                                 className="flex h-8 w-8 items-center rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-200/10 dark:hover:text-neutral-200"
                                 href={href}
@@ -42,7 +47,7 @@ export default function FooterLayout({ links, copyright }: Props): JSX.Element {
                                 rel="noreferrer"
                                 key={index}
                             >
-                                <Icon className="h-full w-full" />
+                                {icon}
                             </a>
                         ))}
                     </div>

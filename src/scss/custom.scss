@@ -117,10 +117,6 @@ html[data-theme-override="light"] {
     --ifm-navbar-background-color: #fff;
 }
 
-.docs-wrapper .navbar__items {
-    // @apply bg-white dark:bg-neutral-950;
-}
-
 .docs-wrapper .main-wrapper,
 .blog-wrapper .main-wrapper {
     max-width: var(--max-width);
@@ -142,6 +138,11 @@ html[data-theme-override="light"] {
     transform: translateY(0);
     will-change: transform;
     @apply justify-center px-0 text-neutral-600 shadow-none dark:fill-white dark:text-neutral-400;
+
+    .navbar__items {
+        position: relative;
+        --ifm-navbar-padding-horizontal: 1.5rem;
+    }
 
     .navbar__inner {
         max-width: var(--max-width);
@@ -200,11 +201,20 @@ html[data-theme-override="light"] {
     }
 
     .DocSearch-Button {
-        @apply mr-6 h-8 w-40 scale-110 rounded-lg bg-transparent font-normal text-neutral-500 hover:bg-neutral-200 hover:text-neutral-500 hover:shadow-none md:scale-100 md:bg-neutral-100 md:text-neutral-500 lg:mr-0 xl:w-80 dark:bg-transparent dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:md:bg-neutral-800/50;
+        @apply mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-transparent p-0 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 hover:shadow-none md:mr-6 md:w-40 md:justify-start md:bg-neutral-100 md:px-3 md:font-normal md:text-neutral-500 md:hover:bg-neutral-200 lg:mr-0 xl:w-80 dark:text-neutral-400 dark:hover:bg-neutral-200/10 dark:hover:text-neutral-300 dark:md:bg-neutral-800/50 dark:md:hover:bg-neutral-800/80;
         font-family: Jost;
 
-        svg {
-            @apply w-4 text-current;
+        .DocSearch-Button-Container {
+            @apply flex h-full w-full items-center justify-center md:justify-start;
+        }
+
+        .DocSearch-Search-Icon {
+            @apply m-0 h-4 w-4 shrink-0 text-current;
+        }
+
+        .DocSearch-Button-Placeholder,
+        .DocSearch-Button-Keys {
+            @apply hidden md:flex;
         }
 
         .DocSearch-Button-Key {
@@ -237,6 +247,52 @@ html[data-theme-override="light"] {
         &::after {
             transform: none;
         }
+    }
+
+    .header-github-link svg,
+    .header-sourcecraft-link svg {
+        display: none !important;
+    }
+
+    .header-github-link,
+    .header-sourcecraft-link,
+    .color-mode-toggle {
+        @apply mx-0.5 items-center gap-[5px] rounded-lg lg:flex lg:h-8 lg:w-8 lg:justify-center lg:gap-0 lg:p-0 lg:text-[0px];
+    }
+
+    /*.header-github-link,
+    .header-sourcecraft-link {
+        font-size: 0;
+    }*/
+
+    .color-mode-toggle .clean-btn {
+        @apply flex h-full w-full items-center justify-center rounded-lg p-0;
+    }
+
+    .color-mode-toggle:hover,
+    .color-mode-toggle .clean-btn:hover {
+        @apply bg-neutral-100 dark:bg-neutral-200/10;
+    }
+
+    .header-github-link::before,
+    .header-sourcecraft-link::before {
+        content: "";
+        display: block;
+        width: 1rem;
+        height: 1rem;
+        background-color: currentColor;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+
+    .header-github-link::before {
+        mask: url("../../static/icons/github.svg") no-repeat center / contain;
+    }
+
+    .header-sourcecraft-link::before {
+        mask: url("../../static/icons/sourcecraft-light-theme.svg") no-repeat center / contain;
+        transform: scale(1.5);
     }
 
     .navbar__brand {
