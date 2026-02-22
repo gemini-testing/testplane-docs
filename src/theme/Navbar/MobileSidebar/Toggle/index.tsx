@@ -14,7 +14,7 @@ export default function MobileSidebarToggle(): JSX.Element {
                 description: "The ARIA label for hamburger menu button of mobile navigation",
             })}
             aria-expanded={shown}
-            className="navbar__toggle clean-btn absolute right-2 z-999"
+            className="navbar__toggle clean-btn absolute right-0 z-999 flex h-8 w-8 items-center justify-center lg:hidden"
             type="button"
         >
             <EllipsisVertical />

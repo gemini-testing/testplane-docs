@@ -113,6 +113,15 @@ const config: Config = {
                 {
                     href: "https://github.com/gemini-testing/testplane",
                     label: "GitHub",
+                    className: "header-github-link",
+                    "aria-label": "GitHub repository",
+                    position: "right",
+                },
+                {
+                    href: "https://sourcecraft.dev/testplane/testplane",
+                    label: "SourceCraft",
+                    className: "header-sourcecraft-link",
+                    "aria-label": "SourceCraft repository",
                     position: "right",
                 },
             ],

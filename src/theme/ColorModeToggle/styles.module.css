@@ -2,8 +2,6 @@
 
 .toggle {
     @apply flex justify-center rounded-lg;
-    height: 21px;
-    width: 21px;
 }
 
 .toggleButton {
