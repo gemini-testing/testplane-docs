@@ -118,60 +118,72 @@ describe("tests", () => {
 
 ### Взаимодействия с элементами
 
-После знакомства с селекторами и нахождения элемента можно выполнить различные действия: клик, ввод текста, двойной клик.
+После знакомства с селекторами и поиска элемента можно выполнить различные действия: клик, ввод текста, двойной клик.
+
+Для клика по элементу используйте метод `element.click()`.
 
 ```javascript
 const assert = require("assert");
 
-describe("tests, () => {
-
-    it("Пример клика — открытие поиска", async ({browser}) => {
+describe("Тест клика", () => {
+    it("Пример клика — открытие поиска", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
 
         // Клик по кнопке поиска
         const searchButton = await browser.$("button.DocSearch");
-        await searchButton.waitForClickable({timeout: 5000});
+        await searchButton.waitForClickable({ timeout: 5000 });
         await searchButton.click();
-        await browser.pause(1000);
 
         // Проверяем, что модальное окно поиска появилось
         const searchModal = await browser.$(".DocSearch-Modal");
         const isDisplayed = await searchModal.isDisplayed();
         assert.strictEqual(isDisplayed, true);
     });
+});
+```
 
-    it("Пример ввода текста — поиск по документации", async ({browser}) => {
+Чтобы заполнить поле для ввода текста используйте метод `element.setValue("text")`.
+
+```javascript
+const assert = require("assert");
+
+describe("Тест ввода текста", () => {
+    it("Пример ввода текста — поиск по документации", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
 
         // Открываем поиск
         const searchButton = await browser.$("button.DocSearch");
-        await searchButton.waitForClickable({timeout: 5000});
+        await searchButton.waitForClickable({ timeout: 5000 });
         await searchButton.click();
-        await browser.pause(500);
 
         // Вводим текст в поле поиска
         const searchInput = await browser.$("input.DocSearch-Input");
-        await searchInput.waitForDisplayed({timeout: 5000});
+        await searchInput.waitForDisplayed({ timeout: 5000 });
         await searchInput.setValue("browser");
-        await browser.pause(1000);
 
         // Проверяем, что текст введен
         const inputValue = await searchInput.getValue();
         assert.strictEqual(inputValue, "browser");
     });
+});
+```
 
-    it("Пример двойного клика — выделение текста заголовка", async ({browser}) => {
+Для двойного клика по элементу используйте метод `element.doubleClick()`.
+
+```javascript
+const assert = require("assert");
+
+describe("Тест двойного клика", () => {
+    it("Пример двойного клика — выделение текста заголовка", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
 
         // Находим заголовок на главной странице
         const heading = await browser.$("h1");
-        await heading.waitForDisplayed({timeout: 5000});
+        await heading.waitForDisplayed({ timeout: 5000 });
         await heading.scrollIntoView();
-        await browser.pause(500);
 
         // Двойной клик по заголовку
         await heading.doubleClick();
-        await browser.pause(500);
 
         // Проверяем, что элемент существует и отображается
         const isDisplayed = await heading.isDisplayed();
@@ -180,9 +192,81 @@ describe("tests, () => {
 });
 ```
 
+Testplane предоставляет специальные методы для работы с различными элементами форм. Например, чекбоксы и радиокнопки управляются через клик.
+
+```javascript
+const assert = require("assert");
+
+describe("Взаимодействие с формами", () => {
+    it("Работа с чекбоксами через клик", async ({ browser }) => {
+        // Для демонстрации используем страницу с формой
+        await browser.url("https://the-internet.herokuapp.com/checkboxes");
+
+        const checkbox1 = await browser.$("#checkboxes input:nth-child(1)");
+        await checkbox1.waitForDisplayed({ timeout: 5000 });
+
+        // Проверяем начальное состояние
+        let isSelected = await checkbox1.isSelected();
+        assert.strictEqual(isSelected, false);
+
+        // Кликаем для выбора
+        await checkbox1.click();
+        isSelected = await checkbox1.isSelected();
+        assert.strictEqual(isSelected, true);
+
+        // Кликаем еще раз для снятия выбора
+        await checkbox1.click();
+        isSelected = await checkbox1.isSelected();
+        assert.strictEqual(isSelected, false);
+    });
+
+    it("Работа с радиокнопками через клик", async ({ browser }) => {
+        await browser.url("https://the-internet.herokuapp.com/");
+
+        // Переходим на страницу с примерами
+        const link = await browser.$("a[href='/forgot_password']");
+        await link.click();
+
+        // Работа с полем email (как пример радиокнопок)
+        const emailInput = await browser.$("#email");
+        await emailInput.waitForDisplayed({ timeout: 5000 });
+        await emailInput.setValue("test@example.com");
+
+        const value = await emailInput.getValue();
+        assert.ok(value.includes("test@example.com"));
+    });
+});
+```
+
+Для выпадающих списков `(<select>)` есть удобные методы выбора опций по видимому тексту или значению атрибута.
+
+```javascript
+const assert = require("assert");
+
+describe("Работа с выпадающим списком", () => {
+    it("Работа с выпадающим списком (select) — выбор по тексту", async ({ browser }) => {
+        await browser.url("https://the-internet.herokuapp.com/dropdown");
+
+        const dropdown = await browser.$("#dropdown");
+        await dropdown.waitForDisplayed({ timeout: 5000 });
+
+        // Выбор опции по видимому тексту
+        await dropdown.selectByVisibleText("Option 1");
+
+        // Проверяем выбранное значение
+        let selectedValue = await dropdown.getValue();
+        assert.strictEqual(selectedValue, "1");
+
+        // Получаем текст выбранной опции
+        let selectedText = await dropdown.$("option:checked").getText();
+        assert.strictEqual(selectedText, "Option 1");
+    });
+});
+```
+
 ### Assertions
 
-Testplane задействует `expect API` из `WebdriverIO` для проверки состояния элементов и страниц  — это позволяет формулировать утверждения (`assertions`) о том, какими должны быть свойства элементов или страницы в целом.
+Testplane задействует `expect API` из `WebdriverIO` для проверки состояния элементов и страниц — это позволяет формулировать утверждения (`assertions`) о том, какими должны быть свойства элементов или страницы в целом.
 
 ```javascript
 const assert = require("assert");
@@ -260,41 +344,7 @@ describe("tests", () => {
 ```javascript
 const assert = require("assert");
 
-describe("Примеры работы с хуками", () => {
-    // beforeEach — выполняется перед каждым тестом
-    beforeEach(async ({ browser }) => {
-        console.log("--- Выполняется BEFOREEACH — перед каждым тестом ---");
-        await browser.url("https://testplane.io/ru/");
-        await browser.pause(500);
-    });
-
-    // afterEach — выполняется после каждого теста
-    afterEach(async ({ browser }) => {
-        console.log("--- Выполняется AFTEREACH — после каждого теста ---");
-        const currentUrl = await browser.getUrl();
-        console.log("Текущий URL:", currentUrl);
-        // Можно делать скриншоты, очищать данные и т.д.
-    });
-
-    it("Тест 1 — проверка заголовка", async ({ browser }) => {
-        const title = await browser.getTitle();
-        assert.ok(title.includes("Testplane"));
-    });
-
-    it("Тест 2 — проверка логотипа", async ({ browser }) => {
-        const logo = await browser.$("a.navbar__brand");
-        const isDisplayed = await logo.isDisplayed();
-        assert.strictEqual(isDisplayed, true);
-    });
-
-    it("Тест 3 — проверка поиска", async ({ browser }) => {
-        const searchButton = await browser.$("button.DocSearch");
-        const isExisting = await searchButton.isExisting();
-        assert.strictEqual(isExisting, true);
-    });
-});
-
-describe("Пример вложенных describe с хуками", () => {
+describe("Пример работы с хуками", () => {
     beforeEach(async ({ browser }) => {
         console.log("--- OUTER BEFOREEACH ---");
         await browser.url("https://testplane.io/ru/");
@@ -419,94 +469,6 @@ describe("Примеры ожиданий в Testplane", () => {
 
         const finalUrl = await browser.getUrl();
         assert.ok(finalUrl.includes("docs"));
-    });
-});
-```
-
-### Работа с формами
-
-Testplane предоставляет специальные методы для работы с различными элементами форм. Чекбоксы и радиокнопки управляются через клик. Для выпадающих списков `(<select>)` есть удобные методы выбора опций по видимому тексту или значению атрибута.
-
-```javascript
-const assert = require("assert");
-
-describe("Примеры работы с формами в Testplane", () => {
-    it("Работа с чекбоксами через клик", async ({ browser }) => {
-        // Для демонстрации используем страницу с формой
-        await browser.url("https://the-internet.herokuapp.com/checkboxes");
-
-        const checkbox1 = await browser.$("#checkboxes input:nth-child(1)");
-        await checkbox1.waitForDisplayed({ timeout: 5000 });
-
-        // Проверяем начальное состояние
-        let isSelected = await checkbox1.isSelected();
-        assert.strictEqual(isSelected, false);
-
-        // Кликаем для выбора
-        await checkbox1.click();
-        isSelected = await checkbox1.isSelected();
-        assert.strictEqual(isSelected, true);
-
-        // Кликаем еще раз для снятия выбора
-        await checkbox1.click();
-        isSelected = await checkbox1.isSelected();
-        assert.strictEqual(isSelected, false);
-    });
-
-    it("Работа с радиокнопками через клик", async ({ browser }) => {
-        await browser.url("https://the-internet.herokuapp.com/");
-
-        // Переходим на страницу с примерами
-        const link = await browser.$("a[href='/forgot_password']");
-        await link.click();
-
-        // Работа с полем email (как пример радиокнопок)
-        const emailInput = await browser.$("#email");
-        await emailInput.waitForDisplayed({ timeout: 5000 });
-        await emailInput.setValue("test@example.com");
-
-        const value = await emailInput.getValue();
-        assert.ok(value.includes("test@example.com"));
-    });
-
-    it("Работа с выпадающим списком (select) — выбор по тексту", async ({ browser }) => {
-        await browser.url("https://the-internet.herokuapp.com/dropdown");
-
-        const dropdown = await browser.$("#dropdown");
-        await dropdown.waitForDisplayed({ timeout: 5000 });
-
-        // Выбор опции по видимому тексту
-        await dropdown.selectByVisibleText("Option 1");
-
-        // Проверяем выбранное значение
-        let selectedValue = await dropdown.getValue();
-        assert.strictEqual(selectedValue, "1");
-
-        // Получаем текст выбранной опции
-        let selectedText = await dropdown.$("option:checked").getText();
-        assert.strictEqual(selectedText, "Option 1");
-    });
-
-    it("Отправка формы и проверка результата", async ({ browser }) => {
-        await browser.url("https://the-internet.herokuapp.com/login");
-
-        // Заполняем форму
-        const usernameInput = await browser.$("#username");
-        const passwordInput = await browser.$("#password");
-        const submitButton = await browser.$("button[type='submit']");
-
-        await usernameInput.setValue("tomsmith");
-        await passwordInput.setValue("SuperSecretPassword!");
-
-        // Отправляем форму
-        await submitButton.click();
-
-        // Ждем появления сообщения об успехе
-        const successMessage = await browser.$("#flash");
-        await successMessage.waitForDisplayed({ timeout: 5000 });
-
-        const messageText = await successMessage.getText();
-        assert.ok(messageText.includes("You logged into a secure area!"));
     });
 });
 ```

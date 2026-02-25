@@ -32,19 +32,6 @@ describe("tests", () => {
         assert.ok(title.includes("Testplane"));
     });
 
-    it("Проверка наличия логотипа на главной странице", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const logo = await browser.$("a.navbar__brand");
-        const isDisplayed = await logo.isDisplayed();
-        assert.strictEqual(isDisplayed, true);
-    });
-
-    it("Проверка навигационного меню", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const menuItems = await browser.$$("nav.navbar a.navbar__item");
-        assert.ok(menuItems.length > 0);
-    });
-
     it("Проверка наличия поля поиска", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
         const searchButton = await browser.$("button.DocSearch");
@@ -108,7 +95,6 @@ describe("Browser specific tests", () => {
     });
 });
 ```
-
 
 ### Запуск теста из конкретного файла
 
