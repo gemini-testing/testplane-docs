@@ -2,54 +2,158 @@
 sidebar_position: 3
 ---
 
-# Running Tests
+# Running and Debugging Tests
 
-Use the `npx testplane` command to run all tests in your project.
+## Running tests
 
-## Running a Specific File {#running_a_specific_file}
-
-If you want to run a whole group of tests located in a specific file, specify the path to this file as an input parameter for testplane:
+To run tests, use the following command:
 
 ```bash
-npx testplane src/features/Reviews/Reviews.test/MyReview/MyReview.a11y@touch-phone.testplane.js
+npx testplane
 ```
 
-## The `--grep` Option {#the_grep_option}
-
-If you want to run a specific test, use the `--grep` option by providing the full name of the test as its value:
+You can also run tests in `gui` mode. To do this, execute the command:
 
 ```bash
-npx testplane --grep "Accessibility Leaving a review"
+npx testplane gui
 ```
 
-## The `.only` Directive {#the_only_directive}
+### Running a specific test
 
-You can also use the `.only` directive for a suite of tests (`describe`) or a specific test (`it`), similar to what is implemented in `mocha` (see the [exclusive tests](https://mochajs.org/#exclusive-tests) section):
-
-For example:
+Consider the following set of tests:
 
 ```javascript
-describe.only("Accessibility", function () {
-    // Test suite...
+const assert = require("assert");
+
+describe("tests", () => {
+    it("Checking the display of the main page", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/");
+        const title = await browser.getTitle();
+        assert.ok(title.includes("Testplane"));
+    });
+
+    it("Checking for the presence of a search field", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/");
+        const searchButton = await browser.$("button.DocSearch");
+        const isExisting = await searchButton.isExisting();
+        assert.strictEqual(isExisting, true);
+    });
 });
 ```
 
-or
+If you want to run just one of them, use `--grep` option:
+
+```bash
+testplane --grep "Checking for the presence of a search field"
+```
+
+You can pass the whole test name, some part of it or regex pattern to run only those tests whose names will match.
+
+### Running tests in specific browsers
+
+By default, tests run in the browsers specified in the `testplane.config.ts` file.
+
+```bash
+browsers: ["chrome", "firefox"];
+```
+
+When you run the `npx testplane` command, tests will run in Google Chrome and Mozilla Firefox.
+
+```bash
+# Run in all browsers (default)
+testplane
+```
+
+To run tests in a specific browser, use the command:
+
+```bash
+# Run only in Chrome
+testplane --browser chrome
+```
+
+You can also specify a specific browser for use within the test body.
 
 ```javascript
-it.only("Leaving a review", async function () {
-    // Test code...
+// tests/browser-specific.test.js
+describe("Browser specific tests", () => {
+    it("should work in all browsers", async ({ browser }) => {
+        await browser.url("https://example.com");
+    });
+
+    // Skip the test in Safari
+    testplane.skip.in("safari", "Feature not supported in Safari");
+    it("should work only in Chrome and Firefox", async ({ browser }) => {
+        await browser.url("https://example.com");
+        // ... test body
+    });
+
+    // Run only in Chrome
+    testplane.only.in("chrome");
+    it("should work only in Chrome", async ({ browser }) => {
+        await browser.url("https://example.com");
+        // ... test body
+    });
 });
 ```
 
-## Running a Test N Times {#running_tests_multiple_times}
+### Running a test from a specific file
 
-You might want to run the same test multiple times, for example, to check test stability. Use the [@testplane/test-repeater][testplane-test-repeater] plugin to run tests a specified number of times.
-
-After installing and enabling the plugin, you can run the test multiple times like this:
+To run tests from a specific file, execute the command:
 
 ```bash
-npx testplane --test-repeater-repeat 5 --grep 'Test name'
+# Running a specific file
+testplane ../testplane-tests/example.testplane.ts
 ```
 
-[testplane-test-repeater]: ../../plugins/testplane-test-repeater
+Where `../testplane-tests/example.testplane.ts` is the path to the test file.
+
+### User interface mode
+
+In Testplane, you can work with tests in UI format using Testplane UI.
+
+![](/img/docs/html-reporter/html-reporter-demo.png)
+
+You can read about the installation and setup processes for Testplane UI in the [UI.](..//html-reporter//overview.mdx) section.
+
+## Debugging
+
+It’s very easy to track the test execution process if you run tests in `gui` mode. In this mode, the HTML reporter will show which tests were executed successfully, which ones have errors, and what kind of errors they are.
+
+![Testplane GUI](/img/docs/guides/testplane-gui.png)
+
+### Browser.debug()
+
+Testplane has a built‑in debugging tool — `browser.debug`.
+
+```javascript
+it("debugging with a pause", async ({ browser }) => {
+    // Open the page being tested
+    await browser.url("/page");
+
+    // browser.debug() stops test execution
+    // and opens an interactive console (REPL — Read-Eval-Print Loop)
+    await browser.debug();
+
+    // After calling debug(), the test pauses
+    // In the console, you can enter WebdriverIO commands in real time:
+
+    // Examples of commands you can enter in REPL:
+    // > await browser.$('.button').click()  - click the button
+    // > await browser.getTitle()            - get the page title
+    // > await browser.$$('.items')          - find all elements
+    // > .exit                               - exit debug mode
+
+    // This code will run only after exiting debug()
+    await browser.$(".button").click();
+});
+```
+
+### Debugging via Testplane UI
+
+The most convenient way to debug tests is using the UI mode, where you can observe test execution in real time.
+
+![](/gif/docs/ui/run-debug.gif)
+
+You can find unstable, slow tests, or other issues using the «sorting» and «grouping» options.
+
+![](/gif/docs/ui/analytics.gif)
