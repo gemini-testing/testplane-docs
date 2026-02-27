@@ -2,174 +2,54 @@
 sidebar_position: 3
 ---
 
-# Запуск и отладка
+# Запуск тестов
 
-## Запуск тестов
+Используйте команду `npx testplane` для запуска всех тестов в вашем проекте.
 
-Для запуска тестов используйте команду:
+## Запуск конкретного файла
 
-```bash
-npx testplane
-```
-
-Также тесты можно запускать в `gui`-режиме, для этого выполните команду:
+Если вы хотите запустить всю группу тестов, которые находятся в конкретном файле, то укажите путь к этому файлу в качестве входного параметра для testplane:
 
 ```bash
-npx testplane gui
+testplane src/features/Reviews/Reviews.test/MyReview/MyReview.a11y@touch-phone.testplane.js
 ```
 
-### Запуск конкретного теста
+## Опция `--grep`
 
-У вас имеется набор тестов и вам нужно запустить только один из них.
+Если же вы хотите запустить конкретный тест, то воспользуйтесь опцией `--grep`, указав в качестве ее значения полное имя теста:
+
+```bash
+testplane --grep "Доступность Оставление отзыва"
+```
+
+## Директива `.only`
+
+Ещё вы можете воспользоваться директивой `.only` для набора тестов `describe` и конкретного теста `it`, аналогично тому как это реализовано в `mocha` (см. раздел [exlusive tests](https://mochajs.org/#exclusive-tests)):
+
+Например:
 
 ```javascript
-const assert = require("assert");
-
-describe("tests", () => {
-    it("Проверка отображения главной страницы", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const title = await browser.getTitle();
-        assert.ok(title.includes("Testplane"));
-    });
-
-    it("Проверка наличия логотипа на главной странице", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const logo = await browser.$("a.navbar__brand");
-        const isDisplayed = await logo.isDisplayed();
-        assert.strictEqual(isDisplayed, true);
-    });
-
-    it("Проверка навигационного меню", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const menuItems = await browser.$$("nav.navbar a.navbar__item");
-        assert.ok(menuItems.length > 0);
-    });
-
-    it("Проверка наличия поля поиска", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const searchButton = await browser.$("button.DocSearch");
-        const isExisting = await searchButton.isExisting();
-        assert.strictEqual(isExisting, true);
-    });
+describe.only("Доступность", function () {
+    // набор тестов...
 });
 ```
 
-В таком случае выполните команду:
-
-```bash
-testplane --grep "Проверка наличия поля поиска"
-```
-
-В кавычках вам необходимо передать содержимое скобок ключевого слова `it`.
-
-### Запуск тестов в конкретных браузерах
-
-По умолчанию тесты запускаются в тех браузерах, которые указаны в файле `testplane.config.ts`.
+или
 
 ```javascript
-browsers: ["chrome", "firefox"];
-```
-
-При выполнении команды `npx testplane` тесты запустятся в браузерах Google Chrome и Mozila Firefox.
-
-```bash
-# Запуск во всех браузерах (по умолчанию)
-testplane
-```
-
-Чтобы выполнить тесты в конкретном браузере, используйте команду:
-
-```bash
-# Запуск только в Chrome
-testplane --browser chrome
-```
-
-Также вы можете указать конкретный браузер для работы в теле теста.
-
-```javascript
-// tests/browser-specific.test.js
-describe("Browser specific tests", () => {
-    it("should work in all browsers", async ({ browser }) => {
-        await browser.url("https://example.com");
-    });
-
-    // Пропустить тест в Safari
-    testplane.skip.in("safari", "Feature not supported in Safari");
-    it("should work only in Chrome and Firefox", async ({ browser }) => {
-        await browser.url("https://example.com");
-        // ... тело теста
-    });
-
-    // Запустить только в Chrome
-    testplane.only.in("chrome");
-    it("should work only in Chrome", async ({ browser }) => {
-        await browser.url("https://example.com");
-        // ... тело теста
-    });
+it.only("Оставление отзыва", async function () {
+    // код теста...
 });
 ```
 
+## Запуск тестов несколько раз {#running_tests_multiple_times}
 
-### Запуск теста из конкретного файла
+Иногда может быть полезным запустить один и тот же тест несколько раз — например, для проверки стабильности. Плагин [@testplane/test-repeater][testplane-test-repeater] позволяет запустить тесты заданное количество раз.
 
-Чтобы запустить тесты из конкретного файла, выполните команду:
+После установки и включения плагина вы можете запустить тесты нужное количество раз, используя следующую команду:
 
 ```bash
-# Запуск конкретного файла
-testplane ../testplane-tests/example.testplane.ts
+npx testplane --test-repeater-repeat 5 --grep 'Имя теста'
 ```
 
-Где `../testplane-tests/example.testplane.ts` это путь к файлу с тестами.
-
-### Режим пользовательского интерфейса
-
-В Testplane вы можете работать с тестами в UI формате с помощью Testplane UI.
-
-![](/img/docs/html-reporter/html-reporter-demo.png)
-
-О процессах установки и настройки Testplane UI вы можете прочитать в разделе [UI.](..//html-reporter//overview.mdx)
-
-## Отладка
-
-### Отладка в gui-формате
-
-Отслеживать процесс выполнения тестов очень легко, если запустить их в `gui`-режиме. В подобном формате работы html-reporter продемонстрирует, какие тесты были успешно выполнены, а в каких присутствуют ошибки и какого они характера.
-
-![Интерфейс Testplane GUI](/img/docs/guides/testplane-gui.png)
-
-### Browser.debug()
-
-В Testplane имеется встроенный инструмент для отладки — `browser.debug`.
-
-```javascript
-it("отладка с паузой", async ({ browser }) => {
-    // Открываем тестируемую страницу
-    await browser.url("/page");
-
-    // browser.debug() останавливает выполнение теста
-    // и открывает интерактивную консоль (REPL - Read-Eval-Print Loop)
-    await browser.debug();
-
-    // После вызова debug() тест приостанавливается
-    // В консоли можно вводить команды WebdriverIO в реальном времени:
-
-    // Примеры команд, которые можно вводить в REPL:
-    // > await browser.$('.button').click()  - кликнуть по кнопке
-    // > await browser.getTitle()            - получить заголовок страницы
-    // > await browser.$$('.items')          - найти все элементы
-    // > .exit                               - выйти из режима отладки
-
-    // Этот код выполнится только после выхода из debug()
-    await browser.$(".button").click();
-});
-```
-
-### Отладка через Testplane UI
-
-Наиболее удобным способом для работы с отладкой тестов является UI режим, в нем вы можете в реальном времени наблюдать выполнения тестов.
-
-![](/gif/docs/ui/run-debug.gif)
-
-И находить нестабильные тесты, медленные тесты или другие проблемы с помощью опций «сортировка» и «группировка».
-
-![](/gif/docs/ui/analytics.gif)
+[testplane-test-repeater]: ../../plugins/testplane-test-repeater

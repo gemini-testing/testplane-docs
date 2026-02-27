@@ -1,1 +1,479 @@
 # Selectors
+
+# Selectors
+
+Testplane provides multiple ways to locate elements on a web page.
+
+## Recommendations for using selectors
+
+| Selector / Selection method                                               | Recommendation | Notes                                                                                                                                                                                           |
+| ------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| By class (e.g., `.btn`)                                                   | 🚨 Poor        | Not related to user behavior and doesn’t reflect semantics, but is usually stable.                                                                                                              |
+| By ID (e.g., `#main`)                                                     | ⚠️ Rarely      | IDs are more stable than classes, but can still depend on JS logic or markup changes. Use only if the ID is guaranteed to be stable.                                                            |
+| By attribute type (e.g., `input[type="text"]`)                            | ⚠️ Rarely      | Works if the attribute type is semantically meaningful and stable. However, it can be too generic (many elements of the same type).                                                             |
+| CSS selectors by `data-testid` attribute (e.g., `[data-testid="submit"]`) | ✅ Good        | The best choice for tests. The `data-testid` attribute is designed specifically for automation: it doesn’t affect styles/accessibility, is stable, and clearly indicates the element’s purpose. |
+| By element text (e.g., `*=Submit`)                                        | ✅ Good        | Reflects user interaction. However, requires attention to translations and dynamic content. Use locale files to prevent tests from breaking when text changes.                                  |
+| By attributes (except `data-testid`, e.g., `[name="email"]`)              | ⚠️ Rarely      | Depends on HTML attribute semantics. Can be unstable (attributes may change or be removed).                                                                                                     |
+| DOM navigation (e.g., `parent().find('button')`)                          | 🚨 Poor        | Extremely fragile. Depends on markup structure: any change in nesting breaks the selector. Hard to maintain.                                                                                    |
+| XPath: indices and positions (e.g., `(//button)[2]`)                      | 🚨 Poor        | Very fragile. Element position can change when adjacent elements are added/removed. Doesn’t reflect the element’s meaning.                                                                      |
+| Link Text selectors (e.g., `:link("More details")`)                       | ✅ Good        | Natural for users. However, like element text, requires consideration of translations and dynamic changes.                                                                                      |
+| Shadow DOM selectors (e.g., `::shadow .inner-element`)                    | ⚠️ Rarely      | Specific to web components. Can be unstable when libraries/components are updated. Use only if there’s no alternative.                                                                          |
+
+## WebDriverIO
+
+Testplane supports element location compatible with WebdriverIO syntax: CSS selectors, XPath, element text, and other methods described below.
+
+### CSS selectors
+
+#### By class
+
+To find an element by class, use the `".class-name"` selector.
+
+```javascript
+describe("CSS selector by class", () => {
+    it("Finding an element on the main page", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find element by class "navbar"
+        const navbar = await browser.$(".navbar");
+
+        // Check if the element is displayed on the page
+        const isDisplayed = await navbar.isDisplayed();
+        console.log("Navbar is displayed:", isDisplayed);
+    });
+});
+```
+
+Use this approach if:
+
+-   the class is stable and not generated dynamically;
+-   you need a quick and simple way to find an element;
+-   the class semantically describes the element (e.g., `.error-message`, `.success-banner`);
+-   you are working with component libraries where classes are part of the API.
+
+#### By ID
+
+To find an element by `id`, use a selector of the form `"#id"`.
+
+```javascript
+describe("CSS selector by ID", () => {
+    it("Finding an element by ID on the main page", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find element by ID "__docusaurus"
+        const main = await browser.$("#__docusaurus");
+
+        // Check if the element is displayed on the page
+        const isDisplayed = await main.isDisplayed();
+        console.log("Element is displayed:", isDisplayed);
+    });
+});
+```
+
+Use this approach if:
+
+-   you need a quick and simple way to find elements;
+-   the `id` is part of the component’s public API;
+-   you need maximum selector performance (`id` is the fastest selector).
+
+#### By attribute type
+
+To find an element by attribute, use a selector of the form `input[type="name"]`.
+
+```javascript
+describe("CSS selector by attribute type", () => {
+    it("Finding an element by attribute type", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find a button by the attribute type="button"
+        // Selector format: element[type="value"]
+        const button = await browser.$('button[type="button"]');
+
+        // Check if the element exists in the DOM
+        const isExisting = await button.isExisting();
+        console.log("Button exists:", isExisting);
+    });
+});
+```
+
+Use this approach if:
+
+-   you need to find all elements of a certain type (all checkboxes, all radio buttons);
+-   you need to work with semantic HTML5 types (`email`, `tel`, `url`, `date`).
+
+#### CSS selectors by the data-testid attribute
+
+To find elements that are marked for testing, use selectors based on the `data-testid` attribute.
+
+```javascript
+describe("CSS selector by the data-testid attribute", () => {
+    it("Finding an element by data-testid", async ({ browser }) => {
+        // Open the page and wait for it to load
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find element by the data-testid attribute
+        const element = await browser.$('[data-testid="main-content"]');
+
+        // Check if the element exists in the DOM
+        const isExisting = await element.isExisting();
+        console.log("Element with data-testid exists:", isExisting);
+    });
+});
+```
+
+Use this approach if:
+
+-   you are creating selectors specifically for testing;
+-   you need selector stability regardless of UI/style changes.
+
+### XPath selectors
+
+#### By element text
+
+To find an element by the text it contains, use the selector `//element[text()="text"]`.
+
+```javascript
+// Exact text match
+describe("XPath selector by element text", () => {
+    it("Finding an element by text", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find element by the text inside it
+        const link = await browser.$('//a[text()="Docs"]');
+
+        // Check if the element exists in the DOM
+        const isExisting = await link.isExisting();
+        console.log("Element with text exists:", isExisting);
+    });
+});
+```
+
+Use this approach if:
+
+-   the element text is unique and stable (button labels, headings);
+-   other element-finding strategies are not applicable.
+
+#### By attributes
+
+To find an element by attribute, use a selector of the form `//element[@type="attribute"]`.
+
+```javascript
+describe("XPath selector by attribute", () => {
+    it("Finding an element by attribute", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find element by the type attribute
+        const button = await browser.$('//button[@type="button"]');
+
+        // Check if the element exists in the DOM
+        const isExisting = await button.isExisting();
+        console.log("Element with attribute exists:", isExisting);
+    });
+});
+```
+
+Use this approach if:
+
+-   you need complex search conditions (combinations of attributes);
+-   you are working with dynamic attributes (`data` attributes with variable values);
+-   you need flexibility in searching (partial matches, start/end of string);
+-   CSS selectors cannot express the required logic;
+-   you need to find an element by the absence of an attribute.
+
+#### DOM navigation
+
+Using XPath, you can navigate through the DOM tree.
+
+```javascript
+// Direct parent
+const parentDiv = await browser.$("//input[@name='email']/..");
+
+// Ancestor with condition
+const formContainer = await browser.$("//input[@name='email']/ancestor::form[@id='registration']");
+
+// Following sibling
+const errorLabel = await browser.$(
+    "//input[@class='invalid']/following-sibling::span[@class='error'][1]",
+);
+
+// Preceding sibling
+const label = await browser.$("//input[@name='password']/preceding-sibling::label[1]");
+
+// All descendants
+const allInputs = await browser.$$("//form[@id='checkout']//input");
+
+// Direct children
+const directChildren = await browser.$$("//ul[@class='menu']/li");
+
+// Finding an "uncle" of the element (parent -> parent's sibling)
+const siblingSection = await browser.$("//h2[text()='Контакты']/../following-sibling::section[1]");
+```
+
+This type of DOM tree navigation is not recommended due to its fragility, but it is possible.
+
+#### XPath: indices and positions
+
+XPath allows you to select elements by their position in the result set.
+
+```javascript
+describe("XPath selector: indices and positions", () => {
+    it("Finding an element by index", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find the third link element in the navigation (index starts at 1)
+        // Selector format: (//element)[index]
+        const thirdLink = await browser.$("(//a)[3]");
+
+        // Wait for the element to appear and be displayed
+        await thirdLink.waitForDisplayed({ timeout: 5000 });
+
+        // Check if the element exists in the DOM
+        const isExisting = await thirdLink.isExisting();
+        console.log("Third element exists:", isExisting);
+
+        // Get the element's text
+        const text = await thirdLink.getText();
+        console.log("Text of the third element:", text);
+    });
+});
+```
+
+Use this approach if:
+
+-   you need to access an element by its position in the result set;
+-   you are testing pagination or lists with a specific order;
+-   you are working with tables and need a specific row;
+-   you need the first or last element among several identical ones;
+-   you are testing sorting (verifying that an element is in the correct position).
+
+### Link Text selectors
+
+Link Text selectors allow you to find links (`<a>`) by their inner text. Use `="text"` to find an element with exact text match and `*="text"` for partial text matching.
+
+```javascript
+describe("Link Text selector", () => {
+    it("Finding an element by exact text match", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Exact text match for a link
+        const docsLink = await browser.$("=Documentation");
+        const isDocsLinkFound = await docsLink.isExisting();
+        console.log(`Element with exact text "Documentation" found: ${isDocsLinkFound}`);
+
+        // Partial text match for a link
+        const partialLink = await browser.$("*=Docum");
+        const isPartialLinkFound = await partialLink.isExisting();
+        console.log(`Element with partial text "Docum" found: ${isPartialLinkFound}`);
+
+        // Partial match with specified <a> tag
+        const tagPartialLink = await browser.$("a*=Document");
+        const isTagPartialLinkFound = await tagPartialLink.isExisting();
+        console.log(`<a> element with partial text "Document" found: ${isTagPartialLinkFound}`);
+
+        // Case-insensitive search with div tag
+        const divCaseInsensitive = await browser.$("div.=testplane");
+        const isDivCaseInsensitiveFound = await divCaseInsensitive.isExisting();
+        console.log(
+            `<div> element with case-insensitive text "testplane" found: ${isDivCaseInsensitiveFound}`,
+        );
+    });
+});
+```
+
+Use this approach if:
+
+-   the element text is stable;
+-   you need the test to closely mimic real user scenarios.
+
+### Shadow DOM selectors
+
+Shadow DOM selectors allow you to work with elements inside the Shadow DOM — an encapsulated part of the DOM tree. For example, if you have a custom element `my-custom-element`, you can find a button inside its Shadow DOM using `shadow$("button")`.
+
+```javascript
+// Simple access to Shadow DOM
+const customElement = await browser.$("my-custom-element");
+const button = await customElement.shadow$("button");
+await button.click();
+
+// Multiple elements in Shadow DOM
+const slotElements = await customElement.shadow$$(".slot-item");
+```
+
+Use this approach if:
+
+-   you are working with Web Components and Custom Elements;
+-   the application uses Shadow DOM to encapsulate styles;
+-   you are testing components from third‑party libraries (Lit, Stencil, native Web Components);
+-   you need access to elements inside the shadow root;
+-   you are working with a design system based on Web Components.
+
+## Testing Library
+
+Testing Library allows you to find elements the way users do — by text, element type, or other attributes that don’t depend on your layout details.
+
+### ByRole
+
+`getByRole` is the main method in Testing Library that lets you find elements by their ARIA roles. For example, if you use the method `screen.getByRole("button", { name: /submit/i })`, you will find a button with text containing `submit`.
+
+```javascript
+describe("getByRole", () => {
+    it("Finding a button using the getByRole method", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const button = await browser.getByRole("button", { name: "Get started" });
+        await button.click();
+    });
+});
+```
+
+### ByLabelText
+
+To find form elements by their label text (`label`), use the `getByLabelText` method.
+
+```javascript
+describe("Finding an input field using the getByLabelText method", () => {
+    it("Find and use the search field", async ({ browser }) => {
+        await browser.url("https://testplane.io/docs/v8/html-reporter/overview/");
+        // Find the search button
+        const searchButton = await browser.getByLabelText(/search|поиск/i);
+        // Click the button to open the search modal
+        await searchButton.click();
+    });
+});
+```
+
+### ByPlaceholderText
+
+To find an input field by its `placeholder` text, use the `getByPlaceholderText` selector.
+
+```javascript
+describe("getByPlaceholderText", () => {
+    it("Finding an input field using the getByPlaceholderText method", async ({ browser }) => {
+        await browser.url("https://testplane.io/docs/v8/html-reporter/overview/");
+
+        // Open the search modal
+        const searchButton = await browser.$(".DocSearch-Button");
+        await searchButton.click();
+
+        // Wait for the modal to appear
+        await browser.pause(500);
+
+        // Find the input field by placeholder
+        const searchInput = await browser.getByPlaceholderText("Поиск");
+        await searchInput.waitForDisplayed({ timeout: 3000 });
+
+        // Verify that the element is visible
+        await expect(searchInput).toBeDisplayed();
+    });
+});
+```
+
+### ByText
+
+To find a text element by its content, use the `getByText` method.
+
+```javascript
+describe("getByText", () => {
+    it("Finding an element using the getByText method", async ({ browser }) => {
+        // Open the Testplane home page
+        await browser.url("https://testplane.io/");
+        // Find the "Get started" button
+        const button = await browser.getByText("Get started");
+
+        // Verify that the element is found and visible
+        await expect(button).toBeDisplayed();
+        await expect(button).toBeClickable();
+        // Click the button
+        await button.click();
+
+        // Wait for the new page to load
+        await browser.pause(1000);
+
+        // Verify navigation occurred
+        const url = await browser.getUrl();
+        expect(url).toContain("/docs");
+    });
+});
+```
+
+### ByDisplayValue
+
+To find an element by its current value, use the `getByDisplayValue` method.
+
+```javascript
+describe("Finding using the getByDisplayValue method", () => {
+    it("Find and verify the value", async ({ browser }) => {
+        await browser.url("https://testplane.io/docs/v8/html-reporter/overview/");
+
+        // Open search
+        const searchButton = await browser.$(".DocSearch-Button");
+        await searchButton.click();
+        await browser.pause(500);
+
+        // Enter text
+        const searchInput = await browser.$('input[type="search"]');
+        await searchInput.setValue("html-reporter");
+
+        // Search by full value
+        const input = await browser.getByDisplayValue("html-reporter");
+        await expect(input).toBeDisplayed();
+
+        // Verify the value
+        const value = await input.getValue();
+        expect(value).toBe("html-reporter");
+    });
+});
+```
+
+### ByAltText
+
+To find an image by its `alt` text, use the `getByAltText` method.
+
+```javascript
+describe("Finding an element using the getByAltText method", () => {
+    it("Finding an <img> element by the alt attribute", async ({ browser }) => {
+        // Open the page
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        // Find the book image by the alt attribute
+        const bookImage = await browser.getByAltText("The Great Gatsby");
+
+        // Confirm that the element is found
+        await expect(bookImage).toBeExisting();
+    });
+});
+```
+
+### ByTitle
+
+To find an element by the `title` attribute, use the `getByTitle` method.
+
+```javascript
+describe("Finding an element using the getByTitle method", () => {
+    it("Finding an <a> element", async ({ browser }) => {
+        // Open the page
+        await browser.url("https://testplane.io/docs/v8/");
+        // Find the <a> element by the title attribute
+        const linkElement = await browser.getByTitle("Direct link to Rich Debugging Capabilities");
+        // Confirm that the element is found
+        await expect(linkElement).toBeExisting();
+    });
+});
+```
+
+### ByTestId
+
+`getByTestId` is used as a last resort when other methods are not suitable. For example, if you use `screen.getByTestId("submit-button")`, you will find an element with the attribute `data-testid="submit-button"`.
+
+```javascript
+describe("Finding an element using the getByTestId method", () => {
+    it("Finding an element by the data-testid attribute", async ({ browser }) => {
+        // Open the page
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+        // Find the element by the data-testid attribute
+        const searchInput = await browser.getByTestId("search-input");
+        // Confirm that the element is found
+        await expect(searchInput).toBeExisting();
+    });
+});
+```
