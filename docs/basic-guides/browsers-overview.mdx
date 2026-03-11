@@ -2,34 +2,34 @@ import Admonition from "@theme/Admonition";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Работа с браузерами
+# Working with Browsers
 
-<Admonition title="Что вы узнаете">
+<Admonition title="What you will learn">
 
-- Как Testplane работает с браузерами
-- Как описать браузеры в конфигурации
-- Какие есть источники браузеров: локальные, Docker, облако
-- Как выбрать подход под свою задачу    
+- How Testplane works with browsers
+- How to describe browsers in configuration
+- What browser sources are available: local, Docker, cloud
+- How to choose the right approach for your task
 
 </Admonition>
 
-## Введение
+## Introduction
 
-Testplane запускает тесты в реальных браузерах и не привязан к конкретным версиям или одному источнику браузеров.  
+Testplane runs tests in real browsers and is not tied to specific versions or a single browser source.
 
-Вы описываете нужные браузеры в секции [`browsers`](../reference/config/browsers.mdx), а параметр [`gridUrl`](../reference/config/browsers.mdx#grid_url) определяет, откуда их брать: локально, из Docker-грида (например, Selenoid) или из удалённого облака (BrowserStack, Sauce Labs).
+You describe the required browsers in the [`browsers`](../reference/config/browsers.mdx) section, and the [`gridUrl`](../reference/config/browsers.mdx#grid_url) parameter determines where to get them from: locally, from a Docker grid (e.g., Selenoid), or from a remote cloud (BrowserStack, Sauce Labs).
 
-**Общая схема работы:**
+**General workflow:**
 
-1. Testplane читает секцию `browsers`
-2. Для каждого браузера берёт `gridUrl` (общий или переопределённый на уровне браузера)
-3. Обращается к гриду и запускает браузер с указанными `desiredCapabilities`
+1. Testplane reads the `browsers` section
+2. For each browser, it takes the `gridUrl` (common or overridden at the browser level)
+3. Connects to the grid and launches the browser with the specified `desiredCapabilities`
 
-Обычно для всех браузеров используют один источник (один `gridUrl`), но при необходимости его можно задать отдельно для каждого браузера.
+Usually, all browsers use one source (one `gridUrl`), but if necessary, it can be set separately for each browser.
 
-## Конфигурация браузеров
+## Browser Configuration
 
-Секция [`browsers`](../reference/config/browsers.mdx) описывает, в каких браузерах запускаются тесты.
+The [`browsers`](../reference/config/browsers.mdx) section describes which browsers the tests run in.
 
 ```ts title="testplane.config.ts"
 import type { ConfigInput } from "testplane";
@@ -63,17 +63,17 @@ export default {
 } satisfies ConfigInput;
 ```
 
-Ключ в `browsers` (`chrome`, `chrome-mobile`) — логическое **имя браузера**. Оно используется в CLI и в отчётах. Имя не ограничивает реальные настройки: в `desiredCapabilities` можно указать любой `browserName` и `browserVersion`.
+The key in `browsers` (`chrome`, `chrome-mobile`) is the logical **browser name**. It is used in CLI and reports. The name does not limit the actual settings: you can specify any `browserName` and `browserVersion` in `desiredCapabilities`.
 
-**Версия браузера** задаётся в `desiredCapabilities.browserVersion`. Для локальных браузеров Testplane скачает нужную версию, если она поддерживается. Для Docker и облака версия должна совпадать с образом или настройками грида.
+**Browser version** is set in `desiredCapabilities.browserVersion`. For local browsers, Testplane will download the required version if it is supported. For Docker and cloud, the version must match the image or grid settings.
 
-`headless: true` включает **запуск без графического интерфейса**.
+`headless: true` enables **headless mode** (running without a graphical interface).
 
-`windowSize: "1920x1080"` задаёт **размер окна**, что важно для скриншотных тестов.
+`windowSize: "1920x1080"` sets the **window size**, which is important for screenshot tests.
 
-### Мобильная эмуляция
+### Mobile Emulation
 
-Для Chrome используйте `goog:chromeOptions.mobileEmulation`:
+For Chrome, use `goog:chromeOptions.mobileEmulation`:
 
 ```ts
 "goog:chromeOptions": {
@@ -82,7 +82,7 @@ export default {
     }
 ```
 
-Для Firefox можно эмулировать мобильный user-agent через `moz:firefoxOptions`:
+For Firefox, you can emulate a mobile user-agent via `moz:firefoxOptions`:
 
 ```ts
 "moz:firefoxOptions": {
@@ -93,52 +93,52 @@ export default {
 }
 ```
 
-## Локальные браузеры
+## Local Browsers
 
-Самый простой способ начать работу с Testplane. Тесты запускаются на браузерах и драйверах, установленных на вашей машине.
+The easiest way to get started with Testplane. Tests run on browsers and drivers installed on your machine.
 
-### Установка зависимостей
+### Installing Dependencies
 
-Скачать необходимые браузеры и драйверы:
+Download the required browsers and drivers:
 
 ```bash
 npx testplane install-deps
 ```
 
-Загрузить только выбранные браузеры (по логическому имени из конфига):
+Download only selected browsers (by logical name from config):
 
 ```bash
 npx testplane install-deps chrome-dark
 ```
 
-Указать конкретные версии:
+Specify specific versions:
 
 ```bash
 npx testplane install-deps chrome@130 firefox@104
 ```
 
-По умолчанию браузеры и драйверы скачиваются в директорию `.testplane` в домашней папке пользователя. Путь можно изменить через переменную окружения `TESTPLANE_BROWSERS_PATH`:
+By default, browsers and drivers are downloaded to the `.testplane` directory in the user's home folder. The path can be changed via the `TESTPLANE_BROWSERS_PATH` environment variable:
 
 ```bash
 TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
 ```
 
-#### Удаление браузеров
+#### Removing Browsers
 
-- Удалите директорию .testplane в домашней папке
-- Или удалите каталог, указанный в `TESTPLANE_BROWSERS_PATH`
+- Delete the .testplane directory in the home folder
+- Or delete the directory specified in `TESTPLANE_BROWSERS_PATH`
 
-### Запуск тестов
+### Running Tests
 
-Есть два варианта:
+There are two options:
 
-**Через CLI-опцию `--local`:**
+**Via the `--local` CLI option:**
 
 ```bash
 npx testplane --local
 ```
 
-**Через `gridUrl: "local"` в конфигурации:**
+**Via `gridUrl: "local"` in configuration:**
 
 ```ts
 export default {
@@ -154,9 +154,9 @@ export default {
 };
 ```
 
-### Отладка локальных запусков
+### Debugging Local Runs
 
-Включить подробные логи через конфигурацию:
+Enable verbose logs via configuration:
 
 ```ts
 export default {
@@ -166,48 +166,48 @@ export default {
 };
 ```
 
-Или через переменные окружения — с ограничением уровня логирования `webdriverio`:
+Or via environment variables — with limited `webdriverio` logging level:
 
 ```bash
 testplane_system_debug=true WDIO_LOG_LEVEL=error npx testplane --local -b chrome
 ```
 
-### Плюсы и минусы
+### Pros and Cons
 
-#### Преимущества
+#### Advantages
 
-- Высокая скорость запуска тестов
-- Нет затрат на облачные сервисы
-- Простая настройка и лёгкая отладка
+- High test execution speed
+- No costs for cloud services
+- Simple setup and easy debugging
 
-#### Ограничения
+#### Limitations
 
-- Ограниченный набор версий браузеров
-- Зависимость от операционной системы: скриншоты могут различаться
-- Нужен контроль за обновлением версий
+- Limited set of browser versions
+- OS dependency: screenshots may differ
+- Need to control version updates
 
-Локальные браузеры подходят для разработки, быстрого прогона и отладки, но не идеальны для скриншотного тестирования между разными ОС.
+Local browsers are suitable for development, quick runs, and debugging, but not ideal for screenshot testing across different OSes.
 
-## Браузеры в Docker-контейнерах
+## Browsers in Docker Containers
 
-Docker-контейнеры дают изолированное и воспроизводимое окружение, удобное для CI/CD. Часто используют Selenoid — легковесную реализацию Selenium Grid, которая запускает браузеры внутри контейнеров.
+Docker containers provide an isolated and reproducible environment, convenient for CI/CD. Selenoid is often used — a lightweight implementation of Selenium Grid that runs browsers inside containers.
 
 **Selenoid:**
 
-- Управляет браузерами в Docker-контейнерах
-- Автоматически масштабирует контейнеры
-- Умеет записывать видео и даёт VNC-доступ
-- Настраивается через простой JSON-файл с браузерами
+- Manages browsers in Docker containers
+- Automatically scales containers
+- Can record video and provides VNC access
+- Configured via a simple JSON file with browsers
 
-### Образы браузеров
+### Browser Images
 
-Готовые образы доступны на Docker Hub:
+Ready-made images are available on Docker Hub:
 
 - [`selenoid/chrome`](https://hub.docker.com/r/selenoid/chrome/tags) — образы Chrome
 - [`selenoid/firefox`](https://hub.docker.com/r/selenoid/firefox/tags) — образы Firefox
 - [`selenoid/opera`](https://hub.docker.com/r/selenoid/opera/tags) — образы Opera
 
-У готовых образов могут отсутствовать самые свежие версии браузеров. Чтобы собрать актуальные, используйте репозиторий [`gemini-testing/images`](https://github.com/gemini-testing/images/):
+Ready-made images may not have the latest browser versions. To build up-to-date ones, use the [`gemini-testing/images`](https://github.com/gemini-testing/images/) repository:
 
 ```bash
 git clone https://github.com/gemini-testing/images.git
@@ -217,9 +217,9 @@ cd images
 ./firefox/build.sh
 ```
 
-Следить за появлением готовых свежих образов можно в [этом issue](https://github.com/gemini-testing/testplane/issues/1212).
+You can track the availability of ready-made fresh images in [this issue](https://github.com/gemini-testing/testplane/issues/1212).
 
-### Конфигурация Testplane для Selenoid
+### Testplane Configuration for Selenoid
 
 ```ts title="testplane.config.ts"
 export default {
@@ -262,30 +262,30 @@ export default {
 };
 ```
 
-### Плюсы и минусы
+### Pros and Cons
 
-#### Преимущества
+#### Advantages
 
-    - Изолированное окружение, тесты не влияют на систему
-    - Стабильные и одинаковые версии браузеров везде
-    - Лёгкая масштабируемость в CI/CD
-    - Гибкая конфигурация окружения
+    - Isolated environment, tests don't affect the system
+    - Stable and identical browser versions everywhere
+    - Easy scalability in CI/CD
+    - Flexible environment configuration
 
-#### Ограничения
+#### Limitations
 
-    - Требуются базовые знания Docker и Selenoid
-    - Более высокий расход ресурсов
-    - Нужно следить за актуальностью образов и настроек сети
+    - Requires basic Docker and Selenoid knowledge
+    - Higher resource consumption
+    - Need to monitor image updates and network settings
 
-Docker хорошо подходит для CI/CD и скриншотного тестирования, где важна стабильность и воспроизводимость.
+Docker is well-suited for CI/CD and screenshot testing where stability and reproducibility are important.
 
-## Удалённые гриды
+## Remote Grids
 
-Облачные сервисы (BrowserStack, Sauce Labs и др.) дают широкий набор браузеров, ОС и реальных устройств для кросс-браузерного тестирования.
+Cloud services (BrowserStack, Sauce Labs, etc.) provide a wide range of browsers, OSes, and real devices for cross-browser testing.
 
-### Подключение и аутентификация
+### Connection and Authentication
 
-Для подключения нужно указать `gridUrl` сервиса и передать учётные данные через `user` и `key`. Рекомендуется хранить их в переменных окружения:
+To connect, you need to specify the service's `gridUrl` and pass credentials via `user` and `key`. It is recommended to store them in environment variables:
 
 ```ts title="testplane.config.ts"
 export default {
@@ -325,82 +325,82 @@ export default {
 };
 ```
 
-### Кастомизация сессий
+### Session Customization
 
-У разных сервисов свои опции:
+Different services have their own options:
 
 **BrowserStack** (`bstack:options`)
 
-- ОС и её версия (`os`, `osVersion`)
-- Разрешение экрана (`resolution`)
-- Локальное тестирование (`local`)
-- Включение логов и отладки (`debug`, `networkLogs`, `consoleLogs`)
+- OS and its version (`os`, `osVersion`)
+- Screen resolution (`resolution`)
+- Local testing (`local`)
+- Enable logs and debugging (`debug`, `networkLogs`, `consoleLogs`)
 
 **Sauce Labs** (`sauce:options`)
 
-- Имя и билд (`name`, `build`)
-- Теги (`tags`)
-- Ограничения по времени (`commandTimeout`, `idleTimeout`, `maxDuration`)
-- Видео и логи (`recordVideo`, `recordLogs`)
+- Name and build (`name`, `build`)
+- Tags (`tags`)
+- Time limits (`commandTimeout`, `idleTimeout`, `maxDuration`)
+- Video and logs (`recordVideo`, `recordLogs`)
 
-### Таймауты и отладка
+### Timeouts and Debugging
 
-Облачные сервисы жёстко ограничивают время выполнения одной команды, время простоя сессии и максимальную длительность сессии.
+Cloud services strictly limit the execution time of a single command, session idle time, and maximum session duration.
 
-Для отладки доступны:
+For debugging, the following are available:
 
-- Логи сессий
-- Видео каждого прогона
-- VNC или аналог для просмотра браузера
-- Сетевые логи
+- Session logs
+- Video of each run
+- VNC or similar for browser viewing
+- Network logs
 
-### Плюсы и минусы
+### Pros and Cons
 
-#### Преимущества
+#### Advantages
 
-    - Большой выбор браузеров и ОС
-    - Нет необходимости поднимать свою инфраструктуру
-    - Детальные логи и видео
+    - Wide selection of browsers and OSes
+    - No need to set up your own infrastructure
+    - Detailed logs and videos
 
-#### Ограничения
+#### Limitations
 
-    - Стоимость, особенно при большом количестве запусков
-    - Зависимость от сети и задержек
-    - Ограничения по времени сессий
-    - Требования к безопасности данных
+    - Cost, especially with a large number of runs
+    - Network dependency and latency
+    - Session time limits
+    - Data security requirements
 
-Облачные гриды удобны для регулярного кросс-браузерного и мобильного тестирования без поддержки собственной фермы браузеров.
+Cloud grids are convenient for regular cross-browser and mobile testing without maintaining your own browser farm.
 
-## Практические сценарии
+## Practical Scenarios
 
 <Tabs>
-    <TabItem value="local" label="Разработка" default>
-        Для разработки и быстрого фидбэка:
+    <TabItem value="local" label="Development" default>
+        For development and quick feedback:
 
-        - Используйте локальные браузеры (`--local` или `gridUrl: "local"`)
-        - Запускайте только нужные браузеры через `-b chrome`
-        - Включайте `system.debug` при отладке
+        - Use local browsers (`--local` or `gridUrl: "local"`)
+        - Run only the needed browsers via `-b chrome`
+        - Enable `system.debug` when debugging
     </TabItem>
     <TabItem value="docker" label="CI/CD">
-        Для стабильных прогонов в CI:
+        For stable CI runs:
 
-        - Поднимайте Selenoid или аналогичный грид в Docker
-        - Используйте один и тот же образ во всех пайплайнах
-        - Распараллеливайте тесты через `sessionsPerBrowser`  
+        - Set up Selenoid or a similar grid in Docker
+        - Use the same image in all pipelines
+        - Parallelize tests via `sessionsPerBrowser`
     </TabItem>
-    <TabItem value="grid" label="Кросс-браузерное тестирование">  
-        Когда нужно проверить много комбинаций браузеров и устройств:
+    <TabItem value="grid" label="Cross-browser Testing">
+        When you need to test many browser and device combinations:
 
-        - Создайте отдельные логические браузеры для ключевых комбинаций (Chrome, Safari, мобильный Chrome и т.д.)
-        - Запускайте регрессию раз в релиз или по расписанию
-        - Анализируйте видео и логи для редких сложно воспроизводимых багов
-    </TabItem>    
-</Tabs>   
+        - Create separate logical browsers for key combinations (Chrome, Safari, mobile Chrome, etc.)
+        - Run regression once per release or on schedule
+        - Analyze videos and logs for rare, hard-to-reproduce bugs
+    </TabItem>
+</Tabs>
 
-### Гибридный вариант
+### Hybrid Approach
 
-Практичный вариант для большинства проектов:
+A practical option for most projects:
 
-- Локальные браузеры — для разработки и отладки
-- Docker в CI — для стабильных быстрых прогонов на одном наборе браузеров
-- Облако — для периодического кросс-браузерного и мобильного тестирования
+- Local browsers — for development and debugging
+- Docker in CI — for stable, fast runs on one set of browsers
+- Cloud — for periodic cross-browser and mobile testing
