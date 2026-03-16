@@ -4,36 +4,59 @@ sidebar_position: 1
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
+import Admonition from "@theme/Admonition";
 
-# Installation {#install}
+# Installation and Setup
 
-Run the Testplane installer using `npm`.
+## System requirements
+
+To start working with Testplane, install `Node.js` version 18.0 or higher.
+
+## Installation {#install}
+
+To run the Testplane installer using `npm`, execute the following command:
 
 ```bash
 npm init testplane@latest YOUR_PROJECT_PATH
 ```
 
-If you do not want to use the defaults when initializing the project and want to configure it using a wizard, specify the `-v` option.
+To configure the project instead of using defaults during initialization, specify the `-v` option.
+
+After running the installation command, the following set of files and folders will appear in the project directory:
+
+```bash
+node_modules
+testplane-tests
+    example.testplane.ts
+    ts.config.json
+package-lock.json
+package.json
+testplane.config.ts
+```
 
 ## Setup {#setup}
 
-After executing the command mentioned above, a `testplane.config.ts` file with basic settings will be generated at the root of the project.
+The `testplane.config.ts` file contains a basic set of settings for running tests:
 
 ```typescript
 export default {
-    // https://testplane.io/docs/v8/basic-guides/managing-browsers/
     gridUrl: "local",
     baseUrl: "http://localhost",
     pageLoadTimeout: 0,
     httpTimeout: 60000,
     testTimeout: 90000,
     resetCursor: false,
+
+    // The `sets` parameter contains information about the directory where the tests are located
+    // and a list of browsers in which they will be run:
     sets: {
         desktop: {
             files: ["testplane-tests/**/*.testplane.(t|j)s"],
             browsers: ["chrome", "firefox"],
         },
     },
+
+    // The `browsers` field describes the configuration of the browsers used:
     browsers: {
         chrome: {
             headless: true,
@@ -48,9 +71,9 @@ export default {
             },
         },
     },
+
     plugins: {
         "html-reporter/testplane": {
-            // https://github.com/gemini-testing/html-reporter
             enabled: true,
             path: "testplane-report",
             defaultView: "all",
@@ -60,39 +83,10 @@ export default {
 };
 ```
 
-You can download these browsers, described in the config, separately from running Testplane itself:
+To download the browsers described in the config separately from running Testplane itself, execute the command:
 
 ```bash
 npx testplane install-deps
 ```
 
-Without running the command, absent browsers will be downloaded during first Testplane launch.
-
-## Creating a Test {#test_creation}
-
-Navigate to the `tests/example.testplane.js` file with a test. Here you can see a test example or write your own. For example,
-
-```javascript
-describe("github", async function () {
-    it("should find testplane", async function ({ browser }) {
-        await browser.url("https://github.com/gemini-testing/testplane");
-        const elem = await browser.$("#readme h1");
-
-        await expect(elem).toHaveText("Testplane");
-    });
-});
-```
-
-## Running a Test {#test_running}
-
-Now you can run the tests:
-
-```bash
-npx testplane
-```
-
-or launch the GUI mode and run the test through the browser interface
-
-```bash
-npx testplane gui
-```
+Without running this command beforehand, missing browsers will be automatically downloaded the first time Testplane is launched.
