@@ -1,15 +1,15 @@
 import Admonition from "@theme/Admonition";
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 # Working with Browsers
 
 <Admonition title="What you will learn">
 
-- How Testplane works with browsers
-- How to describe browsers in configuration
-- What browser sources are available: local, Docker, cloud
-- How to choose the right approach for your task
+-   How Testplane works with browsers
+-   How to describe browsers in configuration
+-   What browser sources are available: local, Docker, cloud
+-   How to choose the right approach for your task
 
 </Admonition>
 
@@ -125,8 +125,8 @@ TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
 
 #### Removing Browsers
 
-- Delete the .testplane directory in the home folder
-- Or delete the directory specified in `TESTPLANE_BROWSERS_PATH`
+-   Delete the .testplane directory in the home folder
+-   Or delete the directory specified in `TESTPLANE_BROWSERS_PATH`
 
 ### Running Tests
 
@@ -176,15 +176,15 @@ testplane_system_debug=true WDIO_LOG_LEVEL=error npx testplane --local -b chrome
 
 #### Advantages
 
-- High test execution speed
-- No costs for cloud services
-- Simple setup and easy debugging
+-   High test execution speed
+-   No costs for cloud services
+-   Simple setup and easy debugging
 
 #### Limitations
 
-- Limited set of browser versions
-- OS dependency: screenshots may differ
-- Need to control version updates
+-   Limited set of browser versions
+-   OS dependency: screenshots may differ
+-   Need to control version updates
 
 Local browsers are suitable for development, quick runs, and debugging, but not ideal for screenshot testing across different OSes.
 
@@ -194,18 +194,18 @@ Docker containers provide an isolated and reproducible environment, convenient f
 
 **Selenoid:**
 
-- Manages browsers in Docker containers
-- Automatically scales containers
-- Can record video and provides VNC access
-- Configured via a simple JSON file with browsers
+-   Manages browsers in Docker containers
+-   Automatically scales containers
+-   Can record video and provides VNC access
+-   Configured via a simple JSON file with browsers
 
 ### Browser Images
 
 Ready-made images are available on Docker Hub:
 
-- [`selenoid/chrome`](https://hub.docker.com/r/selenoid/chrome/tags) — образы Chrome
-- [`selenoid/firefox`](https://hub.docker.com/r/selenoid/firefox/tags) — образы Firefox
-- [`selenoid/opera`](https://hub.docker.com/r/selenoid/opera/tags) — образы Opera
+-   [`selenoid/chrome`](https://hub.docker.com/r/selenoid/chrome/tags) — образы Chrome
+-   [`selenoid/firefox`](https://hub.docker.com/r/selenoid/firefox/tags) — образы Firefox
+-   [`selenoid/opera`](https://hub.docker.com/r/selenoid/opera/tags) — образы Opera
 
 Ready-made images may not have the latest browser versions. To build up-to-date ones, use the [`gemini-testing/images`](https://github.com/gemini-testing/images/) repository:
 
@@ -331,17 +331,17 @@ Different services have their own options:
 
 **BrowserStack** (`bstack:options`)
 
-- OS and its version (`os`, `osVersion`)
-- Screen resolution (`resolution`)
-- Local testing (`local`)
-- Enable logs and debugging (`debug`, `networkLogs`, `consoleLogs`)
+-   OS and its version (`os`, `osVersion`)
+-   Screen resolution (`resolution`)
+-   Local testing (`local`)
+-   Enable logs and debugging (`debug`, `networkLogs`, `consoleLogs`)
 
 **Sauce Labs** (`sauce:options`)
 
-- Name and build (`name`, `build`)
-- Tags (`tags`)
-- Time limits (`commandTimeout`, `idleTimeout`, `maxDuration`)
-- Video and logs (`recordVideo`, `recordLogs`)
+-   Name and build (`name`, `build`)
+-   Tags (`tags`)
+-   Time limits (`commandTimeout`, `idleTimeout`, `maxDuration`)
+-   Video and logs (`recordVideo`, `recordLogs`)
 
 ### Timeouts and Debugging
 
@@ -349,10 +349,10 @@ Cloud services strictly limit the execution time of a single command, session id
 
 For debugging, the following are available:
 
-- Session logs
-- Video of each run
-- VNC or similar for browser viewing
-- Network logs
+-   Session logs
+-   Video of each run
+-   VNC or similar for browser viewing
+-   Network logs
 
 ### Pros and Cons
 
@@ -395,12 +395,13 @@ Cloud grids are convenient for regular cross-browser and mobile testing without 
         - Run regression once per release or on schedule
         - Analyze videos and logs for rare, hard-to-reproduce bugs
     </TabItem>
+
 </Tabs>
 
 ### Hybrid Approach
 
 A practical option for most projects:
 
-- Local browsers — for development and debugging
-- Docker in CI — for stable, fast runs on one set of browsers
-- Cloud — for periodic cross-browser and mobile testing
+-   Local browsers — for development and debugging
+-   Docker in CI — for stable, fast runs on one set of browsers
+-   Cloud — for periodic cross-browser and mobile testing
