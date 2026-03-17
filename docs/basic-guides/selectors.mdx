@@ -4,24 +4,98 @@ Testplane provides multiple ways to locate elements on a web page.
 
 ## Recommendations for using selectors
 
-| Selector / Selection method                                               | Recommendation | Notes                                                                                                                                                                                           |
-| ------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| By class (e.g., `.btn`)                                                   | 🚨 Poor        | Not related to user behavior and doesn’t reflect semantics, but is usually stable.                                                                                                              |
-| By ID (e.g., `#main`)                                                     | ⚠️ Rarely      | IDs are more stable than classes, but can still depend on JS logic or markup changes. Use only if the ID is guaranteed to be stable.                                                            |
-| By attribute type (e.g., `input[type="text"]`)                            | ⚠️ Rarely      | Works if the attribute type is semantically meaningful and stable. However, it can be too generic (many elements of the same type).                                                             |
-| CSS selectors by `data-testid` attribute (e.g., `[data-testid="submit"]`) | ✅ Good        | The best choice for tests. The `data-testid` attribute is designed specifically for automation: it doesn’t affect styles/accessibility, is stable, and clearly indicates the element’s purpose. |
-| By element text (e.g., `*=Submit`)                                        | ✅ Good        | Reflects user interaction. However, requires attention to translations and dynamic content. Use locale files to prevent tests from breaking when text changes.                                  |
-| By attributes (except `data-testid`, e.g., `[name="email"]`)              | ⚠️ Rarely      | Depends on HTML attribute semantics. Can be unstable (attributes may change or be removed).                                                                                                     |
-| DOM navigation (e.g., `parent().find('button')`)                          | 🚨 Poor        | Extremely fragile. Depends on markup structure: any change in nesting breaks the selector. Hard to maintain.                                                                                    |
-| XPath: indices and positions (e.g., `(//button)[2]`)                      | 🚨 Poor        | Very fragile. Element position can change when adjacent elements are added/removed. Doesn’t reflect the element’s meaning.                                                                      |
-| Link Text selectors (e.g., `:link("More details")`)                       | ✅ Good        | Natural for users. However, like element text, requires consideration of translations and dynamic changes.                                                                                      |
-| Shadow DOM selectors (e.g., `::shadow .inner-element`)                    | ⚠️ Rarely      | Specific to web components. Can be unstable when libraries/components are updated. Use only if there’s no alternative.                                                                          |
+We recommend locating elements the same way users interact with the application being tested.
 
-## WebDriverIO
+When choosing a selector, consider 3 factors:
+
+-   User-centric — the selector reflects what the user sees and interacts with
+-   Stability — the selector doesn't break during refactoring, CSS changes, or page structure changes
+-   Uniqueness — the selector unambiguously identifies the required element
+
+| Selector / Selection method                                          | Recommendation | Notes                                                                                                                                                                                            |
+| -------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| By visible content — text, role, ... (`getByRole`, `getByText`, ...) | ✅ Best        | Locate elements the same way users do: by text, role, label — a stable and "honest" way to find elements.                                                                                        |
+| By `data-testid` attribute (e.g., `[data-testid="submit"]`)          | ✅ Good        | The `data-testid` attribute is designed specifically for automation: it doesn't affect styles/accessibility, is stable, and clearly indicates the element's purpose, but requires manual markup. |
+| By ID (e.g., `#main`)                                                | ⚠️ Rarely      | IDs are more stable than classes, but can still depend on JS logic or markup changes. Use only if the ID is guaranteed to be stable.                                                             |
+| By attribute type (e.g., `input[type="text"]`)                       | ⚠️ Rarely      | Works if the attribute type is semantically meaningful and stable. However, it can be too generic (many elements of the same type).                                                              |
+| By attributes (except `data-testid`, e.g., `[name="email"]`)         | ⚠️ Rarely      | Depends on HTML attribute semantics. Can be unstable (attributes may change or be removed).                                                                                                      |
+| XPath (e.g., `(//button)[2]`)                                        | 🔴 Poor        | Element position can change, and XPath selectors are generally hard to maintain. However, they can be useful as they provide maximum flexibility for locating elements.                          |
+| By class (e.g., `.sidebar .list-item.state-opened-qU1azF`)           | 🔴 Poor        | Not related to user behavior and doesn't reflect semantics, with a hard dependency on hierarchy.                                                                                                 |
+
+## WebdriverIO
 
 Testplane supports element location compatible with WebdriverIO syntax: CSS selectors, XPath, element text, and other methods described below.
 
+### By text selectors
+
+This type of selector allows you to find elements by the text they contain:
+
+-   `="text"` — exact text match
+-   `*="text"` — partial text match
+-   `a*=text` — text match inside an `<a>` tag
+-   `div.=text` — case-insensitive text match inside a `<div>` tag
+
+```javascript
+describe("Link Text selector", () => {
+    it("Finding an element by exact text match", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Exact text match for a link
+        const docsLink = await browser.$("=Documentation");
+        const isDocsLinkFound = await docsLink.isExisting();
+        console.log(`Element with exact text "Documentation" found: ${isDocsLinkFound}`);
+
+        // Partial text match for a link
+        const partialLink = await browser.$("*=Docum");
+        const isPartialLinkFound = await partialLink.isExisting();
+        console.log(`Element with partial text "Docum" found: ${isPartialLinkFound}`);
+
+        // Partial match with specified <a> tag
+        const tagPartialLink = await browser.$("a*=Document");
+        const isTagPartialLinkFound = await tagPartialLink.isExisting();
+        console.log(`<a> element with partial text "Document" found: ${isTagPartialLinkFound}`);
+
+        // Case-insensitive search with div tag
+        const divCaseInsensitive = await browser.$("div.=testplane");
+        const isDivCaseInsensitiveFound = await divCaseInsensitive.isExisting();
+        console.log(
+            `<div> element with case-insensitive text "testplane" found: ${isDivCaseInsensitiveFound}`,
+        );
+    });
+});
+```
+
+Use this approach if:
+
+-   the element text is stable
+-   you need the test to closely mimic real user scenarios
+
 ### CSS selectors
+
+#### By the data-testid attribute
+
+This approach is suitable for finding elements that are marked with testing attributes.
+
+```javascript
+describe("CSS selector by the data-testid attribute", () => {
+    it("Finding an element by data-testid", async ({ browser }) => {
+        // Open the page and wait for it to load
+        await browser.openAndWait("https://testplane.io/");
+
+        // Find element by the data-testid attribute
+        const element = await browser.$('[data-testid="main-content"]');
+
+        // Check if the element exists in the DOM
+        const isExisting = await element.isExisting();
+        console.log("Element with data-testid exists:", isExisting);
+    });
+});
+```
+
+Use this approach if:
+
+-   you are creating selectors specifically for testing
+-   you need selector stability regardless of UI/style changes
 
 #### By class
 
@@ -44,10 +118,10 @@ describe("CSS selector by class", () => {
 
 Use this approach if:
 
--   the class is stable and not generated dynamically;
--   you need a quick and simple way to find an element;
--   the class semantically describes the element (e.g., `.error-message`, `.success-banner`);
--   you are working with component libraries where classes are part of the API.
+-   the class is stable and not generated dynamically
+-   you need a quick and simple way to find an element
+-   the class semantically describes the element (e.g., `.error-message`, `.success-banner`)
+-   you are working with component libraries where classes are part of the API
 
 #### By ID
 
@@ -70,9 +144,9 @@ describe("CSS selector by ID", () => {
 
 Use this approach if:
 
--   you need a quick and simple way to find elements;
--   the `id` is part of the component’s public API;
--   you need maximum selector performance (`id` is the fastest selector).
+-   you need a quick and simple way to find elements
+-   the `id` is part of the component's public API
+-   you need maximum selector performance (`id` is the fastest selector)
 
 #### By attribute type
 
@@ -96,33 +170,8 @@ describe("CSS selector by attribute type", () => {
 
 Use this approach if:
 
--   you need to find all elements of a certain type (all checkboxes, all radio buttons);
--   you need to work with semantic HTML5 types (`email`, `tel`, `url`, `date`).
-
-#### CSS selectors by the data-testid attribute
-
-To find elements that are marked for testing, use selectors based on the `data-testid` attribute.
-
-```javascript
-describe("CSS selector by the data-testid attribute", () => {
-    it("Finding an element by data-testid", async ({ browser }) => {
-        // Open the page and wait for it to load
-        await browser.openAndWait("https://testplane.io/");
-
-        // Find element by the data-testid attribute
-        const element = await browser.$('[data-testid="main-content"]');
-
-        // Check if the element exists in the DOM
-        const isExisting = await element.isExisting();
-        console.log("Element with data-testid exists:", isExisting);
-    });
-});
-```
-
-Use this approach if:
-
--   you are creating selectors specifically for testing;
--   you need selector stability regardless of UI/style changes.
+-   you need to find all elements of a certain type (all checkboxes, all radio buttons)
+-   you need to work with semantic HTML5 types (`email`, `tel`, `url`, `date`)
 
 ### XPath selectors
 
@@ -148,8 +197,8 @@ describe("XPath selector by element text", () => {
 
 Use this approach if:
 
--   the element text is unique and stable (button labels, headings);
--   other element-finding strategies are not applicable.
+-   the element text is unique and stable (button labels, headings)
+-   other element-finding strategies are not applicable
 
 #### By attributes
 
@@ -172,11 +221,11 @@ describe("XPath selector by attribute", () => {
 
 Use this approach if:
 
--   you need complex search conditions (combinations of attributes);
--   you are working with dynamic attributes (`data` attributes with variable values);
--   you need flexibility in searching (partial matches, start/end of string);
--   CSS selectors cannot express the required logic;
--   you need to find an element by the absence of an attribute.
+-   you need complex search conditions (combinations of attributes)
+-   you are working with dynamic attributes (`data` attributes with variable values)
+-   you need flexibility in searching (partial matches, start/end of string)
+-   CSS selectors cannot express the required logic
+-   you need to find an element by the absence of an attribute
 
 #### DOM navigation
 
@@ -238,50 +287,11 @@ describe("XPath selector: indices and positions", () => {
 
 Use this approach if:
 
--   you need to access an element by its position in the result set;
--   you are testing pagination or lists with a specific order;
--   you are working with tables and need a specific row;
--   you need the first or last element among several identical ones;
--   you are testing sorting (verifying that an element is in the correct position).
-
-### Link Text selectors
-
-Link Text selectors allow you to find links (`<a>`) by their inner text. Use `="text"` to find an element with exact text match and `*="text"` for partial text matching.
-
-```javascript
-describe("Link Text selector", () => {
-    it("Finding an element by exact text match", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
-
-        // Exact text match for a link
-        const docsLink = await browser.$("=Documentation");
-        const isDocsLinkFound = await docsLink.isExisting();
-        console.log(`Element with exact text "Documentation" found: ${isDocsLinkFound}`);
-
-        // Partial text match for a link
-        const partialLink = await browser.$("*=Docum");
-        const isPartialLinkFound = await partialLink.isExisting();
-        console.log(`Element with partial text "Docum" found: ${isPartialLinkFound}`);
-
-        // Partial match with specified <a> tag
-        const tagPartialLink = await browser.$("a*=Document");
-        const isTagPartialLinkFound = await tagPartialLink.isExisting();
-        console.log(`<a> element with partial text "Document" found: ${isTagPartialLinkFound}`);
-
-        // Case-insensitive search with div tag
-        const divCaseInsensitive = await browser.$("div.=testplane");
-        const isDivCaseInsensitiveFound = await divCaseInsensitive.isExisting();
-        console.log(
-            `<div> element with case-insensitive text "testplane" found: ${isDivCaseInsensitiveFound}`,
-        );
-    });
-});
-```
-
-Use this approach if:
-
--   the element text is stable;
--   you need the test to closely mimic real user scenarios.
+-   you need to access an element by its position in the result set
+-   you are testing pagination or lists with a specific order
+-   you are working with tables and need a specific row
+-   you need the first or last element among several identical ones
+-   you are testing sorting (verifying that an element is in the correct position)
 
 ### Shadow DOM selectors
 
@@ -299,19 +309,21 @@ const slotElements = await customElement.shadow$$(".slot-item");
 
 Use this approach if:
 
--   you are working with Web Components and Custom Elements;
--   the application uses Shadow DOM to encapsulate styles;
--   you are testing components from third‑party libraries (Lit, Stencil, native Web Components);
--   you need access to elements inside the shadow root;
--   you are working with a design system based on Web Components.
+-   you are working with Web Components and Custom Elements
+-   the application uses Shadow DOM to encapsulate styles
+-   you are testing components from third‑party libraries (Lit, Stencil, native Web Components)
+-   you need access to elements inside the shadow root
+-   you are working with a design system based on Web Components
 
 ## Testing Library
 
-Testing Library allows you to find elements the way users do — by text, element type, or other attributes that don’t depend on your layout details.
+Testing Library allows you to find elements the way users do — by text, element type, or other attributes that don't depend on your layout details.
+
+To use this type of selector, you need to [install Testing Library](../../guides/how-to-add-testing-library).
 
 ### ByRole
 
-`getByRole` is the main method in Testing Library that lets you find elements by their ARIA roles. For example, if you use the method `screen.getByRole("button", { name: /submit/i })`, you will find a button with text containing `submit`.
+`getByRole` is the main method in Testing Library that lets you find elements by their ARIA roles. For example, if you use the method `browser.getByRole("button", { name: /submit/i })`, you will find a button with text containing `submit`.
 
 ```javascript
 describe("getByRole", () => {
@@ -461,7 +473,7 @@ describe("Finding an element using the getByTitle method", () => {
 
 ### ByTestId
 
-`getByTestId` is used as a last resort when other methods are not suitable. For example, if you use `screen.getByTestId("submit-button")`, you will find an element with the attribute `data-testid="submit-button"`.
+`getByTestId` is used as a last resort when other methods are not suitable. For example, if you use `browser.getByTestId("submit-button")`, you will find an element with the attribute `data-testid="submit-button"`.
 
 ```javascript
 describe("Finding an element using the getByTestId method", () => {
