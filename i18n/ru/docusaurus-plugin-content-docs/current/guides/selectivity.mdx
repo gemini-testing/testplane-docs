@@ -40,6 +40,8 @@ export default {
 
 ```ts
 // testplane.config.ts
+import { SelectivityMode } from "testplane";
+
 const DEV_SERVER_PORT = 3050;
 
 export default {
@@ -53,7 +55,7 @@ export default {
         },
     },
     selectivity: {
-        enabled: true,
+        enabled: SelectivityMode.Enabled,
     },
 } satisfies import("testplane").ConfigInput;
 ```
