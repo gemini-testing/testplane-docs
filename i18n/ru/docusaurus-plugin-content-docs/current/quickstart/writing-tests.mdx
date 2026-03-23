@@ -32,21 +32,21 @@ describe("test examples", () => {
     it("docs search test", async ({ browser }) => {
         await browser.openAndWait("https://testplane.io/");
 
-        // Find by tag name
+        // Поиск по имени тега
         const navBar = await browser.$("nav");
 
-        // Find by aria-label
+        // Поиск по aria-label
         await navBar.$("aria/Search").click();
 
-        // Find by placeholder
+        // Поиск по placeholder
         const fileSearchInput = await browser.findByPlaceholderText("Search docs");
         await fileSearchInput.waitForDisplayed();
         await fileSearchInput.setValue("config");
 
-        // Find by id
+        // Поиск по id
         const fileSearchResults = await browser.$("#docsearch-list");
 
-        // Find by role
+        // Поиск по role
         const fileSearchResultsItems = await fileSearchResults.findAllByRole("option");
 
         await expect(fileSearchResultsItems.length).toBeGreaterThan(1);
@@ -336,6 +336,20 @@ describe("tests", () => {
     });
 });
 ```
+
+Когда использовать WebdriverIO expect vs Jest expect
+
+**WebdriverIO expect** — используйте для проверки элементов и браузера:
+- Автоматические ожидания (retry механизм)
+- Проверка состояния элементов: `toBeDisplayed()`, `toExist()`, `toHaveText()`
+- Проверка браузера: `toHaveUrl()`, `toHaveTitle()`
+
+**Jest expect** — используйте для проверки значений, чисел, строк:
+- Синхронные проверки данных
+- Проверка чисел: `toBeGreaterThan()`, `toBeLessThan()`
+- Проверка строк и массивов: `toContain()`, `toBe()`, `toMatch()`
+
+**Рекомендация:** для проверок элементов и браузера всегда используйте WebdriverIO expect, так как он автоматически ожидает выполнения условия.
 
 ### Хуки
 
