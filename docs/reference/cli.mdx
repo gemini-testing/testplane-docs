@@ -698,7 +698,29 @@ All options can be overridden via command-line flags or environment variables wi
 
 -   The default value.
 
-### Overriding with CLI option {#overriding-cli-settings}
+## `selectivity-merge-dumps` command {#selectivity-merge-dumps}
+
+This command is useful when its needed to merge selectivity dumps from multiple chunks into a single one.
+
+### Usage {#usage}
+
+```bash
+npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4 -d ./selectivity-full
+npx testplane selectivity-merge-dumps -d ./selectivity-full ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4
+npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4
+```
+
+### Command options {#options}
+
+You can specify destination directory with "-d" ("--destination") argument.
+
+It can be omitted. In this case "testDependenciesPath" from "selectivity" config section will be used.
+
+### Command arguments {#arguments}
+
+List of paths to selectivity report chunks
+
+## Overriding with CLI option {#overriding-cli-settings}
 
 To override a config setting with a CLI option, convert the full option path to `--kebab-case`.
 
@@ -714,7 +736,7 @@ It also works for nested properties. Example of overriding `browsers.firefox.ses
 testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
 ```
 
-### Overriding with environment variable {#overriding-env-settings}
+## Overriding with environment variable {#overriding-env-settings}
 
 To override a setting with an environment variable, convert its full path to `snake_case` and add the `testplane_` prefix.
 
@@ -727,7 +749,7 @@ testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
 
 Besides overriding config values, there also two extra environment variables: "TESTPLANE_SKIP_BROWSERS" and "TESTPLANE_SETS":
 
-#### TESTPLANE_SKIP_BROWSERS
+### TESTPLANE_SKIP_BROWSERS
 
 Skip the browsers specified in the config by passing the browser IDs. Multiple browser IDs should be separated by commas
 (spaces after commas are allowed).
@@ -736,7 +758,7 @@ Skip the browsers specified in the config by passing the browser IDs. Multiple b
 TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
 ```
 
-#### TESTPLANE_SETS
+### TESTPLANE_SETS
 
 Runs only specified sets (CLI option `--set` alternative).
 

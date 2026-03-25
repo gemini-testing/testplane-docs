@@ -700,7 +700,29 @@ TESTPLANE_BROWSERS_PATH=~/.testplane npx testplane install-deps
 
 -   Значение по умолчанию.
 
-### Переопределение с помощью CLI опции {#overriding-cli-settings}
+## Команда `selectivity-merge-dumps` {#selectivity-merge-dumps}
+
+Эта команда полезна, когда необходимо объединить дампы селективности из нескольких частей (чанков) в один.
+
+### Использование {#usage}
+
+```bash
+npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4 -d ./selectivity-full
+npx testplane selectivity-merge-dumps -d ./selectivity-full ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4
+npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4
+```
+
+### Опции команды {#options}
+
+Вы можете указать директорию, в которую будет записан результат, с помощью аргумента "-d" ("--destination").
+
+Его можно не указывать. В этом случае будет использован "testDependenciesPath" из секции конфигурации "selectivity".
+
+### Аргументы команды {#arguments}
+
+Список путей к частям (чанкам) отчета селективности
+
+## Переопределение с помощью CLI опции {#overriding-cli-settings}
 
 Чтобы переопределить настройку в конфигурации с помощью опции CLI, преобразуйте полный путь параметра в `--kebab-case`.
 
@@ -716,7 +738,7 @@ testplane path/to/mytest.js --base-url http://example.com
 testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
 ```
 
-### Переопределение с помощью переменной окружения {#overriding-env-settings}
+## Переопределение с помощью переменной окружения {#overriding-env-settings}
 
 Чтобы переопределить настройку с помощью переменной окружения, преобразуйте её полный путь в `snake_case` и добавьте префикс `testplane_`.
 
@@ -729,7 +751,7 @@ testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
 
 Кроме переопределения значений конфигурации, существуют также две дополнительные переменные окружения: "TESTPLANE_SKIP_BROWSERS" и "TESTPLANE_SETS":
 
-#### TESTPLANE_SKIP_BROWSERS
+### TESTPLANE_SKIP_BROWSERS
 
 Пропустить браузеры, указанные в конфигурации, путем передачи идентификаторов браузеров. Несколько идентификаторов браузеров должны быть разделены запятыми (после запятых разрешены пробелы).
 
@@ -737,7 +759,7 @@ testplane_browsers_firefox_sessions_per_browser=7 testplane path/to/mytest.js
 TESTPLANE_SKIP_BROWSERS=ie10,ie11 testplane
 ```
 
-#### TESTPLANE_SETS
+### TESTPLANE_SETS
 
 Запускает только указанные наборы (альтернатива опции CLI `--set`).
 

@@ -1042,9 +1042,13 @@ export = {
     <tbody>
         <tr>
             <td>`enabled`</td>
-            <td>`boolean`</td>
-            <td>`false`</td>
-            <td>Включает селективность запуска тестов.</td>
+            <td>`SelectivityMode`</td>
+            <td>`SelectivityMode.Disabled`</td>
+            <td>
+                Доступные режимы: `SelectivityMode.Disabled`, `SelectivityMode.Enabled`, `SelectivityMode.ReadOnly`, `SelectivityMode.WriteOnly`.
+                В режиме `ReadOnly`, нетронутые тесты не запускаются, но дамп селективности не обновляется после успешного запуска.
+                В режиме `WriteOnly` запускаются все тесты, но дамп селективности обновляетя после успешного запуска.
+            </td>
         </tr>
         <tr>
             <td>`sourceRoot`</td>
@@ -1080,6 +1084,12 @@ export = {
                 Коллбэк, который принимает путь зависимости теста в стиле POSIX и преобразует его в другой путь
                 или полностью игнорирует зависимость, если возвращено `falsy` значение
             </td>
+        </tr>
+        <tr>
+            <td>`reportPath`</td>
+            <td>`string`</td>
+            <td>`""`</td>
+            <td>Если указано, JSON-отчет о селективности будет сохранен в соответствующий файл.</td>
         </tr>
     </tbody>
 </table>

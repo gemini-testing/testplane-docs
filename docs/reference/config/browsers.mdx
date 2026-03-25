@@ -1038,9 +1038,13 @@ The section has the following parameters:
     <tbody>
         <tr>
             <td>`enabled`</td>
-            <td>`boolean`</td>
-            <td>`false`</td>
-            <td>Enables selective test execution.</td>
+            <td>`SelectivityMode`</td>
+            <td>`SelectivityMode.Disabled`</td>
+            <td>
+                Available modes: `SelectivityMode.Disabled`, `SelectivityMode.Enabled`, `SelectivityMode.ReadOnly`, `SelectivityMode.WriteOnly`.
+                In `ReadOnly` mode unchanged tests are skipped, but selectivity dump is not updated after successful run.
+                In `WriteOnly` mode all tests are run, but selectivity dump is updated after successful run.
+            </td>
         </tr>
         <tr>
             <td>`sourceRoot`</td>
@@ -1077,6 +1081,12 @@ The section has the following parameters:
                 Callback, which accepts test dependency path in POSIX style and maps it to another path
                 or filters it completely if `falsy` value is returned
             </td>
+        </tr>
+        <tr>
+            <td>`reportPath`</td>
+            <td>`string`</td>
+            <td>`""`</td>
+            <td>If set, selectivity JSON-report will be saved to specified file path.</td>
         </tr>
     </tbody>
 </table>
