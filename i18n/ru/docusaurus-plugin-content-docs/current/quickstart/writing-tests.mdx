@@ -58,7 +58,7 @@ describe("test examples", () => {
 
 ### Навигация
 
-Для перемещения по страницам используйте метод:
+Для перемещения по страницам используйте метод [`browser.url()`](../commands/browser/url.mdx):
 
 ```javascript
 await browser.url("https://testplane.io/ru/");
@@ -72,17 +72,17 @@ await browser.$("h1").waitForExist({ timeout: 5000 });
 const title = await browser.$("h1").getText();
 ```
 
-Либо используйте команду:
+Либо используйте команду [`browser.openAndWait()`](../commands/browser/openAndWait.mdx):
 
 ```javascript
 await browser.openAndWait("https://testplane.io/ru/");
 ```
 
-Команда `await browser.openAndWait()` по умолчанию дожидается загрузки всех необходимых элементов на странице.
+Команда [`browser.openAndWait()`](../commands/browser/openAndWait.mdx) по умолчанию дожидается загрузки всех необходимых элементов на странице.
 
 ### Селекторы
 
-Testplane поддерживает различные стратегии поиска элементов: `CSS`-селекторы (самые распространенные), текстовые селекторы (по содержимому), `XPath` для сложных запросов. Метод `$()` возвращает первый найденный элемент, а `$$()` — массив всех подходящих элементов:
+Testplane поддерживает различные стратегии поиска элементов: `CSS`-селекторы (самые распространенные), текстовые селекторы (по содержимому), `XPath` для сложных запросов. Метод [`$()`](../commands/browser/$.mdx) возвращает первый найденный элемент, а `$$()` — массив всех подходящих элементов:
 
 ```javascript
 const assert = require("assert");
@@ -115,6 +115,61 @@ describe("tests", () => {
     });
 });
 ```
+
+#### Типы селекторов
+
+Testplane поддерживает несколько типов селекторов. Вот примеры, когда использовать каждый из них:
+
+```javascript
+describe("Примеры типов селекторов", () => {
+    it("CSS-селекторы — основной способ поиска элементов", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/");
+        
+        // ✅ Рекомендуется: data-атрибуты (стабильны, не зависят от вёрстки)
+        const button = await browser.$('[data-testid="submit-button"]');
+        
+        // ✅ Хорошо: CSS-классы и теги
+        const logo = await browser.$("a.navbar__brand");
+        const heading = await browser.$("h1");
+    });
+
+    it("Текстовые селекторы — когда нет стабильных атрибутов", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/");
+        
+        // Поиск ссылки по точному тексту
+        const link = await browser.$("a=Документация");
+        
+        // Поиск кнопки по частичному совпадению текста
+        const button = await browser.$("button*=Начать");
+    });
+
+    it("XPath — для сложных запросов в DOM", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/");
+        
+        // Поиск элемента по тексту внутри
+        const element = await browser.$("//button[contains(text(), 'Поиск')]");
+        
+        // Поиск родительского элемента
+        const parent = await browser.$("//a[@class='navbar__brand']/parent::div");
+        
+        // ⚠️ Используйте XPath только когда CSS-селекторы не подходят
+    });
+});
+```
+
+:::tip Рекомендации по выбору селекторов
+
+**Приоритет использования:**
+1. **Data-атрибуты** (`[data-testid="..."]`) — самый надёжный способ
+2. **CSS-селекторы** (классы, ID, теги) — для стабильных элементов
+3. **Текстовые селекторы** — когда нет других вариантов
+4. **XPath** — только для сложных случаев
+
+**Избегайте:**
+- Сложных CSS-селекторов, зависящих от структуры DOM
+- Селекторов по порядковому номеру (`:nth-child`)
+- XPath без необходимости (медленнее CSS)
+:::
 
 ### Взаимодействия с элементами
 
