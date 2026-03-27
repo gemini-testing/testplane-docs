@@ -1,0 +1,407 @@
+import Admonition from "@theme/Admonition";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Working with Browsers
+
+<Admonition title="What you will learn">
+
+-   How Testplane works with browsers
+-   How to describe browsers in configuration
+-   What browser sources are available: local, Docker, cloud
+-   How to choose the right approach for your task
+
+</Admonition>
+
+## Introduction
+
+Testplane runs tests in real browsers and is not tied to specific versions or a single browser source.
+
+You describe the required browsers in the [`browsers`](../reference/config/browsers.mdx) section, and the [`gridUrl`](../reference/config/browsers.mdx#grid_url) parameter determines where to get them from: locally, from a Docker grid (e.g., Selenoid), or from a remote cloud (BrowserStack, Sauce Labs).
+
+**General workflow:**
+
+1. Testplane reads the `browsers` section
+2. For each browser, it takes the `gridUrl` (common or overridden at the browser level)
+3. Connects to the grid and launches the browser with the specified `desiredCapabilities`
+
+Usually, all browsers use one source (one `gridUrl`), but if necessary, it can be set separately for each browser.
+
+## Browser Configuration
+
+The [`browsers`](../reference/config/browsers.mdx) section describes which browsers the tests run in.
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "local",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+
+        "chrome-mobile": {
+            gridUrl: "local",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    mobileEmulation: {
+                        deviceName: "iPhone 12 Pro",
+                    },
+                },
+            },
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+The key in `browsers` (`chrome`, `chrome-mobile`) is the logical **browser name**. It is used in CLI and reports. The name does not limit the actual settings: you can specify any `browserName` and `browserVersion` in `desiredCapabilities`.
+
+**Browser version** is set in `desiredCapabilities.browserVersion`. For local browsers, Testplane will download the required version if it is supported. For Docker and cloud, the version must match the image or grid settings.
+
+`headless: true` enables **headless mode** (running without a graphical interface).
+
+`windowSize: "1920x1080"` sets the **window size**, which is important for screenshot tests.
+
+### Mobile Emulation
+
+For Chrome, use `goog:chromeOptions.mobileEmulation`:
+
+```ts
+"goog:chromeOptions": {
+    mobileEmulation: {
+        deviceName: "iPhone 12 Pro",
+    }
+```
+
+For Firefox, you can emulate a mobile user-agent via `moz:firefoxOptions`:
+
+```ts
+"moz:firefoxOptions": {
+    prefs: {
+        "general.useragent.override":
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15",
+    }
+}
+```
+
+## Local Browsers
+
+The easiest way to get started with Testplane. Tests run on browsers and drivers installed on your machine.
+
+### Installing Dependencies
+
+Download the required browsers and drivers:
+
+```bash
+npx testplane install-deps
+```
+
+Download only selected browsers (by logical name from config):
+
+```bash
+npx testplane install-deps chrome-dark
+```
+
+Specify specific versions:
+
+```bash
+npx testplane install-deps chrome@130 firefox@104
+```
+
+By default, browsers and drivers are downloaded to the `.testplane` directory in the user's home folder. The path can be changed via the `TESTPLANE_BROWSERS_PATH` environment variable:
+
+```bash
+TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
+```
+
+#### Removing Browsers
+
+-   Delete the .testplane directory in the home folder
+-   Or delete the directory specified in `TESTPLANE_BROWSERS_PATH`
+
+### Running Tests
+
+There are two options:
+
+**Via the `--local` CLI option:**
+
+```bash
+npx testplane --local
+```
+
+**Via `gridUrl: "local"` in configuration:**
+
+```ts
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "local",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "130.0",
+            },
+        },
+    },
+};
+```
+
+### Debugging Local Runs
+
+Enable verbose logs via configuration:
+
+```ts
+export default {
+    system: {
+        debug: true,
+    },
+};
+```
+
+Or via environment variables — with limited `webdriverio` logging level:
+
+```bash
+testplane_system_debug=true WDIO_LOG_LEVEL=error npx testplane --local -b chrome
+```
+
+### Pros and Cons
+
+#### Advantages
+
+-   High test execution speed
+-   No costs for cloud services
+-   Simple setup and easy debugging
+
+#### Limitations
+
+-   Limited set of browser versions
+-   OS dependency: screenshots may differ
+-   Need to control version updates
+
+Local browsers are suitable for development, quick runs, and debugging, but not ideal for screenshot testing across different OSes.
+
+## Browsers in Docker Containers
+
+Docker containers provide an isolated and reproducible environment, convenient for CI/CD. Selenoid is often used — a lightweight implementation of Selenium Grid that runs browsers inside containers.
+
+**Selenoid:**
+
+-   Manages browsers in Docker containers
+-   Automatically scales containers
+-   Can record video and provides VNC access
+-   Configured via a simple JSON file with browsers
+
+### Browser Images
+
+Ready-made images are available on Docker Hub:
+
+-   [`selenoid/chrome`](https://hub.docker.com/r/selenoid/chrome/tags) — образы Chrome
+-   [`selenoid/firefox`](https://hub.docker.com/r/selenoid/firefox/tags) — образы Firefox
+-   [`selenoid/opera`](https://hub.docker.com/r/selenoid/opera/tags) — образы Opera
+
+Ready-made images may not have the latest browser versions. To build up-to-date ones, use the [`gemini-testing/images`](https://github.com/gemini-testing/images/) repository:
+
+```bash
+git clone https://github.com/gemini-testing/images.git
+cd images
+
+./chrome/build.sh
+./firefox/build.sh
+```
+
+You can track the availability of ready-made fresh images in [this issue](https://github.com/gemini-testing/testplane/issues/1212).
+
+### Testplane Configuration for Selenoid
+
+```ts title="testplane.config.ts"
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "130.0",
+                "selenoid:options": {
+                    enableVNC: true,
+                    enableVideo: true,
+                    enableLog: true,
+                    screenResolution: "1920x1080x24",
+                },
+                "goog:chromeOptions": {
+                    args: ["--headless=new"],
+                },
+            },
+            headless: true,
+        },
+
+        firefox: {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "firefox",
+                browserVersion: "125.0",
+                "selenoid:options": {
+                    enableVNC: true,
+                    enableVideo: true,
+                    screenResolution: "1920x1080x24",
+                },
+                "moz:firefoxOptions": {
+                    args: ["-headless"],
+                },
+            },
+            headless: true,
+        },
+    },
+};
+```
+
+### Pros and Cons
+
+#### Advantages
+
+    - Isolated environment, tests don't affect the system
+    - Stable and identical browser versions everywhere
+    - Easy scalability in CI/CD
+    - Flexible environment configuration
+
+#### Limitations
+
+    - Requires basic Docker and Selenoid knowledge
+    - Higher resource consumption
+    - Need to monitor image updates and network settings
+
+Docker is well-suited for CI/CD and screenshot testing where stability and reproducibility are important.
+
+## Remote Grids
+
+Cloud services (BrowserStack, Sauce Labs, etc.) provide a wide range of browsers, OSes, and real devices for cross-browser testing.
+
+### Connection and Authentication
+
+To connect, you need to specify the service's `gridUrl` and pass credentials via `user` and `key`. It is recommended to store them in environment variables:
+
+```ts title="testplane.config.ts"
+export default {
+    browsers: {
+        "chrome-bstack": {
+            gridUrl: "https://hub.browserstack.com/wd/hub",
+            user: process.env.BROWSERSTACK_USERNAME,
+            key: process.env.BROWSERSTACK_ACCESS_KEY,
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "latest",
+                "bstack:options": {
+                    os: "Windows",
+                    osVersion: "11",
+                    projectName: "My Test Project",
+                    buildName: "Build 1.0",
+                },
+            },
+        },
+
+        "firefox-sauce": {
+            // Регион выбирается в зависимости от вашего расположения:
+            // https://docs.saucelabs.com/basics/data-center-endpoints/
+            gridUrl: "https://ondemand.us-west-1.saucelabs.com/wd/hub",
+            user: process.env.SAUCE_USERNAME,
+            key: process.env.SAUCE_ACCESS_KEY,
+            desiredCapabilities: {
+                browserName: "firefox",
+                browserVersion: "latest",
+                "sauce:options": {
+                    name: "Firefox test",
+                    build: "Build 1.0",
+                },
+            },
+        },
+    },
+};
+```
+
+### Session Customization
+
+Different services have their own options:
+
+**BrowserStack** (`bstack:options`)
+
+-   OS and its version (`os`, `osVersion`)
+-   Screen resolution (`resolution`)
+-   Local testing (`local`)
+-   Enable logs and debugging (`debug`, `networkLogs`, `consoleLogs`)
+
+**Sauce Labs** (`sauce:options`)
+
+-   Name and build (`name`, `build`)
+-   Tags (`tags`)
+-   Time limits (`commandTimeout`, `idleTimeout`, `maxDuration`)
+-   Video and logs (`recordVideo`, `recordLogs`)
+
+### Timeouts and Debugging
+
+Cloud services strictly limit the execution time of a single command, session idle time, and maximum session duration.
+
+For debugging, the following are available:
+
+-   Session logs
+-   Video of each run
+-   VNC or similar for browser viewing
+-   Network logs
+
+### Pros and Cons
+
+#### Advantages
+
+    - Wide selection of browsers and OSes
+    - No need to set up your own infrastructure
+    - Detailed logs and videos
+
+#### Limitations
+
+    - Cost, especially with a large number of runs
+    - Network dependency and latency
+    - Session time limits
+    - Data security requirements
+
+Cloud grids are convenient for regular cross-browser and mobile testing without maintaining your own browser farm.
+
+## Practical Scenarios
+
+<Tabs>
+    <TabItem value="local" label="Development" default>
+        For development and quick feedback:
+
+        - Use local browsers (`--local` or `gridUrl: "local"`)
+        - Run only the needed browsers via `-b chrome`
+        - Enable `system.debug` when debugging
+    </TabItem>
+    <TabItem value="docker" label="CI/CD">
+        For stable CI runs:
+
+        - Set up Selenoid or a similar grid in Docker
+        - Use the same image in all pipelines
+        - Parallelize tests via `sessionsPerBrowser`
+    </TabItem>
+    <TabItem value="grid" label="Cross-browser Testing">
+        When you need to test many browser and device combinations:
+
+        - Create separate logical browsers for key combinations (Chrome, Safari, mobile Chrome, etc.)
+        - Run regression once per release or on schedule
+        - Analyze videos and logs for rare, hard-to-reproduce bugs
+    </TabItem>
+
+</Tabs>
+
+### Hybrid Approach
+
+A practical option for most projects:
+
+-   Local browsers — for development and debugging
+-   Docker in CI — for stable, fast runs on one set of browsers
+-   Cloud — for periodic cross-browser and mobile testing

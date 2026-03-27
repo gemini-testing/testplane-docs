@@ -1,0 +1,564 @@
+import Admonition from "@theme/Admonition";
+
+# Браузеры
+
+<Admonition title="Что вы узнаете">
+
+-   Как Testplane работает с браузерами
+-   Как описать браузеры в конфигурации
+-   Какие есть источники браузеров: локальные, Docker, облако
+-   Как выбрать подход под свою задачу
+
+</Admonition>
+
+## Введение
+
+Testplane запускает тесты в реальных браузерах и не привязан к конкретным версиям или одному источнику браузеров.
+
+Вы описываете нужные браузеры в секции [`browsers`](../reference/config/browsers.mdx), а параметр [`gridUrl`](../reference/config/browsers.mdx#grid_url) определяет, откуда их брать: локально, из Docker-грида (например, Selenoid) или из удалённого облака (BrowserStack, Sauce Labs).
+
+**Общая схема работы:**
+
+1. Testplane читает секцию `browsers`
+2. Для каждого браузера берёт `gridUrl` (общий или переопределённый на уровне браузера)
+3. Обращается к гриду и запускает браузер с указанными `desiredCapabilities`
+
+Обычно для всех браузеров используют один источник (один `gridUrl`), но при необходимости его можно задать отдельно для каждого браузера.
+
+## Конфигурация браузеров
+
+Секция [`browsers`](../reference/config/browsers.mdx) описывает, в каких браузерах запускаются тесты.
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "local",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+
+        "chrome-mobile": {
+            gridUrl: "local",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    mobileEmulation: {
+                        deviceName: "iPhone 12 Pro",
+                    },
+                },
+            },
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+Ключ в `browsers` (`chrome`, `chrome-mobile`) — логическое имя браузера. Оно используется в CLI и в отчётах. Имя не ограничивает реальные настройки: в `desiredCapabilities` можно указать любой `browserName` и `browserVersion`.
+
+Версия браузера задаётся в `desiredCapabilities.browserVersion`. Для локальных браузеров Testplane скачает нужную версию, если она поддерживается.
+
+`windowSize: "1920x1080"` задаёт размер окна, что важно для скриншотных тестов.
+
+### Headless-режим
+
+Параметр [`headless: true`](../reference/config/browsers.mdx#headless) включает запуск браузера без графического интерфейса.
+
+**Важные моменты:**
+
+-   Поведение тестов идентично: с точки зрения тестов браузер с `headless: true` и `headless: false` работает полностью одинаково. Например, при запуске с `headless: true` всё ещё можно делать скриншоты, работать с DOM, выполнять любые команды.
+
+-   Параметр обязателен в окружениях без UI: в окружениях, где нет графического интерфейса (например, в CI-джобах), необходимо использовать `headless: true`, иначе будут ошибки вида `cannot open display` и подобные.
+
+### Мобильная эмуляция
+
+Для Chrome используйте `goog:chromeOptions.mobileEmulation`:
+
+```ts
+"goog:chromeOptions": {
+    mobileEmulation: {
+        deviceName: "iPhone 12 Pro",
+    }
+```
+
+Для Firefox можно эмулировать мобильный user-agent через `moz:firefoxOptions`:
+
+```ts
+"moz:firefoxOptions": {
+    prefs: {
+        "general.useragent.override":
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15",
+    }
+}
+```
+
+## Локальные браузеры
+
+Самый простой способ начать работу с Testplane. Тесты запускаются на браузерах и драйверах, установленных на вашей машине.
+
+### Установка зависимостей
+
+Скачать все браузеры и драйверы, указанные в конфиге и поддерживающие автоматическую установку:
+
+```bash
+npx testplane install-deps
+```
+
+Загрузить только выбранные браузеры (по логическому имени из конфига):
+
+```bash
+npx testplane install-deps chrome-dark
+```
+
+Указать конкретные версии:
+
+```bash
+npx testplane install-deps chrome@130 firefox@104
+```
+
+По умолчанию браузеры и драйверы скачиваются в директорию `.testplane` в домашней папке пользователя. Путь можно изменить через переменную окружения `TESTPLANE_BROWSERS_PATH`:
+
+```bash
+TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
+```
+
+#### Удаление браузеров
+
+-   Удалите директорию .testplane в домашней папке
+-   Или удалите каталог, указанный в `TESTPLANE_BROWSERS_PATH`
+
+### Поддержка браузеров {#browser-support}
+
+Ниже представлена таблица поддерживаемых браузеров:
+
+| Браузер | Авто-загрузка | Авто-загрузка драйвера | Запуск webdriver |
+| ------- | ------------- | ---------------------- | ---------------- |
+| Chrome  | +             | +                      | +                |
+| Firefox | +             | +                      | +                |
+| Edge    | -             | +                      | +                |
+| Safari  | -             | +                      | +                |
+
+Поддерживаемые версии браузеров в зависимости от ОС:
+
+|   ОС    | Windows | MacOs | Ubuntu 20 | Ubuntu 22 | Ubuntu 24 |
+| :-----: | ------- | ----- | --------- | --------- | --------- |
+| Chrome  | 73+     | 73+   | 73+       | 73+       | 73+       |
+| Firefox | 60+     | 60+   | 60+       | 91+       | 126+      |
+|  Edge   | \*      | \*    | \*        | \*        | \*        |
+| Safari  | -       | \*    | -         | -         | -         |
+
+> `*` — авто-загрузка браузера не поддерживается, но если браузер установлен пользователем, Testplane будет использовать установленную версию.
+
+### Запуск тестов
+
+Есть два варианта:
+
+-   Через CLI-опцию `--local`:
+
+```bash
+npx testplane --local
+```
+
+-   Через `gridUrl: "local"` в конфигурации:
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "local",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+### Плюсы и минусы
+
+#### Преимущества
+
+-   Высокая скорость запуска тестов
+-   Нет затрат на облачные сервисы
+-   Простая настройка и лёгкая отладка
+
+#### Ограничения
+
+-   Ограниченный набор версий браузеров
+-   Зависимость от операционной системы: скриншоты могут различаться
+
+Локальные браузеры подходят для разработки, быстрого прогона и отладки, но не идеальны для скриншотного тестирования между разными ОС.
+
+## Браузеры в Docker-контейнерах
+
+Docker-контейнеры дают изолированное и воспроизводимое окружение, удобное для CI/CD. Часто используют Selenoid — легковесную реализацию Selenium Grid, которая запускает браузеры внутри контейнеров.
+
+**Selenoid:**
+
+-   Управляет браузерами в Docker-контейнерах
+-   Автоматически масштабирует контейнеры
+-   Умеет записывать видео и даёт VNC-доступ
+-   Настраивается через простой JSON-файл с браузерами
+
+### Образы браузеров
+
+Готовые образы доступны на Docker Hub:
+
+-   [`selenoid/chrome`](https://hub.docker.com/r/selenoid/chrome/tags) — образы Chrome
+-   [`selenoid/firefox`](https://hub.docker.com/r/selenoid/firefox/tags) — образы Firefox
+-   [`selenoid/opera`](https://hub.docker.com/r/selenoid/opera/tags) — образы Opera
+
+У готовых образов могут отсутствовать самые свежие версии браузеров. Чтобы собрать актуальные образы, воспользуйтесь инструкциями из репозитория [`gemini-testing/images`](https://github.com/gemini-testing/images/).
+
+Следить за появлением готовых свежих образов можно в [этом issue](https://github.com/gemini-testing/testplane/issues/1212).
+
+### Запуск одного браузера в Docker
+
+Самый простой способ запустить браузер в Docker — использовать готовый образ напрямую:
+
+```bash
+docker run -it --rm --privileged -p 4444:4444 -p 5900:5900 -e ENABLE_VNC='true' selenoid/chrome:128.0
+```
+
+Эта команда:
+
+-   Запускает контейнер с Chrome 128.0
+-   Пробрасывает порт 4444 для WebDriver
+-   Пробрасывает порт 5900 для VNC-доступа
+-   Включает VNC для возможности просмотра браузера
+
+В конфигурации Testplane укажите:
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+Этот подход удобен для быстрого тестирования или отладки в конкретной версии браузера.
+
+### Запуск Selenoid с несколькими браузерами
+
+Для работы с несколькими браузерами используйте Selenoid — он управляет запуском контейнеров на основе конфигурационного файла.
+
+#### Создание конфигурации
+
+Создайте файл `browsers.json` с описанием нужных браузеров:
+
+<details>
+<summary>browsers.json</summary>
+
+```json
+{
+    "chrome": {
+        "versions": {
+            "128.0": {
+                "image": "selenoid/chrome:128.0",
+                "path": "/",
+                "port": "4444",
+                "shmSize": 2147483648,
+                "tmpfs": {
+                    "/tmp": "size=512m"
+                },
+                "volumes": ["/tmp/.X11-unix:/tmp/.X11-unix"]
+            }
+        }
+    },
+    "firefox": {
+        "versions": {
+            "145.0": {
+                "image": "selenoid/firefox:145.0",
+                "path": "/wd/hub",
+                "port": "4444",
+                "shmSize": 2147483648,
+                "tmpfs": {
+                    "/tmp": "size=512m"
+                },
+                "volumes": ["/tmp/.X11-unix:/tmp/.X11-unix"]
+            }
+        }
+    }
+}
+```
+
+</details>
+
+#### Запуск Selenoid
+
+Запустите Selenoid, указав путь к конфигурации (в примере конфиг лежит в `/home/selenoid-config/browsers.json`):
+
+```bash
+docker run --rm -d \
+  --name selenoid \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /home/selenoid-config:/etc/selenoid/:ro \
+  --network=host \
+  aerokube/selenoid:latest
+```
+
+Selenoid будет автоматически запускать нужные контейнеры браузеров при получении запросов от Testplane.
+
+#### Конфигурация Testplane
+
+Базовая конфигурация идентична локальным браузерам, меняется только `gridUrl`:
+
+```ts title="testplane.config.ts"
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+
+        "chrome-mobile": {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    mobileEmulation: {
+                        deviceName: "iPhone 12 Pro",
+                    },
+                },
+            },
+            headless: true,
+        },
+    },
+};
+```
+
+Подробнее о настройке Selenoid читайте в [официальной документации](https://aerokube.com/selenoid/latest/).
+
+### Специфичные опции Selenoid
+
+Selenoid поддерживает дополнительные опции через `selenoid:options`:
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "selenoid:options": {
+                    enableVNC: true,
+                    enableVideo: true,
+                    enableLog: true,
+                },
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+
+        "chrome-mobile": {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    mobileEmulation: {
+                        deviceName: "iPhone 12 Pro",
+                    },
+                },
+                "selenoid:options": {
+                    enableVNC: true,
+                    enableVideo: true,
+                    enableLog: true,
+                },
+            },
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+### Плюсы и минусы
+
+#### Преимущества
+
+    - Браузеры ведут себя одинаково на любой машине — хоть на Mac разработчика, хоть в Linux CI
+    - Скриншоты всегда идентичны, независимо от того, где запускаются тесты — это критично для скриншотного тестирования
+    - Стабильность скриншотов: одинаковое окружение гарантирует отсутствие различий в рендеринге между разными ОС
+    - В Selenoid можно записывать видео прогона тестов и подключаться к браузеру через VNC
+
+#### Ограничения
+
+    - Нужно устанавливать Docker и скачивать образы браузеров (плюс Selenoid, если используете его)
+    - Потребляет больше ресурсов, чем локальные браузеры
+
+Docker хорошо подходит для CI/CD и скриншотного тестирования, где важна стабильность и воспроизводимость.
+
+## Удалённые гриды
+
+Облачные сервисы (BrowserStack, Sauce Labs и др.) дают широкий набор браузеров, ОС и реальных устройств для кросс-браузерного тестирования.
+
+### Подключение и аутентификация
+
+Для подключения нужно указать `gridUrl` сервиса и передать учётные данные через `user` и `key`. Рекомендуется хранить их в переменных окружения.
+
+Базовая конфигурация браузеров остаётся той же, меняется только `gridUrl` и добавляются специфичные опции облачного провайдера:
+
+```ts title="testplane.config.ts"
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "https://hub.browserstack.com/wd/hub",
+            user: process.env.BROWSERSTACK_USERNAME,
+            key: process.env.BROWSERSTACK_ACCESS_KEY,
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "bstack:options": {
+                    os: "Windows",
+                    osVersion: "11",
+                    projectName: "My Test Project",
+                    buildName: "Build 1.0",
+                },
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+
+        "chrome-mobile": {
+            gridUrl: "https://hub.browserstack.com/wd/hub",
+            user: process.env.BROWSERSTACK_USERNAME,
+            key: process.env.BROWSERSTACK_ACCESS_KEY,
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    mobileEmulation: {
+                        deviceName: "iPhone 12 Pro",
+                    },
+                },
+                "bstack:options": {
+                    os: "Windows",
+                    osVersion: "11",
+                    projectName: "My Test Project",
+                    buildName: "Build 1.0",
+                },
+            },
+            headless: true,
+        },
+    },
+};
+```
+
+### Кастомизация сессий
+
+У разных сервисов свои опции:
+
+**BrowserStack** (`bstack:options`)
+
+-   ОС и её версия (`os`, `osVersion`)
+-   Разрешение экрана (`resolution`)
+-   Локальное тестирование (`local`)
+-   Включение логов и отладки (`debug`, `networkLogs`, `consoleLogs`)
+
+**Sauce Labs** (`sauce:options`)
+
+-   Имя и билд (`name`, `build`)
+-   Теги (`tags`)
+-   Ограничения по времени (`commandTimeout`, `idleTimeout`, `maxDuration`)
+-   Видео и логи (`recordVideo`, `recordLogs`)
+
+### Таймауты и отладка
+
+Облачные сервисы жёстко ограничивают время выполнения одной команды, время простоя сессии и максимальную длительность сессии.
+
+Для отладки доступны:
+
+-   Логи сессий
+-   Видео каждого прогона
+-   VNC или аналог для просмотра браузера
+-   Сетевые логи
+
+### Плюсы и минусы
+
+#### Преимущества
+
+-   Широкий выбор браузеров, версий и операционных систем
+-   Не требуется поддержка собственной инфраструктуры
+-   Встроенные инструменты отладки: логи, видео, сетевые трассировки
+
+#### Ограничения
+
+-   Стоимость использования при большом количестве запусков
+-   Зависимость от качества сети и возможные задержки
+-   Жёсткие ограничения по времени выполнения сессий
+
+Облачные гриды подходят для кросс-браузерного и мобильного тестирования, когда нужен широкий охват платформ без затрат на собственную инфраструктуру.
+
+## Как выбрать источник браузеров
+
+Рекомендуется выбрать один источник браузеров для всего проекта (или для каждого пака тестов, если вы разбиваете их на группы). Выбирайте подход, который закрывает ваши основные потребности:
+
+### Локальные браузеры для большинства проектов
+
+Если вы не используете скриншотные тесты и вам важна скорость запуска (например, для разработки и отладки), локальные браузеры — самый простой и быстрый вариант. Они не требуют дополнительной инфраструктуры и работают прямо на вашей машине.
+
+### Docker для стабильных скриншотов
+
+Когда важна стабильность скриншотов между разными машинами и операционными системами, а вы готовы работать с Docker-образами, используйте Docker. Одинаковое окружение гарантирует идентичные скриншоты на любой машине.
+
+### Облачные гриды для масштабирования
+
+Если вам нужна стабильность скриншотов, высокая параллельность на тысячах тестов или тестирование на множестве комбинаций браузеров и ОС, подойдут облачные гриды. Вам не придётся поддерживать свою инфраструктуру, также будет доступен широкий набор браузеров и устройств. Недостатком будет стоимость при большом количестве запусков.
+
+<Admonition type="tip">
+    Для разработки и отладки можно использовать локальные браузеры (запуск с `--local`), даже если в
+    CI используется Docker или облако. Это ускорит итерации при написании тестов.
+</Admonition>
+
+## Отладка
+
+Включить подробные логи через конфигурацию:
+
+```ts title="testplane.config.ts"
+export default {
+    browsers: {
+        // ... ваши браузеры
+    },
+    system: {
+        debug: true,
+    },
+};
+```
+
+Или через переменные окружения с ограничением уровня логирования `webdriverio`:
+
+```bash
+testplane_system_debug=true WDIO_LOG_LEVEL=error npx testplane --local -b chrome
+```
