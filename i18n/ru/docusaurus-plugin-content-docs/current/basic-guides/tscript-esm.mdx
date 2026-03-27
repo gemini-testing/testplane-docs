@@ -1,0 +1,575 @@
+# Typescript и ESM
+
+## Typescript в Testplane
+
+Testplane поддерживает TypeScript из коробки — вам не нужно настраивать дополнительные инструменты для транспайлинга. Вы можете писать тесты, конфиги и плагины на TypeScript без предварительной компиляции.
+
+#### Начало работы
+
+Установите необходимые зависимости:
+
+```npm
+npm install --save-dev typescript ts-node @types/node
+```
+
+Создайте `tsconfig.json` в корне проекта:
+
+```json
+{
+    "compilerOptions": {
+        "target": "ES2019",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "strict": true,
+        "esModuleInterop": true,
+        "outDir": "./dist",
+        "rootDir": "./"
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules", "dist"]
+}
+```
+
+Testplane автоматически подхватит TypeScript-файлы через встроенную поддержку ts-node.
+
+#### Варианты транспайлинга
+
+По умолчанию Testplane использует `ts-node` для транспайлинга TypeScript. Это наиболее простой способ — никакой дополнительной конфигурации не требуется.
+
+```bash
+npm install --save-dev ts-node
+```
+
+Testplane автоматически обнаружит `ts-node` и будет использовать его при запуске `.ts`-файлов.
+
+#### @swc/core
+
+Если вы хотите ускорить транспайлинг, используйте `@swc/core` вместо `ts-node`. SWC написан на Rust и значительно быстрее при больших объёмах кода.
+
+```bash
+npm install --save-dev @swc/core
+```
+
+Настройте `.swcrc`:
+
+```json
+{
+    "jsc": {
+        "parser": {
+            "syntax": "typescript",
+            "decorators": true
+        },
+        "target": "es2019"
+    },
+    "module": {
+        "type": "commonjs"
+    }
+}
+```
+
+В конфиге Testplane укажите транспайлер явно:
+
+```typescript
+// .testplane.conf.ts
+export default {
+    system: {
+        compilationCache: true,
+    },
+};
+```
+
+#### esbuild
+
+Ещё один вариант для ускорения транспайлинга — `esbuild`:
+
+```bash
+npm install --save-dev esbuild esbuild-register
+```
+
+В конфиге Testplane укажите транспайлер явно:
+
+```typescript
+// .testplane.conf.ts
+export default {
+    system: {
+        // esbuild подключается через require-хук
+    },
+};
+```
+
+#### Сравнение вариантов
+
+| Транспайлер | Скорость | Проверка типов | Декораторы |
+| ----------- | -------- | -------------- | ---------- |
+| ts‑node     | Средняя  | ✅             | ✅         |
+| @swc/core   | Быстрая  | ❌             | ✅         |
+| esbuild     | Быстрая  | ❌             | ⚠️         |
+
+:::warning Важно
+`@swc/core` и `esbuild` не выполняют проверку типов во время запуска тестов. Для проверки типов используйте отдельную команду `tsc --noEmit`.
+:::
+
+## Работа с путями в конфиге
+
+Многие проекты используют алиасы путей в `tsconfig.json`:
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@components/*": ["src/components/*"],
+            "@utils/*": ["src/utils/*"],
+            "@fixtures/*": ["tests/fixtures/*"]
+        }
+    }
+}
+```
+
+Однако TypeScript-компилятор умеет резолвить эти пути только во время компиляции. В рантайме `Node.js` не знает об этих алиасах, и вы получите ошибку:
+
+```bash
+ Cannot find module '@components/Button'.
+```
+
+#### Резолв путей в рантайме
+
+Установите пакет `tsconfig-paths`:
+
+```bash
+npm install --save-dev tsconfig-paths
+```
+
+#### Через require в конфиге
+
+Зарегистрируйте tsconfig-paths в конфиге Testplane:
+
+```typescript
+// .testplane.conf.ts
+import "tsconfig-paths/register";
+
+export default {
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+    },
+};
+```
+
+#### С помощью NODE_OPTIONS
+
+```bash
+NODE_OPTIONS="-r tsconfig-paths/register" npx testplane
+```
+
+Или добавьте в `package.json`:
+
+```json
+{
+    "scripts": {
+        "test": "NODE_OPTIONS='-r tsconfig-paths/register' testplane"
+    }
+}
+```
+
+#### Через .testplane.conf.ts с явным указанием путей
+
+Если у вас нестандартный `tsconfig.json` или он находится не в корне:
+
+```typescript
+// .testplane.conf.ts
+import { register } from "tsconfig-paths";
+import { loadConfig } from "tsconfig-paths";
+
+const tsConfig = loadConfig("./tsconfig.json");
+
+if (tsConfig.resultType === "success") {
+    register({
+        baseUrl: tsConfig.absoluteBaseUrl,
+        paths: tsConfig.paths,
+    });
+}
+
+export default {
+    // ваш конфиг
+};
+```
+
+#### Проверка настройки
+
+После настройки вы можете использовать алиасы в тестах:
+
+```typescript
+// tests/auth.test.ts
+import { LoginPage } from "@components/LoginPage";
+import { createUser } from "@utils/factories";
+import { userFixture } from "@fixtures/user";
+
+describe("Auth", () => {
+    it("should login successfully", async ({ browser }) => {
+        const loginPage = new LoginPage(browser);
+        await loginPage.open();
+        // ...
+    });
+});
+```
+
+## Типизация конфига
+
+Testplane экспортирует типы для конфигурации, что позволяет получить автодополнение и проверку типов.
+
+#### Именованный конфиг с типом
+
+```typescript
+// .testplane.conf.ts
+import type { ConfigInput } from "testplane";
+
+const config: ConfigInput = {
+    gridUrl: "http://localhost:4444/wd/hub",
+
+    baseUrl: "https://example.com",
+
+    screenshotsDir: "tests/screenshots",
+
+    browsers: {
+        "chrome-desktop": {
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+            windowSize: "1280x720",
+        },
+        "firefox-desktop": {
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+            windowSize: "1280x720",
+        },
+    },
+
+    sets: {
+        desktop: {
+            files: ["tests/desktop/**/*.testplane.ts"],
+            browsers: ["chrome-desktop", "firefox-desktop"],
+        },
+    },
+
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            path: "testplane-report",
+        },
+    },
+};
+
+export default config;
+```
+
+#### Функциональный конфиг
+
+Если вам нужно использовать условную логику:
+
+```typescript
+// .testplane.conf.ts
+import type { ConfigInput } from "testplane";
+
+const isCI = process.env.CI === "true";
+
+export default {
+    gridUrl: isCI ? process.env.GRID_URL : "http://localhost:4444/wd/hub",
+
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+            retry: isCI ? 2 : 0,
+            testsPerSession: isCI ? 10 : 1,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+:::tip Совет
+Используйте `satisfies ConfigInput` вместо явного указания типа, чтобы сохранить точные литеральные типы для последующего использования.
+:::
+
+## Расширение типов команд браузера
+
+Если вы добавляете собственные команды через `browser.addCommand` или `element.addCommand`, TypeScript не будет знать об этих командах. Вам нужно расширить существующие интерфейсы через декларацию модуля (`Declaration Merging`).
+
+#### Добавление на уровне browser
+
+Создайте файл деклараций, например `types/testplane.d.ts`:
+
+```typescript
+// types/testplane.d.ts
+declare namespace WebdriverIO {
+    interface Browser {
+        /**
+         * Открывает страницу авторизации и выполняет вход
+         */
+        login(username: string, password: string): Promise<void>;
+
+        /**
+         * Ожидает появления тостового уведомления
+         */
+        waitForToast(text: string, timeout?: number): Promise<void>;
+
+        /**
+         * Делает скриншот и сравнивает с эталоном
+         */
+        assertScreenshot(name: string): Promise<void>;
+    }
+}
+```
+
+#### Добавление команд на уровне element
+
+```typescript
+// types/testplane.d.ts
+declare namespace WebdriverIO {
+    interface Element {
+        /**
+         * Скроллит к элементу и кликает по нему
+         */
+        scrollAndClick(): Promise<void>;
+
+        /**
+         * Проверяет, что элемент находится во вьюпорте
+         */
+        isInViewport(): Promise<boolean>;
+
+        /**
+         * Устанавливает значение через React
+         */
+        setReactValue(value: string): Promise<void>;
+    }
+}
+```
+
+#### Регистрация команд в тестах
+
+```typescript
+// tests/helpers/commands.ts
+export function registerCustomCommands(browser: WebdriverIO.Browser): void {
+    browser.addCommand(
+        "login",
+        async function (this: WebdriverIO.Browser, username: string, password: string) {
+            await this.url("/login");
+            await this.$("#username").setValue(username);
+            await this.$("#password").setValue(password);
+            await this.$('[type="submit"]').click();
+            await this.waitForUrl("/dashboard");
+        },
+    );
+
+    browser.addCommand(
+        "waitForToast",
+        async function (this: WebdriverIO.Browser, text: string, timeout = 5000) {
+            await this.$(`.toast=${text}`).waitForDisplayed({ timeout });
+        },
+    );
+}
+```
+
+Подключите команды в хуке `before`:
+
+```typescript
+// .testplane.conf.ts
+import type { ConfigInput } from "testplane";
+import { registerCustomCommands } from "./tests/helpers/commands";
+
+export default {
+    browsers: {
+        chrome: {
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+
+    prepareBrowser(browser) {
+        registerCustomCommands(browser);
+    },
+} satisfies ConfigInput;
+```
+
+#### Использование в тестах
+
+После настройки TypeScript будет полностью знать о ваших кастомных командах:
+
+```typescript
+// tests/auth.testplane.ts
+it("should login and see dashboard", async ({ browser }) => {
+    // ✅ TypeScript знает об этой команде и её сигнатуре
+    await browser.login("admin", "secret");
+
+    // ✅ Автодополнение работает
+    await browser.waitForToast("Welcome back!");
+});
+```
+
+#### Подключение файла деклараций
+
+Убедитесь, что TypeScript видит ваш файл деклараций. Добавьте его в `tsconfig.json`:
+
+```json
+{
+    "compilerOptions": {
+        "typeRoots": ["./types", "./node_modules/@types"]
+    },
+    "include": ["**/*.ts", "types/**/*.d.ts"]
+}
+```
+
+## Работа с ESM
+
+Testplane поддерживает ES Modules (ESM). Однако работа с ESM имеет ряд особенностей.
+
+:::info Примечание
+Поддержка ESM в Testplane находится в активной разработке. Рекомендуем использовать `CommonJS` для продакшн-проектов, если у вас нет явной необходимости в ESM.
+:::
+
+#### Настройка проекта для ESM
+
+Добавьте `"type": "module"` в `package.json`:
+
+```json
+{
+    "type": "module",
+    "scripts": {
+        "test": "testplane"
+    }
+}
+```
+
+Обновите `tsconfig.json`:
+
+```json
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true
+    }
+}
+```
+
+#### Конфиг в формате ESM
+
+```typescript
+// .testplane.conf.ts
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+    },
+} satisfies ConfigInput;
+```
+
+#### Тесты в формате ESM
+
+```typescript
+// tests/example.testplane.ts
+import { expect } from "chai";
+import type { Browser } from "webdriverio";
+
+// ESM-импорты работают нативно
+import { myHelper } from "../helpers/index.js"; // Обратите внимание на расширение .js
+
+it("should work with ESM", async ({ browser }: { browser: Browser }) => {
+    await browser.url("https://example.com");
+    const title = await browser.getTitle();
+    expect(title).to.equal("Example Domain");
+});
+```
+
+:::warning Важно
+В ESM при импорте TypeScript-файлов используйте расширение `.js`, а не `.ts`. TypeScript резолвит `.js` → `.ts` автоматически согласно спецификации ESM.
+:::
+
+#### tsconfig-paths с ESM
+
+Для работы алиасов путей в ESM-окружении используйте tsconfig-paths/esm:
+
+```json
+{
+    "scripts": {
+        "test": "node --loader tsconfig-paths/esm --loader ts-node/esm node_modules/.bin/testplane"
+    }
+}
+```
+
+Или через `NODE_OPTIONS`:
+
+```bash
+NODE_OPTIONS="--loader ts-node/esm --loader tsconfig-paths/esm" npx testplane
+```
+
+#### Смешанный режим
+
+Если ваш проект использует `CommonJS`, но вы хотите импортировать отдельные ESM-пакеты, используйте динамические импорты:
+
+```typescript
+// В CommonJS-проекте импорт ESM-пакета
+it("should use esm package", async ({ browser }) => {
+    // Динамический импорт для ESM-only пакетов
+    const { nanoid } = await import("nanoid");
+    const id = nanoid();
+    // ...
+});
+```
+
+#### Полный пример конфигурации
+
+```typescript
+// .testplane.conf.ts
+import "tsconfig-paths/register";
+import type { ConfigInput } from "testplane";
+import { registerCustomCommands } from "./tests/helpers/commands";
+
+export default {
+    gridUrl: process.env.GRID_URL ?? "http://localhost:4444/wd/hub",
+    baseUrl: process.env.BASE_URL ?? "http://localhost:3000",
+
+    screenshotsDir: "tests/screenshots",
+    diffColor: "#ff0000",
+
+    browsers: {
+        "chrome-desktop": {
+            desiredCapabilities: {
+                browserName: "chrome",
+                "goog:chromeOptions": {
+                    args: process.env.CI ? ["--headless", "--no-sandbox"] : [],
+                },
+            },
+            windowSize: "1280x720",
+            retry: process.env.CI ? 2 : 0,
+        },
+    },
+
+    sets: {
+        desktop: {
+            files: ["tests/**/*.testplane.ts"],
+            browsers: ["chrome-desktop"],
+        },
+    },
+
+    prepareBrowser(browser) {
+        registerCustomCommands(browser);
+    },
+
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+        },
+    },
+} satisfies ConfigInput;
+```
