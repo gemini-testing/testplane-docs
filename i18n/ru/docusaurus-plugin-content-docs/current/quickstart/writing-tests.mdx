@@ -7,27 +7,9 @@ draft: true
 
 ## Структура теста
 
-Блок `describe` предназначен для группировки связанных тестов.
+После установки testplane можно ознакомиться с примером теста, для этого перейдите в папку `testplane-tests` и откройте файл `example.testplane.ts`.
 
-```javascript
-describe("Название группы тестов", () => {
-    it("описание того, что должно произойти", async ({ browser }) => {
-        // Тело теста
-    });
-});
-```
-
-В блоке `it` описываются тестовые сценарии.
-
-```javascript
-it("описание того, что должно произойти", async ({ browser }) => {
-    // Тело теста
-});
-```
-
-После установки testplane вы можете ознакомиться с примером теста, для этого перейдите в папку `testplane-tests` и откройте файл `example.testplane.ts`.
-
-```javascript
+```typescript title="example.testplane.ts"
 describe("test examples", () => {
     it("docs search test", async ({ browser }) => {
         await browser.openAndWait("https://testplane.io/");
@@ -54,19 +36,31 @@ describe("test examples", () => {
 });
 ```
 
+Блок `describe` предназначен для группировки связанных тестов.
+
+В блоке `it` описываются тестовые сценарии.
+
+```typescript
+describe("Название группы тестов", () => {
+    it("Описание того, что должно произойти", async ({ browser }) => {
+        // Тело теста
+    });
+});
+```
+
 ## Базовый синтаксис
 
 ### Навигация
 
 Для перемещения по страницам используйте метод [`browser.url()`](../commands/browser/url.mdx):
 
-```javascript
+```typescript
 await browser.url("https://testplane.io/ru/");
 ```
 
 Если на странице имеются элементы, которые отображаются с задержкой, для корректного выполнения тестов укажите явное ожидание:
 
-```javascript
+```typescript
 await browser.url("https://testplane.io/ru/");
 await browser.$("h1").waitForExist({ timeout: 5000 });
 const title = await browser.$("h1").getText();
@@ -74,7 +68,7 @@ const title = await browser.$("h1").getText();
 
 Либо используйте команду [`browser.openAndWait()`](../commands/browser/openAndWait.mdx):
 
-```javascript
+```typescript
 await browser.openAndWait("https://testplane.io/ru/");
 ```
 
@@ -82,9 +76,9 @@ await browser.openAndWait("https://testplane.io/ru/");
 
 ### Селекторы
 
-Testplane поддерживает различные стратегии поиска элементов: `CSS`-селекторы (самые распространенные), текстовые селекторы (по содержимому), `XPath` для сложных запросов. Метод [`$()`](../commands/browser/$.mdx) возвращает первый найденный элемент, а `$$()` — массив всех подходящих элементов:
+Testplane поддерживает различные стратегии поиска элементов: `CSS`-селекторы (самые распространенные), текстовые селекторы (по содержимому), `XPath` для сложных запросов. Метод [`$()`](../commands/browser/$.mdx) возвращает первый найденный элемент, а [`$$()`](../commands/browser/$$.mdx) — массив всех подходящих элементов:
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("tests", () => {
@@ -118,58 +112,57 @@ describe("tests", () => {
 
 #### Типы селекторов
 
-Testplane поддерживает несколько типов селекторов. Вот примеры, когда использовать каждый из них:
+Testplane поддерживает несколько типов селекторов:
 
-```javascript
+```typescript
 describe("Примеры типов селекторов", () => {
     it("CSS-селекторы — основной способ поиска элементов", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
-        // ✅ Рекомендуется: data-атрибуты (стабильны, не зависят от вёрстки)
+
+        // Рекомендуется: data-атрибуты (стабильны, не зависят от вёрстки)
         const button = await browser.$('[data-testid="submit-button"]');
-        
-        // ✅ Хорошо: CSS-классы и теги
+
+        // Хорошо: CSS-классы и теги
         const logo = await browser.$("a.navbar__brand");
         const heading = await browser.$("h1");
     });
 
     it("Текстовые селекторы — когда нет стабильных атрибутов", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // Поиск ссылки по точному тексту
         const link = await browser.$("a=Документация");
-        
+
         // Поиск кнопки по частичному совпадению текста
         const button = await browser.$("button*=Начать");
     });
 
     it("XPath — для сложных запросов в DOM", async ({ browser }) => {
         await browser.url("https://testplane.io/ru/");
-        
+
         // Поиск элемента по тексту внутри
         const element = await browser.$("//button[contains(text(), 'Поиск')]");
-        
+
         // Поиск родительского элемента
         const parent = await browser.$("//a[@class='navbar__brand']/parent::div");
-        
-        // ⚠️ Используйте XPath только когда CSS-селекторы не подходят
+
+        // Используйте XPath только когда CSS-селекторы не подходят
     });
 });
 ```
 
-:::tip Рекомендации по выбору селекторов
-
 **Приоритет использования:**
-1. **Data-атрибуты** (`[data-testid="..."]`) — самый надёжный способ
-2. **CSS-селекторы** (классы, ID, теги) — для стабильных элементов
-3. **Текстовые селекторы** — когда нет других вариантов
-4. **XPath** — только для сложных случаев
+
+1. Data-атрибуты (`[data-testid="..."]`) — самый надёжный способ
+2. CSS-селекторы (классы, ID, теги) — для стабильных элементов
+3. Текстовые селекторы — когда нет других вариантов
+4. XPath — только для сложных случаев
 
 **Избегайте:**
-- Сложных CSS-селекторов, зависящих от структуры DOM
-- Селекторов по порядковому номеру (`:nth-child`)
-- XPath без необходимости (медленнее CSS)
-:::
+
+-   Сложных CSS-селекторов, зависящих от структуры DOM
+-   Селекторов по порядковому номеру (`:nth-child`)
+-   XPath без необходимости (медленнее CSS)
 
 ### Взаимодействия с элементами
 
@@ -177,7 +170,7 @@ describe("Примеры типов селекторов", () => {
 
 Для клика по элементу используйте метод `element.click()`.
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("Тест клика", () => {
@@ -199,7 +192,7 @@ describe("Тест клика", () => {
 
 Чтобы заполнить поле для ввода текста используйте метод `element.setValue("text")`.
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("Тест ввода текста", () => {
@@ -225,7 +218,7 @@ describe("Тест ввода текста", () => {
 
 Для двойного клика по элементу используйте метод `element.doubleClick()`.
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("Тест двойного клика", () => {
@@ -249,7 +242,7 @@ describe("Тест двойного клика", () => {
 
 Testplane предоставляет специальные методы для работы с различными элементами форм. Например, чекбоксы и радиокнопки управляются через клик.
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("Взаимодействие с формами", () => {
@@ -295,7 +288,7 @@ describe("Взаимодействие с формами", () => {
 
 Для выпадающих списков `(<select>)` есть удобные методы выбора опций по видимому тексту или значению атрибута.
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("Работа с выпадающим списком", () => {
@@ -323,7 +316,7 @@ describe("Работа с выпадающим списком", () => {
 
 Testplane задействует `expect API` из `WebdriverIO` для проверки состояния элементов и страниц — это позволяет формулировать утверждения (`assertions`) о том, какими должны быть свойства элементов или страницы в целом.
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("tests", () => {
@@ -395,14 +388,16 @@ describe("tests", () => {
 Когда использовать WebdriverIO expect vs Jest expect
 
 **WebdriverIO expect** — используйте для проверки элементов и браузера:
-- Автоматические ожидания (retry механизм)
-- Проверка состояния элементов: `toBeDisplayed()`, `toExist()`, `toHaveText()`
-- Проверка браузера: `toHaveUrl()`, `toHaveTitle()`
+
+-   Автоматические ожидания (retry механизм)
+-   Проверка состояния элементов: `toBeDisplayed()`, `toExist()`, `toHaveText()`
+-   Проверка браузера: `toHaveUrl()`, `toHaveTitle()`
 
 **Jest expect** — используйте для проверки значений, чисел, строк:
-- Синхронные проверки данных
-- Проверка чисел: `toBeGreaterThan()`, `toBeLessThan()`
-- Проверка строк и массивов: `toContain()`, `toBe()`, `toMatch()`
+
+-   Синхронные проверки данных
+-   Проверка чисел: `toBeGreaterThan()`, `toBeLessThan()`
+-   Проверка строк и массивов: `toContain()`, `toBe()`, `toMatch()`
 
 **Рекомендация:** для проверок элементов и браузера всегда используйте WebdriverIO expect, так как он автоматически ожидает выполнения условия.
 
@@ -410,46 +405,26 @@ describe("tests", () => {
 
 Хуки — это специальные функции, которые автоматически выполняются в определенные моменты жизненного цикла тестов. Они позволяют подготовить окружение перед тестами и очистить его после выполнения. По умолчанию доступны два вида хуков — `beforeEach` и `afterEach`, первый выполняется перед каждым тестом, а второй — после.
 
-```javascript
-const assert = require("assert");
-
-describe("Пример работы с хуками", () => {
+```typescript
+describe("Работа с хуками", () => {
     beforeEach(async ({ browser }) => {
-        console.log("--- OUTER BEFOREEACH ---");
+        // Подготовка: открываем страницу перед каждым тестом
         await browser.url("https://testplane.io/ru/");
     });
 
     afterEach(async ({ browser }) => {
-        console.log("--- OUTER AFTEREACH ---");
+        // Очистка: удаляем cookies после каждого теста
+        await browser.deleteAllCookies();
     });
 
-    it("Внешний тест", async ({ browser }) => {
+    it("Проверяет заголовок страницы", async ({ browser }) => {
         const title = await browser.getTitle();
-        assert.ok(title.length > 0);
+        expect(title).toContain("Testplane");
     });
 
-    describe("Внутренний блок тестов", () => {
-        beforeEach(async ({ browser }) => {
-            console.log("--- INNER BEFOREEACH ---");
-            // Сначала выполнится outer beforeEach, потом этот
-            await browser.url("https://testplane.io/ru/docs/v8/");
-        });
-
-        afterEach(async ({ browser }) => {
-            console.log("--- INNER AFTEREACH ---");
-            // Сначала выполнится этот afterEach, потом outer
-        });
-
-        it("Внутренний тест 1", async ({ browser }) => {
-            const currentUrl = await browser.getUrl();
-            assert.ok(currentUrl.includes("docs"));
-        });
-
-        it("Внутренний тест 2", async ({ browser }) => {
-            const heading = await browser.$("h1");
-            const isDisplayed = await heading.isDisplayed();
-            assert.strictEqual(isDisplayed, true);
-        });
+    it("Проверяет наличие логотипа", async ({ browser }) => {
+        const logo = await browser.$(".navbar__brand");
+        await expect(logo).toExist();
     });
 });
 ```
@@ -458,7 +433,7 @@ describe("Пример работы с хуками", () => {
 
 Явные ожидания необходимы для работы с динамическим контентом, который загружается или изменяется асинхронно. Testplane автоматически ждет появления элементов, но для сложных сценариев можно использовать специальные методы ожидания.
 
-```javascript
+```typescript
 const assert = require("assert");
 
 describe("Примеры ожиданий в Testplane", () => {
@@ -546,7 +521,11 @@ describe("Примеры ожиданий в Testplane", () => {
 
 Иногда нужно выполнить произвольный JavaScript-код в контексте страницы — например, для работы с `localStorage`, вызова функций или манипуляции `DOM` напрямую. Метод `execute()` выполняет код в браузере и может возвращать результат.
 
-```javascript
+:::warning Ограничения browser.execute
+Код, переданный в `browser.execute()`, выполняется **только в контексте браузера** (на странице). Вы не можете использовать Node.js модули (например, `fs`, `path`) или обращаться к файловой системе. Все переменные и функции должны быть доступны в глобальной области видимости страницы.
+:::
+
+```typescript
 const assert = require("assert");
 
 describe("Примеры работы с JavaScript кодом", () => {

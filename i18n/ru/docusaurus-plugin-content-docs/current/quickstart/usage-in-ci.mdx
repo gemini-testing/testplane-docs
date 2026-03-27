@@ -1,6 +1,87 @@
 ---
 sidebar_position: 4
-draft: true
 ---
 
 # Использование в CI
+
+Testplane можно легко интегрировать в любую CI-систему (GitHub Actions, GitLab CI, Jenkins и др.). Ниже приведён пример настройки для GitHub Actions.
+
+## GitHub Actions
+
+Создайте файл `.github/workflows/testplane.yml` в корне вашего репозитория:
+
+```yaml
+name: Testplane Tests
+
+on:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Install browser dependencies
+              run: npx testplane install-deps
+
+            - name: Run tests
+              run: npx testplane
+
+            - name: Upload HTML report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: testplane-report
+                  path: testplane-report/
+```
+
+### Пояснения к конфигурации
+
+-   **`testplane install-deps`** — загружает необходимые браузеры (Chrome, Firefox) перед запуском тестов.
+-   **`npx testplane`** — запускает все тесты в headless-режиме (по умолчанию).
+-   **Загрузка отчёта** — после выполнения тестов HTML-репорт сохраняется как артефакт, который можно скачать из интерфейса GitHub Actions.
+
+## GitLab CI
+
+Пример `.gitlab-ci.yml`:
+
+```yaml
+image: node:20-alpine
+
+stages:
+    - test
+
+testplane:
+    stage: test
+    script:
+        - npm ci
+        - npx testplane install-deps
+        - npx testplane
+    artifacts:
+        when: always
+        paths:
+            - testplane-report/
+```
+
+## Общие рекомендации
+
+-   **Кэширование зависимостей** — настройте кэширование `node_modules` и браузеров, чтобы ускорить выполнение.
+-   **Параллельный запуск** — используйте возможности CI для параллельного запуска тестов в разных браузерах (например, через `testplane --browser chrome` и `testplane --browser firefox` в отдельных job'ах).
+-   **Переменные окружения** — задайте `gridUrl` для удалённого Selenium Grid, если тесты запускаются на облачной инфраструктуре.
+
+Подробнее о настройке Testplane для CI читайте в [документации по конфигурации](../reference/config/main.mdx).
