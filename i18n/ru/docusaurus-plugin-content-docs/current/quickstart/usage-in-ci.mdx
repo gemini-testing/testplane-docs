@@ -4,13 +4,13 @@ sidebar_position: 4
 
 # Использование в CI
 
-Testplane можно легко интегрировать в любую CI-систему (GitHub Actions, GitLab CI, Jenkins и др.). Ниже приведён пример настройки для GitHub Actions.
+Testplane можно легко интегрировать в любую CI-систему. Для GitHub Actions рекомендуем использовать официальный action [gemini-testing/gh-actions-testplane](https://github.com/gemini-testing/gh-actions-testplane), который автоматически кэширует браузеры и формирует отчёты.
 
-## GitHub Actions
+## Настройка GitHub Actions
 
 Создайте файл `.github/workflows/testplane.yml` в корне вашего репозитория:
 
-```yaml
+```yaml title=".github/workflows/testplane.yml"
 name: Testplane Tests
 
 on:
@@ -22,66 +22,28 @@ on:
 jobs:
     test:
         runs-on: ubuntu-latest
-
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
+            - uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
+            - uses: actions/setup-node@v4
               with:
                   node-version: "20"
                   cache: "npm"
 
-            - name: Install dependencies
-              run: npm ci
+            - run: npm ci
 
-            - name: Install browser dependencies
-              run: npx testplane install-deps
-
-            - name: Run tests
-              run: npx testplane
-
-            - name: Upload HTML report
-              if: always()
-              uses: actions/upload-artifact@v4
+            - uses: gemini-testing/gh-actions-testplane@v1
               with:
-                  name: testplane-report
-                  path: testplane-report/
+                  browser: "chrome,firefox" # Опционально: список браузеров
 ```
 
-### Пояснения к конфигурации
+## Дополнительные возможности
 
--   **`testplane install-deps`** — загружает необходимые браузеры (Chrome, Firefox) перед запуском тестов.
--   **`npx testplane`** — запускает все тесты в headless-режиме (по умолчанию).
--   **Загрузка отчёта** — после выполнения тестов HTML-репорт сохраняется как артефакт, который можно скачать из интерфейса GitHub Actions.
+Action поддерживает дополнительные параметры для настройки:
 
-## GitLab CI
+-   `config-path` — путь к файлу конфигурации (по умолчанию `testplane.config.ts`)
+-   `set` — запуск конкретных наборов тестов
+-   `grep` — фильтрация тестов по паттерну
+-   `storybook` — интеграция с [@testplane/storybook](https://github.com/gemini-testing/testplane-storybook)
 
-Пример `.gitlab-ci.yml`:
-
-```yaml
-image: node:20-alpine
-
-stages:
-    - test
-
-testplane:
-    stage: test
-    script:
-        - npm ci
-        - npx testplane install-deps
-        - npx testplane
-    artifacts:
-        when: always
-        paths:
-            - testplane-report/
-```
-
-## Общие рекомендации
-
--   **Кэширование зависимостей** — настройте кэширование `node_modules` и браузеров, чтобы ускорить выполнение.
--   **Параллельный запуск** — используйте возможности CI для параллельного запуска тестов в разных браузерах (например, через `testplane --browser chrome` и `testplane --browser firefox` в отдельных job'ах).
--   **Переменные окружения** — задайте `gridUrl` для удалённого Selenium Grid, если тесты запускаются на облачной инфраструктуре.
-
-Подробнее о настройке Testplane для CI читайте в [документации по конфигурации](../reference/config/main.mdx).
+Подробнее о параметрах и расширенных сценариях использования читайте в [руководстве по настройке GitHub Actions](../guides/how-to-run-on-github.mdx), а о настройке Testplane для других CI-систем — в [документации по конфигурации](../reference/config/main.mdx).
