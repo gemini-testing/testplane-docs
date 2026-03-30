@@ -20,7 +20,7 @@ import Admonition from "@theme/Admonition";
 npm init testplane@latest YOUR_PROJECT_PATH
 ```
 
-Чтобы настроить проект, а не использовать дефолты при его инициализации, укажите опцию <nobr>`-v`</nobr>.
+Чтобы настроить проект в интерактивном режиме с дополнительными параметрами (выбор пакетного менеджера, установка плагинов), укажите опцию <nobr>`-v`</nobr>.
 
 После выполнения команды установки в директории проекта появится следующий набор файлов и папок:
 
@@ -42,18 +42,16 @@ testplane.config.ts
 export default {
     gridUrl: "local",
     baseUrl: "http://localhost",
-    pageLoadTimeout: 0,
-    httpTimeout: 60000,
+    pageLoadTimeout: 20000,
+    httpTimeout: 20000,
     testTimeout: 90000,
     resetCursor: false,
-
     sets: {
         desktop: {
             files: ["testplane-tests/**/*.testplane.(t|j)s"],
             browsers: ["chrome", "firefox"],
         },
     },
-
     browsers: {
         chrome: {
             headless: true,
@@ -68,7 +66,9 @@ export default {
             },
         },
     },
-
+    prepareBrowser: (browser: WdioBrowser) => {
+        setupBrowser(browser);
+    },
     plugins: {
         "html-reporter/testplane": {
             enabled: true,
@@ -77,7 +77,7 @@ export default {
             diffMode: "3-up-scaled",
         },
     },
-};
+} satisfies import("testplane").ConfigInput;
 ```
 
 ### Основные параметры конфигурации
@@ -88,7 +88,7 @@ export default {
 
 `testTimeout` — максимальное время выполнения одного теста в миллисекундах. Если тест выполняется дольше этого значения, он будет прерван. Настраивайте в зависимости от сложности вашего приложения.
 
-`pageLoadTimeout` — максимальное время ожидания загрузки страницы. Значение `0` означает отсутствие ограничений.
+`pageLoadTimeout` — максимальное время ожидания загрузки страницы.
 
 `browsers` — конфигурация для каждого браузера. Параметр `headless: true` запускает браузер в фоновом режиме без графического интерфейса. Подробнее в разделе [Браузеры](../basic-guides/managing-browsers.mdx).
 
@@ -146,20 +146,19 @@ npx testplane gui
 Total: 2 Passed: 2 Failed: 0 Skipped: 0 Retries: 0
 ```
 
-### Что делать, если тест упал
+### Возможные проблемы
 
 Если тест не прошёл, проверьте:
 
-1. Интернет-соединение: тест обращается к https://testplane.io/
-2. Браузеры установлены: запустите `npx testplane install-deps`
-3. Порты свободны: убедитесь, что порты не заняты другими процессами
+-   Интернет-соединение (тест обращается к https://testplane.io/)
+-   Браузеры установлены: `npx testplane install-deps`
 
-Подробнее об отладке читайте в разделе [Запуск и отладка](./running-tests.mdx).
+Подробнее об отладке в разделе [Запуск и отладка](./running-tests.mdx).
 
 ## Что дальше?
 
 Теперь, когда Testplane настроен и работает, вы можете:
 
--   [Запустить тесты разными способами](./running-tests.mdx) — фильтрация, отладка, GUI-режим
--   [Настроить CI/CD](./usage-in-ci.mdx) — автоматизируйте запуск тестов в GitHub Actions или GitLab CI
--   Изучить [справочник по API](../reference/testplane-api.mdx) — полный список методов и возможностей
+-   [Написать свои тесты](./writing-tests.mdx): структура тестов, селекторы и основные команды
+-   [Запустить и отладить тесты](./running-tests.mdx): фильтрация, GUI-режим, отладка
+-   [Настроить CI/CD](./usage-in-ci.mdx): автозапуск тестов в GitHub Actions
