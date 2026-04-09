@@ -39,6 +39,9 @@ testplane.config.ts
 В файле `testplane.config.ts` содержится базовый набор настроек для запуска тестов:
 
 ```typescript title="testplane.config.ts"
+import { setupBrowser } from "@testplane/testing-library";
+import type { WdioBrowser } from "testplane";
+
 export default {
     gridUrl: "local",
     baseUrl: "http://localhost",
@@ -82,13 +85,13 @@ export default {
 
 ### Основные параметры конфигурации
 
--   `gridUrl` определяет, где запускать браузеры. Значение `"local"` означает запуск на вашей локальной машине. Для удаленного запуска укажите URL Selenium Grid или облачного сервиса (например, BrowserStack или Sauce Labs).
--   `sets` — группы тестов, привязанные к определенным браузерам. Позволяет запускать разные наборы тестов в разных браузерах. Например, можно создать отдельные наборы для десктопных тестов в Chrome/Firefox и мобильных в Safari. Подробнее в [справочнике по sets](../reference/config/sets.mdx).
--   `testTimeout` — максимальное время выполнения одного теста в миллисекундах. Если тест выполняется дольше этого значения, он будет прерван. Настраивайте в зависимости от сложности вашего приложения.
+-   `gridUrl` — где запускать браузеры: `"local"` для локального запуска или URL для Selenium Grid или облака (например, BrowserStack, Sauce Labs).
+-   `sets` — группы тестов для разных браузеров (например, набор тестов для десктопных Chrome или Firefox и набор для мобильного Safari). Подробнее: [справочник по sets](https://github.com/gemini-testing/testplane-docs/pull/reference/config/sets.mdx).
+-   `testTimeout` — максимальное время выполнения теста в миллисекундах, после превышения тест прерывается.
 -   `pageLoadTimeout` — максимальное время ожидания загрузки страницы.
--   `browsers` — конфигурация для каждого браузера. Параметр `headless: true` запускает браузер в фоновом режиме без графического интерфейса. Подробнее в разделе [Браузеры](../basic-guides/managing-browsers.mdx).
--   `prepareBrowser` — хук для настройки браузера перед запуском тестов. В конфиге по умолчанию вызывает `setupBrowser(browser)`, который добавляет методы Testing Library к объекту браузера и элементам, позволяя сразу использовать семантические запросы в тестах.
--   `plugins` — подключаемые модули. `html-reporter` — инструмент для просмотра результатов тестов в браузере. Предоставляет интерактивные отчеты со скриншотами, логами и возможностями отладки. Подробнее в разделе [HTML Reporter](../html-reporter/overview.mdx).
+-   `browsers` — конфигурация браузеров; `headless: true` — запуск без UI. Подробнее: [Браузеры](https://github.com/gemini-testing/testplane-docs/pull/basic-guides/managing-browsers.mdx).
+-   `prepareBrowser` — хук перед тестами; в конфиге выше вызывает `setupBrowser(browser)` и добавляет методы Testing Library.
+-   `plugins` — плагины; в конфиге выше `html-reporter` для интерактивных отчетов (скриншоты, логи, отладка). Подробнее: [HTML Reporter](https://github.com/gemini-testing/testplane-docs/pull/html-reporter/overview.mdx).
 
 Полный список параметров конфигурации см. в [справочнике по конфигурации](../reference/config/main.mdx).
 
