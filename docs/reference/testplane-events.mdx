@@ -399,9 +399,11 @@ module.exports = (testplane, opts) => {
 
 ## INIT {#init}
 
-**async | master**
+**async | master, worker**
 
-The `INIT` event is triggered before the [run][run] or [readTests][read-tests] tasks are performed. The event handler can be asynchronous: in which case, the tasks will only start after the Promise returned by the event handler is resolved. The event triggers only once, regardless of how many times the tasks are performed.
+The `INIT` event is triggered before the [run][run] or [readTests][read-tests] tasks are performed. The event handler can be asynchronous: in which case, the tasks will only start after the Promise returned by the event handler is resolved.
+
+This event is emitted once in master process and once in each worker.
 
 ### Subscribing to the event {#init_subscription}
 
