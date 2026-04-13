@@ -43,7 +43,7 @@ export default {
 
 ### Как это работает
 
-В рамках примера параметру `sessionsPerBrowser` присвоены значения `5`:
+В рамках примера параметру `sessionsPerBrowser` присвоены значения 5:
 
 ```typescript
 chrome: {
@@ -56,7 +56,7 @@ chrome: {
         }
 ```
 
-и `2`:
+и 2:
 
 ```typescript
 firefox: {
@@ -229,92 +229,64 @@ module.exports = {
 
 В качестве примера будет использован следующий набор тестов:
 
-```typescript
-describe("test examples", () => {
-    it("Поиск элемента по data-testid", async ({ browser }) => {
-        // Открываем страницу и ждем ее загрузки
-        await browser.openAndWait("https://testplane.io/");
+```text
+project/
+├── .testplane.conf.js
+├── package.json
+└── tests/
+    ├── registration.testplane.js    # 500 тестов
+    ├── payment.testplane.js         # 500 тестов
+    └── auth.testplane.js            # 500 тестов
+```
 
-        // Ищем элемент по атрибуту data-testid
-        const element = await browser.$('[data-testid="main-content"]');
+```javascript
+//registration.testplane.js
 
-        // Проверяем существование элемента в DOM
-        const isExisting = await element.isExisting();
-        console.log("Элемент с data-testid существует:", isExisting);
-    });
+describe("Регистрация", () => {
+    it("тест 1 - пустой email показывает ошибку", async ({ browser }) => {});
+    it("тест 2 - невалидный формат email", async ({ browser }) => {});
+    it("тест 3 - пустой пароль показывает ошибку", async ({ browser }) => {});
 
-    it("Поиск элемента на главной странице", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+    // ...
 
-        // Ищем элемент по классу "navbar"
-        const navbar = await browser.$(".navbar");
+    // тест 500
+});
+```
 
-        // Проверяем, отображается ли элемент на странице
-        const isDisplayed = await navbar.isDisplayed();
-        console.log("Навбар отображается:", isDisplayed);
-    });
+```javascript
+//payment.testplane.js
 
-    it("Поиск элемента по id на главной странице", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+describe("Оплата", () => {
+    it("тест 1 - пустой номер карты показывает ошибку", async ({ browser }) => {});
+    it("тест 2 - невалидный номер карты", async ({ browser }) => {});
+    it("тест 3 - истёкший срок действия карты", async ({ browser }) => {});
 
-        // Ищем элемент по id "__docusaurus"
-        const main = await browser.$("#__docusaurus");
+    // ...
 
-        // Проверяем, отображается ли элемент на странице
-        const isDisplayed = await main.isDisplayed();
-        console.log("Элемент отображается:", isDisplayed);
-    });
+    // тест 500
+});
+```
 
-    it("Поиск элемента по типу атрибута", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+```javascript
+//auth.testplane.js
 
-        // Ищем кнопку по атрибуту type="button"
-        // Формат селектора: element[type="value"]
-        const button = await browser.$('button[type="button"]');
+describe("Авторизация", () => {
+    it("тест 1 - пустой email показывает ошибку", async ({ browser }) => {});
+    it("тест 2 - пустой пароль показывает ошибку", async ({ browser }) => {});
+    it("тест 3 - неверный пароль показывает ошибку", async ({ browser }) => {});
 
-        // Проверяем существование элемента в DOM
-        const isExisting = await button.isExisting();
-        console.log("Кнопка существует:", isExisting);
-    });
+    // ...
 
-    it("Поиск элемента по тексту", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем элемент по тексту внутри него
-        const link = await browser.$('//a[text()="Docs"]');
-
-        // Проверяем существование элемента в DOM
-        const isExisting = await link.isExisting();
-        console.log("Элемент с текстом существует:", isExisting);
-    });
-
-    it("Поиск элемента по атрибуту", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем элемент по атрибуту type
-        const button = await browser.$('//button[@type="button"]');
-
-        // Проверяем существование элемента в DOM
-        const isExisting = await button.isExisting();
-        console.log("Элемент с атрибутом существует:", isExisting);
-    });
-
-    it("Поиск кнопки с помощью метода getByRole", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
-
-        const button = await browser.getByRole("button", { name: "Get started" });
-
-        await button.click();
-    });
+    // тест 500
 });
 ```
 
 Резделение тестов на чанки:
 
 ```css
-Чанк 0 → тесты 1, 2, 3  (≈ первая треть)
-Чанк 1 → тесты 4, 5     (≈ вторая треть)
-Чанк 2 → тесты 6, 7     (≈ третья треть)
+Чанк 0 → тесты 1, 2, ..., 500  (≈ первая треть)
+Чанк 1 → тесты 1, 2, ..., 500     (≈ вторая треть)
+Чанк 2 → тесты 1, 2, ..., 500     (≈ третья треть)
 ```
 
 Запуск каждого чанка отдельно через терминал:
@@ -338,9 +310,10 @@ CHUNKS_COUNT=3 CHUNKS_CURRENT=2 npx testplane
 ┌──────────┬──────────┬──────────┐
 │ Чанк 0   │ Чанк 1   │ Чанк 2   │
 ├──────────┼──────────┼──────────┤
-│ тест 1   │ тест 4   │ тест 6   │
-│ тест 2   │ тест 5   │ тест 7   │
-│ тест 3   │          │          │
+│ тест 1   │ тест 1   │ тест 1   │
+│ тест 2   │ тест 2   │ тест 2   │
+│   ...    │   ...    │   ...    │
+│ тест 500 │ тест 500 │ тест 500 │
 └──────────┴──────────┴──────────┘
 ```
 
@@ -362,10 +335,18 @@ npx html-reporter merge-reports report-dir/ path-to-database.db path-to-database
 
 #### Воркеры
 
-Рекомендуемым значение — `8`. Любое другое не должно превышать количество ядер CPU.
+Рекомендуемое значение — 8. Любое другое не должно превышать количество ядер CPU.
 
 #### sessionsPerBrowser
 
-При локальном запуске значение не превышает `5`. В ином случает примерное значение можно вычислить путем деления доступных ресурсов на требуемое для конкретного браузера. При расчете помните о затратах на запуск самих тестов.
+При локальном запуске значение не превышает 5. В ином случает примерное значение можно вычислить путем деления доступных ресурсов на требуемое для конкретного браузера. При расчете помните о затратах на запуск самих тестов.
 
 #### Количество чанков
+
+При расчете количества чанков необходимо отталкиваться от:
+
+-   количества доступных браузеров
+-   оверхеда на создание чанка
+-   желаемого общего времени прогона
+
+Рекомендация — не меньше 500 тестов на чанк.
