@@ -4,17 +4,16 @@ sidebar_position: 1
 
 import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
-import Admonition from "@theme/Admonition";
 
 # Установка и настройка
 
 ## Системные требования
 
-Чтобы начать работу с testplane, установите `Node.js` версии 18.0 и выше.
+Чтобы начать работу с Testplane, установите `Node.js` версии 18.0 и выше.
 
 ## Установка {#install}
 
-Для запуска установщика testplane с помощью `npm` выполните следующую команду:
+Для запуска установщика Testplane с помощью `npm` выполните следующую команду:
 
 ```bash
 npm init testplane@latest YOUR_PROJECT_PATH
@@ -93,7 +92,7 @@ export default {
 -   `prepareBrowser` — хук перед тестами; в конфиге выше вызывает `setupBrowser(browser)` и добавляет методы Testing Library.
 -   `plugins` — плагины; в конфиге выше `html-reporter` для интерактивных отчетов (скриншоты, логи, отладка). Подробнее: [HTML Reporter](https://github.com/gemini-testing/testplane-docs/pull/html-reporter/overview.mdx).
 
-Полный список параметров конфигурации см. в [справочнике по конфигурации](../reference/config/main.mdx).
+Полный список параметров конфигурации ищите в [справочнике по конфигурации](../reference/config/main.mdx).
 
 Чтобы загрузить браузеры, описанные в конфиге, отдельно от запуска самого Testplane, выполните команду:
 
@@ -145,14 +144,7 @@ npx testplane gui
 Total: 2 Passed: 2 Failed: 0 Skipped: 0 Retries: 0
 ```
 
-### Возможные проблемы
-
-Если тест не прошел, проверьте:
-
--   Интернет-соединение (тест обращается к https://testplane.io/)
--   Браузеры установлены: `npx testplane install-deps`
-
-Подробнее об отладке в разделе [Запуск и отладка](./running-tests.mdx).
+Для успешного прохождения тестам нужен доступ к [testplane.io](https://testplane.io/).
 
 ## Что дальше?
 

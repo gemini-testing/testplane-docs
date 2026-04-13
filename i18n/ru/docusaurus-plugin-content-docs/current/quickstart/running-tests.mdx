@@ -2,6 +2,8 @@
 sidebar_position: 3
 ---
 
+import Admonition from "@theme/Admonition";
+
 # Запуск и отладка
 
 ## Запуск тестов
@@ -21,15 +23,15 @@ npx testplane gui
 В GUI вы можете:
 
 -   Наблюдать выполнение тестов в реальном времени
--   Просматривать скриншоты и сравнивать их
+-   Просматривать скриншоты, сравнивать и обновлять их
 -   Перезапускать отдельные тесты
 -   Видеть подробные ошибки с историей команд
 
-![Интерфейс Testplane GUI](/img/docs/guides/testplane-gui.png)
+![Интерфейс Testplane GUI](/gif/docs/ui/run-debug.gif)
 
 Подробнее о GUI читайте в разделе [HTML Reporter](../html-reporter/overview.mdx).
 
-### Фильтрация тестов
+## Фильтрация тестов при запуске
 
 Предположим, у вас есть такие тесты:
 
@@ -45,7 +47,7 @@ describe("Главная страница", () => {
 });
 ```
 
-#### По имени {#the-grep-option}
+### По имени {#the-grep-option}
 
 Опция [`--grep`](../reference/cli.mdx) позволяет запускать тесты по совпадению с именем:
 
@@ -56,18 +58,18 @@ npx testplane --grep "Проверка наличия поля поиска"
 Поддерживаются регулярные выражения:
 
 ```bash
-npx testplane --grep "поиск|навигация"
+npx testplane --grep "поиска|заголовка"
 ```
 
 Опция `--grep` фильтрует тесты по полному имени (включая все уровни `describe` и `it`). Переданная строка интерпретируется как регулярное выражение.
 
-#### По тегам
+### По тегам
 
 Теги помогают группировать тесты, например, отделить быстрые smoke-тесты от полных:
 
 ```typescript
 describe("Авторизация", { tag: "auth" }, () => {
-    it("успешный вход", { tag: "smoke" }, async ({ browser }) => {
+    it("Успешный вход", { tag: "smoke" }, async ({ browser }) => {
         // ...
     });
 });
@@ -77,10 +79,10 @@ describe("Авторизация", { tag: "auth" }, () => {
 
 ```bash
 npx testplane --tag "smoke"           # только smoke-тесты
-npx testplane --tag "auth & smoke"    # тесты с обоими тегами
+npx testplane --tag "auth&smoke"    # тесты с обоими тегами
 ```
 
-#### По браузеру
+### По браузеру
 
 По умолчанию тесты запускаются во всех браузерах из конфига. Чтобы запустить только в одном:
 
@@ -88,7 +90,37 @@ npx testplane --tag "auth & smoke"    # тесты с обоими тегами
 npx testplane --browser chrome
 ```
 
-#### По файлу {#running_a_specific_file}
+Опцию `--browser` можно указывать несколько раз для запуска в нескольких браузерах:
+
+```bash
+npx testplane -b chrome -b firefox
+```
+
+Также вы можете указать конкретный браузер в коде теста:
+
+```typescript
+describe("Запуск тестов в разных браузерах", () => {
+    it("Работает во всех браузерах", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+    });
+
+    // Пропустить тест в Safari
+    testplane.skip.in("safari", "Feature not supported in Safari");
+    it("Работает только в Chrome и Firefox", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+        // ...
+    });
+
+    // Запустить только в Chrome
+    testplane.only.in("chrome");
+    it("Работает только в Chrome", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+        // ...
+    });
+});
+```
+
+### По файлу {#running_a_specific_file}
 
 Чтобы запустить тесты из конкретного файла:
 
@@ -96,7 +128,7 @@ npx testplane --browser chrome
 npx testplane tests/login.testplane.ts
 ```
 
-#### Быстрый запуск одного теста
+### Быстрый запуск одного теста
 
 Во время разработки удобно использовать `.only()`:
 
@@ -120,14 +152,12 @@ npx testplane gui
 
 В GUI вы увидите выполнение тестов в реальном времени, скриншоты и ошибки. Можно перезапускать отдельные тесты и наблюдать за их выполнением.
 
-![](/gif/docs/ui/run-debug.gif)
-
 ### Локальный браузер с DevTools
 
-По умолчанию Testplane запускает браузер в headless-режиме (без окна). Для отладки можно открыть видимое окно браузера с DevTools:
+Для отладки можно открыть видимое окно браузера с DevTools:
 
 ```bash
-npx testplane --local --devtools --grep "Название теста"
+npx testplane --local --devtools --headless false --grep "Название теста"
 ```
 
 Что произойдет:
@@ -136,25 +166,41 @@ npx testplane --local --devtools --grep "Название теста"
 2.  Автоматически откроются Chrome DevTools
 3.  Вы сможете наблюдать за выполнением теста
 
+<Admonition type="warning">В браузере Firefox нет поддержки DevTools.</Admonition>
+
 ### REPL-режим
 
-REPL (Read-Eval-Print Loop) — интерактивная консоль для выполнения команд браузера во время теста.
+REPL (Read-Eval-Print Loop) — интерактивная консоль для выполнения команд браузера во время теста. Есть несколько способов войти в REPL:
 
-Добавьте `browser.debug()` в код теста:
+1. Опции командной строки:
 
-```typescript
-it("Отладка", async ({ browser }) => {
-    await browser.url("/page");
-    await browser.debug(); // Тест остановится здесь
+    - `--repl` — включает REPL-режим. Для входа в консоль вызовите [`browser.switchToRepl()`](../commands/browser/switchToRepl.mdx) в коде теста
+    - `--repl-before-test` — автоматически открывает REPL перед запуском теста
+    - `--repl-on-fail` — автоматически открывает REPL при падении теста
 
-    // В консоли можно выполнять команды:
-    // > await browser.$(".button").click()
-    // > await browser.getTitle()
-    // > .exit  — выйти из REPL и продолжить тест
+    ```bash
+    # Открыть REPL при падении теста
+    npx testplane --repl-on-fail --grep "Название теста" --browser chrome
 
-    await browser.$(".button").click();
-});
-```
+    # Открыть REPL перед запуском теста
+    npx testplane --repl-before-test --grep "Название теста" --browser chrome
+    ```
+
+2. Команда `browser.switchToRepl()` в коде:
+
+    ```typescript
+    it("Отладка", async ({ browser }) => {
+        await browser.url("/page");
+        await browser.switchToRepl(); // Тест остановится здесь
+
+        // В консоли можно выполнять команды:
+        // > await browser.$(".button").click()
+        // > await browser.getTitle()
+        // > Cmd+D или Ctrl+D — выйти из REPL и продолжить тест
+
+        await browser.$(".button").click();
+    });
+    ```
 
 ### Сохранение браузера после теста
 
@@ -165,19 +211,7 @@ npx testplane --keep-browser --grep "Название теста"
 npx testplane --keep-browser-on-fail  # только при падении
 ```
 
-Полезно для проверки DOM, cookies или localStorage после выполнения теста.
-
-## Что делать, если тест упал
-
-Запустите тесты в GUI и кликните на упавший тест, чтобы увидеть текст ошибки, скриншот страницы и историю выполненных команд.
-
-Частые причины:
-
--   Элемент не найден: проверьте селектор в DevTools
--   Элемент не готов: добавьте ожидание: `await element.waitForDisplayed()`
--   Тест падает в CI: увеличьте таймауты
-
-Подробное руководство: [Отладка тестов](../basic-guides/debugging-tests.mdx)
+Полезно для проверки DOM, cookies или localStorage после выполнения теста, а также в связке с [MCP](../testplane-mcp.mdx), чтобы AI-агент подключился к уже подготовленному браузеру.
 
 ## Полезные команды
 
@@ -194,8 +228,8 @@ npx testplane --grep "название теста"
 # Запуск только в одном браузере
 npx testplane --browser chrome
 
-# Отладка с DevTools
-npx testplane --local --devtools --grep "название теста"
+# Отладка с Chrome DevTools Protocol
+npx testplane --devtools --grep "название теста"
 
 # Интерактивная отладка при падении
 npx testplane --repl-on-fail --grep "название теста"
