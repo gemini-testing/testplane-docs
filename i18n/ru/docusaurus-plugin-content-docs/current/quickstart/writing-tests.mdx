@@ -2,8 +2,6 @@
 sidebar_position: 2
 ---
 
-import Admonition from "@theme/Admonition";
-
 # Написание тестов
 
 ## Структура теста
@@ -73,7 +71,7 @@ await browser.url("https://testplane.io/");
 
 Testplane поддерживает различные стратегии поиска элементов: CSS-селекторы (самые распространенные), текстовые селекторы (по содержимому), XPath для сложных запросов. Метод [`$()`](../commands/browser/$.mdx) возвращает первый найденный элемент, а [`$$()`](../commands/browser/$$.mdx) — массив всех подходящих.
 
-Testplane интегрирована с Testing Library, это позволяет писать более читаемые тесты, ориентированные на пользовательское поведение. Пакет устанавливается автоматически при инициализации через `npm init testplane`.
+Также есть поддержка селекторов Testing Library, это позволяет писать более читаемые тесты, ориентированные на пользовательское поведение. При инициализации через `npm init testplane` она уже включена. Если вы создавали проект иначе, ее можно [установить вручную](../guides/how-to-add-testing-library.mdx).
 
 ```typescript
 describe("Примеры селекторов", () => {
@@ -139,7 +137,7 @@ describe("Типы селекторов", () => {
 const assert = require("assert");
 
 describe("Клик", () => {
-    it("Клик: открытие поиска", async ({ browser }) => {
+    it("Клик и двойной клик", async ({ browser }) => {
         await browser.url("https://testplane.io/");
 
         // Клик по кнопке поиска
@@ -147,26 +145,13 @@ describe("Клик", () => {
         await searchButton.waitForClickable({ timeout: 5000 });
         await searchButton.click();
 
+        // Двойной клик по кнопке поиска
+        await searchButton.doubleClick();
+
         // Проверка
         const searchModal = await browser.$(".DocSearch-Modal");
         await searchModal.waitForDisplayed({ timeout: 5000 });
         const isDisplayed = await searchModal.isDisplayed();
-        assert.strictEqual(isDisplayed, true);
-    });
-
-    it("Двойной клик: выделение текста заголовка", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-
-        // Поиск заголовка на главной странице
-        const heading = await browser.$("h1");
-        await heading.waitForDisplayed({ timeout: 5000 });
-        await heading.scrollIntoView();
-
-        // Двойной клик по заголовку
-        await heading.doubleClick();
-
-        // Проверка
-        const isDisplayed = await heading.isDisplayed();
         assert.strictEqual(isDisplayed, true);
     });
 });

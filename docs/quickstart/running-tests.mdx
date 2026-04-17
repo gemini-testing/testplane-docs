@@ -2,158 +2,235 @@
 sidebar_position: 3
 ---
 
-# Running and Debugging Tests
+import Admonition from "@theme/Admonition";
+
+# Running and Debugging
 
 ## Running tests
 
-To run tests, use the following command:
+To run tests, use the command:
 
 ```bash
 npx testplane
 ```
 
-You can also run tests in `gui` mode. To do this, execute the command:
+You can also run tests in GUI mode with a visual interface:
 
 ```bash
 npx testplane gui
 ```
 
-### Running a specific test {#the_grep_option}
+In the GUI you can:
 
-Consider the following set of tests:
+-   Observe test execution in real time
+-   View screenshots, compare and update them
+-   Restart individual tests
+-   See detailed errors with command history
 
-```javascript
-const assert = require("assert");
+![Testplane GUI interface](/gif/docs/ui/run-debug.gif)
 
-describe("tests", () => {
-    it("Checking the display of the main page", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const title = await browser.getTitle();
-        assert.ok(title.includes("Testplane"));
+Learn more about the GUI in the [HTML Reporter](../html-reporter/overview.mdx) section.
+
+## Filtering tests at runtime
+
+Suppose you have the following tests:
+
+```typescript
+describe("Main page", () => {
+    it("Check title", async ({ browser }) => {
+        // ...
     });
 
-    it("Checking for the presence of a search field", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/");
-        const searchButton = await browser.$("button.DocSearch");
-        const isExisting = await searchButton.isExisting();
-        assert.strictEqual(isExisting, true);
+    it("Check search field presence", async ({ browser }) => {
+        // ...
     });
 });
 ```
 
-If you want to run just one of them, use `--grep` option:
+### By name {#the_grep_option}
+
+The [`--grep`](../reference/cli.mdx) option allows running tests by name match:
 
 ```bash
-testplane --grep "Checking for the presence of a search field"
+npx testplane --grep "Check search field presence"
 ```
 
-You can pass the whole test name, some part of it or regex pattern to run only those tests whose names will match.
-
-### Running tests in specific browsers
-
-By default, tests run in the browsers specified in the `testplane.config.ts` file.
+Regular expressions are supported:
 
 ```bash
-browsers: ["chrome", "firefox"];
+npx testplane --grep "search|title"
 ```
 
-When you run the `npx testplane` command, tests will run in Google Chrome and Mozilla Firefox.
+The `--grep` option filters tests by full name (including all levels of `describe` and `it`). The provided string is interpreted as a regular expression.
+
+### By tags
+
+Tags help group tests, for example, to separate fast smoke tests from full ones:
+
+```typescript
+describe("Authorization", { tag: "auth" }, () => {
+    it("Successful login", { tag: "smoke" }, async ({ browser }) => {
+        // ...
+    });
+});
+```
+
+Run only smoke tests:
 
 ```bash
-# Run in all browsers (default)
-testplane
+npx testplane --tag "smoke"         # only smoke tests
+npx testplane --tag "auth&smoke"    # tests with both tags
 ```
 
-To run tests in a specific browser, use the command:
+### By browser
+
+By default, tests run in all browsers from the config. To run in only one:
 
 ```bash
-# Run only in Chrome
-testplane --browser chrome
+npx testplane --browser chrome
 ```
 
-You can also specify a specific browser for use within the test body.
+The `--browser` option can be specified multiple times to run in several browsers:
 
-```javascript
-// tests/browser-specific.test.js
-describe("Browser specific tests", () => {
-    it("should work in all browsers", async ({ browser }) => {
-        await browser.url("https://example.com");
+```bash
+npx testplane -b chrome -b firefox
+```
+
+You can also specify a specific browser in the test code:
+
+```typescript
+describe("Running tests in different browsers", () => {
+    it("Works in all browsers", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
     });
 
-    // Skip the test in Safari
+    // Skip test in Safari
     testplane.skip.in("safari", "Feature not supported in Safari");
-    it("should work only in Chrome and Firefox", async ({ browser }) => {
-        await browser.url("https://example.com");
-        // ... test body
+    it("Works only in Chrome and Firefox", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+        // ...
     });
 
     // Run only in Chrome
     testplane.only.in("chrome");
-    it("should work only in Chrome", async ({ browser }) => {
-        await browser.url("https://example.com");
-        // ... test body
+    it("Works only in Chrome", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+        // ...
     });
 });
 ```
 
-### Running a test from a specific file {#running_a_specific_file}
+### By file {#running_a_specific_file}
 
-To run tests from a specific file, execute the command:
+To run tests from a specific file:
 
 ```bash
-# Running a specific file
-testplane ../testplane-tests/example.testplane.ts
+npx testplane tests/login.testplane.ts
 ```
 
-Where `../testplane-tests/example.testplane.ts` is the path to the test file.
+### Quick run of a single test
 
-### User interface mode
+During development, it's convenient to use `.only()`:
 
-In Testplane, you can work with tests in UI format using Testplane UI.
-
-![](/img/docs/html-reporter/html-reporter-demo.png)
-
-You can read about the installation and setup processes for Testplane UI in the [UI.](..//html-reporter//overview.mdx) section.
-
-## Debugging
-
-It’s very easy to track the test execution process if you run tests in `gui` mode. In this mode, the HTML reporter will show which tests were executed successfully, which ones have errors, and what kind of errors they are.
-
-![Testplane GUI](/img/docs/guides/testplane-gui.png)
-
-### Browser.debug()
-
-Testplane has a built‑in debugging tool — `browser.debug`.
-
-```javascript
-it("debugging with a pause", async ({ browser }) => {
-    // Open the page being tested
-    await browser.url("/page");
-
-    // browser.debug() stops test execution
-    // and opens an interactive console (REPL — Read-Eval-Print Loop)
-    await browser.debug();
-
-    // After calling debug(), the test pauses
-    // In the console, you can enter WebdriverIO commands in real time:
-
-    // Examples of commands you can enter in REPL:
-    // > await browser.$('.button').click()  - click the button
-    // > await browser.getTitle()            - get the page title
-    // > await browser.$$('.items')          - find all elements
-    // > .exit                               - exit debug mode
-
-    // This code will run only after exiting debug()
-    await browser.$(".button").click();
+```typescript
+it.only("Check search field", async ({ browser }) => {
+    // Only this test will run
 });
 ```
 
-### Debugging via Testplane UI
+Remove `.only()` before committing, otherwise only one test will run in CI!
 
-The most convenient way to debug tests is using the UI mode, where you can observe test execution in real time.
+## Debugging
 
-![](/gif/docs/ui/run-debug.gif)
+### GUI mode
 
-You can find unstable, slow tests, or other issues using the «sorting» and «grouping» options.
+The easiest way to debug is to run tests in GUI:
 
-![](/gif/docs/ui/analytics.gif)
+```bash
+npx testplane gui
+```
+
+In the GUI you will see test execution in real time, screenshots, and errors. You can restart individual tests and observe their execution.
+
+### Local browser with DevTools
+
+For debugging, you can open a visible browser window with DevTools:
+
+```bash
+px testplane --local --devtools --headless false --grep "Test name"
+```
+
+What will happen:
+
+1.  A visible browser window will open
+2.  Chrome DevTools will automatically open
+3.  You can observe the test execution
+
+<Admonition type="warning">Firefox browser does not support DevTools.</Admonition>
+
+### REPL mode
+
+REPL (Read-Eval-Print Loop) is an interactive console for executing browser commands during a test. There are several ways to enter REPL:
+
+1. Command line options:
+
+    - `--repl` — enables REPL mode. To enter the console, call [`browser.switchToRepl()`](../commands/browser/switchToRepl.mdx) in the test code
+    - `--repl-before-test` — automatically opens REPL before test execution
+    - `--repl-on-fail` — automatically opens REPL when a test fails
+
+    ```bash
+    # Open REPL on test failure
+    npx testplane --repl-on-fail --grep "Test name" --browser chrome
+
+    # Open REPL before test execution
+    npx testplane --repl-before-test --grep "Test name" --browser chrome
+    ```
+
+2. `browser.switchToRepl()` command in code:
+
+    ```typescript
+    it("Debugging", async ({ browser }) => {
+        await browser.url("/page");
+        await browser.switchToRepl(); // Test will stop here
+
+        // In the console you can execute commands:
+        // > await browser.$(".button").click()
+        // > await browser.getTitle()
+        // > Cmd+D or Ctrl+D — exit REPL and continue the test
+
+        await browser.$(".button").click();
+    });
+    ```
+
+### Keeping the browser after test
+
+By default, the browser closes immediately after the test. To examine the final page state:
+
+```bash
+npx testplane --keep-browser --grep "Test name"
+npx testplane --keep-browser-on-fail  # only on failure
+```
+
+Useful for checking DOM, cookies, or localStorage after test execution, and also in combination with [MCP](../testplane-mcp.mdx) to allow an AI agent to connect to an already prepared browser.
+
+## Useful commands
+
+```bash
+# Run all tests
+npx testplane
+
+# Run in GUI with visual interface
+npx testplane gui
+
+# Run a specific test
+npx testplane --grep "test name"
+
+# Run only in one browser
+npx testplane --browser chrome
+
+# Debug with Chrome DevTools Protocol
+npx testplane --devtools --grep "test name"
+
+# Interactive debugging on failure
+npx testplane --repl-on-fail --grep "test name"
+```
