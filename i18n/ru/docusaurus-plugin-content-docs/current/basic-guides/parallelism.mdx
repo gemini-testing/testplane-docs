@@ -2,7 +2,7 @@
 
 ## Параллельность в Testplane
 
-Параллельность в Testplane — это возможность одновременно выполнять несколько тестовых сценариев в разных браузерных сессиях, чтобы сократить общее время прогона тестов.
+Testplane запускает тесты параллельно с помощью запуска нескольких браузеров одновременно, которые управляются одним или нексколькими воркерами. Параллельное выполнение тестов позволяет значительно сократить общее время прогона тестов.
 
 ### sessionsPerBrowser
 
@@ -24,7 +24,7 @@ export default {
 
 Параметр `sessionsPerBrowser` является ключевым в рамках управления параллельностью. Он определяет, сколько браузеров одного типа Testplane запустит одновременно. По умолчанию значение: `1`.
 
-### Воркеры
+### Workers
 
 Параметр `workers` определяет, сколько дочерних процессов-воркеров будет запущено. Архитектурно это выглядит так:
 
@@ -41,40 +41,46 @@ export default {
 
 Параметр `testsPerSession` отвечает за то, сколько тестов можно запускать последовательно в одной сессии браузера. Он ограничивает переиспользование сессии, чтобы не допустить падения тестов из-за деградации браузера, и не имеет отношения к параллельному запуску тестов.
 
-### Как это работает
+### Пример
 
 В рамках примера параметру `sessionsPerBrowser` присвоены значения 5:
 
 ```typescript
-chrome: {
-            headless: true,
-            desiredCapabilities: {
-                browserName: "chrome"
-            },
-            sessionsPerBrowser: 5, // 5 параллельных сессий Chrome
-            waitTimeout: 10000,
-        }
+const config = {
+    chrome: {
+        headless: true,
+        desiredCapabilities: {
+            browserName: "chrome",
+        },
+        sessionsPerBrowser: 5, // 5 параллельных сессий Chrome
+        waitTimeout: 10000,
+    },
+};
 ```
 
 и 2:
 
 ```typescript
-firefox: {
-            headless: true,
-            desiredCapabilities: {
-                browserName: "firefox"
-            },
-            sessionsPerBrowser: 2, // 2 параллельные сессии Firefox
-            waitTimeout: 10000,
-        }
+const config = {
+    firefox: {
+        headless: true,
+        desiredCapabilities: {
+            browserName: "firefox",
+        },
+        sessionsPerBrowser: 2, // 2 параллельные сессии Firefox
+        waitTimeout: 10000,
+    },
+};
 ```
 
 Значение параметра `workers`:
 
 ```typescript
-system: {
+const config = {
+    system: {
         workers: 1,
     },
+};
 ```
 
 Далее тесты:
@@ -82,103 +88,72 @@ system: {
 ```typescript
 describe("test examples", () => {
     it("Поиск элемента по data-testid", async ({ browser }) => {
-        // Открываем страницу и ждем ее загрузки
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем элемент по атрибуту data-testid
-        const element = await browser.$('[data-testid="main-content"]');
-
-        // Проверяем существование элемента в DOM
-        const isExisting = await element.isExisting();
-        console.log("Элемент с data-testid существует:", isExisting);
+        // тело теста
     });
 
     it("Поиск элемента на главной странице", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем элемент по классу "navbar"
-        const navbar = await browser.$(".navbar");
-
-        // Проверяем, отображается ли элемент на странице
-        const isDisplayed = await navbar.isDisplayed();
-        console.log("Навбар отображается:", isDisplayed);
+        // тело теста
     });
 
     it("Поиск элемента по id на главной странице", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем элемент по id "__docusaurus"
-        const main = await browser.$("#__docusaurus");
-
-        // Проверяем, отображается ли элемент на странице
-        const isDisplayed = await main.isDisplayed();
-        console.log("Элемент отображается:", isDisplayed);
+        // тело теста
     });
 
     it("Поиск элемента по типу атрибута", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем кнопку по атрибуту type="button"
-        // Формат селектора: element[type="value"]
-        const button = await browser.$('button[type="button"]');
-
-        // Проверяем существование элемента в DOM
-        const isExisting = await button.isExisting();
-        console.log("Кнопка существует:", isExisting);
+        // тело теста
     });
 
     it("Поиск элемента по тексту", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем элемент по тексту внутри него
-        const link = await browser.$('//a[text()="Docs"]');
-
-        // Проверяем существование элемента в DOM
-        const isExisting = await link.isExisting();
-        console.log("Элемент с текстом существует:", isExisting);
+        // тело теста
     });
 
     it("Поиск элемента по атрибуту", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
-
-        // Ищем элемент по атрибуту type
-        const button = await browser.$('//button[@type="button"]');
-
-        // Проверяем существование элемента в DOM
-        const isExisting = await button.isExisting();
-        console.log("Элемент с атрибутом существует:", isExisting);
+        // тело теста
     });
 
     it("Поиск кнопки с помощью метода getByRole", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
-
-        const button = await browser.getByRole("button", { name: "Get started" });
-
-        await button.click();
+        // тело теста
     });
 });
 ```
 
 #### Как работает параллелизм в данном примере
 
-Для Chrome открывается до 5 окон браузера одновременно. Каждое из них — это отдельная независимая сессия со своим `sessionId`:
+Для Chrome и Firefox открывается до 5 и 2 окон браузера одновременно. Каждое из них — это отдельная независимая сессия со своим `sessionId`.
 
-```bash
-Тест 1 → сессия chrome:abc123 → открывается окно Chrome #1
-Тест 2 → сессия chrome:def456 → открывается окно Chrome #2
-Тест 3 → сессия chrome:ghi789 → открывается окно Chrome #3
-Тест 4 → сессия chrome:jkl012 → открывается окно Chrome #4
-Тест 5 → сессия chrome:mno345 → открывается окно Chrome #5
+При таких значениях параметров:
+
+```typescript
+const config = {
+    browsers: {
+        chrome: { sessionsPerBrowser: 3, testsPerSession: 1 },
+        firefox: { sessionsPerBrowser: 2, testsPerSession: 10 },
+    },
+};
 ```
 
-Для Firefox логика та же, но одновременно работают только 2 окна. Это ограничение задано через `sessionsPerBrowser`:
+Вы получите следующий результат:
 
-```bash
-Тест 1 → сессия firefox:fb59f7 → открывается окно Firefox #1
-Тест 2 → сессия firefox:660ee0 → открывается окно Firefox #2
-Тест 3 → ждёт в очереди...
-         как только тест 1 завершился → сессия fb59f7 освободилась
-Тест 3 → сессия firefox:fb59f7 → то же окно Firefox #1, новый тест
+```json
+CH-* — сессии chrome
+FF-* — сессии firefox
+[n/m] = занято n из m слотов
+
+Шаг 1
+  chrome  [3/3]: открываются окна CH-1, CH-2, CH-3 → запускают test1, test2, test3
+  firefox [2/2]: открываются окна FF-1, FF-2       → запускают test1, test2
+
+Шаг 2
+  chrome  [3/3]: CH-1 завершает test1 и закрывается; создается CH-4 → запускается test4
+  firefox [2/2]: FF-1 завершает test1 и переиспользуется            → запускается test3
+
+Шаг 3
+  chrome  [2/3]: CH-2 завершает test2 и закрывается
+  firefox [2/2]: FF-2 завершает test2 и переиспользуется            → запускается test4
+
+Шаг 4
+  chrome  [0/3]: CH-3 и CH-4 завершают test3 и test4, затем закрываются
+  firefox [0/2]: FF-1 и FF-2 завершают test3 и test4, затем закрываются
 ```
 
 :::warning Важно
@@ -189,9 +164,9 @@ describe("test examples", () => {
 
 При наличии тысяч тестов время одного запуска может быть неприемлемо большим даже при максимальном параллелизме. В таких случаях используют шардирование — разбивку всего набора тестов на несколько независимых частей (чанков), которые запускаются параллельно на разных машинах или в разных `CI`-джобах.
 
-### Плагин testplane-chunks
+### Плагин @testplane/chunks
 
-Плагин `@testplane/chunks` позволяет распараллелить запуск тестов на нескольких серверах, тем самым ускорив процесс. Однако сам плагин не занимается какой-либо оркестрацией, распараллеливанием запуска или слиянием получившихся отдельных отчетов в один итоговый отчет.
+Плагин разбивает набор тестов проекта на детерминированные фрагменты, упрощая запуск нужной части.
 
 #### Установка и подключение
 
@@ -217,13 +192,6 @@ module.exports = {
     // другие настройки Testplane...
 };
 ```
-
-#### Расшифровка параметров конфигурации
-
-| Параметр | Тип      | По умолчанию | Описание                                                          |
-| -------- | -------- | ------------ | ----------------------------------------------------------------- |
-| `count`  | `Number` | `1`          | Количество порций (чанков), на которые нужно разбить набор тестов |
-| `run`    | `Number` | `1`          | Номер чанка, тесты из которого нужно запустить                    |
 
 ### Как разбить запуск тестов
 
@@ -259,7 +227,7 @@ describe("Регистрация", () => {
 describe("Оплата", () => {
     it("тест 1 - пустой номер карты показывает ошибку", async ({ browser }) => {});
     it("тест 2 - невалидный номер карты", async ({ browser }) => {});
-    it("тест 3 - истёкший срок действия карты", async ({ browser }) => {});
+    it("тест 3 - истекший срок действия карты", async ({ browser }) => {});
 
     // ...
 
@@ -302,25 +270,6 @@ CHUNKS_COUNT=3 CHUNKS_CURRENT=1 npx testplane
 CHUNKS_COUNT=3 CHUNKS_CURRENT=2 npx testplane
 ```
 
-### Как плагин делит тесты
-
-После сортировки по `fullTitle` набор тестов делится на 3 чанка:
-
-```css
-┌──────────┬──────────┬──────────┐
-│ Чанк 0   │ Чанк 1   │ Чанк 2   │
-├──────────┼──────────┼──────────┤
-│ тест 1   │ тест 1   │ тест 1   │
-│ тест 2   │ тест 2   │ тест 2   │
-│   ...    │   ...    │   ...    │
-│ тест 500 │ тест 500 │ тест 500 │
-└──────────┴──────────┴──────────┘
-```
-
-:::tip Примечание
-Главная идея чанков: если `workers` распределяет тесты внутри одного процесса, то чанки делят тесты между несколькими независимыми процессами — например, на разных `CI`-агентах или на одной машине через `concurrently`.
-:::
-
 ### Как объединить отчеты
 
 Чтобы объединить несколько отчетов в один, используйте команду `merge-reports`. Она принимает пути к директориям с отчетами, файлам баз данных или к файлам `databaseUrls.json`, после чего создает новый html-отчет в папке назначения с данными из всех переданных отчетов.
@@ -328,12 +277,104 @@ CHUNKS_COUNT=3 CHUNKS_CURRENT=2 npx testplane
 Пример использования:
 
 ```bash
-npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report -h foo=bar
+npx html-reporter merge-reports report-chunk-1/ report-chunk-2/ report-chunk-3/ -d merged-report
 ```
+
+### Пример GitHub Actions
+
+Ниже показан пример запуска `@testplane/chunks` в GitHub Actions. Тесты разбиваются на 3 чанка, каждый чанк выполняется в отдельном `matrix job`, а затем отчеты всех чанков скачиваются из `S3` и объединяются в один итоговый отчет.
+
+<details>
+<summary>Полный пример</summary>
+
+```yaml
+name: Testplane
+
+on:
+    pull_request:
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    chunks:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                chunk: [1, 2, 3]
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - run: npm ci
+
+            - run: npx testplane --chunks-count 3 --chunks-run ${{ matrix.chunk }}
+
+            - uses: aws-actions/configure-aws-credentials@v5
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: eu-central-1
+
+            - uses: jakejarvis/s3-sync-action@v0.5.1
+              with:
+                  args: --follow-symlinks
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+                  AWS_REGION: eu-central-1
+                  SOURCE_DIR: testplane-report
+                  DEST_DIR: testplane/${{ github.run_id }}/chunk-${{ matrix.chunk }}
+
+    merge-report:
+        runs-on: ubuntu-latest
+        needs: chunks
+        if: ${{ always() }}
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - run: npm ci
+
+            - uses: aws-actions/configure-aws-credentials@v5
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: eu-central-1
+
+            - run: |
+                  mkdir -p reports/chunk-1 reports/chunk-2 reports/chunk-3
+                  aws s3 cp s3://${{ secrets.S3_BUCKET }}/testplane/${{ github.run_id }}/chunk-1/ reports/chunk-1 --recursive
+                  aws s3 cp s3://${{ secrets.S3_BUCKET }}/testplane/${{ github.run_id }}/chunk-2/ reports/chunk-2 --recursive
+                  aws s3 cp s3://${{ secrets.S3_BUCKET }}/testplane/${{ github.run_id }}/chunk-3/ reports/chunk-3 --recursive
+
+            - run: |
+                  npx testplane merge-reports \
+                    reports/chunk-1 \
+                    reports/chunk-2 \
+                    reports/chunk-3 \
+                    --output merged-report
+
+            - uses: jakejarvis/s3-sync-action@v0.5.1
+              with:
+                  args: --follow-symlinks
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+                  AWS_REGION: eu-central-1
+                  SOURCE_DIR: merged-report
+                  DEST_DIR: testplane/${{ github.run_id }}/merged
+```
+
+</details>
 
 ## Рекомендуемые настройки и их расчет
 
-#### Воркеры
+#### Workers
 
 Рекомендуемое значение — 8. Любое другое не должно превышать количество ядер CPU.
 
