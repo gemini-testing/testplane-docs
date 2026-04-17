@@ -140,9 +140,9 @@ describe("Клик", () => {
     it("Клик и двойной клик", async ({ browser }) => {
         await browser.url("https://testplane.io/");
 
-    const button = await browser.$("button");
-    await button.waitForClickable();
-    await button.click();
+        const button = await browser.$("button");
+        await button.waitForClickable();
+        await button.click();
 
         // Двойной клик по кнопке поиска
         await searchButton.doubleClick();
