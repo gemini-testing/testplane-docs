@@ -241,7 +241,7 @@ const config: Config = {
                     },
                     {
                         from: "/docs/v8/guides/local-browsers",
-                        to: "/docs/v8/basic-guides/managing-browsers",
+                        to: "/docs/v8/basic-guides/browsers-overview",
                     },
                     {
                         from: "/docs/v8/guides/how-to-get-report",
