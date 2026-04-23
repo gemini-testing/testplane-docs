@@ -2,29 +2,39 @@ import Admonition from "@theme/Admonition";
 
 # Конфигурация
 
-// TODO: подумать про более логичную структуру статьи
-// TODO: в этой статье вы узнаете...
+<Admonition title="Что вы узнаете">
+
+-   Где Testplane ищет конфигурационный файл
+-   Как переопределить настройки без изменения конфигурационного файла
+-   Как работает наследование настроек
+-   Как настроить параллельный запуск тестов и тайм-ауты
+-   Как подключить плагины
+
+</Admonition>
 
 ## Введение
 
-Testplane настраивается тремя способами: через конфигурационный файл, переменные окружения и аргументы командной строки. 
+Testplane настраивается тремя способами: через конфигурационный файл, переменные окружения и аргументы командной строки.
 
 Конфигурационный файл — основной источник настроек: в нём указывают браузеры, пути к тестам, параллельность, плагины и тайм-ауты. Переменные окружения и CLI-аргументы позволяют переопределить отдельные параметры без изменения файла, это удобно для CI/CD или локальных экспериментов.
 
-Полный список параметров в [справочнике по конфигурации](../reference/config/main.mdx).
+Полный справочник параметров — в [документации по конфигурации](../reference/config/main.mdx).
 
-## Где Testplane ищет конфигурационный файл {#config-location} // TODO: переименовать
+## Конфигурационный файл {#config-location}
 
 При запуске Testplane ищет конфигурационный файл в текущей рабочей директории. Поддерживаются следующие имена файлов (в порядке приоритета):
 
-- `.testplane.conf.ts`
-- `.testplane.conf.js`
-- `testplane.config.ts`
-- `testplane.config.js`
-- `testplane.config.cts` //
-- `testplane.config.cjs` //
-- `.hermione.conf.ts` (для обратной совместимости) //
-- `.hermione.conf.js` (для обратной совместимости) // TODO: вынести в плашку
+-   `.testplane.conf.ts`
+-   `.testplane.conf.js`
+-   `testplane.config.ts`
+-   `testplane.config.js`
+-   `testplane.config.cts`
+-   `testplane.config.cjs`
+
+<Admonition type="tip">
+    Для обратной совместимости также поддерживаются имена файлов `.hermione.conf.ts` и
+    `.hermione.conf.js`.
+</Admonition>
 
 Если нужно использовать конфиг из другого места, укажите путь через опцию `--config`:
 
@@ -44,12 +54,12 @@ npx testplane --config ./configs/testplane.local.ts
 
 При конфликте значений применяется следующий приоритет (от высшего к низшему):
 
-| Приоритет | Источник | Пример |
-|-----------|----------|--------|
-| 1 | CLI аргумент | `--base-url http://example.com` |
-| 2 | Переменная окружения | `testplane_base_url=http://example.com` |
-| 3 | Файл конфигурации | `baseUrl: "http://example.com"` |
-| 4 | Значение по умолчанию | — |
+| Приоритет | Источник              | Пример                                  |
+| --------- | --------------------- | --------------------------------------- |
+| 1         | CLI аргумент          | `--base-url http://example.com`         |
+| 2         | Переменная окружения  | `testplane_base_url=http://example.com` |
+| 3         | Файл конфигурации     | `baseUrl: "http://example.com"`         |
+| 4         | Значение по умолчанию | —                                       |
 
 ### Переопределение через CLI {#cli-override}
 
@@ -93,13 +103,6 @@ testplane_browsers_firefox_sessions_per_browser=10 npx testplane
     Для обратной совместимости также поддерживается префикс `hermione_`.
 </Admonition>
 
-Также доступны специальные переменные окружения: // TODO: уточнить
-
-| Переменная | Описание |
-|------------|----------|
-| `TESTPLANE_SKIP_BROWSERS` | Пропустить указанные браузеры: `TESTPLANE_SKIP_BROWSERS=ie10,ie11` |
-| `TESTPLANE_SETS` | Запустить только указанные сеты: `TESTPLANE_SETS=desktop,touch` |
-
 ## Наследование параметров {#inheritance}
 
 Testplane поддерживает каскадное наследование параметров: настройки, заданные на корневом уровне конфига, применяются ко всем браузерам. Браузеры могут переопределять эти значения.
@@ -134,20 +137,24 @@ export default {
 ```
 
 В этом примере:
-- Chrome получит `retry: 2` и `sessionsPerBrowser: 3` (наследование)
-- Firefox получит `retry: 5` (переопределение) и `sessionsPerBrowser: 3` (наследование)
+
+-   Chrome получит `retry: 2` и `sessionsPerBrowser: 3` (наследование)
+-   Firefox получит `retry: 5` (переопределение) и `sessionsPerBrowser: 3` (наследование)
 
 <Admonition type="info">
-    Единственный параметр, который нельзя вынести на корневой уровень — это `desiredCapabilities`. Он должен быть задан для каждого браузера отдельно.
+    Единственный параметр, который нельзя вынести на корневой уровень — это `desiredCapabilities`.
+    Он должен быть задан для каждого браузера отдельно.
 </Admonition>
 
 ## Базовые параметры {#basic-params}
 
 ### Ретраи (retry) {#retry}
 
-Параметр `retry` определяет, сколько раз Testplane будет перезапускать упавший тест. По умолчанию: `0`.
+Параметр `retry` определяет, сколько раз Testplane будет перезапускать упавший тест.
 
 ```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
 export default {
     // Глобальное значение для всех браузеров
     retry: 2,
@@ -159,23 +166,16 @@ export default {
             desiredCapabilities: { browserName: "chrome" },
         },
     },
-};
-```
-
-Типичная практика — использовать разные значения для локальной разработки и CI:
-
-```typescript
-export default {
-    retry: process.env.CI ? 3 : 0,
-    // ...
-};
+} satisfies ConfigInput;
 ```
 
 ### Расположение тестовых файлов {#test-files}
 
-Тестовые файлы указываются в секции `sets`. Каждый сет определяет набор тестов и браузеры для их запуска:
+Наборы тестовых файлов и браузеры для их запуска указываются в секции `sets`:
 
 ```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
 export default {
     sets: {
         desktop: {
@@ -191,7 +191,7 @@ export default {
         },
     },
     // ...
-};
+} satisfies ConfigInput;
 ```
 
 Запуск конкретного сета:
@@ -200,139 +200,111 @@ export default {
 npx testplane --set desktop
 ```
 
-Подробнее о сетах см. в [документации по sets](../reference/config/sets).
+Подробнее о сетах см. в [документации по sets](../reference/config/sets.mdx).
 
 ### Dev Server {#dev-server}
 
 Секция `devServer` позволяет автоматически запускать сервер разработки перед тестами:
 
 ```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
 export default {
     devServer: {
-        // Команда для запуска сервера
         command: "npm run dev",
-        
-        // Рабочая директория (по умолчанию — директория конфига)
-        cwd: null,
-        
-        // Переменные окружения для сервера
-        env: { NODE_ENV: "test" },
-        
-        // Аргументы командной строки
-        args: ["--port", "3000"],
-        
-        // Показывать логи сервера в консоли (по умолчанию: true)
-        logs: true,
-        
-        // Переиспользовать уже запущенный сервер (по умолчанию: false)
-        reuseExisting: false,
-        
-        // Проверка готовности сервера
+        reuseExisting: true,
         readinessProbe: {
             url: "http://localhost:3000",
-            // Функция проверки ответа (опционально)
-            isReady: (response) => response.status === 200,
-            timeouts: {
-                waitServerTimeout: 60000,    // Ожидание запуска (60 сек)
-                probeRequestTimeout: 10000,  // Тайм-аут запроса (10 сек)
-                probeRequestInterval: 1000,  // Интервал проверки (1 сек)
-            },
         },
     },
     baseUrl: "http://localhost:3000",
     // ...
-};
+} satisfies ConfigInput;
 ```
+
+Testplane запустит команду и дождётся готовности сервера по указанному URL.
 
 <Admonition type="warning">
     Секция `devServer` только запускает сервер. Не забудьте также настроить `baseUrl`.
 </Admonition>
 
 <Admonition type="tip">
-    При использовании `reuseExisting: true` обязательно укажите `readinessProbe.url` — Testplane проверит, запущен ли сервер, и не будет запускать новый.
+    При использовании `reuseExisting: true` обязательно укажите `readinessProbe.url`: Testplane
+    проверит, запущен ли сервер, и не будет запускать новый.
 </Admonition>
 
-Подробнее см. в [документации по devServer](../reference/config/dev-server).
+Подробнее см. в [документации по devServer](../reference/config/dev-server.mdx).
 
 ### Параллельность выполнения {#parallelism}
 
-Testplane поддерживает несколько уровней параллельности:
+Testplane запускает тесты параллельно, что значительно ускоряет прогон. Для настройки параллельности используются два основных параметра: `sessionsPerBrowser` и `workers`.
 
-| Параметр | Описание | По умолчанию |
-|----------|----------|--------------|
-| `sessionsPerBrowser` | Количество параллельных сессий для каждого браузера | `1` |
-| `testsPerSession` | Сколько тестов запускать в одной сессии браузера | `Infinity` |
-| `system.workers` | Количество воркер-процессов | `1` |
-| `system.parallelLimit` | Максимум браузеров одновременно | `Infinity` |
+-   `sessionsPerBrowser` определяет максимальное число параллельных браузерных сессий для каждого браузера
+-   `workers` определяет число воркер-процессов Node.js для параллельного выполнения тестов
 
 ```typescript title="testplane.config.ts"
-export default {
-    // Запускать 5 сессий Chrome параллельно
-    sessionsPerBrowser: 5,
-    
-    // Перезапускать браузер каждые 20 тестов (для стабильности)
-    testsPerSession: 20,
+import type { ConfigInput } from "testplane";
 
+export default {
+    browsers: {
+        chrome: {
+            sessionsPerBrowser: 5,
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            sessionsPerBrowser: 3,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
+    },
     system: {
-        // Использовать 4 воркера
         workers: 4,
     },
     // ...
-};
+} satisfies ConfigInput;
 ```
+
+В этом примере Testplane может запустить до 5 параллельных сессий Chrome и до 3 сессий Firefox, распределяя тесты между 4 воркер-процессами.
+
+Для тонкой настройки параллельности доступны дополнительные опции: `testsPerSession`, `testsPerWorker` и `parallelLimit`. Подробнее см. в [документации](../). // TODO: найти соответствующий материал и прикрепить ссылку
 
 ## Тайм-ауты {#timeouts}
 
-### Основные тайм-ауты {#main-timeouts}
+Testplane позволяет настроить тайм-ауты для для контроля времени выполнения операций:
 
-**waitTimeout** (по умолчанию: 3000 мс) — время ожидания появления элемента на странице. Используется в командах `waitFor*` и при поиске элементов.
+-   `httpTimeout` — тайм-аут HTTP-запросов к WebDriver
+-   `testTimeout` — максимальное время выполнения одного теста
+-   `pageLoadTimeout` — тайм-аут загрузки страницы в браузере
+-   `waitTimeout` — тайм-аут для команд ожидания (`waitFor*`)
 
-```typescript
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
 export default {
-    waitTimeout: 5000, // Увеличить до 5 секунд
-    // ...
-};
-```
-
-**testTimeout** — максимальное время выполнения одного теста. Можно задать через `system.mochaOpts.timeout` (по умолчанию: 60000 мс):
-
-```typescript
-export default {
-    system: {
-        mochaOpts: {
-            timeout: 120000, // 2 минуты на тест
+    // Глобальные тайм-ауты
+    pageLoadTimeout: 20000,
+    httpTimeout: 20000,
+    testTimeout: 90000,
+    browsers: {
+        chrome: {
+            // Тайм-ауты можно переопределить для конкретного браузера
+            pageLoadTimeout: 30000,
+            waitTimeout: 5000,
+            desiredCapabilities: { browserName: "chrome" },
         },
     },
     // ...
-};
+} satisfies ConfigInput;
 ```
 
-**httpTimeout** (по умолчанию: 30000 мс) — тайм-аут для запросов к Selenium-серверу:
-
-```typescript
-export default {
-    httpTimeout: 60000, // Увеличить для медленных гридов
-    // ...
-};
-```
-
-### Другие тайм-ауты {#other-timeouts}
-
-| Параметр | По умолчанию | Описание |
-|----------|--------------|----------|
-| `waitInterval` | 500 мс | Интервал проверки условия в `waitFor*` |
-| `urlHttpTimeout` | = httpTimeout | Тайм-аут для команды перехода по URL |
-| `pageLoadTimeout` | 20000 мс | Тайм-аут загрузки страницы |
-| `sessionRequestTimeout` | = httpTimeout | Тайм-аут создания сессии браузера |
-| `sessionQuitTimeout` | 5000 мс | Тайм-аут закрытия сессии |
-
-Полный список тайм-аутов см. в [документации](../). // TODO: найти соответствующий материал и прикрепить ссылку
+Полный список тайм-аутов и их описание см. в [документации](../). // TODO: найти соответствующий материал и прикрепить ссылку
 
 ## Подключение плагинов {#plugins}
 
-Плагины подключаются в секции `plugins`. 
-
-Testplane автоматически ищет модули с префиксом `testplane-`, поэтому его можно опускать. // TODO: уточнить
+Плагины подключаются и настраиваются в секции `plugins` в конфигурационном файле. Каждый ключ — это имя npm-пакета плагина, а значение — объект с его параметрами.
 
 ### Пример с html-reporter {#html-reporter-example}
 
@@ -347,6 +319,8 @@ npm install html-reporter --save-dev
 **Подключение:**
 
 ```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
 export default {
     plugins: {
         "html-reporter": {
@@ -357,63 +331,89 @@ export default {
         },
     },
     // ...
-};
+} satisfies ConfigInput;
 ```
 
-// TODO: подробнее про передачу параметров в плагины
+Параметры плагина можно переопределить через переменные окружения:
+
+```bash
+# Отключить плагин
+testplane_plugins_testplane_retry_progressive='false'
+
+# Передать объект с параметрами
+testplane_plugins_testplane_retry_progressive='{"enabled": true, "extraRetry": 10}'
+```
+
+Аналогично можно передать параметры через командную строку:
+
+```bash
+# Отключить плагин
+npx testplane --plugins-testplane-retry-progressive false
+
+# Передать объект с параметрами
+npx testplane --plugins-testplane-retry-progressive '{"enabled": true, "extraRetry": 10}'
+```
+
+Если параметр указан в нескольких местах, применяется значение с наивысшим приоритетом:
+
+1. CLI — высший приоритет
+2. Переменные окружения
+3. Конфигурационный файл — низший приоритет
+
+Это позволяет гибко управлять поведением плагинов в CI/CD без изменения конфига.
 
 ## Настройка дефолтов для команд {#command-defaults}
 
-// TODO: добавить введение про возможность менять дефолты для ряда команд
+Testplane позволяет задать значения по умолчанию для параметров некоторых команд. Вместо того чтобы передавать одни и те же опции при каждом вызове, можно указать их один раз в конфигурации.
 
 ### assertViewOpts {#assert-view-opts}
 
-// TODO: вместо перечисления параметров написать что-то внятное
-
-### expectOpts {#expect-opts}
-
-Настройки для [expect-матчеров](../commands/expect/overview):
-
-// TODO: вместо перечисления параметров написать что-то внятное
-
-### stateOpts {#state-opts}
-
-Настройки для команд работы с состоянием ([saveState](../commands/browser/saveState), [restoreState](../commands/browser/restoreState)):
-
-// TODO: вместо перечисления параметров написать что-то внятное
-
-## Полный пример конфигурации {#full-example}
-
-// TODO: а он вообще нужен тут, или просто сослаться на доку?
-
-## Советы и лучшие практики {#best-practices}
-
-### Разделяйте конфиги для разных окружений {#env-configs}
-
-Создайте базовый конфиг и расширяйте его для разных окружений:
-
-```typescript title="testplane.config.ts"
-const baseConfig = {
-    baseUrl: "http://localhost:3000",
-    // общие настройки...
-};
-
-export default {
-    ...baseConfig,
-    retry: process.env.CI ? 3 : 0,
-    gridUrl: process.env.GRID_URL || "http://localhost:4444/wd/hub",
-};
-```
-
-### Выносите чувствительные данные в переменные окружения {#sensitive-data}
-
-Не храните пароли и токены в конфиге:
+Настройки по умолчанию для скриншотного тестирования. Позволяют задать, какие элементы игнорировать, допустимую разницу в пикселях, задержку перед снимком и другие параметры сравнения скриншотов.
 
 ```typescript
 export default {
-    gridUrl: process.env.SELENIUM_GRID_URL,
+    assertViewOpts: {
+        ignoreElements: [".ads", ".dynamic-banner"],
+        ignoreDiffPixelCount: "0.5%",
+    },
     // ...
 };
 ```
 
-// TODO: что-нибудь ещё?
+Полный список параметров см. в документации [assertView](../commands/browser/assertView.mdx).
+
+### expectOpts {#expect-opts}
+
+Настройки для асинхронных проверок с ожиданием.
+
+```typescript
+export default {
+    system: {
+        expectOpts: {
+            wait: 5000, // макс. время ожидания (мс)
+            interval: 200, // интервал проверок (мс)
+        },
+    },
+    // ...
+};
+```
+
+Полный список параметров см. в документации по [expect-матчерам](../commands/expect/overview.mdx).
+
+### stateOpts {#state-opts}
+
+Настройки для команд сохранения и восстановления состояния браузера. Определяют, что сохранять (cookies, localStorage, sessionStorage), куда сохранять, и нужно ли удалять файл после тестов.
+
+```typescript
+export default {
+    stateOpts: {
+        path: "./tmp/auth-state.json",
+        cookies: true,
+        localStorage: true,
+        sessionStorage: false,
+    },
+    // ...
+};
+```
+
+Полный список параметров см. в документации по [saveState](../commands/browser/saveState.mdx) и [restoreState](../commands/browser/restoreState.mdx).
