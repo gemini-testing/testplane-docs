@@ -1078,11 +1078,33 @@ export = {
         </tr>
         <tr>
             <td>`mapDependencyRelativePath`</td>
-            <td>`null | (dependency: { scope: "browser" | "testplane", relativePath: string }) => string | void`</td>
+            <td>`null | (dependency: { scope: "browser" | "testplane", relativePath: string }) => string | boolean | void`</td>
             <td>`null`</td>
             <td>
-                Коллбэк, который принимает путь зависимости теста в стиле POSIX и преобразует его в другой путь
-                или полностью игнорирует зависимость, если возвращено `falsy` значение
+                Коллбэк, который принимает путь зависимости теста в стиле POSIX и преобразует его в другой путь.
+                Верните строку `string` для переназначения пути, `true` для сохранения исходного пути без изменений,
+                или falsy-значение (`false`, `undefined`, `void`) для полного исключения зависимости.
+            </td>
+        </tr>
+        <tr>
+            <td>`mapSourceMapUrl`</td>
+            <td>`null | (assetInfo: { type: "css" | "js", sourceUrl: string, sourceMapUrl: string }) => string | boolean | void`</td>
+            <td>`null`</td>
+            <td>
+                Коллбэк для фильтрации или переназначения URL-адресов source map перед их загрузкой.
+                Верните строку `string` для переназначения URL, `true` для сохранения исходного URL без изменений,
+                или falsy-значение для полного пропуска ресурса (и скрипт/стиль, и его source map будут проигнорированы).
+            </td>
+        </tr>
+        <tr>
+            <td>`saveIncompleteDumpOnFail`</td>
+            <td>`boolean`</td>
+            <td>`false`</td>
+            <td>
+                Если `true`, дамп селективности сохраняется даже при падении некоторых тестов.
+                Это позволяет затем перезапустить только упавшие тесты с помощью
+                [`--last-failed-only`][last-failed] для дополнения дампа без полного перезапуска всех тестов.
+                См. [руководство по восстановлению после неудачного прогона селективности][selectivity-incomplete-dump-guide].
             </td>
         </tr>
         <tr>
@@ -1131,6 +1153,44 @@ export = {
             }
 
             return relativePath;
+        },
+    }
+}
+```
+
+### Примеры `mapSourceMapUrl` {#mapSourceMapUrl_examples}
+
+#### Фильтрация сторонних скриптов {#mapSourceMapUrl_example_filter}
+
+```ts
+{
+    selectivity: {
+        enabled: true,
+        mapSourceMapUrl({ type, sourceUrl, sourceMapUrl }) {
+            // Пропускаем скрипты аналитики и трекинга
+            if (sourceUrl.includes("analytics") || sourceUrl.includes("tracking")) {
+                return false;
+            }
+
+            return true;
+        },
+    }
+}
+```
+
+#### Переназначение URL source map на локальный сервер {#mapSourceMapUrl_example_remap}
+
+```ts
+{
+    selectivity: {
+        enabled: true,
+        mapSourceMapUrl({ type, sourceUrl, sourceMapUrl }) {
+            // Перенаправляем загрузку source map на локальный сервер
+            if (sourceMapUrl.startsWith("https://cdn.example.com/")) {
+                return sourceMapUrl.replace("https://cdn.example.com/", "http://localhost:3000/");
+            }
+
+            return true;
         },
     }
 }
@@ -1209,3 +1269,5 @@ export = {
 [saveState]: .../../../../../commands/browser/saveState
 [restoreState]: .../../../../../commands/browser/restoreState
 [getState]: .../../../../../commands/browser/getState
+[last-failed]: ../last-failed
+[selectivity-incomplete-dump-guide]: ../../../guides/selectivity#recovering-incomplete-dump

@@ -1075,11 +1075,33 @@ The section has the following parameters:
         </tr>
         <tr>
             <td>`mapDependencyRelativePath`</td>
-            <td>`null | (dependency: { scope: "browser" | "testplane", relativePath: string }) => string | void`</td>
+            <td>`null | (dependency: { scope: "browser" | "testplane", relativePath: string }) => string | boolean | void`</td>
             <td>`null`</td>
             <td>
-                Callback, which accepts test dependency path in POSIX style and maps it to another path
-                or filters it completely if `falsy` value is returned
+                Callback, which accepts test dependency path in POSIX style and maps it to another path.
+                Return a mapped `string` path to remap, `true` to keep the original path unchanged,
+                or a falsy value (`false`, `undefined`, `void`) to filter the dependency out completely.
+            </td>
+        </tr>
+        <tr>
+            <td>`mapSourceMapUrl`</td>
+            <td>`null | (assetInfo: { type: "css" | "js", sourceUrl: string, sourceMapUrl: string }) => string | boolean | void`</td>
+            <td>`null`</td>
+            <td>
+                Callback to filter or remap source map URLs before they are fetched.
+                Return a mapped `string` URL to remap, `true` to keep the original URL unchanged,
+                or a falsy value to skip the asset entirely (both the script/style and its source map will be ignored).
+            </td>
+        </tr>
+        <tr>
+            <td>`saveIncompleteDumpOnFail`</td>
+            <td>`boolean`</td>
+            <td>`false`</td>
+            <td>
+                When `true`, selectivity dump is saved even if some tests failed.
+                This allows you to later rerun only the failed tests with
+                [`--last-failed-only`][last-failed] to complete the dump without re-running the entire suite.
+                See the [guide on recovering from a failed selectivity run][selectivity-incomplete-dump-guide].
             </td>
         </tr>
         <tr>
@@ -1128,6 +1150,44 @@ The section has the following parameters:
             }
 
             return relativePath;
+        },
+    }
+}
+```
+
+### `mapSourceMapUrl` examples {#mapSourceMapUrl_examples}
+
+#### Filter out third-party scripts {#mapSourceMapUrl_example_filter}
+
+```ts
+{
+    selectivity: {
+        enabled: true,
+        mapSourceMapUrl({ type, sourceUrl, sourceMapUrl }) {
+            // Skip analytics and tracking scripts
+            if (sourceUrl.includes("analytics") || sourceUrl.includes("tracking")) {
+                return false;
+            }
+
+            return true;
+        },
+    }
+}
+```
+
+#### Remap source map URL to a local server {#mapSourceMapUrl_example_remap}
+
+```ts
+{
+    selectivity: {
+        enabled: true,
+        mapSourceMapUrl({ type, sourceUrl, sourceMapUrl }) {
+            // Redirect source map fetching to a local server
+            if (sourceMapUrl.startsWith("https://cdn.example.com/")) {
+                return sourceMapUrl.replace("https://cdn.example.com/", "http://localhost:3000/");
+            }
+
+            return true;
         },
     }
 }
@@ -1207,3 +1267,5 @@ export = {
 [restoreState]: ../../../commands/browser/restoreState
 [getState]: ../../../commands/browser/getState
 [url-resolve]: https://nodejs.org/api/url.html#urlresolvefrom-to
+[last-failed]: ../last-failed
+[selectivity-incomplete-dump-guide]: ../../../guides/selectivity#recovering-incomplete-dump
