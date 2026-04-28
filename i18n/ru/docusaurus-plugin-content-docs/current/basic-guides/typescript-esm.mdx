@@ -1,0 +1,176 @@
+# Typescript и ESM
+
+## Typescript в Testplane
+
+Testplane поддерживает TypeScript из коробки — вам не нужно настраивать дополнительные инструменты для транспайлинга, вы сразу можете писать тесты:
+
+```typescript
+describe("test examples", () => {
+    it("Открыть главную страницу и проверить заголовок", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const title = await browser.getTitle();
+        expect(title).toContain("Testplane");
+    });
+});
+```
+
+И указывать `.ts` файлы напрямую в конфиге:
+
+```typescript
+// .testplane.config.ts
+export default {
+    sets: {
+        desktop: {
+            files: ["tests/**/*.ts"],
+        },
+    },
+};
+```
+
+## Варианты транспайлинга
+
+Testplane автоматически использует `@swc/core` для транспайлинга, если этот пакет установлен в проекте, в противном случае он задействует `esbuild`, который уже включён в состав Testplane:
+
+```typescript
+if (envVar && hasSwcCore()) {
+    // Используем @swc/core
+} else {
+    // Используем esbuild
+}
+```
+
+:::warning Важно
+Проверку типов необходимо реализовывать отдельно с помощью `tsc` и конфига.
+:::
+
+Если автоматический трайнспайлинг не подходит из-за специфики проекта, чтобы отключить его и настроить самостоятельно, опишите переменную окружения `TS_ENABLE=false` в конфигурационном файле:
+
+```typescript
+//typescript.ts
+if (processWithTranspileSymbol[TESTPLANE_TRANSFORM_HOOK] || process.env.TS_ENABLE === "false") {
+    return;
+}
+```
+
+Чтобы передать нужный лоадер при настройке вручную, используйте опцию `--require`, например:
+
+```bash
+-r ts-node/register
+```
+
+## Работа с алиасами в ипортах
+
+Многие проекты используют алиасы путей в `tsconfig.json`:
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@components/*": ["src/components/*"],
+            "@utils/*": ["src/utils/*"],
+            "@fixtures/*": ["tests/fixtures/*"]
+        }
+    }
+}
+```
+
+Однако TypeScript-компилятор умеет резолвить эти пути только во время компиляции. В рантайме `Node.js` не знает об этих алиасах, и вы получите ошибку:
+
+```bash
+ Cannot find module '@components/Button'.
+```
+
+#### Резолв путей в рантайме
+
+Установите пакет `tsconfig-paths`:
+
+```bash
+npm install --save-dev tsconfig-paths
+```
+
+Ипользуйте опцию `--require`:
+
+```bash
+npx testplane -r tsconfig-paths/register
+```
+
+Или опишите `tsconfig-paths` в конфиге Testplane:
+
+```typescript
+// .testplane.conf.ts
+import "tsconfig-paths/register";
+
+export default {
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+    },
+};
+```
+
+Для более подробного знакомства с `tsconfig-paths` перейдите на [сайт с документацией пакета](https://www.typescriptlang.org/tsconfig/#paths).
+
+## Типизация конфига
+
+Testplane экспортирует типы для конфигурации, например:
+
+```typescript
+export default {
+    // ...конфиг
+} satisfies import("testplane").ConfigInput;
+```
+
+Оператор `satisfies` проверяет совместимость значения с указанным типом при сохранении исходного типа этого значения.
+
+## Расширение типов команд браузера
+
+В Testplane имеется поддержка пользовательских команд с Typescript:
+
+```typescript
+import "webdriverio"; // Может быть любой импорт, не обязательно webdriverio
+
+declare global {
+    declare namespace WebdriverIO {
+        interface Browser {
+            customCommand: (arg: any) => Promise<void>;
+        }
+    }
+}
+```
+
+Подробнее об этом вы можете прочитать в статье про [кастомные команды](https://testplane-ci.website.yandexcloud.net/testplane-docs/website-static/23649641933-511-1/ru/docs/v8/basic-guides/custom-commands/#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D1%85-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4-%D1%81-typescript).
+
+## Работа с ESM
+
+#### Системные ограничения
+
+Для работы с ESM вам понадобится `Node.js` версии v22.0.0, v20.17.0 и выше.
+
+#### Настройка
+
+Укажите поле `type` в файле `packahe.json`:
+
+```json
+{
+    "type": "module"
+}
+```
+
+Добавьте необходимые поля в файле tsconfig.json:
+
+```json
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "types": ["testplane"]
+    },
+    "include": ["tests/**/*.ts", ".testplane.conf.ts"]
+}
+```
