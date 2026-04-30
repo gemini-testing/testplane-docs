@@ -1,0 +1,393 @@
+# Параллельный запуск тестов
+
+## Параллельность в Testplane
+
+Testplane запускает тесты параллельно с помощью запуска нескольких браузеров одновременно, которые управляются одним или нексколькими воркерами. Параллельное выполнение тестов позволяет значительно сократить общее время прогона тестов.
+
+### sessionsPerBrowser
+
+В конфигурационном файле объявляются типы браузеров в поле `browsers`. Для каждого типа браузера независимо настраивается, сколько экземпляров может работать одновременно:
+
+```typescript
+// .testplane.config.ts
+export default {
+    browsers: {
+        chrome: {
+            sessionsPerBrowser: 5, // до 5 параллельных сессий Chrome
+        },
+        firefox: {
+            sessionsPerBrowser: 2, // до 2 параллельных сессий Firefox
+        },
+    },
+};
+```
+
+Параметр `sessionsPerBrowser` является ключевым в рамках управления параллельностью. Он определяет, сколько браузеров одного типа Testplane запустит одновременно. По умолчанию значение: `1`.
+
+### Workers
+
+Параметр `workers` определяет, сколько дочерних процессов-воркеров будет запущено. Архитектурно это выглядит так:
+
+-   `Master`-процесс — координирует запуск, формирует очереди тестов и раздает задания воркерам
+-   `Worker`-процессы — непосредственно исполняют тесты
+
+Каждый воркер — это отдельный поток, но внутри одного воркера тесты выполняются конкурентно: когда тест ждет ответа от браузера (`await`), воркер не простаивает, а переключается на следующий тест. Поэтому даже один воркер способен обслуживать множество параллельных браузерных сессий.
+
+:::warning Важно
+`workers` и `sessionsPerBrowser` — независимые ограничения. Увеличение числа воркеров не увеличивает реальную параллельность, если `sessionsPerBrowser` остается прежним.
+:::
+
+### testsPerSession
+
+Параметр `testsPerSession` отвечает за то, сколько тестов можно запускать последовательно в одной сессии браузера. Он ограничивает переиспользование сессии, чтобы не допустить падения тестов из-за деградации браузера, и не имеет отношения к параллельному запуску тестов.
+
+### Пример
+
+В рамках примера параметру `sessionsPerBrowser` присвоены значения 5:
+
+```typescript
+const config = {
+    chrome: {
+        headless: true,
+        desiredCapabilities: {
+            browserName: "chrome",
+        },
+        sessionsPerBrowser: 5, // 5 параллельных сессий Chrome
+        waitTimeout: 10000,
+    },
+};
+```
+
+и 2:
+
+```typescript
+const config = {
+    firefox: {
+        headless: true,
+        desiredCapabilities: {
+            browserName: "firefox",
+        },
+        sessionsPerBrowser: 2, // 2 параллельные сессии Firefox
+        waitTimeout: 10000,
+    },
+};
+```
+
+Значение параметра `workers`:
+
+```typescript
+const config = {
+    system: {
+        workers: 1,
+    },
+};
+```
+
+Далее тесты:
+
+```typescript
+describe("test examples", () => {
+    it("Поиск элемента по data-testid", async ({ browser }) => {
+        // тело теста
+    });
+
+    it("Поиск элемента на главной странице", async ({ browser }) => {
+        // тело теста
+    });
+
+    it("Поиск элемента по id на главной странице", async ({ browser }) => {
+        // тело теста
+    });
+
+    it("Поиск элемента по типу атрибута", async ({ browser }) => {
+        // тело теста
+    });
+
+    it("Поиск элемента по тексту", async ({ browser }) => {
+        // тело теста
+    });
+
+    it("Поиск элемента по атрибуту", async ({ browser }) => {
+        // тело теста
+    });
+
+    it("Поиск кнопки с помощью метода getByRole", async ({ browser }) => {
+        // тело теста
+    });
+});
+```
+
+#### Как работает параллелизм в данном примере
+
+Для Chrome и Firefox открывается до 5 и 2 окон браузера одновременно. Каждое из них — это отдельная независимая сессия со своим `sessionId`.
+
+При таких значениях параметров:
+
+```typescript
+const config = {
+    browsers: {
+        chrome: { sessionsPerBrowser: 3, testsPerSession: 1 },
+        firefox: { sessionsPerBrowser: 2, testsPerSession: 10 },
+    },
+};
+```
+
+Вы получите следующий результат:
+
+```json
+CH-* — сессии chrome
+FF-* — сессии firefox
+[n/m] = занято n из m слотов
+
+Шаг 1
+  chrome  [3/3]: открываются окна CH-1, CH-2, CH-3 → запускают test1, test2, test3
+  firefox [2/2]: открываются окна FF-1, FF-2       → запускают test1, test2
+
+Шаг 2
+  chrome  [3/3]: CH-1 завершает test1 и закрывается; создается CH-4 → запускается test4
+  firefox [2/2]: FF-1 завершает test1 и переиспользуется            → запускается test3
+
+Шаг 3
+  chrome  [2/3]: CH-2 завершает test2 и закрывается
+  firefox [2/2]: FF-2 завершает test2 и переиспользуется            → запускается test4
+
+Шаг 4
+  chrome  [0/3]: CH-3 и CH-4 завершают test3 и test4, затем закрываются
+  firefox [0/2]: FF-1 и FF-2 завершают test3 и test4, затем закрываются
+```
+
+:::warning Важно
+`workers` управляет количеством `Node.js`-процессов, а `sessionsPerBrowser` — количеством одновременных браузерных сессий внутри каждого воркера. При `workers`: `1` все 7 сессий управляются одним процессом.
+:::
+
+## Шардирование
+
+При наличии тысяч тестов время одного запуска может быть неприемлемо большим даже при максимальном параллелизме. В таких случаях используют шардирование — разбивку всего набора тестов на несколько независимых частей (чанков), которые запускаются параллельно на разных машинах или в разных `CI`-джобах.
+
+### Плагин @testplane/chunks
+
+Плагин разбивает набор тестов проекта на детерминированные фрагменты, упрощая запуск нужной части.
+
+#### Установка и подключение
+
+Для установки выполните команду:
+
+```bash
+npm install -D @testplane/chunks
+```
+
+И укажите параметры в файле `testplane.config.ts`.
+
+```typescript
+module.exports = {
+    plugins: {
+        "@testplane/chunks": {
+            count: 7, // Разбить тесты на 7 порций (чанков)
+            run: 1, // Запустить первую порцию
+        },
+
+        // другие плагины Testplane...
+    },
+
+    // другие настройки Testplane...
+};
+```
+
+### Как разбить запуск тестов
+
+В качестве примера будет использован следующий набор тестов:
+
+```text
+project/
+├── .testplane.conf.js
+├── package.json
+└── tests/
+    ├── registration.testplane.js    # 500 тестов
+    ├── payment.testplane.js         # 500 тестов
+    └── auth.testplane.js            # 500 тестов
+```
+
+```javascript
+//registration.testplane.js
+
+describe("Регистрация", () => {
+    it("тест 1 - пустой email показывает ошибку", async ({ browser }) => {});
+    it("тест 2 - невалидный формат email", async ({ browser }) => {});
+    it("тест 3 - пустой пароль показывает ошибку", async ({ browser }) => {});
+
+    // ...
+
+    // тест 500
+});
+```
+
+```javascript
+//payment.testplane.js
+
+describe("Оплата", () => {
+    it("тест 1 - пустой номер карты показывает ошибку", async ({ browser }) => {});
+    it("тест 2 - невалидный номер карты", async ({ browser }) => {});
+    it("тест 3 - истекший срок действия карты", async ({ browser }) => {});
+
+    // ...
+
+    // тест 500
+});
+```
+
+```javascript
+//auth.testplane.js
+
+describe("Авторизация", () => {
+    it("тест 1 - пустой email показывает ошибку", async ({ browser }) => {});
+    it("тест 2 - пустой пароль показывает ошибку", async ({ browser }) => {});
+    it("тест 3 - неверный пароль показывает ошибку", async ({ browser }) => {});
+
+    // ...
+
+    // тест 500
+});
+```
+
+Резделение тестов на чанки:
+
+```css
+Чанк 0 → тесты 1, 2, ..., 500  (≈ первая треть)
+Чанк 1 → тесты 1, 2, ..., 500     (≈ вторая треть)
+Чанк 2 → тесты 1, 2, ..., 500     (≈ третья треть)
+```
+
+Запуск каждого чанка отдельно через терминал:
+
+```bash
+# Терминал 1 — Чанк 0
+CHUNKS_COUNT=3 CHUNKS_CURRENT=0 npx testplane
+
+# Терминал 2 — Чанк 1
+CHUNKS_COUNT=3 CHUNKS_CURRENT=1 npx testplane
+
+# Терминал 2 — Чанк 2
+CHUNKS_COUNT=3 CHUNKS_CURRENT=2 npx testplane
+```
+
+### Как объединить отчеты
+
+Чтобы объединить несколько отчетов в один, используйте команду `merge-reports`. Она принимает пути к директориям с отчетами, файлам баз данных или к файлам `databaseUrls.json`, после чего создает новый html-отчет в папке назначения с данными из всех переданных отчетов.
+
+Пример использования:
+
+```bash
+npx html-reporter merge-reports report-chunk-1/ report-chunk-2/ report-chunk-3/ -d merged-report
+```
+
+### Пример GitHub Actions
+
+Ниже показан пример запуска `@testplane/chunks` в GitHub Actions. Тесты разбиваются на 3 чанка, каждый чанк выполняется в отдельном `matrix job`, а затем отчеты всех чанков скачиваются из `S3` и объединяются в один итоговый отчет.
+
+<details>
+<summary>Полный пример</summary>
+
+```yaml
+name: Testplane
+
+on:
+    pull_request:
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    chunks:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                chunk: [1, 2, 3]
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - run: npm ci
+
+            - run: npx testplane --chunks-count 3 --chunks-run ${{ matrix.chunk }}
+
+            - uses: aws-actions/configure-aws-credentials@v5
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: eu-central-1
+
+            - uses: jakejarvis/s3-sync-action@v0.5.1
+              with:
+                  args: --follow-symlinks
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+                  AWS_REGION: eu-central-1
+                  SOURCE_DIR: testplane-report
+                  DEST_DIR: testplane/${{ github.run_id }}/chunk-${{ matrix.chunk }}
+
+    merge-report:
+        runs-on: ubuntu-latest
+        needs: chunks
+        if: ${{ always() }}
+
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - run: npm ci
+
+            - uses: aws-actions/configure-aws-credentials@v5
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: eu-central-1
+
+            - run: |
+                  mkdir -p reports/chunk-1 reports/chunk-2 reports/chunk-3
+                  aws s3 cp s3://${{ secrets.S3_BUCKET }}/testplane/${{ github.run_id }}/chunk-1/ reports/chunk-1 --recursive
+                  aws s3 cp s3://${{ secrets.S3_BUCKET }}/testplane/${{ github.run_id }}/chunk-2/ reports/chunk-2 --recursive
+                  aws s3 cp s3://${{ secrets.S3_BUCKET }}/testplane/${{ github.run_id }}/chunk-3/ reports/chunk-3 --recursive
+
+            - run: |
+                  npx testplane merge-reports \
+                    reports/chunk-1 \
+                    reports/chunk-2 \
+                    reports/chunk-3 \
+                    --output merged-report
+
+            - uses: jakejarvis/s3-sync-action@v0.5.1
+              with:
+                  args: --follow-symlinks
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+                  AWS_REGION: eu-central-1
+                  SOURCE_DIR: merged-report
+                  DEST_DIR: testplane/${{ github.run_id }}/merged
+```
+
+</details>
+
+## Рекомендуемые настройки и их расчет
+
+#### Workers
+
+Рекомендуемое значение — 8. Любое другое не должно превышать количество ядер CPU.
+
+#### sessionsPerBrowser
+
+При локальном запуске значение не превышает 5. В ином случает примерное значение можно вычислить путем деления доступных ресурсов на требуемое для конкретного браузера. При расчете помните о затратах на запуск самих тестов.
+
+#### Количество чанков
+
+При расчете количества чанков необходимо отталкиваться от:
+
+-   количества доступных браузеров
+-   оверхеда на создание чанка
+-   желаемого общего времени прогона
+
+Рекомендация — не меньше 500 тестов на чанк.
