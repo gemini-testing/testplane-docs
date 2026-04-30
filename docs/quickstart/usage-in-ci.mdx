@@ -1,6 +1,49 @@
 ---
 sidebar_position: 4
-draft: true
 ---
 
 # Usage in CI
+
+Testplane can be integrated into any CI system. For GitHub Actions, we recommend using the official action [gemini-testing/gh-actions-testplane](https://github.com/gemini-testing/gh-actions-testplane), which automatically caches browsers and generates reports.
+
+## GitHub Actions setup
+
+Create a `.github/workflows/testplane.yml` file in the root of your repository:
+
+```yaml title=".github/workflows/testplane.yml"
+name: Testplane Tests
+
+on:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+
+            - run: npm ci
+
+            - uses: gemini-testing/gh-actions-testplane@v1
+              with:
+                  browser: "chrome,firefox" # Optional: list of browsers
+```
+
+## Additional capabilities
+
+The action supports additional parameters for configuration:
+
+-   `config-path` — path to the configuration file (default `testplane.config.ts`)
+-   `set` — run specific test sets
+-   `grep` — filter tests by pattern
+-   `storybook` — integration with [@testplane/storybook](https://github.com/gemini-testing/testplane-storybook)
+
+For more details on parameters and advanced usage scenarios, see the [GitHub Actions setup guide](../guides/how-to-run-on-github.mdx), and for configuring Testplane for other CI systems, refer to the [configuration documentation](../reference/config/main.mdx).
