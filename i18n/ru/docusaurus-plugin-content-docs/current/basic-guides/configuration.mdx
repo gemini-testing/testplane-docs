@@ -1,0 +1,400 @@
+import Admonition from "@theme/Admonition";
+
+# Конфигурация
+
+<Admonition title="Что вы узнаете">
+
+-   Где Testplane ищет конфигурационный файл
+-   Как переопределить настройки без изменения конфигурационного файла
+-   Как работает наследование настроек
+-   Как настроить параллельный запуск тестов и тайм-ауты
+-   Как подключить плагины
+
+</Admonition>
+
+## Введение
+
+Testplane настраивается тремя способами: через конфигурационный файл, переменные окружения и аргументы командной строки.
+
+Конфигурационный файл — основной источник настроек: в нём указывают браузеры, пути к тестам, параллельность, плагины и тайм-ауты. Переменные окружения и CLI-аргументы позволяют переопределить отдельные параметры без изменения файла, это удобно для CI/CD или локальных экспериментов.
+
+Полный справочник параметров см. в [документации по конфигурации](../reference/config/main.mdx).
+
+## Конфигурационный файл {#config-location}
+
+При запуске Testplane ищет конфигурационный файл в текущей рабочей директории.
+
+Если нужно использовать конфиг из другого места, укажите путь через опцию `--config`:
+
+```bash
+npx testplane --config ./configs/testplane.local.ts
+```
+
+## Способы задания параметров {#config-sources}
+
+Параметры конфигурации Testplane можно задавать тремя способами:
+
+1. Файл конфигурации: основной способ, подходит для большинства настроек
+2. Переменные окружения: удобно для CI/CD и чувствительных данных
+3. Аргументы CLI: для быстрого переопределения при запуске
+
+### Переопределение через переменные окружения {#env-override}
+
+Любой параметр конфигурации можно переопределить через переменные окружения. Имя переменной формируется из имени параметра в конфиге:
+
+1. Замените `camelCase` на `snake_case` (например, `baseUrl` → `base_url`)
+2. Для вложенных параметров соедините все уровни через `_`
+3. Добавьте префикс `testplane_`
+
+```bash
+# gridUrl в конфиге → testplane_grid_url
+testplane_grid_url=local npx testplane
+
+# browsers.firefox.headless в конфиге → testplane_browsers_firefox_headless
+testplane_browsers_firefox_headless=false npx testplane
+```
+
+### Переопределение через CLI {#cli-override}
+
+Параметры также можно переопределить через CLI-аргумент:
+
+1. Замените `camelCase` на `kebab-case` (например, `baseUrl` → `base-url`)
+2. Для вложенных параметров соедините все уровни через дефис
+3. Добавьте `--` в начале
+
+```bash
+# gridUrl в конфиге → --grid-url в CLI
+npx testplane --grid-url local
+
+# browsers.firefox.headless в конфиге → --browsers-firefox-headless в CLI
+npx testplane --browsers-firefox-headless false
+```
+
+### Приоритет параметров {#priority}
+
+При конфликте значений применяется следующий приоритет (от высшего к низшему):
+
+| Приоритет | Источник              | Пример                                  |
+| --------- | --------------------- | --------------------------------------- |
+| 1         | CLI аргумент          | `--base-url http://example.com`         |
+| 2         | Переменная окружения  | `testplane_base_url=http://example.com` |
+| 3         | Файл конфигурации     | `baseUrl: "http://example.com"`         |
+| 4         | Значение по умолчанию | —                                       |
+
+## Наследование параметров {#inheritance}
+
+Testplane поддерживает каскадное наследование параметров: настройки, заданные на корневом уровне конфига, применяются ко всем браузерам. Браузеры могут переопределять эти значения.
+
+### Пример наследования {#inheritance-example}
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // Корневые настройки — применяются ко всем браузерам
+    baseUrl: "http://localhost:3000",
+    retry: 2,
+    sessionsPerBrowser: 3,
+    browsers: {
+        chrome: {
+            // Наследует retry: 2 и sessionsPerBrowser: 3
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            // Переопределяет retry, наследует sessionsPerBrowser: 3
+            retry: 5,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+В этом примере:
+
+-   Chrome получит `retry: 2` и `sessionsPerBrowser: 3` (наследование)
+-   Firefox получит `retry: 5` (переопределение) и `sessionsPerBrowser: 3` (наследование)
+
+<Admonition type="info">
+    Единственный параметр, который нельзя вынести на корневой уровень — это `desiredCapabilities`.
+    Он должен быть задан для каждого браузера отдельно.
+</Admonition>
+
+## Базовые параметры {#basic-params}
+
+### Ретраи (retry) {#retry}
+
+Параметр [`retry`](../reference/config/browsers.mdx#retry) определяет, сколько раз Testplane будет перезапускать упавший тест.
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // Глобальное значение для всех браузеров
+    retry: 2,
+    browsers: {
+        chrome: {
+            // Для нестабильного браузера можно увеличить
+            retry: 5,
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+### Расположение тестовых файлов {#test-files}
+
+Наборы тестовых файлов и браузеры для их запуска указываются в секции `sets`:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    sets: {
+        desktop: {
+            // Пути к тестам
+            files: ["tests/desktop/**/*.test.ts"],
+            browsers: ["chrome", "firefox"],
+        },
+        mobile: {
+            files: ["tests/mobile/**/*.test.ts"],
+            // Можно исключить файлы
+            ignoreFiles: ["tests/mobile/**/*.skip.ts"],
+            browsers: ["iphone", "android"],
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+Запуск конкретного сета:
+
+```bash
+npx testplane --set desktop
+```
+
+Подробнее о сетах см. в [документации по sets](../reference/config/sets.mdx).
+
+### Dev Server {#dev-server}
+
+Секция `devServer` позволяет автоматически запускать сервер разработки перед тестами:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+const SERVER_PORT = 3000;
+
+export default {
+    devServer: {
+        command: "npm run dev",
+        env: { PORT: SERVER_PORT },
+        reuseExisting: true,
+        readinessProbe: {
+            url: `http://localhost:${SERVER_PORT}/health`,
+        },
+    },
+    baseUrl: "http://localhost:3000",
+    // ...
+} satisfies ConfigInput;
+```
+
+Testplane запустит команду и дождётся готовности сервера по указанному URL.
+
+<Admonition type="warning">
+    Секция `devServer` только запускает сервер. Не забудьте также настроить `baseUrl`.
+</Admonition>
+
+<Admonition type="tip">
+    При использовании `reuseExisting: true` обязательно укажите `readinessProbe.url`: Testplane
+    проверит, запущен ли сервер, и не будет запускать новый.
+</Admonition>
+
+Подробнее см. в [документации по devServer](../reference/config/dev-server.mdx).
+
+### Параллельность выполнения {#parallelism}
+
+Testplane запускает тесты параллельно, что значительно ускоряет прогон. Для настройки параллельности используются два основных параметра: `sessionsPerBrowser` и `workers`.
+
+-   `sessionsPerBrowser` определяет максимальное число параллельных браузерных сессий для каждого браузера
+-   `workers` определяет число воркер-процессов Node.js для параллельного выполнения тестов
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            sessionsPerBrowser: 5,
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            sessionsPerBrowser: 3,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
+    },
+    system: {
+        workers: 4,
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+В этом примере Testplane может запустить до 5 параллельных сессий Chrome и до 3 сессий Firefox, распределяя тесты между 4 воркер-процессами.
+
+Для тонкой настройки параллельности доступны дополнительные опции: `testsPerSession`, `testsPerWorker` и `parallelLimit`.
+
+## Тайм-ауты {#timeouts}
+
+Testplane позволяет настроить тайм-ауты для для контроля времени выполнения операций:
+
+-   `httpTimeout` — тайм-аут HTTP-запросов к WebDriver
+-   `testTimeout` — максимальное время выполнения одного теста
+-   `pageLoadTimeout` — тайм-аут загрузки страницы в браузере
+-   `waitTimeout` — тайм-аут для команд ожидания (`waitFor*`)
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // Глобальные тайм-ауты
+    pageLoadTimeout: 20000,
+    httpTimeout: 20000,
+    testTimeout: 90000,
+    browsers: {
+        chrome: {
+            // Тайм-ауты можно переопределить для конкретного браузера
+            pageLoadTimeout: 30000,
+            waitTimeout: 5000,
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+Полный список тайм-аутов и их описание см. в [документации](../reference/config/browsers.mdx#timeouts).
+
+## Подключение плагинов {#plugins}
+
+Плагины подключаются и настраиваются в секции `plugins` в конфигурационном файле. Каждый ключ — это имя npm-пакета плагина, а значение — объект с его параметрами.
+
+### Пример с html-reporter {#html-reporter-example}
+
+[html-reporter](../html-reporter/html-reporter-setup.mdx) — плагин для генерации HTML-отчётов о тестах.
+
+**Установка:**
+
+```bash
+npm install html-reporter --save-dev
+```
+
+**Подключение:**
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            path: "testplane-report",
+            defaultView: "all",
+            diffMode: "3-up-scaled",
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+Параметры плагина можно переопределить через переменные окружения:
+
+```bash
+# Отключить плагин
+html_reporter_enabled=false npx testplane
+
+# Изменить путь к отчёту
+html_reporter_path=./custom-report npx testplane
+```
+
+Аналогично можно передать параметры через командную строку:
+
+```bash
+# Изменить путь к отчёту
+npx testplane --html-reporter-path=./custom-report
+
+# Изменить режим отображения diff
+npx testplane --html-reporter-diff_mode=only-diff
+```
+
+Если параметр указан в нескольких местах, применяется значение с наивысшим приоритетом:
+
+1. CLI — высший приоритет
+2. Переменные окружения
+3. Конфигурационный файл — низший приоритет
+
+Это позволяет гибко управлять поведением плагинов в CI/CD без изменения конфига.
+
+## Настройка дефолтов для команд {#command-defaults}
+
+Testplane позволяет задать значения по умолчанию для параметров некоторых команд. Вместо того чтобы передавать одни и те же опции при каждом вызове, можно указать их один раз в конфигурации.
+
+### assertViewOpts {#assert-view-opts}
+
+Настройки по умолчанию для скриншотного тестирования. Позволяют задать, какие элементы игнорировать, допустимую разницу в пикселях, задержку перед снимком и другие параметры сравнения скриншотов.
+
+```typescript
+export default {
+    assertViewOpts: {
+        ignoreElements: [".ads", ".dynamic-banner"],
+        ignoreDiffPixelCount: "0.5%",
+    },
+    // ...
+};
+```
+
+Полный список параметров см. в документации [assertView](../commands/browser/assertView.mdx).
+
+### expectOpts {#expect-opts}
+
+Настройки для асинхронных проверок с ожиданием.
+
+```typescript
+export default {
+    system: {
+        expectOpts: {
+            wait: 5000, // макс. время ожидания (мс)
+            interval: 200, // интервал проверок (мс)
+        },
+    },
+    // ...
+};
+```
+
+Полный список параметров см. в документации по [expect-матчерам](../commands/expect/overview.mdx).
+
+### stateOpts {#state-opts}
+
+Настройки для команд сохранения и восстановления состояния браузера. Определяют, что сохранять (cookies, localStorage, sessionStorage), куда сохранять, и нужно ли удалять файл после тестов.
+
+```typescript
+export default {
+    stateOpts: {
+        path: "./tmp/auth-state.json",
+        cookies: true,
+        localStorage: true,
+        sessionStorage: false,
+    },
+    // ...
+};
+```
+
+Полный список параметров см. в документации по [saveState](../commands/browser/saveState.mdx) и [restoreState](../commands/browser/restoreState.mdx).
