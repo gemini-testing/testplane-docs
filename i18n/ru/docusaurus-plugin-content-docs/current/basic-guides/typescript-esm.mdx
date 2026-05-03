@@ -30,28 +30,13 @@ export default {
 
 ## Варианты транспайлинга
 
-Testplane автоматически использует `@swc/core` для транспайлинга, если этот пакет установлен в проекте, в противном случае он задействует `esbuild`, который уже включён в состав Testplane:
-
-```typescript
-if (envVar && hasSwcCore()) {
-    // Используем @swc/core
-} else {
-    // Используем esbuild
-}
-```
+Testplane автоматически использует `@swc/core` для транспайлинга, если этот пакет установлен в проекте, в противном случае он задействует `esbuild`, который уже включён в состав Testplane.
 
 :::warning Важно
 Проверку типов необходимо реализовывать отдельно с помощью `tsc` и конфига.
 :::
 
-Если автоматический трайнспайлинг не подходит из-за специфики проекта, чтобы отключить его и настроить самостоятельно, опишите переменную окружения `TS_ENABLE=false` в конфигурационном файле:
-
-```typescript
-//typescript.ts
-if (processWithTranspileSymbol[TESTPLANE_TRANSFORM_HOOK] || process.env.TS_ENABLE === "false") {
-    return;
-}
-```
+Если автоматический трайнспайлинг не подходит из-за специфики проекта, вы можете отключить его с помощью переменной окружения `TS_ENABLE=false` и провести настройку самостоятельно.
 
 Чтобы передать нужный лоадер при настройке вручную, используйте опцию `--require`, например:
 
@@ -96,23 +81,6 @@ npm install --save-dev tsconfig-paths
 npx testplane -r tsconfig-paths/register
 ```
 
-Или опишите `tsconfig-paths` в конфиге Testplane:
-
-```typescript
-// .testplane.conf.ts
-import "tsconfig-paths/register";
-
-export default {
-    browsers: {
-        chrome: {
-            desiredCapabilities: {
-                browserName: "chrome",
-            },
-        },
-    },
-};
-```
-
 Для более подробного знакомства с `tsconfig-paths` перейдите на [сайт с документацией пакета](https://www.typescriptlang.org/tsconfig/#paths).
 
 ## Типизация конфига
@@ -120,9 +88,11 @@ export default {
 Testplane экспортирует типы для конфигурации, например:
 
 ```typescript
+import type { ConfigInput } from "testplane";
+
 export default {
-    // ...конфиг
-} satisfies import("testplane").ConfigInput;
+    // ...
+} satisfies ConfigInput;
 ```
 
 Оператор `satisfies` проверяет совместимость значения с указанным типом при сохранении исходного типа этого значения.
@@ -149,28 +119,4 @@ declare global {
 
 #### Системные ограничения
 
-Для работы с ESM вам понадобится `Node.js` версии v22.0.0, v20.17.0 и выше.
-
-#### Настройка
-
-Укажите поле `type` в файле `packahe.json`:
-
-```json
-{
-    "type": "module"
-}
-```
-
-Добавьте необходимые поля в файле tsconfig.json:
-
-```json
-{
-    "compilerOptions": {
-        "target": "ES2020",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "types": ["testplane"]
-    },
-    "include": ["tests/**/*.ts", ".testplane.conf.ts"]
-}
-```
+Для работы с ESM вам понадобится `Node.js` версии v22.0.0, v20.17.0 и выше. Взаимодействие с `ECMAScript` происходит с помощью [функции](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require) `require()`.
