@@ -1,1 +1,122 @@
 # Typescript and ESM
+
+## TypeScript in Testplane
+
+Testplane supports TypeScript out of the box — you don’t need to set up additional tools for transpilation, you can start writing tests right away:
+
+```typescript
+describe("test examples", () => {
+    it("Open the main page and check the title", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const title = await browser.getTitle();
+        expect(title).toContain("Testplane");
+    });
+});
+```
+
+And you can specify `.ts` files directly in the config:
+
+```typescript
+// .testplane.config.ts
+export default {
+    sets: {
+        desktop: {
+            files: ["tests/**/*.ts"],
+        },
+    },
+};
+```
+
+## Transpilation options
+
+Testplane automatically uses `@swc/core` for transpilation if this package is installed in the project, otherwise, it uses `esbuild`, which is already included in Testplane.
+
+:::warning Warning
+Type checking must be implemented separately using `tsc` and a config file.
+:::
+
+If automatic transpilation doesn’t suit your project’s specifics, you can disable it using the `TS_ENABLE=false` environment variable and set it up manually.
+
+To pass the required loader when setting it up manually, use the `--require option`, for example:
+
+```bash
+-r ts-node/register
+```
+
+## Working with import aliases
+
+Many projects use path aliases in `tsconfig.json`:
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@components/*": ["src/components/*"],
+            "@utils/*": ["src/utils/*"],
+            "@fixtures/*": ["tests/fixtures/*"]
+        }
+    }
+}
+```
+
+However, the TypeScript compiler can resolve these paths only at compile time. At runtime, `Node.js` is unaware of these aliases, and you’ll get an error:
+
+```bash
+ Cannot find module '@components/Button'.
+```
+
+#### Resolving paths at runtime
+
+Install the `tsconfig-paths` package:
+
+```bash
+npm install --save-dev tsconfig-paths
+```
+
+Use the `--require` option:
+
+```bash
+npx testplane -r tsconfig-paths/register
+```
+
+For a more detailed introduction to `tsconfig-paths`, visit the [package documentation website](https://www.typescriptlang.org/tsconfig/#paths).
+
+## Config typing
+
+Testplane exports types for the configuration, for example:
+
+```typescript
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+} satisfies ConfigInput;
+```
+
+The `satisfies` operator checks whether a value is compatible with the specified type while preserving the original type of that value.
+
+## Extending browser command types
+
+Testplane supports custom commands with TypeScript:
+
+```typescript
+import "webdriverio"; // Any import can be used here — it doesn’t have to be webdriverio
+
+declare global {
+    declare namespace WebdriverIO {
+        interface Browser {
+            customCommand: (arg: any) => Promise<void>;
+        }
+    }
+}
+```
+
+You can read more about this in the [custom commands](https://testplane.io/docs/v8/basic-guides/custom-commands/) guide.
+
+## Working with ESM
+
+#### System limitations
+
+To work with ESM, you’ll need `Node.js` version v22.0.0, v20.17.0, or higher. Interaction with `ECMAScript` is handled via the `require()` [function](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).
