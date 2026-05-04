@@ -17,7 +17,10 @@ After a file changes, on the next run only those tests that depend on the change
 
 <Admonition type="info">
     If at least one test fails, then on the next run all the same tests will be executed again —
-    Testplane will "remember" the new state only after a fully successful run.
+    Testplane will "remember" the new state only after a fully successful run. However, you can use
+    [`saveIncompleteDumpOnFail`][selectivity-config] to save the dump even on failure and then
+    complete it by re-running only the failed tests. See [Recovering from a failed selectivity
+    run](#recovering-incomplete-dump) below.
 </Admonition>
 
 ## Setup
@@ -222,9 +225,53 @@ You can also disable selectivity manually using an environment variable:
 testplane_selectivity_enabled=false # disable
 ```
 
+## Recovering from a failed selectivity run {#recovering-incomplete-dump}
+
+By default, if any test fails during a Testplane run, the selectivity dump is **not updated**. This means that if you ran Testplane to collect a selectivity dump (e.g. in CI) and only a few tests failed, you would need to re-run the **entire** test suite just to get a valid dump.
+
+The `saveIncompleteDumpOnFail` option solves this problem. Here is the step-by-step workflow:
+
+### 1. Run Testplane with `saveIncompleteDumpOnFail: true`
+
+Enable selectivity in `enabled` or `writeOnly` mode with `saveIncompleteDumpOnFail: true` in your config:
+
+```typescript
+selectivity: {
+    enabled: true, // or "writeOnly"
+    saveIncompleteDumpOnFail: true,
+}
+```
+
+Run Testplane as usual. If some tests fail, the dump will still be saved — but it is in an **incomplete state**. An incomplete dump may incorrectly skip some of the failed tests, so it should **not** be used directly for selective runs.
+
+### 2. Re-run only the failed tests
+
+Use the [`--last-failed-only`][last-failed] flag to re-run only the tests that failed:
+
+```bash
+npx testplane --last-failed-only
+```
+
+Make sure `saveIncompleteDumpOnFail: true` is still set in the config. This run will only execute the previously failed tests and update the incomplete dump with their results.
+
+### 3. Repeat until all tests pass
+
+You can repeat step 2 multiple times if needed — for example, if some tests are flaky and fail again. Each subsequent `--last-failed-only` run updates the dump incrementally.
+
+### 4. Dump is complete
+
+Once a run succeeds with no failures, the dump is considered **complete** and can safely be used for selective test execution.
+
+<Admonition type="warning">
+    Do not use the incomplete dump (saved after a failed run) for selective test execution. An
+    incomplete dump may skip tests that actually need to be re-run. Always complete the dump by
+    re-running failed tests until the run is fully successful.
+</Admonition>
+
 ## Configuration
 
 Additional information about selectivity configuration is provided in the [browsers-selectivity][selectivity-config] section of the documentation.
 
 [dev-server]: ../../reference/config/dev-server
 [selectivity-config]: ../../reference/config/browsers#selectivity
+[last-failed]: ../../reference/config/last-failed
