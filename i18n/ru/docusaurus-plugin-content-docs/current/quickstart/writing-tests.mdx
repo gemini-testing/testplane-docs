@@ -157,6 +157,8 @@ describe("Клик", () => {
 });
 ```
 
+Подробнее см. в статьях о [`click()`](../commands/element/click.mdx) и [`doubleClick()`](../commands/element/doubleClick.mdx).
+
 #### Ввод текста
 
 ```typescript
@@ -182,6 +184,8 @@ describe("Ввод текста", () => {
     });
 });
 ```
+
+Подробнее см. в статье о [`setValue()`](../commands/element/setValue.mdx).
 
 #### Взаимодействие с формами
 
@@ -230,6 +234,8 @@ describe("Взаимодействие с формами", () => {
 });
 ```
 
+Подробнее см. в статьях о методах [`isSelected()`](../commands/element/isSelected.mdx) и [`selectByVisibleText()`](../commands/element/selectByVisibleText.mdx).
+
 ### Assertions
 
 Assertions — это проверки, которые сравнивают фактический результат с ожидаемым.
@@ -253,6 +259,8 @@ describe("Assertions", () => {
     });
 });
 ```
+
+Подробнее см. в [документации по assertions](../commands/expect/overview.mdx).
 
 ### Хуки
 
@@ -284,9 +292,11 @@ describe("Работа с хуками", () => {
 });
 ```
 
+Подробнее о хуках см. в [документации](../basic-guides/setup-and-teardown.mdx).
+
 ### Ожидания
 
-Явные ожидания необходимы для работы с динамическим контентом:
+Явные ожидания (например, [`waitForDisplayed()`](../commands/element/waitForDisplayed.mdx) и [`waitUntil()`](../commands/element/waitUntil.mdx)) необходимы для работы с динамическим контентом:
 
 ```typescript
 describe("Ожидание", () => {
@@ -321,7 +331,7 @@ describe("Ожидание", () => {
 
 ## Визуальное тестирование
 
-Testplane позволяет делать скриншоты элементов и сравнивать их с эталонными изображениями с помощью команды `assertView`.
+Testplane позволяет делать скриншоты элементов и сравнивать их с эталонными изображениями с помощью команды [`assertView()`](../commands/browser/assertView.mdx).
 
 При первом запуске теста создаются эталонные скриншоты. При последующих запусках Testplane сравнивает новые скриншоты с эталонами и сообщает о различиях. Если различий нет, тест проходит. Если есть различия, тест падает, а diff-изображение сохраняется для анализа.
 
@@ -342,7 +352,7 @@ describe("Визуальная проверка", () => {
 
 ## Выполнение JavaScript
 
-Метод `execute()` выполняет JavaScript-код в контексте страницы:
+Метод [`execute()`](../commands/browser/execute.mdx) выполняет JavaScript-код в контексте страницы:
 
 ```typescript
 describe("Выполнение JavaScript", () => {
