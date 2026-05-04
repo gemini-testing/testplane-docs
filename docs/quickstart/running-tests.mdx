@@ -157,7 +157,7 @@ In the GUI you will see test execution in real time, screenshots, and errors. Yo
 For debugging, you can open a visible browser window with DevTools:
 
 ```bash
-px testplane --local --devtools --headless false --grep "Test name"
+npx testplane --local --devtools --headless false --grep "Test name"
 ```
 
 What will happen:
@@ -227,9 +227,6 @@ npx testplane --grep "test name"
 
 # Run only in one browser
 npx testplane --browser chrome
-
-# Debug with Chrome DevTools Protocol
-npx testplane --devtools --grep "test name"
 
 # Interactive debugging on failure
 npx testplane --repl-on-fail --grep "test name"

@@ -157,6 +157,8 @@ describe("Click", () => {
 });
 ```
 
+Learn more in the articles about [`click()`](../commands/element/click.mdx) and [`doubleClick()`](../commands/element/doubleClick.mdx).
+
 #### Text input
 
 ```typescript
@@ -182,6 +184,8 @@ describe("Text input", () => {
     });
 });
 ```
+
+Learn more in the article about [`setValue()`](../commands/element/setValue.mdx).
 
 #### Form interactions
 
@@ -230,6 +234,8 @@ describe("Form interactions", () => {
 });
 ```
 
+Learn more in the articles about [`isSelected()`](../commands/element/isSelected.mdx) and [`selectByVisibleText()`](../commands/element/selectByVisibleText.mdx).
+
 ### Assertions
 
 Assertions are checks that compare the actual result with the expected one.
@@ -253,6 +259,8 @@ describe("Assertions", () => {
     });
 });
 ```
+
+Learn more in the [assertions documentation](../commands/expect/overview.mdx).
 
 ### Hooks
 
@@ -284,9 +292,11 @@ describe("Working with hooks", () => {
 });
 ```
 
+Learn more about hooks in the [documentation](../basic-guides/setup-and-teardown.mdx).
+
 ### Waits
 
-Explicit waits are necessary for working with dynamic content:
+Explicit waits (such as [`waitForDisplayed()`](../commands/element/waitForDisplayed.mdx) and [`waitUntil()`](../commands/element/waitUntil.mdx)) are necessary for working with dynamic content:
 
 ```typescript
 describe("Wait", () => {
@@ -321,7 +331,7 @@ describe("Wait", () => {
 
 ## Visual testing
 
-Testplane allows taking screenshots of elements and comparing them with reference images using the `assertView` command.
+Testplane allows taking screenshots of elements and comparing them with reference images using the [`assertView()`](../commands/browser/assertView.mdx) command.
 
 On the first test run, reference screenshots are created. On subsequent runs, Testplane compares new screenshots with the references and reports differences. If there are no differences, the test passes. If differences exist, the test fails, and a diff image is saved for analysis.
 
@@ -342,7 +352,7 @@ describe("Visual check", () => {
 
 ## Executing JavaScript
 
-The `execute()` method runs JavaScript code in the page context:
+The [`execute()`](../commands/browser/execute.mdx) method runs JavaScript code in the page context:
 
 ```typescript
 describe("Executing JavaScript", () => {
