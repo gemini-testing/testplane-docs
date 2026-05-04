@@ -1,0 +1,405 @@
+import Admonition from "@theme/Admonition";
+
+# Configuration
+
+<Admonition title="What you will learn">
+
+-   Where Testplane looks for the configuration file
+-   How to override settings without modifying the configuration file
+-   How settings inheritance works
+-   How to configure parallel test execution and timeouts
+-   How to connect plugins
+
+</Admonition>
+
+## Introduction
+
+Testplane is configured in three ways: through a configuration file, environment variables, and command-line arguments.
+
+The configuration file is the primary source of settings: it specifies browsers, test paths, parallelism, plugins, and timeouts. Environment variables and CLI arguments allow you to override individual parameters without modifying the file, which is convenient for CI/CD or local experiments.
+
+For a complete reference of parameters, see the [configuration documentation](../reference/config/main.mdx).
+
+## Configuration file {#config-location}
+
+When launched, Testplane looks for a configuration file in the current working directory. The following file names are supported (in order of priority):
+
+-   `.testplane.conf.ts`
+-   `.testplane.conf.js`
+-   `testplane.config.ts`
+-   `testplane.config.js`
+-   `testplane.config.cts`
+-   `testplane.config.cjs`
+
+If you need to use a config from a different location, specify the path using the `--config` option:
+
+```bash
+npx testplane --config ./configs/testplane.local.ts
+```
+
+## Setting parameters {#config-sources}
+
+Testplane configuration parameters can be set in three ways:
+
+1. Configuration file: the primary method, suitable for most settings
+2. Environment variables: convenient for CI/CD and sensitive data
+3. CLI arguments: for quick overrides at runtime
+
+### Overriding via environment variables {#env-override}
+
+Any configuration parameter can be overridden via environment variables. The variable name is formed from the parameter name in the config:
+
+1. Replace `camelCase` with `snake_case` (e.g., `baseUrl` → `base_url`)
+2. For nested parameters, join all levels with `_`
+3. Add the `testplane_` prefix
+
+```bash
+# gridUrl in config → testplane_grid_url
+testplane_grid_url=local npx testplane
+
+# browsers.firefox.headless in config → testplane_browsers_firefox_headless
+testplane_browsers_firefox_headless=false npx testplane
+```
+
+### Overriding via CLI {#cli-override}
+
+Parameters can also be overridden via CLI arguments:
+
+1. Replace `camelCase` with `kebab-case` (e.g., `baseUrl` → `base-url`)
+2. For nested parameters, join all levels with hyphens
+3. Add `--` at the beginning
+
+```bash
+# gridUrl in config → --grid-url in CLI
+npx testplane --grid-url local
+
+# browsers.firefox.headless in config → --browsers-firefox-headless in CLI
+npx testplane --browsers-firefox-headless false
+```
+
+### Parameter priority {#priority}
+
+When values conflict, the following priority applies (from highest to lowest):
+
+| Priority | Source               | Example                                 |
+| -------- | -------------------- | --------------------------------------- |
+| 1        | CLI argument         | `--base-url http://example.com`         |
+| 2        | Environment variable | `testplane_base_url=http://example.com` |
+| 3        | Configuration file   | `baseUrl: "http://example.com"`         |
+| 4        | Default value        | —                                       |
+
+## Parameter inheritance {#inheritance}
+
+Testplane supports cascading parameter inheritance: settings defined at the root level of the config apply to all browsers. Browsers can override these values.
+
+### Inheritance example {#inheritance-example}
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // Root settings — apply to all browsers
+    baseUrl: "http://localhost:3000",
+    retry: 2,
+    sessionsPerBrowser: 3,
+    browsers: {
+        chrome: {
+            // Inherits retry: 2 and sessionsPerBrowser: 3
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            // Overrides retry, inherits sessionsPerBrowser: 3
+            retry: 5,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+In this example:
+
+-   Chrome will get `retry: 2` and `sessionsPerBrowser: 3` (inheritance)
+-   Firefox will get `retry: 5` (override) and `sessionsPerBrowser: 3` (inheritance)
+
+<Admonition type="info">
+    The only parameter that cannot be moved to the root level is `desiredCapabilities`. It must be
+    defined for each browser separately.
+</Admonition>
+
+## Basic parameters {#basic-params}
+
+### Retries (retry) {#retry}
+
+The [`retry`](../reference/config/browsers.mdx#retry) parameter determines how many times Testplane will restart a failed test.
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // Global value for all browsers
+    retry: 2,
+    browsers: {
+        chrome: {
+            // Can be increased for an unstable browser
+            retry: 5,
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+### Test file locations {#test-files}
+
+Test file sets and browsers for running them are specified in the `sets` section:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    sets: {
+        desktop: {
+            // Paths to tests
+            files: ["tests/desktop/**/*.test.ts"],
+            browsers: ["chrome", "firefox"],
+        },
+        mobile: {
+            files: ["tests/mobile/**/*.test.ts"],
+            // Files can be excluded
+            ignoreFiles: ["tests/mobile/**/*.skip.ts"],
+            browsers: ["iphone", "android"],
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+Running a specific set:
+
+```bash
+npx testplane --set desktop
+```
+
+For more details about sets, see the [sets documentation](../reference/config/sets.mdx).
+
+### Dev Server {#dev-server}
+
+The `devServer` section allows you to automatically start a development server before tests:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+const SERVER_PORT = 3000;
+
+export default {
+    devServer: {
+        command: "npm run dev",
+        env: { PORT: SERVER_PORT },
+        reuseExisting: true,
+        readinessProbe: {
+            url: `http://localhost:${SERVER_PORT}/health`,
+        },
+    },
+    baseUrl: "http://localhost:3000",
+    // ...
+} satisfies ConfigInput;
+```
+
+Testplane will run the command and wait for the server to be ready at the specified URL.
+
+<Admonition type="warning">
+    The `devServer` section only starts the server. Don't forget to also configure `baseUrl`.
+</Admonition>
+
+<Admonition type="tip">
+    When using `reuseExisting: true`, be sure to specify `readinessProbe.url`: Testplane will check
+    if the server is running and won't start a new one.
+</Admonition>
+
+For more details, see the [devServer documentation](../reference/config/dev-server.mdx).
+
+### Execution parallelism {#parallelism}
+
+Testplane runs tests in parallel, which significantly speeds up the test run. Two main parameters are used to configure parallelism: `sessionsPerBrowser` and `workers`.
+
+-   `sessionsPerBrowser` determines the maximum number of parallel browser sessions for each browser
+-   `workers` determines the number of Node.js worker processes for parallel test execution
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            sessionsPerBrowser: 5,
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            sessionsPerBrowser: 3,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
+    },
+    system: {
+        workers: 4,
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+In this example, Testplane can run up to 5 parallel Chrome sessions and up to 3 Firefox sessions, distributing tests among 4 worker processes.
+
+## Timeouts {#timeouts}
+
+Testplane allows you to configure timeouts to control operation execution time:
+
+-   `httpTimeout` — timeout for HTTP requests to WebDriver
+-   `testTimeout` — maximum execution time for a single test
+-   `pageLoadTimeout` — page load timeout in the browser
+-   `waitTimeout` — timeout for wait commands (`waitFor*`)
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // Global timeouts
+    pageLoadTimeout: 20000,
+    httpTimeout: 20000,
+    testTimeout: 90000,
+    browsers: {
+        chrome: {
+            // Timeouts can be overridden for a specific browser
+            pageLoadTimeout: 30000,
+            waitTimeout: 5000,
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+For a complete list of timeouts and their descriptions, see the [documentation](../reference/config/browsers.mdx#timeouts).
+
+## Connecting plugins {#plugins}
+
+Plugins are connected and configured in the `plugins` section of the configuration file. Each key is the npm package name of the plugin, and the value is an object with its parameters.
+
+### Example with html-reporter {#html-reporter-example}
+
+[html-reporter](../html-reporter/html-reporter-setup.mdx) is a plugin for generating HTML test reports.
+
+**Installation:**
+
+```bash
+npm install html-reporter --save-dev
+```
+
+**Connection:**
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            path: "testplane-report",
+            defaultView: "all",
+            diffMode: "3-up-scaled",
+        },
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+Plugin parameters can be overridden via environment variables:
+
+```bash
+# Disable the plugin
+html_reporter_enabled=false npx testplane
+
+# Change the report path
+html_reporter_path=./custom-report npx testplane
+```
+
+Similarly, parameters can be passed via command line:
+
+```bash
+# Change the report path
+npx testplane --html-reporter-path=./custom-report
+
+# Change the diff display mode
+npx testplane --html-reporter-diff_mode=only-diff
+```
+
+If a parameter is specified in multiple places, the value with the highest priority is applied:
+
+1. CLI — highest priority
+2. Environment variables
+3. Configuration file — lowest priority
+
+This allows flexible control of plugin behavior in CI/CD without modifying the config.
+
+## Setting defaults for commands {#command-defaults}
+
+Testplane allows you to set default values for parameters of certain commands. Instead of passing the same options with each call, you can specify them once in the configuration.
+
+### assertViewOpts {#assert-view-opts}
+
+Default settings for screenshot testing. Allows you to specify which elements to ignore, acceptable pixel difference, delay before capture, and other screenshot comparison parameters.
+
+```typescript
+export default {
+    assertViewOpts: {
+        ignoreElements: [".ads", ".dynamic-banner"],
+        ignoreDiffPixelCount: "0.5%",
+    },
+    // ...
+};
+```
+
+For a complete list of parameters, see the [assertView](../commands/browser/assertView.mdx) documentation.
+
+### expectOpts {#expect-opts}
+
+Settings for asynchronous assertions with waiting.
+
+```typescript
+export default {
+    system: {
+        expectOpts: {
+            wait: 5000, // max wait time (ms)
+            interval: 200, // check interval (ms)
+        },
+    },
+    // ...
+};
+```
+
+For a complete list of parameters, see the [expect matchers](../commands/expect/overview.mdx) documentation.
+
+### stateOpts {#state-opts}
+
+Settings for browser state save and restore commands. Defines what to save (cookies, localStorage, sessionStorage), where to save, and whether to delete the file after tests.
+
+```typescript
+export default {
+    stateOpts: {
+        path: "./tmp/auth-state.json",
+        cookies: true,
+        localStorage: true,
+        sessionStorage: false,
+    },
+    // ...
+};
+```
+
+For a complete list of parameters, see the [saveState](../commands/browser/saveState.mdx) and [restoreState](../commands/browser/restoreState.mdx) documentation.
