@@ -2,25 +2,21 @@
 sidebar_position: 1
 ---
 
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
-import Admonition from "@theme/Admonition";
-
 # Установка и настройка
 
 ## Системные требования
 
-Чтобы начать работу с testplane, установите `Node.js` версии 18.0 и выше.
+Чтобы начать работу с Testplane, установите `Node.js` версии 18.0 и выше.
 
 ## Установка {#install}
 
-Для запуска установщика testplane с помощью `npm` выполните следующую команду:
+Для запуска установщика Testplane с помощью `npm` выполните следующую команду:
 
 ```bash
 npm init testplane@latest YOUR_PROJECT_PATH
 ```
 
-Чтобы настроить проект, а не использовать дефолты при его инициализации, укажите опцию `-v`.
+Чтобы настроить проект в интерактивном режиме с дополнительными параметрами (выбор пакетного менеджера, установка плагинов), укажите опцию <nobr>`-v`</nobr>.
 
 После выполнения команды установки в директории проекта появится следующий набор файлов и папок:
 
@@ -38,25 +34,23 @@ testplane.config.ts
 
 В файле `testplane.config.ts` содержится базовый набор настроек для запуска тестов:
 
-```typescript
+```typescript title="testplane.config.ts"
+import { setupBrowser } from "@testplane/testing-library";
+import type { WdioBrowser } from "testplane";
+
 export default {
     gridUrl: "local",
     baseUrl: "http://localhost",
-    pageLoadTimeout: 0,
-    httpTimeout: 60000,
+    pageLoadTimeout: 20000,
+    httpTimeout: 20000,
     testTimeout: 90000,
     resetCursor: false,
-
-    // В параметре sets содержится информация о директории, в которой находятся тесты
-    // и перечень браузеров, в которых они будут запускаться:
     sets: {
         desktop: {
             files: ["testplane-tests/**/*.testplane.(t|j)s"],
             browsers: ["chrome", "firefox"],
         },
     },
-
-    // В поле `browsers` описана конфигурация используемых браузеров:
     browsers: {
         chrome: {
             headless: true,
@@ -71,7 +65,9 @@ export default {
             },
         },
     },
-
+    prepareBrowser: (browser: WdioBrowser) => {
+        setupBrowser(browser);
+    },
     plugins: {
         "html-reporter/testplane": {
             enabled: true,
@@ -80,8 +76,20 @@ export default {
             diffMode: "3-up-scaled",
         },
     },
-};
+} satisfies import("testplane").ConfigInput;
 ```
+
+### Основные параметры конфигурации
+
+-   `gridUrl` — где запускать браузеры: `"local"` для локального запуска или URL для Selenium Grid или облака (например, BrowserStack, Sauce Labs).
+-   `sets` — группы тестов для разных браузеров (например, набор тестов для десктопных Chrome или Firefox и набор для мобильного Safari). Подробнее: [Справочник по sets](../reference/config/sets.mdx).
+-   `testTimeout` — максимальное время выполнения теста в миллисекундах, после превышения тест прерывается.
+-   `pageLoadTimeout` — максимальное время ожидания загрузки страницы.
+-   `browsers` — конфигурация браузеров; `headless: true` — запуск без UI. Подробнее: [Браузеры](../basic-guides/browsers-overview.mdx).
+-   `prepareBrowser` — хук перед тестами; в конфиге выше вызывает `setupBrowser(browser)` и добавляет методы Testing Library.
+-   `plugins` — плагины; в конфиге выше `html-reporter` для интерактивных отчетов (скриншоты, логи, отладка). Подробнее: [HTML Reporter](../html-reporter/overview.mdx).
+
+Полный список параметров конфигурации ищите в [справочнике по конфигурации](../reference/config/main.mdx).
 
 Чтобы загрузить браузеры, описанные в конфиге, отдельно от запуска самого Testplane, выполните команду:
 
@@ -89,4 +97,56 @@ export default {
 npx testplane install-deps
 ```
 
-Без предварительного запуска команды, недостающие браузеры будут автоматически загружены с первым запуском Testplane.
+Без предварительного запуска команды недостающие браузеры будут автоматически загружены с первым запуском Testplane.
+
+## Первый запуск {#first-run}
+
+После установки и настройки запустите тестовый пример, который был создан автоматически:
+
+```bash
+npx testplane
+```
+
+### Что происходит при первом запуске
+
+Testplane автоматически выполнит следующие действия:
+
+1. Загрузит браузеры: если вы не запускали `install-deps`, Testplane скачает Chrome и Firefox
+2. Запустит тест: выполнит пример из `testplane-tests/example.testplane.ts`
+3. Создаст отчет: сгенерирует HTML-репорт в папке `testplane-report/`
+
+### Просмотр результатов
+
+После завершения тестов откройте интерактивный отчет:
+
+```bash
+npx testplane gui
+```
+
+Команда запустит локальный сервер и откроет отчет в браузере. В интерфейсе вы увидите:
+
+-   Список пройденных тестов
+-   Статистику выполнения
+-   Скриншоты (если тест использует `assertView`)
+-   Логи выполнения
+
+### Ожидаемый результат
+
+Если все настроено корректно, вы увидите:
+
+```
+✔ test examples › docs search test [chrome] - 3.2s
+✔ test examples › docs search test [firefox] - 3.5s
+
+Total: 2 Passed: 2 Failed: 0 Skipped: 0 Retries: 0
+```
+
+Для успешного прохождения тестам нужен доступ к [testplane.io](https://testplane.io/).
+
+## Что дальше?
+
+Теперь, когда Testplane настроен и работает, вы можете:
+
+-   [Написать свои тесты](./writing-tests.mdx): структура тестов, селекторы и основные команды
+-   [Запустить и отладить тесты](./running-tests.mdx): фильтрация, GUI-режим, отладка
+-   [Настроить CI/CD](./usage-in-ci.mdx): автозапуск тестов в GitHub Actions
