@@ -34,7 +34,7 @@ The workers parameter determines how many child worker processes will be launche
 Each worker is a separate thread, but within a single worker, tests run concurrently: when a test is waiting for a response from the browser (`await`), the worker doesn’t stay idle — it switches to the next test. Therefore, even a single worker can handle multiple parallel browser sessions.
 
 :::warning Warning
-workers and sessionsPerBrowser are independent limits. Increasing the number of workers won’t boost actual concurrency if sessionsPerBrowser remains unchanged.
+`workers` and `sessionsPerBrowser` are independent limits. Increasing the number of workers won’t boost actual concurrency if `sessionsPerBrowser` remains unchanged.
 :::
 
 ### testsPerSession
@@ -157,7 +157,7 @@ Step 4
 ```
 
 :::warning Warning
-workers controls the number of Node.js processes, while sessionsPerBrowser controls the number of concurrent browser sessions within each worker. With workers: 1, all 7 sessions are managed by a single process.
+`workers` controls the number of `Node.js` processes, while `sessionsPerBrowser` controls the number of concurrent browser sessions within each worker. With `workers: 1`, all 7 sessions are managed by a single process.
 :::
 
 ## Sharding
