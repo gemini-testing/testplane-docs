@@ -1,0 +1,179 @@
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import SnapshotExample from "/docs/_partials/mcp-snapshot-example.mdx";
+import investigateVideoUrl from "/video/blog/mcp/investigate.mp4";
+import generateVideoUrl from "/video/blog/mcp/generate.mp4";
+
+# Testplane MCP
+
+**Testplane MCP** — проект, который позволяет AI-агентам в реальном времени взаимодействовать с браузерами, анализировать состояние страниц и генерировать тесты на основе реальной структуры DOM.
+
+## Возможности
+
+### Улучшенная генерация тестов
+
+AI-агенты могут открывать страницы в браузерах, анализировать их структуру и выполнять действия (клики, заполнение форм) во время написания тестов. Это позволяет генерировать тесты с корректными селекторами, которые действительно существуют на странице.
+
+### Автоматизация браузерных процессов
+
+Testplane MCP помогает автоматизировать повторяющиеся задачи, например извлекать данные с изображений платежных квитанций, а затем заполнять формы на веб-страницах.
+
+## Установка
+
+Добавьте сервер Testplane MCP в конфигурацию вашей IDE.
+
+### Настройка окружения
+
+<Tabs>
+    <TabItem value="cursor" label="Cursor">
+        Откройте настройки Cursor, в секции `MCP` нажмите `Add new global MCP server` и добавьте конфигурацию:
+
+        ```json
+        {
+            "mcpServers": {
+                "testplane-mcp": {
+                    "command": "npx",
+                    "args": ["@testplane/mcp@latest"]
+                }
+            }
+        }
+        ```
+    </TabItem>
+
+    <TabItem value="cline" label="VS Code + Cline">
+        1. Установите [расширение Cline](https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev)
+        2. Перейдите на вкладку "MCP" и нажмите "Configure MCP Servers"
+        3. Добавьте конфигурацию:
+            ```json
+            {
+                "mcpServers": {
+                    "testplane-mcp": {
+                        "command": "npx",
+                        "args": ["@testplane/mcp@latest"]
+                    }
+                }
+            }
+            ```
+    </TabItem>
+
+    <TabItem value="copilot" label="VS Code + Copilot">
+        В настройках VS Code найдите `MCP`, нажмите `Edit in settings.json` и добавьте:
+
+        ```json
+        {
+            "mcp": {
+                "inputs": [],
+                "servers": {
+                    "testplane-mcp": {
+                        "command": "npx",
+                        "args": ["@testplane/mcp@latest"]
+                    }
+                }
+            }
+        }
+        ```
+    </TabItem>
+
+    <TabItem value="claude" label="Claude Desktop">
+        Откройте настройки по [официальной документации](https://modelcontextprotocol.io/quickstart/user) и добавьте:
+
+        ```json
+        {
+            "mcpServers": {
+                "testplane-mcp": {
+                    "command": "npx",
+                    "args": ["@testplane/mcp@latest"]
+                }
+            }
+        }
+        ```
+    </TabItem>
+
+    <TabItem value="windsurf" label="Windsurf">
+        Следуйте [официальной документации](https://docs.windsurf.com/windsurf/cascade/mcp) и добавьте конфигурацию:
+
+        ```json
+        {
+            "mcpServers": {
+                "testplane-mcp": {
+                    "command": "npx",
+                    "args": ["@testplane/mcp@latest"]
+                }
+            }
+        }
+        ```
+    </TabItem>
+
+    <TabItem value="jetbrains" label="JetBrains">
+        Согласно [официальной документации](https://www.jetbrains.com/help/ai-assistant/configure-an-mcp-server.html), добавьте:
+
+        ```json
+        {
+            "mcpServers": {
+                "testplane-mcp": {
+                    "command": "npx",
+                    "args": ["@testplane/mcp@latest"]
+                }
+            }
+        }
+        ```
+    </TabItem>
+
+</Tabs>
+
+## Использование
+
+Рассмотрим сценарий разработки онлайн-книжного магазина. Представим, что у нас появилась новая функция — отображение рейтингов книг, и мы хотим сгенерировать для нее тесты.
+
+Сначала попросим AI-агента проанализировать страницу и составить план тестирования.
+
+<video src={investigateVideoUrl} width="100%" controls="controls">
+    Ваш браузер не поддерживает тег video.
+    <a href="video/blog/mcp/investigate.mp4">Скачать видео</a>.
+</video>
+
+<br />
+
+Теперь попробуем сгенерировать тесты и запустить их.
+
+<video src={generateVideoUrl} width="100%" controls="controls">
+    Ваш браузер не поддерживает тег video.
+    <a href="video/blog/mcp/generate.mp4">Скачать видео</a>.
+</video>
+
+<br />
+
+Как видно, AI-агент с первой попытки сгенерировал тесты, которые проходят и содержат корректные селекторы.
+
+Вы можете использовать такой промпт для генерации тестов через Testplane MCP:
+
+> Используй testplane mcp, чтобы открыть страницу `https://ya.ru`, выполнить поиск по запросу "cats" и проверить, что результаты поиска отображаются.
+>
+> Не пиши лишние комментарии в тестах, кроме сложных edge-case сценариев. Пиши тесты в соответствии со style guide проекта.
+>
+> Старайся использовать семантические селекторы, например через атрибуты `data-testid` или текст элемента, вместо сложных CSS-селекторов.
+
+## Детали реализации
+
+### Компактные снимки
+
+Testplane MCP создает компактные снимки страницы вместо скриншотов, что значительно экономит токены LLM API.
+
+**Пример:** полный исходный код `https://ya.ru` содержит примерно 260 000 символов, а компактный снимок — около 9 000.
+
+<details>
+    <summary>Пример снимка</summary>
+
+    <SnapshotExample />
+
+</details>
+
+### Интеграция с экосистемой
+
+Каждый ответ сервера содержит выполненный код, что позволяет AI-агенту вставлять его в генерируемые тесты и обеспечивает бесшовную интеграцию с экосистемой Testplane.
+
+## Ссылки
+
+-   [Release Notes](https://github.com/gemini-testing/testplane-mcp/releases)
+-   [GitHub Issues](https://github.com/gemini-testing/testplane-mcp/issues)
+-   [Telegram chat](https://t.me/testplane)

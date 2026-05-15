@@ -1,0 +1,357 @@
+# Testplane CLI
+
+Testplane CLI lets you control a real browser from the terminal with Testplane APIs.
+
+You can open pages, click through flows, capture compact DOM snapshots, inspect console logs, save auth state, debug Testplane reports, and replay Time Travel snapshots. It is useful on its own, and it is also the browser/report engine behind Testplane Skill.
+
+## Installation
+
+Install it in your project:
+
+```shell
+npm install --save-dev @testplane/cli
+```
+
+Then run it with:
+
+```shell
+npx @testplane/cli --help
+```
+
+## Typical flow
+
+The simplest session starts with `navigate`. If there is no browser yet, the CLI starts one automatically.
+
+```shell
+npx @testplane/cli navigate https://example.com
+npx @testplane/cli snapshot
+```
+
+By default, CLI browsers run headless. If you want to watch the browser while debugging, launch it first:
+
+```shell
+npx @testplane/cli launch --headless false
+npx @testplane/cli navigate http://localhost:3000
+```
+
+When you are done:
+
+```shell
+npx @testplane/cli close-browser
+```
+
+If you don't close the browser, it will be closed after 5 minutes of inactivity by default.
+
+## What the output looks like
+
+Most browser commands return three useful pieces of information: the action result, equivalent Testplane code, and the current browser state.
+
+```text
+Successfully navigated to https://example.com
+
+## Testplane Code
+
+await browser.openAndWait("https://example.com");
+
+## Browser Tabs
+
+  1. Title: Example Domain; URL: https://example.com/ (current)
+
+## Current Tab Snapshot
+
+The snapshot was saved to: /tmp/.testplane/snapshots/2026-05-14T21-24-40-811Z.yml
+```
+
+Snapshots are optimized for humans and agents reading terminal output. They omit noisy tags and attributes by default, truncate very long text, and save large snapshots to a temp file instead of filling your terminal.
+
+## Navigating and inspecting pages
+
+Use `navigate` with a custom timeout for slow local apps or CI environments:
+
+```shell
+npx @testplane/cli navigate http://localhost:3000 --timeout 60000
+```
+
+Use `snapshot` to understand the page structure:
+
+```shell
+npx @testplane/cli snapshot
+```
+
+You can tune the snapshot when the default output hides something useful:
+
+```shell
+npx @testplane/cli snapshot --include-attrs data-qa href class --max-text-length 200
+```
+
+Use `screenshot` when you need visual evidence:
+
+```shell
+npx @testplane/cli screenshot ./tmp/page.png
+```
+
+For most test debugging, start with `snapshot`. It is faster to read, easier to search, and usually enough to find the selector or state you need.
+
+## Interacting with elements
+
+Commands accept either a selector or semantic Testing Library-style options.
+
+```shell
+npx @testplane/cli click '[data-testid="submit"]'
+npx @testplane/cli click --role button --name "Submit"
+npx @testplane/cli type --label-text "Email" --value "user@example.com"
+npx @testplane/cli wait --text "Saved" --timeout 5000
+```
+
+For native `<select>` elements:
+
+```shell
+npx @testplane/cli select "#country" --visible-text "Germany"
+npx @testplane/cli select --label-text "Country" --value de
+npx @testplane/cli select --label-text "Country" --index 2
+```
+
+After an action, the CLI reports the resulting browser state. This is useful when a click triggers navigation or replaces the element you just interacted with.
+
+## Console logs
+
+`console` reads browser-side console messages from Chromium-based sessions. It returns only messages that have not been returned by a previous `console` call in the same session.
+
+```shell
+npx @testplane/cli navigate https://stackoverflow.com/questions/10175445/load-page-on-selection-from-dropdown-form
+npx @testplane/cli console
+```
+
+Example:
+
+```text
+Retrieved 8 unseen browser console messages
+
+1. [2026-05-14T22:23:40.793Z] WARNING (security): Error with Feature-Policy header: Unrecognized feature: 'speaker'.
+2. [2026-05-14T22:23:43.883Z] SEVERE (other): Not signed in with the identity provider.
+3. [2026-05-14T22:23:44.059Z] SEVERE (javascript): Access to fetch at 'https://id5-sync.com/api/config/prebid' from origin 'https://stackoverflow.com' has been blocked by CORS policy.
+4. [2026-05-14T22:23:44.059Z] SEVERE (network): Failed to load resource: net::ERR_FAILED
+```
+
+This is handy when a page looks fine in a snapshot but the app is failing in JavaScript, loading a blocked resource, or logging useful runtime errors.
+
+## Using tabs
+
+Use tab commands when a flow opens a new page.
+
+```shell
+npx @testplane/cli list-tabs
+npx @testplane/cli new-tab http://localhost:3000/settings
+npx @testplane/cli switch-tab 1
+npx @testplane/cli close-tab 2
+```
+
+## Auth state
+
+For authenticated flows, you can save and restore browser state.
+
+```shell
+npx @testplane/cli save-state ./tmp/auth-state.json
+npx @testplane/cli restore-state ./tmp/auth-state.json
+```
+
+The state can include cookies, localStorage, and sessionStorage. You can disable parts you do not need:
+
+```shell
+npx @testplane/cli save-state ./tmp/auth-state.json --cookies false
+```
+
+Treat the saved file as sensitive. It can contain real auth material, even though the command output only prints counts.
+
+`restore-state` refreshes the current page by default, so application code can immediately observe restored cookies and storage.
+
+## Running custom Testplane code
+
+When a built-in command is not enough, use `run-code`.
+
+```shell
+npx @testplane/cli run-code "await browser.getUrl()"
+npx @testplane/cli run-code "(browser) => browser.getTitle()"
+npx @testplane/cli run-code --file ./debug-script.js
+```
+
+Inline code can be a JavaScript expression, a small async body, or a function that receives `browser`.
+
+## Attaching to existing sessions
+
+If you run a Testplane test with `--keep-browser`, Testplane can print browser session data. Attach to that browser and inspect the state it left behind:
+
+```shell
+npx @testplane/cli attach --session '{"sessionId":"...","capabilities":{}}'
+npx @testplane/cli snapshot
+```
+
+This is useful when the test performs setup that is hard to reproduce manually, such as logging in, creating data, or navigating through a long flow.
+
+## REPL mode
+
+Suppose you've launched Testplane with repl enabled and a certain repl port:
+
+```
+npx testplane --grep 'test name' -b chrome-desktop --repl-before-test --repl-port 4444
+```
+
+Then CLI can attach to that Testplane REPL session:
+
+```shell
+npx @testplane/cli attach-repl --port 4444
+```
+
+In REPL mode, the CLI currently supports two actions:
+
+```shell
+npx @testplane/cli snapshot
+npx @testplane/cli run-code "await browser.getUrl()"
+```
+
+The big advantage is that you stay inside your project runtime. That means `run-code` can use page objects, custom commands, fixtures, and helpers already available in the test process.
+
+## Reading Testplane HTML reports
+
+The report commands work with local report directories, report HTML files, `databaseUrls.json`, and remote report URLs.
+
+```shell
+npx @testplane/cli test-results ./html-report --status failed
+npx @testplane/cli inspect-result ./html-report --name "checkout submits order" --browser chrome
+```
+
+Useful filters:
+
+```shell
+npx @testplane/cli test-results ./html-report --grep checkout
+npx @testplane/cli test-results ./html-report --browser chrome --duration '>5s'
+npx @testplane/cli test-results ./html-report --grep-error "NoSuchElement"
+npx @testplane/cli test-results ./html-report --meta owner=qa --file 'src/**'
+```
+
+For large reports or using with scripts, you can save the filtered result set as JSON:
+
+```shell
+npx @testplane/cli test-results ./html-report --status failed --save-json
+```
+
+Remote reports are downloaded and cached automatically:
+
+```shell
+REPORT_URL="https://gh-testplane-ci.s3.yandexcloud.net/testplane-ci/e2e-tests-reports/25706755847-557-1/new-ui.html"
+
+npx @testplane/cli test-results "$REPORT_URL" --limit 10 --fields name,status,browser,duration,file
+```
+
+This makes CI report triage scriptable from a terminal, without opening the full HTML UI first.
+
+## Time Travel snapshots
+
+If a report contains Testplane Time Travel data, you can inspect the DOM at a specific moment in the recorded run.
+
+```shell
+npx @testplane/cli time-travel-snapshot ./html-report \
+  --name "checkout submits order" \
+  --browser chrome \
+  --attempt 0 \
+  --time 250
+```
+
+The output includes the selected time, nearby test steps, and a DOM snapshot of the replayed page.
+
+Use `--diff-from` to compare two moments:
+
+```shell
+npx @testplane/cli time-travel-snapshot ./html-report \
+  --name "checkout submits order" \
+  --browser chrome \
+  --time 250 \
+  --diff-from 100
+```
+
+You can also inspect a snapshot zip directly:
+
+```shell
+npx @testplane/cli time-travel-snapshot --snapshot-file ./snapshot.zip --time 100
+```
+
+Time Travel is especially useful when a failure happened in CI and the live browser is gone. You can still inspect what the app looked like when the test was running.
+
+## Custom browser configuration
+
+Use `launch` when you need a visible browser, a specific viewport, mobile emulation, or a custom Selenium grid.
+
+```shell
+npx @testplane/cli launch --headless false --window-size '{"width":1280,"height":720}'
+```
+
+Mobile emulation example:
+
+```shell
+npx @testplane/cli launch --desired-capabilities '{
+  "browserName": "chrome",
+  "goog:chromeOptions": {
+    "mobileEmulation": {
+      "deviceMetrics": {
+        "width": 360,
+        "height": 800,
+        "pixelRatio": 1
+      }
+    }
+  }
+}'
+```
+
+By default, `grid-url` is `local`, which lets Testplane manage Chrome and Firefox automatically. For other browsers, start the driver or Selenium grid yourself and pass its URL:
+
+```shell
+npx @testplane/cli launch --grid-url http://localhost:4444/wd/hub
+```
+
+## Common workflows
+
+Debug a selector:
+
+```shell
+npx @testplane/cli navigate http://localhost:3000/profile
+npx @testplane/cli snapshot --include-attrs data-qa aria-label
+npx @testplane/cli click --role button --name "Edit profile"
+npx @testplane/cli snapshot
+```
+
+Reuse login state:
+
+```shell
+npx @testplane/cli navigate http://localhost:3000/login
+# log in with commands or manually in a headful session
+npx @testplane/cli save-state ./tmp/auth-state.json
+npx @testplane/cli close-browser
+npx @testplane/cli navigate http://localhost:3000/dashboard
+npx @testplane/cli restore-state ./tmp/auth-state.json
+```
+
+Triage a CI report:
+
+```shell
+npx @testplane/cli test-results "$REPORT_URL" --status failed --fields name,browser,error
+npx @testplane/cli inspect-result "$REPORT_URL" --name "full test name" --browser chrome
+npx @testplane/cli time-travel-snapshot "$REPORT_URL" --name "full test name" --browser chrome --time 1000
+```
+
+Attach after a failing test:
+
+```shell
+npx testplane tests/checkout.testplane.ts --grep "submits order" --keep-browser
+npx @testplane/cli attach --session '{"sessionId":"...","capabilities":{}}'
+npx @testplane/cli snapshot
+```
+
+## When in doubt
+
+Each command comes with rich help information as well as usage examples — you can always ask the CLI to learn more about any of the commands:
+
+```shell
+npx @testplane/cli --help
+npx @testplane/cli click --help
+npx @testplane/cli test-results --help
+```

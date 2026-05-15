@@ -1,0 +1,389 @@
+---
+title: Testplane CLI and Skill
+slug: cli-and-skill
+hide_table_of_contents: false
+date: 2026-05-15T17:00
+---
+
+Today, we're releasing a new set of tools for working with Testplane through AI agents: Testplane CLI, Testplane Skill, and major updates to the available interactions.
+
+![](/img/blog/cli-and-skill/cover.png)
+
+{/* truncate */}
+
+## Testplane Skill
+
+The newly available skill teaches agents how to work with Testplane tests effectively, use browser through `@testplane/cli` and work with reports for debug.
+
+Add skill to your system with the following command:
+
+```shell
+npx skills add gemini-testing/testplane-skill
+```
+
+The skill is loaded by agents only when it is relevant, so it does pollute the context all the time.
+
+When test work starts, it gives the agent practical instructions, like: inspect the app before writing tests, prefer real selectors from the browser, reuse project helpers, avoid `browser.pause()`, open reports with `@testplane/cli` for debug, use the CLI to debug tests via REPL and more.
+
+It also teaches the agent to use `@testplane/cli` for browser exploration:
+
+```shell
+npx @testplane/cli navigate http://localhost:3000
+npx @testplane/cli click --role button --name "Save"
+npx @testplane/cli snapshot
+```
+
+That turns a fuzzy task like "fix this flaky checkout test" into a tighter loop. The agent can reproduce the page state, inspect the DOM, update the test, and rerun the narrowest relevant command.
+
+Learn more about Testplane Skill [in our docs](/docs/v8/ai/toolkit/testplane-skill) or visit the skill's page on [skills.sh](https://www.skills.sh/gemini-testing/testplane-skill/testplane-skill).
+
+## Testplane CLI
+
+Testplane CLI lets users and agents drive a browser from the terminal. It is also what powers the browser workflows in Testplane Skill.
+
+Install it in your project:
+
+```shell
+npm install --save-dev @testplane/cli
+```
+
+Or run it directly:
+
+```shell
+npx @testplane/cli@latest --help
+```
+
+By default, the CLI starts browsers in headless mode. If you want to watch the browser while debugging, launch a visible session first:
+
+```shell
+npx @testplane/cli launch --headless false
+```
+
+A basic browser session looks like this:
+
+```shell
+npx @testplane/cli navigate https://example.com
+npx @testplane/cli snapshot
+```
+
+<details>
+<summary>Example navigation output</summary>
+
+```text
+Successfully navigated to https://example.com
+
+## Testplane Code
+
+await browser.openAndWait("https://example.com");
+
+## Browser Tabs
+
+  1. Title: Example Domain; URL: https://example.com/ (current)
+
+## Current Tab Snapshot
+
+The snapshot was saved to: /tmp/.testplane/snapshots/2026-05-14T21-24-40-811Z.yml
+```
+
+</details>
+
+<details>
+<summary>Example snapshot output</summary>
+
+```text
+Page snapshot captured successfully
+
+## Current Tab Snapshot
+
+- body:
+ - div:
+  - h1 "Example Domain"
+  - p "This domain is for use in documentation examples without needing permission. Avoid use in operations..."
+  - p:
+   - a[href=https://iana.org/domains/example] "Learn more"
+```
+
+</details>
+
+Snapshots are text-first and optimized for agents. They omit noisy tags and attributes by default, truncate very long text, and save large snapshots to a temp file instead of flooding the terminal.
+
+## HTML Reporter integration
+
+The new report tools let agents inspect [Testplane HTML reports](/docs/v8/html-reporter/overview) without opening the browser UI. They work with local reports and remote report URLs, including reports published from CI.
+
+Remote reports are downloaded and cached automatically. The agent can ask for failed tests, inspect a concrete attempt, and pull out the error, steps, images, metadata, and attachments that matter for the fix.
+
+```shell
+npx @testplane/cli test-results ./html-report --status failed --grep checkout
+npx @testplane/cli inspect-result ./html-report --name "checkout submits order" --browser chrome
+```
+
+<details>
+<summary>Example test-results output from the CI report</summary>
+
+```text
+Test results in report: https://gh-testplane-ci.s3.yandexcloud.net/testplane-ci/e2e-tests-reports/25706755847-557-1/new-ui.html
+Total tests: 133; total attempts: 133; matched tests: 133
+
+Total tests counts: passed: 133, failed: 0, muted: 0, retried: 0, skipped: 0
+Matched tests counts: passed: 133, failed: 0, muted: 0, retried: 0, skipped: 0
+
+Showing 1-4 of 133 matched test results.
+
+1. success | chrome | attempt 0 | 1.5s | common/error-group.testplane.js
+   testplane Error grouping should group errors
+2. success | chrome | attempt 0 | 1.7s | common/test-results-appearance.testplane.js
+   testplane Test results appearance Passed test should have green retry selector
+3. success | chrome | attempt 0 | 1.6s | common/test-results-appearance.testplane.js
+   testplane Test results appearance Test with diff should have pink retry selector
+4. success | chrome | attempt 0 | 1.4s | common/test-results-appearance.testplane.js
+   testplane Test results appearance Test with diff should display 3 images
+```
+
+</details>
+
+<details>
+<summary>Example inspect-result output</summary>
+
+```json
+{
+    "status": "success",
+    "browser": "chrome",
+    "attempt": 0,
+    "duration": 1503,
+    "file": "common/error-group.testplane.js",
+    "name": "testplane Error grouping should group errors",
+    "error": null,
+    "meta": {
+        "url": "http://host.docker.internal:8061/fixtures/testplane/report/",
+        "file": "common/error-group.testplane.js",
+        "sessionId": "c5e07ff0b8fdce82785dba4493f5c7b7"
+    },
+    "steps": [
+        {
+            "name": "setWindowSize",
+            "args": ["1280", "1024"],
+            "duration": 31
+        },
+        {
+            "name": "$",
+            "args": ["[data-qa=\"group-by-dropdown\"]"],
+            "duration": 0
+        },
+        {
+            "name": "click",
+            "args": [],
+            "duration": 79
+        }
+    ],
+    "images": [],
+    "attachments": [
+        {
+            "type": "snapshot",
+            "path": "snapshots/e632a64/chrome_1778547952338_0.zip",
+            "maxWidth": 1280,
+            "maxHeight": 1024
+        }
+    ]
+}
+```
+
+</details>
+
+The full `inspect-result` response includes all recorded steps for the selected attempt. For an agent, this is usually enough to see what the test did before touching the test file.
+
+There is also a `time-travel-snapshot` command for reports with Testplane Time Travel data. It replays the snapshot at a selected moment and returns a DOM snapshot of that replayed page.
+
+```shell
+npx @testplane/cli time-travel-snapshot ./html-report \
+  --name "checkout submits order" \
+  --browser chrome \
+  --time 250 \
+  --diff-from 100
+```
+
+The same CI report can be inspected at a concrete moment from the test timeline:
+
+```shell
+npx @testplane/cli time-travel-snapshot "$REPORT_URL" \
+  --name "testplane Error grouping should group errors" \
+  --browser chrome \
+  --attempt 0 \
+  --time 1400 \
+  --include-attrs data-qa href class \
+  --max-text-length 80
+```
+
+<details>
+<summary>Example time-travel-snapshot output</summary>
+
+```text
+Time travel snapshot captured
+
+## Source
+
+Report: https://gh-testplane-ci.s3.yandexcloud.net/testplane-ci/e2e-tests-reports/25706755847-557-1/new-ui.html
+Test: testplane Error grouping should group errors
+Browser: chrome
+Attempt: 0
+Mode: report
+Snapshot source: https://gh-testplane-ci.s3.yandexcloud.net/testplane-ci/e2e-tests-reports/25706755847-557-1/snapshots/e632a64/chrome_1778547952338_0.zip
+Events: 34
+Snapshot range: 1778547952408 (2026-05-12T01:05:52.408Z) - 1778547953911 (2026-05-12T01:05:53.911Z); total 1503ms
+
+## Selected Time
+
+Reason: provided offset 1400ms from first rrweb event
+Absolute timestamp: 1778547953808 (2026-05-12T01:05:53.808Z)
+Offset from first rrweb event: 1400ms
+Requested time: 1400 (offset)
+
+## Test Steps
+
+Times are offsets from the first rrweb event; use them as "time" values.
+- +1080ms..+1080ms $("[data-qa=\"group-by-dropdown\"]")
+- +1104ms..+1183ms click
+- +1184ms..+1184ms $("div=error")
+- +1199ms..+1282ms click
+- +1282ms..+1282ms $(".grouped-tests")
+- +1356ms..+1356ms $("span*=tests: 1")
+
+## Snapshot
+
+- body.report.g-root.g-root_theme_light:
+ - div#app:
+  - div.sticky-header__content:
+   - div.main-menu.container:
+    - div.select.select_type_group:
+     - div.g-select.group-by-dropdown:
+      - button[data-qa=group-by-dropdown role=combobox]:
+       - span.g-select-control__option-text "error"
+  - main.container:
+   - div.grouped-tests:
+    - div.tests-group.tests-group_collapsed:
+     - span.tests-group__name "image comparison failed"
+     - span.tests-group__count "( tests: 1, runs: 2 )"
+```
+
+</details>
+
+This is useful when you have failed tests in CI report and want an agent to fix them in one go. The agent can inspect the replayed DOM, compare two points in time, and decide whether the test should change or the product behavior is broken.
+
+## REPL integration
+
+Testplane CLI can attach to a running Testplane REPL session:
+
+```shell
+npx @testplane/cli attach-repl --port 4444
+```
+
+After attaching, the CLI can capture snapshots and run Testplane code through the REPL:
+
+```shell
+npx @testplane/cli snapshot
+npx @testplane/cli run-code "await browser.getUrl()"
+```
+
+This is a useful debugging mode when a test has already driven the browser into the target state. An agent can attach, inspect the page, execute small pieces of Testplane code, and keep the original session alive.
+
+One of the strongest parts of REPL mode is that the agent stays inside your project runtime. That means it can use existing page objects, custom commands, fixtures, and helpers instead of reimplementing the same behavior from raw browser calls.
+
+## Auth handling
+
+The CLI now has browser state commands. Run them after opening or attaching a browser session:
+
+```shell
+npx @testplane/cli save-state ./tmp/auth-state.json
+npx @testplane/cli restore-state ./tmp/auth-state.json
+```
+
+The saved state can include cookies, localStorage, and sessionStorage. You can disable any part when saving:
+
+```shell
+npx @testplane/cli save-state ./tmp/auth-state.json --cookies false
+```
+
+This gives agents a safe way to reuse an authenticated browser state.
+
+The state file itself can contain sensitive material, so keep it out of git and use a short-lived local path.
+
+This is a new approach for dealing with auth and sensitive data besides existing flow where test code prepares browser and leaves it for agent via `--keep-browser` and REPL integration discussed above.
+
+## New browser interaction tools
+
+The interaction layer gained a few small but important pieces.
+
+`select` handles native `<select>` elements:
+
+```shell
+npx @testplane/cli select "#country" --visible-text "Germany"
+npx @testplane/cli select --label-text "Country" --value de
+```
+
+`console` reads unseen browser console messages from Chromium-based sessions:
+
+```shell
+npx @testplane/cli console
+```
+
+<details>
+<summary>Example console output</summary>
+
+```text
+Retrieved 5 unseen browser console messages
+
+## Testplane Code
+
+const consoleMessages = await browser.getLogs("browser");
+
+## Browser Tabs
+
+  1. Title: javascript - Load page on selection from dropdown form - Stack Overflow; URL: https://stackoverflow.com/questions/10175445/load-page-on-selection-from-dropdown-form (current)
+
+## Additional Information
+
+1. [2026-05-14T22:23:40.793Z] WARNING (security): Error with Feature-Policy header: Unrecognized feature: 'speaker'.
+2. [2026-05-14T22:23:42.789Z] WARNING (console-api): "[GPT] PubAdsService.setForceSafeFrame is deprecated..."
+3. [2026-05-14T22:23:43.883Z] SEVERE (other): Not signed in with the identity provider.
+4. [2026-05-14T22:23:44.059Z] SEVERE (javascript): Access to fetch at 'https://id5-sync.com/api/config/prebid' from origin 'https://stackoverflow.com' has been blocked by CORS policy.
+5. [2026-05-14T22:23:44.059Z] SEVERE (network): Failed to load resource: net::ERR_FAILED
+```
+
+</details>
+
+`navigate` accepts a timeout, which is useful for slow local apps and CI environments:
+
+```shell
+npx @testplane/cli navigate http://localhost:3000 --timeout 60000
+```
+
+Post-action navigation is handled more cleanly too. When a click or another action changes the page, the response is based on the resulting browser state, so the next snapshot reflects where the browser actually ended up.
+
+## Testplane MCP
+
+All of these features are available through Testplane MCP as well. The MCP server and the CLI both import the same shared `@testplane/tools` package, so their feature sets stay aligned.
+
+Use the MCP server in an MCP-compatible client with:
+
+```json
+{
+    "mcpServers": {
+        "testplane-mcp": {
+            "command": "npx",
+            "args": ["@testplane/mcp@latest"]
+        }
+    }
+}
+```
+
+Use the CLI when you want direct terminal control or a scriptable workflow. Use MCP when you want the same tools available inside your editor or assistant.
+
+In both cases, the important part is the same: agents can now work with real browser state and real Testplane report data, instead of guessing from source code alone.
+
+## What's next?
+
+We hope this supercharged toolkit helps you turn the messy parts of browser testing into something more observable, more debuggable, and a little more pleasant to work with.
+
+Try it on one real task: a failing report, a flaky test, or a page where selectors are hard to guess. Visit our [AI Toolkit Docs](/docs/v8/ai/toolkit/testplane-cli) page for more ideas, practical guidance, and examples of how these tools can fit into your workflow.
+
+If something still feels awkward — tell us, we are always happy to [hear your feedback](https://github.com/gemini-testing/testplane-mcp/issues).
