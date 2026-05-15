@@ -24,7 +24,7 @@ export default function MDXDetails({ children, className, ...rest }: Props): JSX
         <details
             {...rest}
             className={clsx(
-                "group overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-300/10",
+                "group mb-6 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-300/10",
                 className,
             )}
         >

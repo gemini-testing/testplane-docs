@@ -99,6 +99,12 @@ const config: Config = {
                     position: "left",
                     label: "UI",
                 },
+                {
+                    type: "docSidebar",
+                    sidebarId: "ai",
+                    position: "left",
+                    label: "AI",
+                },
                 { to: "/blog", label: "Blog", position: "left" },
                 {
                     type: "docsVersionDropdown",

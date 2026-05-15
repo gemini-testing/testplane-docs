@@ -41,6 +41,7 @@
     "@storybook/test": "8.0.5",
     "@svgr/webpack": "8.1.0",
     "@tailwindcss/postcss": "4.1.13",
+    "@types/react-dom": "18.2.0",
     "autoprefixer": "10.4.19",
     "docusaurus-plugin-sass": "0.2.5",
     "eslint": "8.57.0",
