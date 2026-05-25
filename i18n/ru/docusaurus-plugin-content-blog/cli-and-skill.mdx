@@ -1,0 +1,387 @@
+---
+title: Testplane CLI и Skill
+slug: cli-and-skill
+hide_table_of_contents: false
+date: 2026-05-15T17:00
+---
+
+Сегодня мы рады представить новый набор инструментов для работы AI-агентов с Testplane: Testplane CLI, Testplane Skill и крупные обновления доступных возможностей.
+
+![](/img/blog/cli-and-skill/cover.png)
+
+{/* truncate */}
+
+## Testplane Skill
+
+Данный skill рассказывает агентам, как эффективно работать с тестами Testplane, использовать браузер через `@testplane/cli` и работать с отчетами для отладки.
+
+Добавьте skill в систему командой:
+
+```shell
+npx skills add gemini-testing/testplane-skill
+```
+
+Skill загружается агентами только когда релевантен запросу, поэтому не засоряет контекст зря.
+
+При работе с тестами он дает агенту инструкции, например: исследовать приложение перед написанием тестов, использовать реальные селекторы из браузера, переиспользовать project helpers, избегать `browser.pause()`, открывать отчеты через `@testplane/cli` для отладки, использовать CLI для отладки тестов через REPL и многое другое.
+
+Также он учит агента использовать `@testplane/cli` для исследования браузера:
+
+```shell
+npx @testplane/cli navigate http://localhost:3000
+npx @testplane/cli click --role button --name "Save"
+npx @testplane/cli snapshot
+```
+
+Это превращает размытый запрос вроде "почини этот flaky checkout-тест" в более четкий цикл работы. Агент может воспроизвести состояние страницы, исследовать DOM, обновить тест и перезапустить самый узкий релевантный набор команд.
+
+Подробнее о Testplane Skill читайте [в документации](/docs/v8/ai/toolkit/testplane-skill) или на странице skill в [skills.sh](https://www.skills.sh/gemini-testing/testplane-skill/testplane-skill).
+
+## Testplane CLI
+
+Testplane CLI позволяет пользователям и агентам управлять браузером из терминала. Он также является основой браузерных workflow в Testplane Skill.
+
+Установите его в проект:
+
+```shell
+npm install --save-dev @testplane/cli
+```
+
+Или запускайте напрямую:
+
+```shell
+npx @testplane/cli@latest --help
+```
+
+По умолчанию CLI запускает браузеры в headless-режиме. Если хотите наблюдать браузер во время отладки, сначала запустите видимую сессию:
+
+```shell
+npx @testplane/cli launch --headless false
+```
+
+Базовая браузерная сессия выглядит так:
+
+```shell
+npx @testplane/cli navigate https://example.com
+npx @testplane/cli snapshot
+```
+
+<details>
+<summary>Пример вывода команды navigate</summary>
+
+```text
+Successfully navigated to https://example.com
+
+## Testplane Code
+
+await browser.openAndWait("https://example.com");
+
+## Browser Tabs
+
+  1. Title: Example Domain; URL: https://example.com/ (current)
+
+## Current Tab Snapshot
+
+The snapshot was saved to: /tmp/.testplane/snapshots/2026-05-14T21-24-40-811Z.yml
+```
+
+</details>
+
+<details>
+<summary>Пример вывода команды snapshot</summary>
+
+```text
+Page snapshot captured successfully
+
+## Current Tab Snapshot
+
+- body:
+ - div:
+  - h1 "Example Domain"
+  - p "This domain is for use in documentation examples without needing permission. Avoid use in operations..."
+  - p:
+   - a[href=https://iana.org/domains/example] "Learn more"
+```
+
+</details>
+
+Snapshots в первую очередь текстовые и оптимизированы для агентов. Они по умолчанию убирают шумные теги и атрибуты, обрезают очень длинный текст и сохраняют большие снимки во временный файл вместо того, чтобы заливать терминал большим объемом вывода.
+
+## Интеграция с HTML Reporter
+
+Новая интеграция с HTML Reporter позволяет агентам исследовать [отчеты Testplane](/docs/v8/html-reporter/overview) с помощью CLI. Они работают как с локальными отчетами, так и удаленными — работать с отчетами из CI можно так же удобно, как и с локальными.
+
+Удаленные отчеты автоматически скачиваются и кэшируются. Агент может запросить упавшие тесты, исследовать конкретный прогон и посмотреть на ошибку, шаги, изображения, метаданные и вложения, которые важны для исправления.
+
+```shell
+npx @testplane/cli test-results ./html-report --status failed --grep checkout
+npx @testplane/cli inspect-result ./html-report --name "checkout submits order" --browser chrome
+```
+
+<details>
+<summary>Пример вывода test-results для отчета из CI</summary>
+
+```text
+Test results in report: https://gh-testplane-ci.s3.yandexcloud.net/testplane-ci/e2e-tests-reports/25706755847-557-1/new-ui.html
+Total tests: 133; total attempts: 133; matched tests: 133
+
+Total tests counts: passed: 133, failed: 0, muted: 0, retried: 0, skipped: 0
+Matched tests counts: passed: 133, failed: 0, muted: 0, retried: 0, skipped: 0
+
+Showing 1-4 of 133 matched test results.
+
+1. success | chrome | attempt 0 | 1.5s | common/error-group.testplane.js
+   testplane Error grouping should group errors
+2. success | chrome | attempt 0 | 1.7s | common/test-results-appearance.testplane.js
+   testplane Test results appearance Passed test should have green retry selector
+3. success | chrome | attempt 0 | 1.6s | common/test-results-appearance.testplane.js
+   testplane Test results appearance Test with diff should have pink retry selector
+4. success | chrome | attempt 0 | 1.4s | common/test-results-appearance.testplane.js
+   testplane Test results appearance Test with diff should display 3 images
+```
+
+</details>
+
+<details>
+<summary>Пример вывода inspect-result</summary>
+
+```json
+{
+    "status": "success",
+    "browser": "chrome",
+    "attempt": 0,
+    "duration": 1503,
+    "file": "common/error-group.testplane.js",
+    "name": "testplane Error grouping should group errors",
+    "error": null,
+    "meta": {
+        "url": "http://host.docker.internal:8061/fixtures/testplane/report/",
+        "file": "common/error-group.testplane.js",
+        "sessionId": "c5e07ff0b8fdce82785dba4493f5c7b7"
+    },
+    "steps": [
+        {
+            "name": "setWindowSize",
+            "args": ["1280", "1024"],
+            "duration": 31
+        },
+        {
+            "name": "$",
+            "args": ["[data-qa=\"group-by-dropdown\"]"],
+            "duration": 0
+        },
+        {
+            "name": "click",
+            "args": [],
+            "duration": 79
+        }
+    ],
+    "images": [],
+    "attachments": [
+        {
+            "type": "snapshot",
+            "path": "snapshots/e632a64/chrome_1778547952338_0.zip",
+            "maxWidth": 1280,
+            "maxHeight": 1024
+        }
+    ]
+}
+```
+
+</details>
+
+Полный ответ `inspect-result` включает все шаги, выполненные в ходе теста.
+
+Также есть команда `time-travel-snapshot` для отчетов с данными Testplane Time Travel. Она воспроизводит снимок в выбранный момент и возвращает DOM-снимок страницы в этом состоянии.
+
+```shell
+npx @testplane/cli time-travel-snapshot ./html-report \
+  --name "checkout submits order" \
+  --browser chrome \
+  --time 250 \
+  --diff-from 100
+```
+
+Тот же CI-отчет можно исследовать в конкретной точке тестового таймлайна:
+
+```shell
+npx @testplane/cli time-travel-snapshot "$REPORT_URL" \
+  --name "testplane Error grouping should group errors" \
+  --browser chrome \
+  --attempt 0 \
+  --time 1400 \
+  --include-attrs data-qa href class \
+  --max-text-length 80
+```
+
+<details>
+<summary>Пример вывода time-travel-snapshot</summary>
+
+```text
+Time travel snapshot captured
+
+## Source
+
+Report: https://gh-testplane-ci.s3.yandexcloud.net/testplane-ci/e2e-tests-reports/25706755847-557-1/new-ui.html
+Test: testplane Error grouping should group errors
+Browser: chrome
+Attempt: 0
+Mode: report
+Snapshot source: https://gh-testplane-ci.s3.yandexcloud.net/testplane-ci/e2e-tests-reports/25706755847-557-1/snapshots/e632a64/chrome_1778547952338_0.zip
+Events: 34
+Snapshot range: 1778547952408 (2026-05-12T01:05:52.408Z) - 1778547953911 (2026-05-12T01:05:53.911Z); total 1503ms
+
+## Selected Time
+
+Reason: provided offset 1400ms from first rrweb event
+Absolute timestamp: 1778547953808 (2026-05-12T01:05:53.808Z)
+Offset from first rrweb event: 1400ms
+Requested time: 1400 (offset)
+
+## Test Steps
+
+Times are offsets from the first rrweb event; use them as "time" values.
+- +1080ms..+1080ms $("[data-qa=\"group-by-dropdown\"]")
+- +1104ms..+1183ms click
+- +1184ms..+1184ms $("div=error")
+- +1199ms..+1282ms click
+- +1282ms..+1282ms $(".grouped-tests")
+- +1356ms..+1356ms $("span*=tests: 1")
+
+## Snapshot
+
+- body.report.g-root.g-root_theme_light:
+ - div#app:
+  - div.sticky-header__content:
+   - div.main-menu.container:
+    - div.select.select_type_group:
+     - div.g-select.group-by-dropdown:
+      - button[data-qa=group-by-dropdown role=combobox]:
+       - span.g-select-control__option-text "error"
+  - main.container:
+   - div.grouped-tests:
+    - div.tests-group.tests-group_collapsed:
+     - span.tests-group__name "image comparison failed"
+     - span.tests-group__count "( tests: 1, runs: 2 )"
+```
+
+</details>
+
+Это полезно, когда у вас есть упавшие тесты в CI-отчете и вы хотите, чтобы агент проанализировал падения. Агент может происследовать воспроизведенный DOM и решить, нужно менять тест или сломалось поведение тестируемого сервиса.
+
+## Интеграция с REPL
+
+Testplane CLI может подключаться к запущенной REPL-сессии Testplane:
+
+```shell
+npx @testplane/cli attach-repl --port 4444
+```
+
+После подключения CLI может снимать снапшоты и выполнять код Testplane через REPL:
+
+```shell
+npx @testplane/cli snapshot
+npx @testplane/cli run-code "await browser.getUrl()"
+```
+
+Это удобный режим отладки, когда тест уже привел браузер в нужное состояние. Агент может подключиться, исследовать страницу, выполнять код Testplane в интерактивном режиме.
+
+Одна из ключевых сильных сторон REPL-режима в том, что агент остается внутри runtime вашего проекта. Это значит, что он может использовать существующие page object'ы, кастомные команды и хелперы вместо повторной реализации поведения через низкоуровневые вызовы браузера.
+
+## Работа с auth
+
+В CLI теперь есть команды для состояния браузера. Запускайте их после открытия или подключения к браузерной сессии:
+
+```shell
+npx @testplane/cli save-state ./tmp/auth-state.json
+npx @testplane/cli restore-state ./tmp/auth-state.json
+```
+
+Сохраненное состояние включает cookies, localStorage и sessionStorage. При сохранении можно отключить любую часть:
+
+```shell
+npx @testplane/cli save-state ./tmp/auth-state.json --cookies false
+```
+
+Это дает агентам безопасный способ переиспользовать аутентифицированное состояние браузера.
+
+Сам файл состояния может содержать чувствительные данные, поэтому не добавляйте его в git и работайте с ним с осторожностью.
+
+Это новый подход к работе с чувствительными данными в дополнение к существующему сценарию, где код теста подготавливает браузер и оставляет браузер агенту через `--keep-browser`. Также для этого сценария можно использовать REPL-интеграцию, описанную выше.
+
+## Новые инструменты взаимодействия с браузером
+
+`select` работает с нативными элементами `<select>`:
+
+```shell
+npx @testplane/cli select "#country" --visible-text "Germany"
+npx @testplane/cli select --label-text "Country" --value de
+```
+
+`console` читает новые (еще не полученные ранее) сообщения консоли браузера из Chromium-сессий:
+
+```shell
+npx @testplane/cli console
+```
+
+<details>
+<summary>Пример вывода console</summary>
+
+```text
+Retrieved 5 unseen browser console messages
+
+## Testplane Code
+
+const consoleMessages = await browser.getLogs("browser");
+
+## Browser Tabs
+
+  1. Title: javascript - Load page on selection from dropdown form - Stack Overflow; URL: https://stackoverflow.com/questions/10175445/load-page-on-selection-from-dropdown-form (current)
+
+## Additional Information
+
+1. [2026-05-14T22:23:40.793Z] WARNING (security): Error with Feature-Policy header: Unrecognized feature: 'speaker'.
+2. [2026-05-14T22:23:42.789Z] WARNING (console-api): "[GPT] PubAdsService.setForceSafeFrame is deprecated..."
+3. [2026-05-14T22:23:43.883Z] SEVERE (other): Not signed in with the identity provider.
+4. [2026-05-14T22:23:44.059Z] SEVERE (javascript): Access to fetch at 'https://id5-sync.com/api/config/prebid' from origin 'https://stackoverflow.com' has been blocked by CORS policy.
+5. [2026-05-14T22:23:44.059Z] SEVERE (network): Failed to load resource: net::ERR_FAILED
+```
+
+</details>
+
+`navigate` принимает таймаут, что полезно для медленных локальных приложений и CI-окружений:
+
+```shell
+npx @testplane/cli navigate http://localhost:3000 --timeout 60000
+```
+
+Навигация после действий тоже улучшилась. Когда клик или другое действие меняет страницу, ответ формируется из итогового состояния браузера, поэтому следующий снапшот отражает то место, где браузер действительно оказался.
+
+## Testplane MCP
+
+Все эти возможности также доступны через Testplane MCP. MCP-сервер и CLI импортируют общий пакет `@testplane/tools`, поэтому их функциональность полностью синхронизирована.
+
+Используйте MCP-сервер в MCP-совместимом клиенте с такой конфигурацией:
+
+```json
+{
+    "mcpServers": {
+        "testplane-mcp": {
+            "command": "npx",
+            "args": ["@testplane/mcp@latest"]
+        }
+    }
+}
+```
+
+Используйте CLI, когда нужен доступ к браузеру из терминала или для скриптов. Используйте MCP, когда хотите видеть доступные инструменты в редакторе или другом MCP клиенте.
+
+В обоих случаях важна одна и та же идея: агенты теперь могут работать с реальным состоянием браузера и реальными данными отчетов Testplane, а не гадать только по исходному коду.
+
+## Что дальше?
+
+Надеемся, новые инструменты помогут вам сделать браузерное тестирование более прозрачным, отлаживаемым и просто приятным процессом.
+
+Попробуйте на одной реальной задаче: отладка упавшего отчета, flaky-теста или страницы, где сложно угадать селекторы. Больше идей, практических рекомендаций и примеров того, как можно использовать эти инструменты, — на странице [документации AI инструментов](/docs/v8/ai/toolkit/testplane-cli).
+
+Если что-то ощущается неудобным — пишите, мы всегда рады [вашему фидбеку](https://github.com/gemini-testing/testplane-mcp/issues).
