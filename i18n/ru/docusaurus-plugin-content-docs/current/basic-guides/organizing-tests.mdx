@@ -21,6 +21,7 @@ import Admonition from "@theme/Admonition";
 Сеты описываются в секции `sets` [конфигурационного файла](./configuration.mdx). Если сеты не указаны, Testplane ищет тесты в папке `testplane/`.
 
 Для каждого сета можно задать параметры:
+
 -   `files` (обязательный) — путь или массив путей к тестовым файлам (поддерживает glob-паттерны)
 -   `browsers` — массив идентификаторов браузеров для запуска тестов данного сета (по умолчанию все из конфигурации)
 -   `ignoreFiles` — массив паттернов для исключения файлов из набора (например, WIP-тесты)
@@ -33,16 +34,16 @@ export default {
         desktop: {
             files: "tests/desktop/**/*.test.ts",
             ignoreFiles: ["tests/desktop/**/*.wip.ts"],
-            browsers: ["chrome", "firefox", "safari"]
+            browsers: ["chrome", "firefox", "safari"],
         },
         mobile: {
             files: "tests/mobile/**/*.test.ts",
-            browsers: ["iphone", "android"]
+            browsers: ["iphone", "android"],
         },
         all: {
             files: "tests/**/*.test.ts",
             // browsers не указан — используются все браузеры из config.browsers
-        }
+        },
     },
     // ...
 } satisfies ConfigInput;
@@ -54,7 +55,7 @@ export default {
 # Запустить все desktop-тесты
 npx testplane --set desktop
 
-# Запустить несколько сетов одновременно 
+# Запустить несколько сетов одновременно
 npx testplane --set desktop --set mobile
 
 # Запустить desktop-тесты только в chrome
@@ -68,7 +69,8 @@ npx testplane
 ```
 
 <Admonition type="tip">
-    Разбивайте тесты по фичам (один файл — одна функция). Это позволит гибко комбинировать файлы в разных сетах и избежать огромных файлов на тысячи строк.
+    Разбивайте тесты по фичам (один файл — одна функция). Это позволит гибко комбинировать файлы в
+    разных сетах и избежать огромных файлов на тысячи строк.
 </Admonition>
 
 Сеты из конфигурационного файла Testplane не отображаются в GUI [html-reporter](../html-reporter/overview.mdx), так как они являются механизмом запуска тестов, а не частью результатов тестирования.
@@ -82,16 +84,16 @@ npx testplane
 Теги задаются в опциях теста или сьюта вторым аргументом в поле `tag`. Все тесты внутри сьюта наследуют тег, присвоенный сьюту.
 
 ```typescript
-describe('Поиск', { tag: 'search' }, function() {
-    it('Открытие поиска', async ({ browser }) => {
+describe("Поиск", { tag: "search" }, function () {
+    it("Открытие поиска", async ({ browser }) => {
         // тег: search
     });
 
-    it('Выполнение поиска', { tag: 'smoke' }, async ({ browser }) => {
+    it("Выполнение поиска", { tag: "smoke" }, async ({ browser }) => {
         // теги: search, smoke
     });
 
-    it('Фильтрация результатов поиска', { tag: ['smoke', 'critical'] }, async ({ browser }) => {
+    it("Фильтрация результатов поиска", { tag: ["smoke", "critical"] }, async ({ browser }) => {
         // теги: search, smoke, critical
     });
 });
@@ -105,20 +107,20 @@ describe('Поиск', { tag: 'search' }, function() {
 
 ```typescript
 it("Click: open search", { tag: ["critical", "ui", "search"] }, async ({ browser }) => {
-        const startTime = Date.now();
-        
-        await browser.url("https://testplane.io/");
+    const startTime = Date.now();
 
-        // ...
-        
-        const duration = Date.now() - startTime;
-        if (duration > 1000) {
-            await browser.addTag("slow");
-        }
-        if (duration > 2000) {
-            await browser.addTag("very-slow");
-        }
-    });
+    await browser.url("https://testplane.io/");
+
+    // ...
+
+    const duration = Date.now() - startTime;
+    if (duration > 1000) {
+        await browser.addTag("slow");
+    }
+    if (duration > 2000) {
+        await browser.addTag("very-slow");
+    }
+});
 ```
 
 После прогона тест будет помечен в отчете тегами `slow` и `very-slow`: по ним можно отфильтровать результаты и решить, нужно ли переносить тест в отдельный сет с меньшей частотой запуска.
@@ -154,8 +156,8 @@ npx testplane --set mobile --tag smoke
 
 Для записи и чтения метаинформации используются два метода:
 
-- [`browser.setMeta(key, value)`](../commands/browser/setMeta.mdx) — сохраняет значение под заданным ключом
-- [`browser.getMeta(key?)`](../commands/browser/getMeta.mdx) — возвращает значение по ключу. Если ключ не указан, возвращает весь объект с метаинформацией.
+-   [`browser.setMeta(key, value)`](../commands/browser/setMeta.mdx) — сохраняет значение под заданным ключом
+-   [`browser.getMeta(key?)`](../commands/browser/getMeta.mdx) — возвращает значение по ключу. Если ключ не указан, возвращает весь объект с метаинформацией.
 
 Наиболее распространенный сценарий использования метаинформации — сохранение сслылки на тикет:
 
@@ -180,15 +182,15 @@ export default {
     browsers: {
         chrome: {
             meta: {
-                platform: 'desktop'
-            }
+                platform: "desktop",
+            },
         },
-        'chrome-mobile': {
+        "chrome-mobile": {
             meta: {
-                platform: 'mobile'
-            }
-        }
-    }
+                platform: "mobile",
+            },
+        },
+    },
     // ...
 } satisfies ConfigInput;
 ```
@@ -196,10 +198,10 @@ export default {
 Ключ `url` Testplane заполняет автоматически: в нём сохраняется адрес страницы, на которой находился браузер в момент завершения теста.
 
 ```typescript
-it('tracks URL', async ({ browser }) => {
-    await browser.url('/foo/bar?baz=qux');
-    
-    const url = await browser.getMeta('url');
+it("tracks URL", async ({ browser }) => {
+    await browser.url("/foo/bar?baz=qux");
+
+    const url = await browser.getMeta("url");
     console.log(url); // '/foo/bar?baz=qux'
 });
 ```
