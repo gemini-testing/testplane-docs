@@ -1,0 +1,227 @@
+import Admonition from "@theme/Admonition";
+
+# Организация и аннотирование тестов
+
+<Admonition title="Что вы узнаете">
+
+-   Как группировать тесты в сеты для запуска в зависимости от платформы и сценария
+-   Как использовать теги для фильтрации тестов
+-   Как добавлять метаинформацию для отчетов и отладки
+
+</Admonition>
+
+## Введение
+
+По мере роста проекта классической структуры `describe/it` становится недостаточно: сотни тестов нужно запускать селективно в разных браузерах, группировать по функциональным областям, распределять по CI/CD джобам и управлять нестабильностью. Для решения этих задач Testplane предлагает сеты (группировка тестов по файлам и браузерам), теги (маркировка тестов для фильтрации), метаинформацию (произвольные данные для отчетов) и интеграцию с GUI/HTML-reporter для визуализации и интерактивной работы с результатами.
+
+## Разбивка тестов на сеты
+
+Сет — это именованная группа тестов, которая определяет, какие файлы запускать и в каких браузерах. Это основной инструмент для разделения тестов по окружениям и сценариям использования.
+
+Сеты описываются в секции `sets` [конфигурационного файла](./configuration.mdx). Если сеты не указаны, Testplane ищет тесты в папке `testplane/`.
+
+Для каждого сета можно задать параметры:
+-   `files` (обязательный) — путь или массив путей к тестовым файлам (поддерживает glob-паттерны)
+-   `browsers` — массив идентификаторов браузеров для запуска тестов данного сета (по умолчанию все из конфигурации)
+-   `ignoreFiles` — массив паттернов для исключения файлов из набора (например, WIP-тесты)
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    sets: {
+        desktop: {
+            files: "tests/desktop/**/*.test.ts",
+            ignoreFiles: ["tests/desktop/**/*.wip.ts"],
+            browsers: ["chrome", "firefox", "safari"]
+        },
+        mobile: {
+            files: "tests/mobile/**/*.test.ts",
+            browsers: ["iphone", "android"]
+        },
+        all: {
+            files: "tests/**/*.test.ts",
+            // browsers не указан — используются все браузеры из config.browsers
+        }
+    },
+    // ...
+} satisfies ConfigInput;
+```
+
+### Запуск из командной строки
+
+```bash
+# Запустить все desktop-тесты
+npx testplane --set desktop
+
+# Запустить несколько сетов одновременно 
+npx testplane --set desktop --set mobile
+
+# Запустить desktop-тесты только в chrome
+npx testplane --set desktop --browser chrome
+
+# Запустить тесты по паттерну из сета в определенном браузере
+npx testplane --set desktop --browser chrome --grep "payment"
+
+# Без указания сета запустятся все тесты из всех сетов
+npx testplane
+```
+
+<Admonition type="tip">
+    Разбивайте тесты по фичам (один файл — одна функция). Это позволит гибко комбинировать файлы в разных сетах и избежать огромных файлов на тысячи строк.
+</Admonition>
+
+Сеты из конфигурационного файла Testplane не отображаются в GUI [html-reporter](../html-reporter/overview.mdx), так как они являются механизмом запуска тестов, а не частью результатов тестирования.
+
+## Использование тегов
+
+Тег — это строковая метка, которую можно присвоить тесту или группе тестов. Теги позволяют фильтровать тесты при запуске независимо от их расположения в файловой системе или структуры `describe/it`.
+
+### Статические теги
+
+Теги задаются в опциях теста или сьюта вторым аргументом в поле `tag`. Все тесты внутри сьюта наследуют тег, присвоенный сьюту.
+
+```typescript
+describe('Поиск', { tag: 'search' }, function() {
+    it('Открытие поиска', async ({ browser }) => {
+        // тег: search
+    });
+
+    it('Выполнение поиска', { tag: 'smoke' }, async ({ browser }) => {
+        // теги: search, smoke
+    });
+
+    it('Фильтрация результатов поиска', { tag: ['smoke', 'critical'] }, async ({ browser }) => {
+        // теги: search, smoke, critical
+    });
+});
+```
+
+### Динамические теги
+
+Статические теги задаются до запуска и описывают природу теста. Но некоторые свойства становятся известны только во время или после выполнения. Для таких случаев есть метод [`browser.addTag()`](../commands/browser/addTag.mdx), который добавляет тег к уже запущенному тесту, и тег сохраняется в отчет.
+
+Типичный сценарий — автоматическая разметка медленных тестов:
+
+```typescript
+it("Click: open search", { tag: ["critical", "ui", "search"] }, async ({ browser }) => {
+        const startTime = Date.now();
+        
+        await browser.url("https://testplane.io/");
+
+        // ...
+        
+        const duration = Date.now() - startTime;
+        if (duration > 1000) {
+            await browser.addTag("slow");
+        }
+        if (duration > 2000) {
+            await browser.addTag("very-slow");
+        }
+    });
+```
+
+После прогона тест будет помечен в отчете тегами `slow` и `very-slow`: по ним можно отфильтровать результаты и решить, нужно ли переносить тест в отдельный сет с меньшей частотой запуска.
+
+### Запуск из командной строки
+
+```bash
+# Запустить только тесты с тегом smoke
+npx testplane --tag smoke
+
+# Запустить тесты с тегом smoke ИЛИ critical
+npx testplane --tag "smoke|critical"
+
+# Запустить тесты с тегами smoke И auth
+npx testplane --tag "smoke&auth"
+
+# Исключить тесты с тегом slow
+npx testplane --tag "!slow"
+
+# Smoke-тесты только на мобильных браузерах
+npx testplane --set mobile --tag smoke
+```
+
+### Теги в GUI
+
+В [html-reporter](../html-reporter/overview.mdx) теги видны в карточке теста. По ним можно выполнять фильтрацию и поиск, например, найти все упавшие critical-тесты. Динамические теги визуально отличаются от статических.
+
+![Теги в Testplane GUI](/img/docs/guides/organizing-tests/tags.png)
+
+## Работа с метаинформацией
+
+Метаинформация — это произвольный набор ключей и значений, который можно прикрепить к тесту. В отличие от тегов, метаинформация не используется для фильтрации при запуске: она предназначена для отладки и аналитики, чтобы по результатам прогона было понятно, в каком контексте выполнялся тест.
+
+Для записи и чтения метаинформации используются два метода:
+
+- [`browser.setMeta(key, value)`](../commands/browser/setMeta.mdx) — сохраняет значение под заданным ключом
+- [`browser.getMeta(key?)`](../commands/browser/getMeta.mdx) — возвращает значение по ключу. Если ключ не указан, возвращает весь объект с метаинформацией.
+
+Наиболее распространенный сценарий использования метаинформации — сохранение сслылки на тикет:
+
+```typescript
+it("Check search functionality", async ({ browser }) => {
+    await browser.setMeta("issue", "TICKET-123");
+
+    await browser.url("https://testplane.io/");
+
+    const issue = await browser.getMeta("issue");
+
+    const meta = await browser.getMeta();
+});
+```
+
+В конфигурационном файле можно задать метаинформацию для всех тестов браузера:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            meta: {
+                platform: 'desktop'
+            }
+        },
+        'chrome-mobile': {
+            meta: {
+                platform: 'mobile'
+            }
+        }
+    }
+    // ...
+} satisfies ConfigInput;
+```
+
+Ключ `url` Testplane заполняет автоматически: в нём сохраняется адрес страницы, на которой находился браузер в момент завершения теста.
+
+```typescript
+it('tracks URL', async ({ browser }) => {
+    await browser.url('/foo/bar?baz=qux');
+    
+    const url = await browser.getMeta('url');
+    console.log(url); // '/foo/bar?baz=qux'
+});
+```
+
+### Метаинформация в GUI
+
+Метаинформация теста отображается в карточке результата в разделе **Metadata**:
+
+![Метаинформация в Testplane GUI](/img/docs/guides/organizing-tests/meta.png)
+
+Если нужно, чтобы значения в секции Meta отображались как кликабельные ссылки, настройте `metaInfoBaseUrls` в конфиге HTML-репортера:
+
+```typescript title="testplane.config.ts"
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            metaInfoBaseUrls: {
+                // Ключ "issue" будет отображаться как ссылка:
+                // https://tracker.company.com/TICKET-123
+                issue: "https://tracker.company.com/",
+            },
+        },
+    },
+};
+```
