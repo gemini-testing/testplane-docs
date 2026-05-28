@@ -30,7 +30,6 @@ import Version from "../_partials/specs/version.mdx";
     --repl [type]                    run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
     --repl-before-test [type]        open repl interface before test run (default: false)
     --repl-on-fail [type]            open repl interface on test fail only (default: false)
-    --devtools                       switches the browser to the devtools mode with using CDP protocol
     --local                          use automatically downloaded browsers and drivers, provided by Testplane
     --keep-browser                   do not close browser session after test completion
     --keep-browser-on-fail           do not close browser session when test fails
@@ -257,11 +256,14 @@ testplane --repl --grep 'my test name' --browser chrome
 
 #### Devtools {#testplane-devtools}
 
-Запускает тесты Testplane с использованием [протокола автоматизации devtools][webdriver-vs-cdp].
+<Admonition type="danger" title="Удалено в Testplane 9">
+    CLI-опция `--devtools` (и соответствующее ей значение `automationProtocol: "devtools"`) **удалена** в Testplane 9. Протокол автоматизации `devtools`, который предоставлял WebdriverIO, вызывал ряд трудновоспроизводимых ошибок, которых не было при использовании WebDriver, и в самом WebdriverIO протокол автоматизации `devtools` тоже был удалён. Единственным поддерживаемым значением `automationProtocol` теперь является `"webdriver"` (оно же и значение по умолчанию).
 
-```bash
-testplane --devtools
-```
+    Чтобы запустить тесты в локально установленном браузере, используйте `gridUrl: "local"` в [конфиге](../config/browsers#automation_protocol) или CLI-опцию `--local`. Подробности — в блог-посте [Запуск на локальных браузерах](/blog/local-browsers-intro).
+
+    Обратите внимание: это не означает отказ от самого Chrome DevTools Protocol — вы по-прежнему можете напрямую использовать CDP в тестах, см. рецепт [Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp].
+
+</Admonition>
 
 #### Help {#testplane-help}
 
@@ -772,3 +774,4 @@ TESTPLANE_SETS=desktop,touch testplane
 [add-tag]: ../../commands/browser/addTag
 [switch-to-repl]: ../../commands/browser/switchToRepl
 [webdriver-vs-cdp]: ../webdriver-vs-cdp
+[how-to-use-cdp]: ../../guides/how-to-use-cdp
