@@ -654,10 +654,10 @@ Wait for actual orientation change. Default: `true`. When set to `true`, testpla
 
 ### resetCursor {#reset_cursor}
 
-Move the cursor to point _(0, 0)_ in _body_ coordinates before each test run. Default: `true`. It may be needed in cases where the default cursor position affects test execution. For example, when a tooltip _(hint)_ pops up because of the cursor, which "spoils" the screenshot being taken.
+Move the cursor to point _(0, 0)_ in _body_ coordinates before each test run. Default: `false`. It may be needed in cases where the default cursor position affects test execution. For example, when a tooltip _(hint)_ pops up because of the cursor, which "spoils" the screenshot being taken.
 
-<Admonition type="tip">
-    It is recommended to reset the cursor for desktop browsers and not for mobile ones.
+<Admonition type="warning">
+    Default value was changed from `true` to `false` in testplane@9.0.0.
 </Admonition>
 
 ### screenshotsDir {#screenshots_dir}
