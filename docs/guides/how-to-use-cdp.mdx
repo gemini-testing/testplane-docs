@@ -24,7 +24,14 @@ For a comparison of the _WebDriver_ and _CDP_ protocols, see the "WebDriver vs C
 
 ## Local Usage {#local_usage}
 
-To work with the browser via CDP locally, add the `automationProtocol: 'devtools'` option to the browser settings in the Testplane config:
+<Admonition type="danger" title="Removed in Testplane 9">
+    Starting from **Testplane 9**, the value `"devtools"` for the `automationProtocol` option (as well as the `--devtools` CLI flag) has been **removed**. It caused a number of hard-to-reproduce errors that never occurred with `automationProtocol: "webdriver"`, and the underlying [WebdriverIO](https://webdriver.io) — on which Testplane is based — has also dropped its `devtools` automation protocol. The only supported value is now `"webdriver"` (which is also the default).
+
+    Note that this does **not** deprecate the Chrome DevTools Protocol itself: you can still use CDP directly (see the [Remote Usage](#remote_usage) section below and the rest of this page). Only the `devtools` automation protocol provided by WebdriverIO has been removed.
+
+</Admonition>
+
+To run your tests in a locally installed browser, use `gridUrl: "local"` (or the `--local` CLI flag) — Testplane will automatically download the required browsers and drivers and launch them via WebDriver:
 
 ```javascript
 // .testplane.conf.js
@@ -32,8 +39,9 @@ To work with the browser via CDP locally, add the `automationProtocol: 'devtools
 module.exports = {
     browsers: {
         chrome: {
-            automationProtocol: "devtools",
+            gridUrl: "local",
             desiredCapabilities: {
+                browserName: "chrome",
                 // ...
             },
         },
@@ -47,17 +55,15 @@ module.exports = {
 
 After this, all subsequent runs will be performed in your locally installed Chrome.
 
-But if you need to run a browser with CDP support just once, it's more convenient to override this option using an environment variable:
+If you need to launch tests on a local browser just once, you can pass the `--local` CLI option instead:
 
 ```bash
-testplane_browsers_chrome_automation_protocol=devtools npx testplane ...
+npx testplane ... --local
 ```
 
-Or set it as a CLI option:
+See the [Running on Local Browsers](/blog/local-browsers-intro) blog post for a step-by-step guide.
 
-```bash
-npx testplane ... --browsers-chrome-automation-protocol=devtools
-```
+Once the browser is started locally via WebDriver, you can still call [CDP commands][how-to-intercept-requests-and-responses] inside the test as described in the [Remote Usage](#remote_usage) section.
 
 ## Remote Usage {#remote_usage}
 

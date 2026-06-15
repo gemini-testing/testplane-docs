@@ -30,7 +30,6 @@ Main command to run tests.
     --repl [type]                    run one test, call `browser.switchToRepl` in test code to open repl interface (default: false)
     --repl-before-test [type]        open repl interface before test run (default: false)
     --repl-on-fail [type]            open repl interface on test fail only (default: false)
-    --devtools                       switches the browser to the devtools mode with using CDP protocol
     --local                          use automatically downloaded browsers and drivers, provided by Testplane
     --keep-browser                   do not close browser session after test completion
     --keep-browser-on-fail           do not close browser session when test fails
@@ -256,11 +255,14 @@ Example of console output with connection information to the browser:
 
 #### Devtools {#testplane-devtools}
 
-Runs Testplane tests using [devtools automation protocol][webdriver-vs-cdp].
+<Admonition type="danger" title="Removed in Testplane 9">
+    The `--devtools` CLI option (and the corresponding `automationProtocol: "devtools"` value) was **removed** in Testplane 9. The `devtools` automation protocol — provided by WebdriverIO — caused a number of hard-to-reproduce issues that never occurred under WebDriver, and WebdriverIO has also dropped its `devtools` automation protocol. The only supported value of `automationProtocol` is now `"webdriver"` (the default).
 
-```bash
-testplane --devtools
-```
+    To run tests in a locally installed browser, use `gridUrl: "local"` in the [config](../config/browsers#automation_protocol) or the `--local` CLI option. See [Running on Local Browsers](/blog/local-browsers-intro) for details.
+
+    Note: this does not deprecate the Chrome DevTools Protocol itself — you can still use it directly from tests, see the [How to Use Chrome DevTools Protocol][how-to-use-cdp] guide.
+
+</Admonition>
 
 #### Help {#testplane-help}
 
@@ -771,3 +773,4 @@ TESTPLANE_SETS=desktop,touch testplane
 [add-tag]: ../../commands/browser/addTag
 [switch-to-repl]: ../../commands/browser/switchToRepl
 [webdriver-vs-cdp]: ../webdriver-vs-cdp
+[how-to-use-cdp]: ../../guides/how-to-use-cdp
