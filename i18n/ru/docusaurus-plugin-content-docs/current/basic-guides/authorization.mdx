@@ -1,1 +1,318 @@
+import Admonition from "@theme/Admonition";
+
 # Авторизация в тестах
+
+<Admonition title="Что вы узнаете">
+
+-   Как работают команды `saveState` и `restoreState`
+-   Как сохранить сессию авторизации и переиспользовать её в тестах
+-   Как работать с несколькими аккаунтами и ролями
+-   Лучшие практики хранения состояния и работы с параллельными тестами
+
+</Admonition>
+
+## Введение
+
+При запуске тестов браузер не содержит данных авторизации. Выполнять вход в каждом тесте неэффективно: это увеличивает время прогона и создаёт зависимость от стабильности формы логина.
+
+Команды [`saveState`](../commands/browser/saveState.mdx) и [`restoreState`](../commands/browser/restoreState.mdx) позволяют сохранить состояние браузера (cookies, localStorage, sessionStorage) после однократной авторизации и восстанавливать его в последующих тестах.
+
+## Как работают команды
+
+### saveState
+
+Команда [`saveState`](../commands/browser/saveState.mdx) сохраняет текущее состояние браузера: cookies, localStorage и sessionStorage. Данные можно сохранить в файл или в переменную.
+
+```typescript
+// Сохранение в файл
+await browser.saveState({ path: "./state.json" });
+
+// Сохранение в переменную
+const state = await browser.saveState();
+```
+
+Для страниц с iframe данные storage сохраняются отдельно для каждого origin. IndexedDB в сохраняемое состояние не входит.
+
+### restoreState
+
+Команда [`restoreState`](../commands/browser/restoreState.mdx) восстанавливает ранее сохранённое состояние.
+
+```typescript
+// Восстановление из файла
+await browser.restoreState({ path: "./state.json" });
+
+// Восстановление из переменной
+await browser.restoreState({ data: state });
+```
+
+<Admonition type="warning" title="Важно">
+    Перед вызовом `restoreState` откройте страницу нужного домена командой
+    [`url`](../commands/browser/url.mdx). Это техническое ограничение браузера: localStorage и
+    sessionStorage привязаны к origin, а cookies можно установить только для текущего домена.
+</Admonition>
+
+По умолчанию после восстановления состояния страница перезагружается (`refresh: true`). Это нужно, чтобы приложение «увидело» восстановленные данные.
+
+### Работа с cookies напрямую
+
+Если авторизация хранится только в cookies и localStorage/sessionStorage не нужны, можно использовать команды [`getCookies`](../commands/browser/getCookies.mdx), [`setCookies`](../commands/browser/setCookies.mdx) и [`deleteCookies`](../commands/browser/deleteCookies.mdx):
+
+```typescript
+// Получить cookies
+const cookies = await browser.getCookies();
+
+// Установить cookies
+await browser.setCookies([{ name: "session", value: "abc123", domain: ".example.com" }]);
+
+// Удалить конкретный cookie
+await browser.deleteCookies("session");
+```
+
+## Базовый сценарий: один аккаунт
+
+В этом варианте авторизация выполняется один раз в `beforeAll`, после чего состояние сохраняется в файл. Перед каждым тестом плагин [`@testplane/global-hook`](../plugins/testplane-global-hook.mdx) открывает приложение и восстанавливает сохранённое состояние, чтобы тесты начинались уже с готовой авторизацией.
+
+<details>
+
+    <summary>Пример конфигурации</summary>
+
+    ```typescript title="testplane.config.ts"
+
+    import path from "node:path";
+    import type { ConfigInput, WdioBrowser } from "testplane";
+    import { launchBrowser } from "testplane/unstable";
+
+    const baseUrl = "http://localhost:3000";
+    const statePath = path.resolve(process.cwd(), ".testplane", "states", "user.json");
+
+    async function login(browser: WdioBrowser) {
+        await browser.url(`${baseUrl}/login`);
+        await browser.$("#email").setValue(process.env.E2E_USER_EMAIL);
+        await browser.$("#password").setValue(process.env.E2E_USER_PASSWORD);
+        await browser.$("#submit").click();
+        await browser.$("#welcome").waitForDisplayed();
+    }
+
+    export default {
+        gridUrl: "local",
+
+        browsers: {
+            chrome: {
+                desiredCapabilities: {
+                    browserName: "chrome"
+                }
+            }
+        },
+
+        sets: {
+            desktop: {
+                files: ["testplane/**/*.e2e.ts"],
+                browsers: ["chrome"]
+            }
+        },
+
+        beforeAll: async ({ config }) => {
+            const browser = await launchBrowser(config.browsers.chrome!);
+
+            await login(browser);
+            await browser.saveState({ path: statePath });
+
+            await browser.deleteSession();
+        },
+
+        plugins: {
+            "@testplane/global-hook": {
+                enabled: true,
+
+                beforeEach: async ({ browser }: { browser: WdioBrowser }) => {
+                    await browser.url(baseUrl);
+                    await browser.restoreState({ path: statePath });
+                }
+            }
+        }
+
+    } satisfies ConfigInput;
+    ```
+
+</details>
+
+<details>
+
+    <summary>Пример теста</summary>
+
+    ```typescript title="example.testplane.ts"
+    const baseUrl = "http://localhost:3000";
+
+    describe("авторизованный пользователь", () => {
+        it("открывает дашборд без повторного логина", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            await expect(browser.$("#role")).toHaveTextContaining("user");
+        });
+
+        it("восстанавливает localStorage и sessionStorage", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            const email = await browser.execute(() => localStorage.getItem("auth.email"));
+            const role = await browser.execute(() => localStorage.getItem("auth.role"));
+            const bannerDismissed = await browser.execute(() =>
+                sessionStorage.getItem("feature.bannerDismissed")
+            );
+
+            expect(email).toBe(process.env.E2E_USER_EMAIL);
+            expect(role).toBe("user");
+            expect(bannerDismissed).toBe("true");
+        });
+    });
+    ```
+
+</details>
+
+-   `beforeAll` выполняет логин только один раз и сохраняет снимок браузера в файл.
+-   `@testplane/global-hook` выносит повторяющуюся логику восстановления состояния из самих тестов в общий `beforeEach`.
+-   Перед `restoreState` обязательно вызывается `browser.url(baseUrl)`, иначе браузер не сможет корректно восстановить cookies и storage для нужного origin.
+
+## Несколько аккаунтов (admin + user)
+
+В этом варианте в `beforeAll` подготавливаются два снимка состояния: один для обычного пользователя, второй для администратора. Нужный снимок выбирается в `beforeEach`, а в тестах можно проверять различия в правах доступа и элементах интерфейса.
+
+<details>
+
+    <summary>Пример конфигурации</summary>
+
+    ```typescript title="testplane.config.ts"
+
+    import path from "node:path";
+    import type { ConfigInput, WdioBrowser } from "testplane";
+    import { launchBrowser } from "testplane/unstable";
+
+    const baseUrl = "http://localhost:3000";
+    const stateDir = path.resolve(process.cwd(), ".testplane", "states");
+    const userStatePath = path.join(stateDir, "user.json");
+    const adminStatePath = path.join(stateDir, "admin.json");
+
+    async function login(browser: WdioBrowser, email: string, password: string) {
+        await browser.url(`${baseUrl}/login`);
+        await browser.$("#email").setValue(email);
+        await browser.$("#password").setValue(password);
+        await browser.$("#submit").click();
+        await browser.$("#welcome").waitForDisplayed();
+    }
+
+    async function clearClientState(browser: WdioBrowser) {
+        await browser.url(`${baseUrl}/login`);
+        await browser.execute(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+        await browser.deleteCookies();
+    }
+
+    export default {
+        gridUrl: "local",
+
+        browsers: {
+            chrome: {
+                desiredCapabilities: {
+                    browserName: "chrome"
+                }
+            }
+        },
+
+        sets: {
+            desktop: {
+                files: ["testplane/**/*.e2e.ts"],
+                browsers: ["chrome"]
+            }
+        },
+
+        beforeAll: async ({ config }) => {
+            const browser = await launchBrowser(config.browsers.chrome!);
+
+            await login(
+                browser,
+                process.env.E2E_USER_EMAIL,
+                process.env.E2E_USER_PASSWORD
+            );
+            await browser.saveState({ path: userStatePath });
+
+            await clearClientState(browser);
+
+            await login(
+                browser,
+                process.env.E2E_ADMIN_EMAIL,
+                process.env.E2E_ADMIN_PASSWORD
+            );
+            await browser.saveState({ path: adminStatePath });
+
+            await browser.deleteSession();
+        },
+
+        plugins: {
+            "@testplane/global-hook": {
+                enabled: true,
+
+                beforeEach: async ({ browser, currentTest }: {
+                    browser: WdioBrowser;
+                    currentTest: { title: string };
+                }) => {
+                    const statePath = currentTest.title.includes("[admin]")
+                        ? adminStatePath
+                        : userStatePath;
+
+                    await browser.url(baseUrl);
+                    await browser.restoreState({ path: statePath });
+                }
+            }
+        }
+    } satisfies ConfigInput;
+    ```
+
+</details>
+
+<details>
+
+    <summary>Пример теста</summary>
+
+    ```typescript title="example.testplane.ts"
+    const baseUrl = "http://localhost:3000";
+
+    describe("аккаунты с разными ролями", () => {
+        it("открывает дашборд для обычного пользователя", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            await expect(browser.$("#role")).toHaveTextContaining("user");
+            await expect(browser.$("#no-admin-message")).toBeDisplayed();
+        });
+
+        it("[admin] открывает дашборд для администратора", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            await expect(browser.$("#role")).toHaveTextContaining("admin");
+            await expect(browser.$("#admin-link")).toBeDisplayed();
+        });
+
+        it("запрещает пользователю доступ к странице администратора", async ({ browser }) => {
+            await browser.url(`${baseUrl}/admin`);
+            await expect(browser.$("#forbidden-message")).toBeDisplayed();
+        });
+
+        it("[admin] разрешает администратору доступ к странице администратора", async ({ browser }) => {
+            await browser.url(`${baseUrl}/admin`);
+            await expect(browser.$("#manage-users")).toBeDisplayed();
+        });
+    });
+    ```
+
+</details>
+
+-   В `beforeAll` сохраняются два отдельных state-файла — по одному на роль, чтобы затем переиспользовать их в тестах.
+-   В `beforeEach` выбирается нужный снимок состояния; в примере выбор завязан на название теста, но в реальном проекте это может быть любая удобная схема .
+-   Такой подход позволяет наглядно показать, что один и тот же набор тестов можно запускать под разными ролями без повторного логина перед каждым кейсом.
+
+## Best practices
+
+-   Не коммитьте state-файлы в репозиторий: в них могут содержаться cookies и другие чувствительные данные.
+-   Храните логины и пароли в переменных окружения, а не в коде тестов.
+-   Учитывайте срок жизни сессии: если снимок состояния устарел, его придётся пересоздать.
+-   Если тесты изменяют данные на стороне сервера, один и тот же аккаунт может стать источником конфликтов при параллельном запуске. В таких случаях лучше готовить отдельные аккаунты на каждый конфликтующий сценарий.
