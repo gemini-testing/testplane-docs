@@ -2,8 +2,6 @@
 sidebar_position: 3
 ---
 
-import Admonition from "@theme/Admonition";
-
 # Running and Debugging
 
 ## Running tests
@@ -152,21 +150,19 @@ npx testplane gui
 
 In the GUI you will see test execution in real time, screenshots, and errors. You can restart individual tests and observe their execution.
 
-### Local browser with DevTools
+### Visible local browser
 
-For debugging, you can open a visible browser window with DevTools:
+For debugging, you can open a visible browser window:
 
 ```bash
-npx testplane --local --devtools --headless false --grep "Test name"
+npx testplane --local --headless false --grep "Test name"
 ```
 
 What will happen:
 
-1.  A visible browser window will open
-2.  Chrome DevTools will automatically open
+1.  Testplane will download the browser and driver if needed (`--local` is the same as `gridUrl: "local"` in the config)
+2.  A visible browser window will open
 3.  You can observe the test execution
-
-<Admonition type="warning">Firefox browser does not support DevTools.</Admonition>
 
 ### REPL mode
 
