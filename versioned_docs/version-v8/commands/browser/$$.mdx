@@ -1,0 +1,96 @@
+---
+slug: _dollardollar
+sidebar_label: $$
+---
+
+import Admonition from "@theme/Admonition";
+
+# $$
+
+## Overview {#overview}
+
+Use the `$$` command instead of [findElements][find-elements] as a shorter command to get multiple elements on the page.
+
+The `$$` command returns an array with the desired elements, on each of which you can call action commands without passing the selector. However, if you do pass a selector, it will first find the corresponding element and then call the action for that element.
+
+You can chain `$` or `$$` together to traverse down the DOM tree.
+
+<Admonition type="info">
+    Read more about how to select specific elements in the recipe "[How to use
+    selectors][how-to-use-selectors]".
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.$$(selector);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>selector</td><td>String or Function</td><td>Selector or JS function to get multiple elements.</td></tr>
+
+</tbody>
+</table>
+
+## Examples {#examples}
+
+**index.html**
+
+```html
+<ul id="menu">
+    <li>
+        <a href="/">Home</a>
+    </li>
+    <li>
+        <a href="/">Developer Guide</a>
+    </li>
+    <li>
+        <a href="/">API</a>
+    </li>
+    <li>
+        <a href="/">Contribute</a>
+    </li>
+</ul>
+```
+
+**$.js**
+
+```javascript
+it("should get text of a menu link", async ({ browser }) => {
+    const text = await browser.$$("#menu")[0];
+
+    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
+});
+
+it("should get text of a menu link - JS Function", async ({ browser }) => {
+    const text = await browser.$$(function () {
+        // Arrow function cannot be used here.
+        // This is Window – https://developer.mozilla.org/en-US/docs/Web/API/Window
+        //
+        // TypeScript users can do something like:
+        // return (this as Window).document.querySelectorAll('#menu')
+        return this.document.querySelectorAll("#menu"); // Element[]
+    })[0];
+
+    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
+});
+```
+
+## Related Commands {#related}
+
+-   [browser.$](../_dollar)
+-   [element.$](../../element/_dollar)
+-   [element.$$](../../element/_dollardollar)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/$$), from which we drew some information while writing our version.
+
+[find-elements]: https://webdriver.io/docs/api/webdriver/#findelements
+[how-to-use-selectors]: https://webdriver.io/docs/selectors

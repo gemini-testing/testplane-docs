@@ -1,0 +1,11 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+import { pick } from "lodash";
+
+export default {
+    // ...
+    prepareEnvironment: function () {
+        this.sets = pick(this.sets, ["touch-phone"]);
+    },
+};
+```

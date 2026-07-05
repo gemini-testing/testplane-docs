@@ -1,0 +1,28 @@
+# restore
+
+## Обзор {#overview}
+
+Используйте команду `restore`, чтобы выполнить все то же, что делает [mock.clear()](../clear), а также удалить любые поддельные возвращаемые значения или реализации.
+
+## Использование {#usage}
+
+```javascript
+mock.restore();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the addValue command", async ({ browser }) => {
+    const mock = await browser.mock("**/googlelogo_color_272x92dp.png");
+    mock.respond("https://webdriver.io/img/webdriverio.png");
+
+    await browser.url("https://google.com"); // покажет логотип WebdriverIO вместо логотипа Google
+    mock.restore();
+    await browser.url("https://google.com"); // покажет родной логотип Google
+});
+```
+
+## Связанные команды {#related}
+
+-   [clear](../clear)

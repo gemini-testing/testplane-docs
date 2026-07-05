@@ -1,0 +1,47 @@
+import Admonition from "@theme/Admonition";
+
+# getPuppeteer
+
+## Обзор {#overview}
+
+Используйте команду `getPuppeteer`, чтобы получить инстанс [Puppeteer][puppeteer] браузера для последующего выполнения с его помощью специальных команд.
+
+Обратите внимание, что все команды [Puppeteer][puppeteer] по умолчанию асинхронны, поэтому, чтобы переключаться между синхронным и асинхронным выполнением, обязательно оберните вызовы [Puppeteer][puppeteer] в [browser.call][browser-call], как показано ниже в примере.
+
+<Admonition type="warning">
+Команда _getPuppeteer_ работает только при использовании _Chrome DevTools Protocol (CDP)_.
+
+Читайте подробности в разделе «[Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp]».
+
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.getPuppeteer();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it('should allow me to use Puppeteer', async ({ browser }) => {
+    await browser.url('https://webdriver.io');
+
+    const puppeteerBrowser = await browser.getPuppeteer();
+
+    // переключаемся на Puppeteer
+    const metrics = await browser.call(async () => {
+        await pages = await puppeteerBrowser.pages();
+
+        pages[0].setGeolocation({ latitude: 59.95, longitude: 30.31667 });
+
+        return pages[0].metrics();
+    });
+
+    console.log(metrics.LayoutCount); // выведет: 42
+});
+```
+
+[how-to-use-cdp]: ../../../guides/how-to-use-cdp
+[puppeteer]: https://pptr.dev/#?product=Puppeteer&version=v5.1.0&show=api-class-browser
+[browser-call]: ../call

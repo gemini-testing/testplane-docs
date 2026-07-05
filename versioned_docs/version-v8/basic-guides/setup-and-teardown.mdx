@@ -1,0 +1,122 @@
+# Setup and Teardown
+
+Testplane provides a way to run code before and after each test as well as once before/after the whole test run. You can use these hooks to prepare the environment, reduce repetition in your tests and more.
+
+## Before/After Each Test
+
+Use the [@testplane/global-hook][testplane-global-hook] plugin to perform actions before/after each test. Install the plugin:
+
+```shell
+npm install -D @testplane/global-hook
+```
+
+Add the plugin to the plugins section of the testplane config and define hooks you need.
+
+In the example below, we're restoring browser state before each test — this is useful if your app requires auth.
+
+```typescript
+export default {
+    // ...
+    plugins: {
+        "@testplane/global-hook": {
+            beforeEach: async ({ browser }) => {
+                await browser.restoreState();
+            },
+            afterEach: async ({ browser }) => {
+                await browser.execute(() => {
+                    try {
+                        localStorage.clear();
+                    } catch (e) {}
+                });
+            },
+        },
+    },
+};
+```
+
+Note: browser instance is available in the hooks as `browser` property of the context object.
+
+Learn more about the [`saveState`](../commands/browser/saveState.mdx) and [`restoreState`](../commands/browser/restoreState.mdx) browser commands in corresponding articles.
+
+[testplane-global-hook]: https://github.com/gemini-testing/testplane-global-hook
+
+## Before/After the Whole Testplane Run
+
+Use the `beforeAll` and `afterAll` hooks to perform actions before/after the whole testplane run. You can define these hooks in your Testplane config, as shown in example below.
+
+A neat use case for these is authenticating and saving auth state for use in subsequent tests:
+
+```typescript
+import fs from "fs";
+import { launchBrowser } from "testplane/unstable";
+
+const COOKIE_PATH = "./cookies.json";
+
+export default {
+    browsers: {
+        "chrome-desktop": {
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+
+    beforeAll: async ({ config }) => {
+        const browser = await launchBrowser(config.browsers["chrome-desktop"]);
+        await browser.url("https://example.com/login");
+
+        await browser.setValue("#username", "user");
+        await browser.setValue("#password", "pass");
+        await browser.click("#submit");
+
+        const cookies = await browser.getCookies();
+        fs.writeFileSync(COOKIE_PATH, JSON.stringify(cookies));
+
+        await browser.deleteSession();
+    },
+
+    afterAll: async () => {
+        if (fs.existsSync(COOKIE_PATH)) {
+            fs.rmSync(COOKIE_PATH);
+        }
+    },
+};
+```
+
+Note: there's no browser instance readily available in the `beforeAll` and `afterAll` hooks, you may use the [Standalone API](../reference/testplane-standalone-api.mdx) to launch a browser and perform actions with it.
+
+## The `prepareBrowser` hook
+
+The `prepareBrowser` hook is called once per browser session, after browser initialization, but before running any tests in it.
+
+A common use case for this hook is adding custom commands for use in tests:
+
+```typescript
+export default {
+    // ...
+    prepareBrowser: function (browser) {
+        browser.addCommand("waitForCustomCondition", async function (selector) {
+            await this.waitForExist(selector);
+            await this.waitForDisplayed(selector);
+        });
+
+        require("./commands/auth-helpers")(browser);
+        require("./commands/api-helpers")(browser);
+    },
+};
+```
+
+## The `prepareEnvironment` hook
+
+The `prepareEnvironment` hook is called once per process: in the main process and in each worker during config loading. This hook has config object available as `this`.
+
+This hook is useful only for very specific cases, prefer to use options above, unless you are sure what you are doing.
+
+```typescript
+import { pick } from "lodash";
+
+export default {
+    // ...
+    prepareEnvironment: function () {
+        this.sets = pick(this.sets, ["touch-phone"]);
+    },
+};
+```

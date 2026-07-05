@@ -342,7 +342,7 @@ describe("getByRole", () => {
 ```javascript
 describe("Поиск поля ввода с помощью метода getByLabelText", () => {
     it("Найти и использовать поле поиска", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/docs/v8/html-reporter/overview/");
+        await browser.url("https://testplane.io/ru/docs/html-reporter/overview/");
 
         // Находим кнопку поиска
         const searchButton = await browser.getByLabelText(/search|поиск/i);
@@ -360,7 +360,7 @@ describe("Поиск поля ввода с помощью метода getByLab
 ```javascript
 describe("getByPlaceholderText", () => {
     it("Поиск поля ввода с помощью метода getByPlaceholderText", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/docs/v8/html-reporter/overview/");
+        await browser.url("https://testplane.io/ru/docs/html-reporter/overview/");
 
         // Открываем модальное окно поиска
         const searchButton = await browser.$(".DocSearch-Button");
@@ -416,7 +416,7 @@ describe("getByText", () => {
 ```javascript
 describe("Поиск с помощью метода getByDisplayValue", () => {
     it("Найти и проверить значение", async ({ browser }) => {
-        await browser.url("https://testplane.io/ru/docs/v8/html-reporter/overview/");
+        await browser.url("https://testplane.io/ru/docs/html-reporter/overview/");
 
         // Открываем поиск
         const searchButton = await browser.$(".DocSearch-Button");
@@ -465,7 +465,7 @@ describe("Поиск элемента с помощью метода getByAltTex
 describe("Поиск элемента с помощью метода getByTitle", () => {
     it("Поиск <a> элемента", async ({ browser }) => {
         // Открываем страницу
-        await browser.url("https://testplane.io/docs/v8/");
+        await browser.url("https://testplane.io/docs/");
 
         // Находим элемент <a> по атрибуту title
         const linkElement = await browser.getByTitle("Direct link to Rich Debugging Capabilities");

@@ -1,0 +1,48 @@
+import Admonition from "@theme/Admonition";
+
+# saveRecordingScreen
+
+## Обзор {#overview}
+
+Используйте команду `saveRecordingScreen`, чтобы сохранить в файл видео, съемка которого была начата командой [startRecordingScreen][start-recording-screen].
+
+<Admonition type="warning">
+    Команда _saveRecordingScreen_ поддерживается только для мобильных сессий, которые используют
+    [Appium][appium].
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.saveRecordingScreen(filepath);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>filepath</td><td>String</td><td>Полный или относительный к исполняемому каталогу путь к видео.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should save a video", async ({ browser }) => {
+    await browser.startRecordingScreen();
+    await browser.$("~BUTTON").click();
+    await browser.saveRecordingScreen("./some/path/video.mp4");
+});
+```
+
+## Связанные команды {#related}
+
+-   [savePDF](../savePDF)
+-   [saveScreenshot](../saveScreenshot)
+
+[start-recording-screen]: https://webdriver.io/docs/api/appium/#startrecordingscreen
+[appium]: http://appium.io/docs/en/commands/device/recording-screen/start-recording-screen/

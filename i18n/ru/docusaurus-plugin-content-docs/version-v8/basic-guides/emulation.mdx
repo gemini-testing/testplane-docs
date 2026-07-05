@@ -1,0 +1,84 @@
+import Admonition from "@theme/Admonition";
+
+# Эмуляция
+
+## Производительность CPU
+
+<Admonition type="warning">
+
+Данная функция работает только браузерами, поддерживающими _Chrome DevTools Protocol (CDP)_.
+
+</Admonition>
+
+Скорость работы процессора на мобильных устройствах сильно уступает скорости на компьютерах. Поэтому для эмуляции скорости CPU в Testplane существует метод [emulateCPUThrottling][emulate-cpu-throttling].
+
+### Пример: замедляем скорость процессора в 8 раз
+
+```javascript
+it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
+    // Получаем инстанс puppeteer'а
+    const puppeteer = await browser.getPuppeteer();
+
+    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
+    const [page] = await puppeteer.pages();
+
+    // Замедляем скорость процессора в 8 раз
+    await page.emulateCPUThrottling(8);
+
+    await browser.url("https://yandex.ru");
+});
+```
+
+## Пропускная способность сети
+
+<Admonition type="warning">
+
+Данная функция работает только браузерами, поддерживающими _Chrome DevTools Protocol (CDP)_.
+
+</Admonition>
+
+Огромное количество пользователей пользуются сервисами с мобильных устройств, на которых скорость интернета бывает довольно медленной или совсем пропадает на время. В _webdriverio_ мы можем ограничить пропускную способность сети с помощью метода [throttle][throttle] и таким образом протестировать поведение сайта в сетях с разной пропускной способностью.
+
+Помимо индивидуальных настроек метод [throttle][throttle] поддерживает следующие готовые пресеты:
+
+-   offline | online
+-   GPRS
+-   Regular2G | Good2G
+-   Regular3G | Good3G
+-   Regular4G
+-   DSL
+-   WiFi
+
+### Пример 1: эмуляция 2G-соединения
+
+Сэмулируем 2G-соединение и откроем yandex.ru в Хроме с эмуляцией телефона:
+
+```javascript
+it("should open yandex.ru with emulation of 2G-connection", async function ({ browser }) {
+    // Имитируем 2G-соединение
+    await browser.throttle("Good2G");
+
+    await browser.url("https://yandex.ru");
+});
+```
+
+### Пример 2: эмуляция сети с заданными характеристиками
+
+Также мы можем сэмулировать соединение с конкретными характеристиками:
+
+```javascript
+it("should open yandex.ru with emulation of custom connection", async function ({ browser }) {
+    // Имитируем соединение в сети с заданными характеристиками
+    await browser.throttle({
+        offline: false, // имитация отключения от интернета
+        downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (byte/sec)
+        uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (byte/sec)
+        latency: 10, // минимальная задержка от отправки запроса до получения заголовков ответа
+    });
+
+    await browser.url("https://yandex.ru");
+});
+```
+
+[emulate-cpu-throttling]: https://pptr.dev/api/puppeteer.page.emulatecputhrottling
+[throttle]: ../../commands/browser/throttle

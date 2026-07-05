@@ -1,0 +1,122 @@
+# Typescript и ESM
+
+## Typescript в Testplane
+
+Testplane поддерживает TypeScript из коробки — вам не нужно настраивать дополнительные инструменты для транспайлинга, вы сразу можете писать тесты:
+
+```typescript
+describe("test examples", () => {
+    it("Открыть главную страницу и проверить заголовок", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const title = await browser.getTitle();
+        expect(title).toContain("Testplane");
+    });
+});
+```
+
+И указывать `.ts` файлы напрямую в конфиге:
+
+```typescript
+// .testplane.config.ts
+export default {
+    sets: {
+        desktop: {
+            files: ["tests/**/*.ts"],
+        },
+    },
+};
+```
+
+## Варианты транспайлинга
+
+Testplane автоматически использует `@swc/core` для транспайлинга, если этот пакет установлен в проекте, в противном случае он задействует `esbuild`, который уже включён в состав Testplane.
+
+:::warning Важно
+Проверку типов необходимо реализовывать отдельно с помощью `tsc` и конфига.
+:::
+
+Если автоматический трайнспайлинг не подходит из-за специфики проекта, вы можете отключить его с помощью переменной окружения `TS_ENABLE=false` и провести настройку самостоятельно.
+
+Чтобы передать нужный лоадер при настройке вручную, используйте опцию `--require`, например:
+
+```bash
+-r ts-node/register
+```
+
+## Работа с алиасами в ипортах
+
+Многие проекты используют алиасы путей в `tsconfig.json`:
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@components/*": ["src/components/*"],
+            "@utils/*": ["src/utils/*"],
+            "@fixtures/*": ["tests/fixtures/*"]
+        }
+    }
+}
+```
+
+Однако TypeScript-компилятор умеет резолвить эти пути только во время компиляции. В рантайме `Node.js` не знает об этих алиасах, и вы получите ошибку:
+
+```bash
+ Cannot find module '@components/Button'.
+```
+
+#### Резолв путей в рантайме
+
+Установите пакет `tsconfig-paths`:
+
+```bash
+npm install --save-dev tsconfig-paths
+```
+
+Ипользуйте опцию `--require`:
+
+```bash
+npx testplane -r tsconfig-paths/register
+```
+
+Для более подробного знакомства с `tsconfig-paths` перейдите на [сайт с документацией пакета](https://www.typescriptlang.org/tsconfig/#paths).
+
+## Типизация конфига
+
+Testplane экспортирует типы для конфигурации, например:
+
+```typescript
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+} satisfies ConfigInput;
+```
+
+Оператор `satisfies` проверяет совместимость значения с указанным типом при сохранении исходного типа этого значения.
+
+## Расширение типов команд браузера
+
+В Testplane имеется поддержка пользовательских команд с Typescript:
+
+```typescript
+import "webdriverio"; // Может быть любой импорт, не обязательно webdriverio
+
+declare global {
+    declare namespace WebdriverIO {
+        interface Browser {
+            customCommand: (arg: any) => Promise<void>;
+        }
+    }
+}
+```
+
+Подробнее об этом вы можете прочитать в статье про [кастомные команды](https://testplane.io/ru/docs/v8/basic-guides/custom-commands/).
+
+## Работа с ESM
+
+#### Системные ограничения
+
+Для работы с ESM вам понадобится `Node.js` версии v22.0.0, v20.17.0 и выше. Взаимодействие ESM и CommonJS кода возможно благодаря возможности `Node.js`, описанной в [статье](https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require).

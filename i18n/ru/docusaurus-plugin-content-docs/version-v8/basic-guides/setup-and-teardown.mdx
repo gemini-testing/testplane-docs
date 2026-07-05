@@ -1,0 +1,122 @@
+# Хуки жизненного цикла
+
+Testplane предоставляет способ выполнять код как до и после каждого теста, так и единоразово до/после всего запуска. Вы можете использовать эти хуки для подготовки окружения, уменьшения дублирования в тестах и многого другого.
+
+## До/после каждого теста
+
+Используйте плагин [@testplane/global-hook][testplane-global-hook] для выполнения действий до/после каждого теста. Установите плагин:
+
+```shell
+npm install -D @testplane/global-hook
+```
+
+Добавьте плагин в секцию plugins конфигурации testplane и определите необходимые хуки.
+
+В примере ниже мы восстанавливаем состояние браузера перед каждым тестом — это полезно, если ваше приложение требует аутентификации.
+
+```typescript
+export default {
+    // ...
+    plugins: {
+        "@testplane/global-hook": {
+            beforeEach: async ({ browser }) => {
+                await browser.restoreState();
+            },
+            afterEach: async ({ browser }) => {
+                await browser.execute(() => {
+                    try {
+                        localStorage.clear();
+                    } catch (e) {}
+                });
+            },
+        },
+    },
+};
+```
+
+Примечание: инстанс браузера доступен в хуках как свойство `browser` объекта контекста.
+
+Узнайте больше о командах [`saveState`](../commands/browser/saveState.mdx) и [`restoreState`](../commands/browser/restoreState.mdx) в соответствующих статьях.
+
+[testplane-global-hook]: https://github.com/gemini-testing/testplane-global-hook
+
+## До/после всего запуска Testplane
+
+Используйте хуки `beforeAll` и `afterAll` для выполнения действий до/после всего запуска Testplane. Вы можете определить эти хуки в конфигурации Testplane, как показано в примере ниже.
+
+Частый случай использования — аутентификация и сохранение состояния аутентификации для использования в последующих тестах:
+
+```typescript
+import fs from "fs";
+import { launchBrowser } from "testplane/unstable";
+
+const COOKIE_PATH = "./cookies.json";
+
+export default {
+    browsers: {
+        "chrome-desktop": {
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+
+    beforeAll: async ({ config }) => {
+        const browser = await launchBrowser(config.browsers["chrome-desktop"]);
+        await browser.url("https://example.com/login");
+
+        await browser.setValue("#username", "user");
+        await browser.setValue("#password", "pass");
+        await browser.click("#submit");
+
+        const cookies = await browser.getCookies();
+        fs.writeFileSync(COOKIE_PATH, JSON.stringify(cookies));
+
+        await browser.deleteSession();
+    },
+
+    afterAll: async () => {
+        if (fs.existsSync(COOKIE_PATH)) {
+            fs.rmSync(COOKIE_PATH);
+        }
+    },
+};
+```
+
+Примечание: в хуках `beforeAll` и `afterAll` нет готового экземпляра браузера, вы можете использовать [Standalone API](../reference/testplane-standalone-api.mdx) для запуска браузера и выполнения действий в нём.
+
+## Хук `prepareBrowser`
+
+Хук `prepareBrowser` вызывается один раз на сессию браузера, после инициализации браузера, но до запуска любых тестов в нём.
+
+Частый случай использования этого хука — добавление пользовательских команд для использования в тестах:
+
+```typescript
+export default {
+    // ...
+    prepareBrowser: function (browser) {
+        browser.addCommand("waitForCustomCondition", async function (selector) {
+            await this.waitForExist(selector);
+            await this.waitForDisplayed(selector);
+        });
+
+        require("./commands/auth-helpers")(browser);
+        require("./commands/api-helpers")(browser);
+    },
+};
+```
+
+## Хук `prepareEnvironment`
+
+Хук `prepareEnvironment` вызывается один раз на процесс: в главном процессе и в каждом воркере во время загрузки конфигурации. В этом хуке объект конфигурации доступен как `this`.
+
+Этот хук полезен только для очень специфических случаев, если вы не уверены в том, что делаете — используйте варианты, описанные выше.
+
+```typescript
+import { pick } from "lodash";
+
+export default {
+    // ...
+    prepareEnvironment: function () {
+        this.sets = pick(this.sets, ["touch-phone"]);
+    },
+};
+```

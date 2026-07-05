@@ -1,0 +1,152 @@
+---
+sidebar_position: 1
+---
+
+# Installation and Setup
+
+## System requirements
+
+To start working with Testplane, install `Node.js` version 18.0 or higher.
+
+## Installation {#install}
+
+To run the Testplane installer using `npm`, execute the following command:
+
+```bash
+npm init testplane@latest YOUR_PROJECT_PATH
+```
+
+To configure the project in interactive mode with additional parameters (package manager selection, plugin installation), specify the <nobr>`-v`</nobr> option.
+
+After running the installation command, the following set of files and folders will appear in the project directory:
+
+```bash
+node_modules
+testplane-tests
+    example.testplane.ts
+    ts.config.json
+package-lock.json
+package.json
+testplane.config.ts
+```
+
+## Setup {#setup}
+
+The `testplane.config.ts` file contains a basic set of settings for running tests:
+
+```typescript title="testplane.config.ts"
+import { setupBrowser } from "@testplane/testing-library";
+import type { WdioBrowser } from "testplane";
+
+export default {
+    gridUrl: "local",
+    baseUrl: "http://localhost",
+    pageLoadTimeout: 20000,
+    httpTimeout: 20000,
+    testTimeout: 90000,
+    resetCursor: false,
+    sets: {
+        desktop: {
+            files: ["testplane-tests/**/*.testplane.(t|j)s"],
+            browsers: ["chrome", "firefox"],
+        },
+    },
+    browsers: {
+        chrome: {
+            headless: true,
+            desiredCapabilities: {
+                browserName: "chrome",
+            },
+        },
+        firefox: {
+            headless: true,
+            desiredCapabilities: {
+                browserName: "firefox",
+            },
+        },
+    },
+    prepareBrowser: (browser: WdioBrowser) => {
+        setupBrowser(browser);
+    },
+    plugins: {
+        "html-reporter/testplane": {
+            enabled: true,
+            path: "testplane-report",
+            defaultView: "all",
+            diffMode: "3-up-scaled",
+        },
+    },
+} satisfies import("testplane").ConfigInput;
+```
+
+### Key configuration parameters
+
+-   `gridUrl` — where to run browsers: `"local"` for local execution or a URL for Selenium Grid or cloud (e.g., BrowserStack, Sauce Labs).
+-   `sets` — test groups for different browsers (e.g., a test set for desktop Chrome or Firefox and a set for mobile Safari). Learn more: [Sets reference](../reference/config/sets.mdx).
+-   `testTimeout` — maximum test execution time in milliseconds; the test is aborted after exceeding this limit.
+-   `pageLoadTimeout` — maximum page load wait time.
+-   `browsers` — browser configuration; `headless: true` — run without UI. Learn more: [Browsers](../basic-guides/browsers-overview.mdx).
+-   `prepareBrowser` — hook before tests; in the config above it calls `setupBrowser(browser)` and adds Testing Library methods.
+-   `plugins` — plugins; in the config above `html-reporter` for interactive reports (screenshots, logs, debugging). Learn more: [HTML Reporter](../html-reporter/overview.mdx).
+
+For a complete list of configuration parameters, see the [configuration reference](../reference/config/main.mdx).
+
+To download the browsers described in the config separately from running Testplane itself, execute the command:
+
+```bash
+npx testplane install-deps
+```
+
+Without running this command beforehand, missing browsers will be automatically downloaded the first time Testplane is launched.
+
+## First run {#first-run}
+
+After installation and setup, run the test example that was created automatically:
+
+```bash
+npx testplane
+```
+
+### What happens during the first run
+
+Testplane will automatically perform the following actions:
+
+1. Download browsers: if you haven't run `install-deps`, Testplane will download Chrome and Firefox
+2. Run the test: execute the example from `testplane-tests/example.testplane.ts`
+3. Generate a report: create an HTML report in the `testplane-report/` folder
+
+### Viewing results
+
+After the tests finish, open the interactive report:
+
+```bash
+npx testplane gui
+```
+
+The command will start a local server and open the report in your browser. In the interface you will see:
+
+-   List of passed tests
+-   Execution statistics
+-   Screenshots (if the test uses `assertView`)
+-   Execution logs
+
+### Expected outcome
+
+If everything is configured correctly, you will see:
+
+```
+✔ test examples › docs search test [chrome] - 3.2s
+✔ test examples › docs search test [firefox] - 3.5s
+
+Total: 2 Passed: 2 Failed: 0 Skipped: 0 Retries: 0
+```
+
+For the tests to pass successfully, they need access to [testplane.io](https://testplane.io/).
+
+## What's next?
+
+Now that Testplane is set up and running, you can:
+
+-   [Write your own tests](./writing-tests.mdx): test structure, selectors, and basic commands
+-   [Run and debug tests](./running-tests.mdx): filtering, GUI mode, debugging
+-   [Set up CI/CD](./usage-in-ci.mdx): automatic test runs in GitHub Actions

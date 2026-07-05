@@ -1,0 +1,49 @@
+# setTimeout
+
+## Overview {#overview}
+
+Use the `setTimeout` command to set timeouts for element searches on the page, document load waits, and script executions through the [execute][execute] or [executeAsync][execute-async] commands.
+
+## Usage {#usage}
+
+```javascript
+await browser.setTimeout({ implicit, pageLoad, script });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>implicit</td><td>Number</td><td>Time in milliseconds for retrying element location when searching for an element.</td></tr>
+<tr><td>pageLoad</td><td>Number</td><td>Time to wait for the document to load, in milliseconds.</td></tr>
+<tr><td>script</td><td>Number</td><td>Timeout for scripts run using [execute][execute] or [executeAsync][execute-async], in milliseconds.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should change timeout duration for session with long code duration", async ({ browser }) => {
+    await browser.setTimeout({
+        pageLoad: 10000,
+        script: 60000,
+    });
+
+    // execute code that takes a long time
+    await browser.executeAsync(done => {
+        console.log("Wake me up before you go!");
+        setTimeout(done, 59000);
+    });
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/setTimeout), from which we drew some information while writing our version.
+
+[execute]: ../execute
+[execute-async]: ../executeAsync

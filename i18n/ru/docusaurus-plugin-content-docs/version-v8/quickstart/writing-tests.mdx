@@ -1,0 +1,387 @@
+---
+sidebar_position: 2
+---
+
+# Написание тестов
+
+## Структура теста
+
+```typescript
+describe("Название группы тестов", () => {
+    it("Описание того, что должно произойти", async ({ browser }) => {
+        // Тело теста
+    });
+});
+```
+
+-   `describe` группирует связанные тесты
+-   `it` описывает конкретный тестовый сценарий
+-   `browser` — объект браузера для взаимодействия со страницей
+
+После установки Testplane можно ознакомиться с примером теста в файле `testplane-tests/example.testplane.ts`.
+
+<details>
+
+    <summary>Пример теста</summary>
+
+    ```typescript title="example.testplane.ts"
+
+        describe("test examples", () => {
+            it("docs search test", async ({browser}) => {
+                await browser.openAndWait("https://testplane.io/");
+
+                // Find by tag name
+                const navBar = await browser.$("nav");
+
+                // Find by aria-label
+                await navBar.$("aria/Search").click();
+
+                // Find by placeholder
+                const fileSearchInput = await browser.findByPlaceholderText("Search docs");
+                await fileSearchInput.waitForDisplayed();
+                await fileSearchInput.setValue("config");
+
+                // Find by id
+                const fileSearchResults = await browser.$("#docsearch-list");
+
+                // Find by role
+                const fileSearchResultsItems = await fileSearchResults.findAllByRole("option");
+
+                await expect(fileSearchResultsItems.length).toBeGreaterThan(1);
+            });
+        });
+
+    ```
+
+</details>
+
+## Базовый синтаксис
+
+### Навигация
+
+Для перемещения по страницам используйте метод [`browser.url()`](../commands/browser/url.mdx):
+
+```typescript
+await browser.url("https://testplane.io/");
+```
+
+Для перехода на страницу можно также использовать команду [`browser.openAndWait()`](../commands/browser/openAndWait.mdx), которая поддерживает больше настроек, связанных с загрузкой статики на странице.
+
+### Селекторы
+
+Testplane поддерживает различные стратегии поиска элементов: CSS-селекторы (самые распространенные), текстовые селекторы (по содержимому), XPath для сложных запросов. Метод [`$()`](../commands/browser/$.mdx) возвращает первый найденный элемент, а [`$$()`](../commands/browser/$$.mdx) — массив всех подходящих.
+
+Также есть поддержка селекторов Testing Library, это позволяет писать более читаемые тесты, ориентированные на пользовательское поведение. При инициализации через `npm init testplane` она уже включена. Если вы создавали проект иначе, ее можно [установить вручную](../guides/how-to-add-testing-library.mdx).
+
+```typescript
+describe("Примеры селекторов", () => {
+    it("Первый найденный элемент", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        const heading = await browser.$("h1");
+        const input = await browser.$('[data-testid="search-input"]');
+        const inputTL = await browser.findByTestId("search-input");
+    });
+
+    it("Поиск нескольких элементов", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const links = await browser.$$("a");
+        expect(links.length).toBeGreaterThan(0);
+    });
+});
+```
+
+#### Типы селекторов
+
+```typescript
+describe("Типы селекторов", () => {
+    it("CSS-селекторы", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        // data-атрибуты
+        const input = await browser.$('[data-testid="search-input"]');
+        const inputTL = await browser.findByTestId("search-input");
+
+        // CSS-классы и теги
+        const navbar = await browser.$(".navbar");
+        const heading = await browser.$("h1");
+    });
+
+    it("Текстовые селекторы", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Поиск по точному тексту
+        const match = await browser.$("=Docs");
+
+        // Поиск по частичному совпадению
+        const partial = await browser.$("*=Doc");
+    });
+
+    it("XPath", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Поиск по тексту внутри элемента
+        const link = await browser.$('//a[text()="Docs"]');
+    });
+});
+```
+
+Подробнее про селекторы читайте в [этой статье](../basic-guides/selectors.mdx).
+
+### Взаимодействие с элементами
+
+#### Клик
+
+```typescript
+const assert = require("assert");
+
+describe("Клик", () => {
+    it("Клик и двойной клик", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Клик по кнопке поиска
+        const searchButton = await browser.$("button.DocSearch");
+        await searchButton.waitForClickable({ timeout: 5000 });
+        await searchButton.click();
+
+        // Двойной клик по кнопке поиска
+        await searchButton.doubleClick();
+
+        // Проверка
+        const searchModal = await browser.$(".DocSearch-Modal");
+        await searchModal.waitForDisplayed({ timeout: 5000 });
+        const isDisplayed = await searchModal.isDisplayed();
+        assert.strictEqual(isDisplayed, true);
+    });
+});
+```
+
+Подробнее см. в статьях о [`click()`](../commands/element/click.mdx) и [`doubleClick()`](../commands/element/doubleClick.mdx).
+
+#### Ввод текста
+
+```typescript
+const assert = require("assert");
+
+describe("Ввод текста", () => {
+    it("Ввод текста в поле поиска", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Клик по кнопке поиска
+        const searchButton = await browser.$("button.DocSearch");
+        await searchButton.waitForClickable({ timeout: 5000 });
+        await searchButton.click();
+
+        // Ввод текста в поле поиска
+        const searchInput = await browser.$("input.DocSearch-Input");
+        await searchInput.waitForDisplayed({ timeout: 5000 });
+        await searchInput.setValue("browser");
+
+        // Проверка
+        const inputValue = await searchInput.getValue();
+        assert.strictEqual(inputValue, "browser");
+    });
+});
+```
+
+Подробнее см. в статье о [`setValue()`](../commands/element/setValue.mdx).
+
+#### Взаимодействие с формами
+
+```typescript
+const assert = require("assert");
+
+describe("Взаимодействие с формами", () => {
+    it("Чекбокс", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/login");
+
+        const checkbox = await browser.$('[data-testid="remember-checkbox"]');
+        await checkbox.waitForDisplayed({ timeout: 5000 });
+
+        // Проверка начального состояния
+        let isSelected = await checkbox.isSelected();
+        assert.strictEqual(isSelected, false);
+
+        // Выбор
+        await checkbox.click();
+        isSelected = await checkbox.isSelected();
+        assert.strictEqual(isSelected, true);
+
+        // Снятие выбора
+        await checkbox.click();
+        isSelected = await checkbox.isSelected();
+        assert.strictEqual(isSelected, false);
+    });
+
+    it("Выпадающий список", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        const dropdown = await browser.$('[data-testid="sort-select"]');
+        await dropdown.waitForDisplayed({ timeout: 5000 });
+
+        // Выбор опции по видимому тексту
+        await dropdown.selectByVisibleText("Highest Rated");
+
+        // Проверка выбранного значения
+        let selectedValue = await dropdown.getValue();
+        assert.strictEqual(selectedValue, "rating");
+
+        // Проверка текста выбранной опции
+        let selectedText = await dropdown.$("option:checked").getText();
+        assert.strictEqual(selectedText, "Highest Rated");
+    });
+});
+```
+
+Подробнее см. в статьях о методах [`isSelected()`](../commands/element/isSelected.mdx) и [`selectByVisibleText()`](../commands/element/selectByVisibleText.mdx).
+
+### Assertions
+
+Assertions — это проверки, которые сравнивают фактический результат с ожидаемым.
+
+```typescript
+describe("Assertions", () => {
+    it("Проверка элементов", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const heading = await browser.$("h1");
+
+        // Проверка существования и видимости
+        await expect(heading).toExist();
+        await expect(heading).toBeDisplayed();
+
+        // Проверка текста
+        await expect(heading).toHaveTextContaining("testplane");
+
+        // Проверка атрибутов
+        await expect(heading).toHaveAttribute("class");
+    });
+});
+```
+
+Подробнее см. в [документации по assertions](../commands/expect/overview.mdx).
+
+### Хуки
+
+Хуки позволяют подготовить окружение перед тестами и очистить его после выполнения.
+
+```typescript
+describe("Работа с хуками", () => {
+    beforeEach(async ({ browser }) => {
+        // Выполняется перед каждым тестом
+        await browser.url("https://testplane.io/");
+    });
+
+    afterEach(async ({ browser }) => {
+        // Выполняется после каждого теста
+        await browser.deleteAllCookies();
+    });
+
+    it("Первый тест", async ({ browser }) => {
+        // Страница уже открыта благодаря beforeEach
+        const title = await browser.getTitle();
+        expect(title).toContain("Fast");
+    });
+
+    it("Второй тест", async ({ browser }) => {
+        // Страница снова открыта, cookies очищены
+        const heading = await browser.$("h1");
+        await expect(heading).toExist();
+    });
+});
+```
+
+Подробнее о хуках см. в [документации](../basic-guides/setup-and-teardown.mdx).
+
+### Ожидания
+
+Явные ожидания (например, [`waitForDisplayed()`](../commands/element/waitForDisplayed.mdx) и [`waitUntil()`](../commands/element/waitUntil.mdx)) необходимы для работы с динамическим контентом:
+
+```typescript
+describe("Ожидание", () => {
+    it("Ожидание элементов", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const button = await browser.$("button*=Get");
+
+        // Ожидание появления
+        await button.waitForDisplayed({ timeout: 5000 });
+    });
+
+    it("Кастомное ожидание", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const heading = await browser.$("h1");
+
+        // Ожидание появления текста заголовка
+        await heading.waitUntil(
+            async function () {
+                const text = await this.getText();
+                return text.length > 0;
+            },
+            {
+                timeout: 5000,
+                timeoutMsg: "Текст заголовка не появился",
+            },
+        );
+    });
+});
+```
+
+## Визуальное тестирование
+
+Testplane позволяет делать скриншоты элементов и сравнивать их с эталонными изображениями с помощью команды [`assertView()`](../commands/browser/assertView.mdx).
+
+При первом запуске теста создаются эталонные скриншоты. При последующих запусках Testplane сравнивает новые скриншоты с эталонами и сообщает о различиях. Если различий нет, тест проходит. Если есть различия, тест падает, а diff-изображение сохраняется для анализа.
+
+```typescript
+describe("Визуальная проверка", () => {
+    it("Логотип", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Ожидание появления элемента
+        const brand = await browser.$(".navbar__brand");
+        await brand.waitForDisplayed({ timeout: 10000 });
+
+        // Скриншот элемента
+        await browser.assertView("default", ".navbar__brand");
+    });
+});
+```
+
+## Выполнение JavaScript
+
+Метод [`execute()`](../commands/browser/execute.mdx) выполняет JavaScript-код в контексте страницы:
+
+```typescript
+describe("Выполнение JavaScript", () => {
+    it("Пример", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Работа с localStorage
+        await browser.execute(() => {
+            localStorage.setItem("token", "abc123");
+        });
+
+        const token = await browser.execute(() => {
+            return localStorage.getItem("token");
+        });
+        expect(token).toBe("abc123");
+
+        // Передача параметров
+        const sum = await browser.execute((a, b) => a + b, 5, 10);
+        expect(sum).toBe(15);
+    });
+});
+```
+
+## Что дальше?
+
+Теперь, когда вы знаете основы написания тестов, изучите:
+
+-   [Запуск и отладка](./running-tests.mdx): как запускать тесты и отлаживать проблемы
+-   [Использование в CI](./usage-in-ci.mdx): автоматический запуск в GitHub Actions
+-   [Конфигурация](../reference/config/main.mdx): полный список настроек
+-   [Команды браузера](../commands/browser/url.mdx): все доступные команды
+-   [HTML Reporter](../html-reporter/overview.mdx): работа с отчетами

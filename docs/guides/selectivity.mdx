@@ -25,7 +25,7 @@ After a file changes, on the next run only those tests that depend on the change
 
 ## Setup
 
-To enable selectivity, just add a [`selectivity`](/docs/v8/reference/config/browsers#selectivity) section with `enabled: true` to your Testplane configuration:
+To enable selectivity, just add a [`selectivity`](/docs/reference/config/browsers#selectivity) section with `enabled: true` to your Testplane configuration:
 
 ```typescript
 // testplane.config.ts
@@ -183,7 +183,7 @@ Since the tests failed, the new state was not saved, so re-running the tests wil
 
 ### Collecting browser dependencies
 
-Testplane records browser dependencies only in the Chrome browser, because dependency collection works via the [Chrome Devtools Protocol](/docs/v8/reference/webdriver-vs-cdp). However, if you have multiple browsers (for example, Chrome and Firefox), Firefox will still be able to use the list of browser dependencies for a test that was collected in Chrome.
+Testplane records browser dependencies only in the Chrome browser, because dependency collection works via the [Chrome Devtools Protocol](/docs/reference/webdriver-vs-cdp). However, if you have multiple browsers (for example, Chrome and Firefox), Firefox will still be able to use the list of browser dependencies for a test that was collected in Chrome.
 
 ### SourceMap requirement
 

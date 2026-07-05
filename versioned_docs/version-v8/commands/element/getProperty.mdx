@@ -1,0 +1,37 @@
+# getProperty
+
+## Overview {#overview}
+
+Use the `getProperty` command to retrieve a property of an element.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).getProperty(property);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>property</td><td>String</td><td>The name of the element's property.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should demonstrate the getProperty command", async ({ browser }) => {
+    var elem = await browser.$("body");
+    var tag = await elem.getProperty("tagName");
+    console.log(tag); // outputs: "BODY"
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/getProperty), from which we drew some information while writing our version.

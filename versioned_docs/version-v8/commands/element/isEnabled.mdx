@@ -1,0 +1,45 @@
+# isEnabled
+
+## Overview {#overview}
+
+Use the `isEnabled` command to determine whether a given DOM element is enabled.
+
+The command returns `true` if the DOM element is enabled; otherwise, it returns `false`.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).isEnabled();
+```
+
+## Usage Examples {#examples}
+
+**index.html**
+
+```html
+<input type="text" name="inputField" class="input1" />
+<input type="text" name="inputField" class="input2" disabled />
+<input type="text" name="inputField" class="input3" disabled="disabled" />
+```
+
+**isEnabled.js**
+
+```javascript
+it("should detect if an element is enabled", async ({ browser }) => {
+    let elem = await browser.$(".input1");
+    let isEnabled = await elem.isEnabled();
+    console.log(isEnabled); // outputs: true
+
+    elem = await browser.$(".input2");
+    isEnabled = await elem.isEnabled();
+    console.log(isEnabled); // outputs: false
+
+    elem = await browser.$(".input3");
+    isEnabled = await elem.isEnabled();
+    console.log(isEnabled); // outputs: false
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/isEnabled), from which we drew some information while writing our version.

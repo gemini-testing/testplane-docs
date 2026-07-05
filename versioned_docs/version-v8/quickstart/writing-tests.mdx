@@ -1,0 +1,387 @@
+---
+sidebar_position: 2
+---
+
+# Writing Tests
+
+## Test structure
+
+```typescript
+describe("Test group name", () => {
+    it("Description of what should happen", async ({ browser }) => {
+        // Test body
+    });
+});
+```
+
+-   `describe` groups related tests
+-   `it` describes a specific test scenario
+-   `browser` — browser object for interacting with the page
+
+After installing Testplane, you can review a test example in the `testplane-tests/example.testplane.ts` file.
+
+<details>
+
+    <summary>Test example</summary>
+
+    ```typescript title="example.testplane.ts"
+
+        describe("test examples", () => {
+            it("docs search test", async ({browser}) => {
+                await browser.openAndWait("https://testplane.io/");
+
+                // Find by tag name
+                const navBar = await browser.$("nav");
+
+                // Find by aria-label
+                await navBar.$("aria/Search").click();
+
+                // Find by placeholder
+                const fileSearchInput = await browser.findByPlaceholderText("Search docs");
+                await fileSearchInput.waitForDisplayed();
+                await fileSearchInput.setValue("config");
+
+                // Find by id
+                const fileSearchResults = await browser.$("#docsearch-list");
+
+                // Find by role
+                const fileSearchResultsItems = await fileSearchResults.findAllByRole("option");
+
+                await expect(fileSearchResultsItems.length).toBeGreaterThan(1);
+            });
+        });
+
+    ```
+
+</details>
+
+## Basic syntax
+
+### Navigation
+
+To navigate between pages, use the [`browser.url()`](../commands/browser/url.mdx) method:
+
+```typescript
+await browser.url("https://testplane.io/");
+```
+
+You can also use the [`browser.openAndWait()`](../commands/browser/openAndWait.mdx) command, which provides more settings related to page static loading.
+
+### Selectors
+
+Testplane supports various element-finding strategies: CSS selectors (most common), text selectors (by content), XPath for complex queries. The [`$()`](../commands/browser/$.mdx) method returns the first found element, while [`$$()`](../commands/browser/$$.mdx) returns an array of all matching elements.
+
+There is also support for Testing Library selectors, which allows writing more readable tests focused on user behavior. It is already included when initializing via `npm init testplane`. If you created the project differently, you can [install it manually](../guides/how-to-add-testing-library.mdx).
+
+```typescript
+describe("Selector examples", () => {
+    it("First found element", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        const heading = await browser.$("h1");
+        const input = await browser.$('[data-testid="search-input"]');
+        const inputTL = await browser.findByTestId("search-input");
+    });
+
+    it("Finding multiple elements", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const links = await browser.$$("a");
+        expect(links.length).toBeGreaterThan(0);
+    });
+});
+```
+
+#### Selector types
+
+```typescript
+describe("Selector types", () => {
+    it("CSS selectors", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        // data attributes
+        const input = await browser.$('[data-testid="search-input"]');
+        const inputTL = await browser.findByTestId("search-input");
+
+        // CSS classes and tags
+        const navbar = await browser.$(".navbar");
+        const heading = await browser.$("h1");
+    });
+
+    it("Text selectors", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Exact text match
+        const match = await browser.$("=Docs");
+
+        // Partial text match
+        const partial = await browser.$("*=Doc");
+    });
+
+    it("XPath", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Search by text inside element
+        const link = await browser.$('//a[text()="Docs"]');
+    });
+});
+```
+
+Learn more about selectors in [this article](../basic-guides/selectors.mdx).
+
+### Interacting with elements
+
+#### Click
+
+```typescript
+const assert = require("assert");
+
+describe("Click", () => {
+    it("Click and double click", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Click on search button
+        const searchButton = await browser.$("button.DocSearch");
+        await searchButton.waitForClickable({ timeout: 5000 });
+        await searchButton.click();
+
+        // Double click on search button
+        await searchButton.doubleClick();
+
+        // Verification
+        const searchModal = await browser.$(".DocSearch-Modal");
+        await searchModal.waitForDisplayed({ timeout: 5000 });
+        const isDisplayed = await searchModal.isDisplayed();
+        assert.strictEqual(isDisplayed, true);
+    });
+});
+```
+
+Learn more in the articles about [`click()`](../commands/element/click.mdx) and [`doubleClick()`](../commands/element/doubleClick.mdx).
+
+#### Text input
+
+```typescript
+const assert = require("assert");
+
+describe("Text input", () => {
+    it("Enter text into search field", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Click on search button
+        const searchButton = await browser.$("button.DocSearch");
+        await searchButton.waitForClickable({ timeout: 5000 });
+        await searchButton.click();
+
+        // Enter text into search field
+        const searchInput = await browser.$("input.DocSearch-Input");
+        await searchInput.waitForDisplayed({ timeout: 5000 });
+        await searchInput.setValue("browser");
+
+        // Verification
+        const inputValue = await searchInput.getValue();
+        assert.strictEqual(inputValue, "browser");
+    });
+});
+```
+
+Learn more in the article about [`setValue()`](../commands/element/setValue.mdx).
+
+#### Form interactions
+
+```typescript
+const assert = require("assert");
+
+describe("Form interactions", () => {
+    it("Checkbox", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/login");
+
+        const checkbox = await browser.$('[data-testid="remember-checkbox"]');
+        await checkbox.waitForDisplayed({ timeout: 5000 });
+
+        // Check initial state
+        let isSelected = await checkbox.isSelected();
+        assert.strictEqual(isSelected, false);
+
+        // Select
+        await checkbox.click();
+        isSelected = await checkbox.isSelected();
+        assert.strictEqual(isSelected, true);
+
+        // Deselect
+        await checkbox.click();
+        isSelected = await checkbox.isSelected();
+        assert.strictEqual(isSelected, false);
+    });
+
+    it("Dropdown", async ({ browser }) => {
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        const dropdown = await browser.$('[data-testid="sort-select"]');
+        await dropdown.waitForDisplayed({ timeout: 5000 });
+
+        // Select option by visible text
+        await dropdown.selectByVisibleText("Highest Rated");
+
+        // Check selected value
+        let selectedValue = await dropdown.getValue();
+        assert.strictEqual(selectedValue, "rating");
+
+        // Check selected option text
+        let selectedText = await dropdown.$("option:checked").getText();
+        assert.strictEqual(selectedText, "Highest Rated");
+    });
+});
+```
+
+Learn more in the articles about [`isSelected()`](../commands/element/isSelected.mdx) and [`selectByVisibleText()`](../commands/element/selectByVisibleText.mdx).
+
+### Assertions
+
+Assertions are checks that compare the actual result with the expected one.
+
+```typescript
+describe("Assertions", () => {
+    it("Element checks", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const heading = await browser.$("h1");
+
+        // Existence and visibility checks
+        await expect(heading).toExist();
+        await expect(heading).toBeDisplayed();
+
+        // Text check
+        await expect(heading).toHaveTextContaining("testplane");
+
+        // Attribute check
+        await expect(heading).toHaveAttribute("class");
+    });
+});
+```
+
+Learn more in the [assertions documentation](../commands/expect/overview.mdx).
+
+### Hooks
+
+Hooks allow you to prepare the environment before tests and clean it up after execution.
+
+```typescript
+describe("Working with hooks", () => {
+    beforeEach(async ({ browser }) => {
+        // Runs before each test
+        await browser.url("https://testplane.io/");
+    });
+
+    afterEach(async ({ browser }) => {
+        // Runs after each test
+        await browser.deleteAllCookies();
+    });
+
+    it("First test", async ({ browser }) => {
+        // Page already opened thanks to beforeEach
+        const title = await browser.getTitle();
+        expect(title).toContain("Fast");
+    });
+
+    it("Second test", async ({ browser }) => {
+        // Page opened again, cookies cleared
+        const heading = await browser.$("h1");
+        await expect(heading).toExist();
+    });
+});
+```
+
+Learn more about hooks in the [documentation](../basic-guides/setup-and-teardown.mdx).
+
+### Waits
+
+Explicit waits (such as [`waitForDisplayed()`](../commands/element/waitForDisplayed.mdx) and [`waitUntil()`](../commands/element/waitUntil.mdx)) are necessary for working with dynamic content:
+
+```typescript
+describe("Wait", () => {
+    it("Waiting for elements", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const button = await browser.$("button*=Get");
+
+        // Wait for appearance
+        await button.waitForDisplayed({ timeout: 5000 });
+    });
+
+    it("Custom wait", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const heading = await browser.$("h1");
+
+        // Wait for heading text to appear
+        await heading.waitUntil(
+            async function () {
+                const text = await this.getText();
+                return text.length > 0;
+            },
+            {
+                timeout: 5000,
+                timeoutMsg: "Heading text did not appear",
+            },
+        );
+    });
+});
+```
+
+## Visual testing
+
+Testplane allows taking screenshots of elements and comparing them with reference images using the [`assertView()`](../commands/browser/assertView.mdx) command.
+
+On the first test run, reference screenshots are created. On subsequent runs, Testplane compares new screenshots with the references and reports differences. If there are no differences, the test passes. If differences exist, the test fails, and a diff image is saved for analysis.
+
+```typescript
+describe("Visual check", () => {
+    it("Logo", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Wait for element to appear
+        const brand = await browser.$(".navbar__brand");
+        await brand.waitForDisplayed({ timeout: 10000 });
+
+        // Screenshot of element
+        await browser.assertView("default", ".navbar__brand");
+    });
+});
+```
+
+## Executing JavaScript
+
+The [`execute()`](../commands/browser/execute.mdx) method runs JavaScript code in the page context:
+
+```typescript
+describe("Executing JavaScript", () => {
+    it("Example", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        // Working with localStorage
+        await browser.execute(() => {
+            localStorage.setItem("token", "abc123");
+        });
+
+        const token = await browser.execute(() => {
+            return localStorage.getItem("token");
+        });
+        expect(token).toBe("abc123");
+
+        // Passing parameters
+        const sum = await browser.execute((a, b) => a + b, 5, 10);
+        expect(sum).toBe(15);
+    });
+});
+```
+
+## What's next?
+
+Now that you know the basics of writing tests, explore:
+
+-   [Running and debugging](./running-tests.mdx): how to run tests and debug issues
+-   [Usage in CI](./usage-in-ci.mdx): automatic test runs in GitHub Actions
+-   [Configuration](../reference/config/main.mdx): full list of settings
+-   [Browser commands](../commands/browser/url.mdx): all available commands
+-   [HTML Reporter](../html-reporter/overview.mdx): working with reports

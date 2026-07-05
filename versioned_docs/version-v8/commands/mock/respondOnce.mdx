@@ -1,0 +1,112 @@
+import Admonition from "@theme/Admonition";
+
+# respondOnce
+
+## Overview {#overview}
+
+Use the `respondOnce` command to respond once with the specified overwrite.
+
+You can call `respondOnce` multiple times in succession. The responses will be used in the same order the `respondOnce` commands were called.
+
+If you use only `respondOnce` and access the resource more times than `respondOnce` was called, then after exhausting the fake data, the request will start returning the original response from the resource.
+
+<Admonition type="info">
+    Also read the recipe "[How to Track and Intercept Network Requests and
+    Responses][how-to-intercept-requests-and-responses]".
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ to overwrite the response.</td></tr>
+<tr><td>header</td><td>Object</td><td>Overwrite specific headers.</td></tr>
+<tr><td>statusCode</td><td>Number</td><td>Overwrite the response status code.</td></tr>
+<tr><td>fetchResponse</td><td>Boolean</td><td>Fetch the actual response before replying with fake data.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+async function getToDos(browser) {
+    await browser.$("#todo-list li").waitForExist();
+
+    const todoElements = await browser.$$("#todo-list li");
+
+    return Promise.all(todoElements.map(el => el.getText()));
+}
+
+it("should demonstrate the respondOnce command", async ({ browser }) => {
+    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/", {
+        method: "get",
+    });
+
+    mock.respondOnce([
+        {
+            title: "3",
+        },
+        {
+            title: "2",
+        },
+        {
+            title: "1",
+        },
+    ]);
+
+    mock.respondOnce([
+        {
+            title: "2",
+        },
+        {
+            title: "1",
+        },
+    ]);
+
+    mock.respondOnce([
+        {
+            title: "1",
+        },
+    ]);
+
+    await browser.url(
+        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
+    );
+    console.log(await getToDos(browser)); // outputs: [ '3', '2', '1' ]
+
+    await browser.url(
+        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
+    );
+    console.log(await getToDos(browser)); // outputs: [ '2', '1' ]
+
+    await browser.url(
+        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
+    );
+    console.log(await getToDos(browser)); // outputs: [ '1' ]
+
+    await browser.url(
+        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
+    );
+    console.log(await getToDos(browser)); // outputs: the actual resource response
+});
+```
+
+## Related Commands {#related}
+
+-   [respond](../respond)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/respondOnce), from which we drew some information while writing our version.
+
+[how-to-intercept-requests-and-responses]: ../../../guides/how-to-intercept-requests-and-responses

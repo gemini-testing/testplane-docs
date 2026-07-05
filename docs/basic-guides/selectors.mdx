@@ -343,7 +343,7 @@ To find form elements by their label text (`label`), use the `getByLabelText` me
 ```javascript
 describe("Finding an input field using the getByLabelText method", () => {
     it("Find and use the search field", async ({ browser }) => {
-        await browser.url("https://testplane.io/docs/v8/html-reporter/overview/");
+        await browser.url("https://testplane.io/docs/html-reporter/overview/");
         // Find the search button
         const searchButton = await browser.getByLabelText(/search|поиск/i);
         // Click the button to open the search modal
@@ -359,7 +359,7 @@ To find an input field by its `placeholder` text, use the `getByPlaceholderText`
 ```javascript
 describe("getByPlaceholderText", () => {
     it("Finding an input field using the getByPlaceholderText method", async ({ browser }) => {
-        await browser.url("https://testplane.io/docs/v8/html-reporter/overview/");
+        await browser.url("https://testplane.io/docs/html-reporter/overview/");
 
         // Open the search modal
         const searchButton = await browser.$(".DocSearch-Button");
@@ -413,7 +413,7 @@ To find an element by its current value, use the `getByDisplayValue` method.
 ```javascript
 describe("Finding using the getByDisplayValue method", () => {
     it("Find and verify the value", async ({ browser }) => {
-        await browser.url("https://testplane.io/docs/v8/html-reporter/overview/");
+        await browser.url("https://testplane.io/docs/html-reporter/overview/");
 
         // Open search
         const searchButton = await browser.$(".DocSearch-Button");
@@ -462,7 +462,7 @@ To find an element by the `title` attribute, use the `getByTitle` method.
 describe("Finding an element using the getByTitle method", () => {
     it("Finding an <a> element", async ({ browser }) => {
         // Open the page
-        await browser.url("https://testplane.io/docs/v8/");
+        await browser.url("https://testplane.io/docs/");
         // Find the <a> element by the title attribute
         const linkElement = await browser.getByTitle("Direct link to Rich Debugging Capabilities");
         // Confirm that the element is found

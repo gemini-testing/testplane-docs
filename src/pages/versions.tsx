@@ -22,7 +22,7 @@ export default function Versions() {
     const docsPluginId = undefined; // Using default plugin
     const versions = useVersions(docsPluginId);
     const latestVersion = useLatestVersion(docsPluginId);
-    const currentVersion = versions.find(version => version.name === "current")!;
+    const archivedVersions = versions.filter(version => version.name !== latestVersion.name);
     const repoUrl = `https://github.com/${organizationName!}/${projectName!}`;
 
     return (
@@ -61,35 +61,39 @@ export default function Versions() {
                         </tbody>
                     </table>
                 </div>
-            </main>
 
-            {currentVersion !== latestVersion && (
-                <div className="margin-bottom--lg">
-                    <Heading as="h3" id="latest">
-                        <Translate id="versionsPage.next.title">
-                            Next version (Unreleased)
-                        </Translate>
-                    </Heading>
-                    <p>
-                        <Translate id="versionsPage.next.description">
-                            Here you can find the documentation for work-in-process unreleased
-                            version.
-                        </Translate>
-                    </p>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <th>{currentVersion.label}</th>
-                                <td>
-                                    <Link to={currentVersion.path}>
-                                        <DocumentationLabel />
-                                    </Link>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                {archivedVersions.length > 0 && (
+                    <div className="margin-bottom--lg">
+                        <Heading as="h3" id="past">
+                            <Translate id="versionsPage.archived.title">Past versions</Translate>
+                        </Heading>
+                        <p>
+                            <Translate id="versionsPage.archived.description">
+                                Here you can find documentation for previous released versions.
+                            </Translate>
+                        </p>
+                        <table>
+                            <tbody>
+                                {archivedVersions.map(version => (
+                                    <tr key={version.name}>
+                                        <th>{version.label}</th>
+                                        <td>
+                                            <Link to={version.path}>
+                                                <DocumentationLabel />
+                                            </Link>
+                                        </td>
+                                        <td>
+                                            <Link to={`${repoUrl}/releases`}>
+                                                <ReleaseNotesLabel />
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </main>
         </Layout>
     );
 }

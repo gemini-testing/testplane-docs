@@ -1,0 +1,119 @@
+import Admonition from "@theme/Admonition";
+import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
+
+# assertView
+
+## Обзор {#overview}
+
+Используйте команду `assertView`, чтобы снять скриншот для определенного состояния теста и сравнить его с эталонным.
+
+<Admonition type="info">
+    Эта команда реализована внутри Testplane, в [API WebDriverIO][webdriverio-api] её нет.
+</Admonition>
+
+<Admonition type="info">
+    Автоматически вызывает команду [waitForStaticToLoad][wait-for-static-to-load] перед снятием
+    скриншота.
+</Admonition>
+
+## Использование {#usage}
+
+```typescript
+await browser.assertView(state, options);
+await browser.assertView(state, selector, options);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>[state](#state)</td><td>String</td><td>Обязательный параметр. Название состояния теста. Должно быть уникальным в пределах одного теста.</td></tr>
+<tr><td>[selector](#selector)</td><td>String или String[]</td><td>Необязательный параметр. Может быть пропущен. Селектор DOM-элемента, который необходимо заснять. При отсутствии команда скриншотит viewport.</td></tr>
+<tr><td>[options](#options)</td><td>Object</td><td>Настройки команды _assertView_.</td></tr>
+
+</tbody>
+</table>
+
+### state
+
+Обязательный параметр. Задает название состояния теста. Название должно быть уникальным в пределах одного теста.
+
+### selector
+
+Необязательный параметр. Может быть пропущен. Задает селектор DOM-элемента, который необходимо заснять. По умолчанию `body`. При его отсутствии `assertView` применяет следующие опции, которые имеют приоритет над `assertViewOpts` из конфига, но не над параметром `options`:
+
+```
+{
+    allowViewportOverflow: true,
+    compositeImage: false,
+    captureElementFromTop: false
+}
+```
+
+Таким образом, по умолчанию без параметра `options` `assertView` скриншотит viewport.
+
+### options
+
+Задает настройки команды `assertView`:
+
+<AssertViewOptions />
+
+## Примеры использования {#examples}
+
+**Визуальная проверка элемента**
+
+```typescript
+it("should assert view", async ({ browser }) => {
+    await browser.url("some/url");
+    await browser.assertView("plain", ".button");
+
+    await browser.click(".button");
+    await browser.assertView("clicked", ".button");
+});
+```
+
+**Визуальная проверка всего вьюпорта**
+
+```typescript
+it("should assert viewport without selector", async ({ browser }) => {
+    await browser.url("some/url");
+    await browser.execute(() => window.scrollTo(0, 1000));
+    await browser.assertView("plain");
+
+    await browser.$(".button").click();
+    await browser.assertView("clicked", { ignoreDiffPixelCount: 5 });
+});
+```
+
+**Визуальная проверка с дополнительными опциями**
+
+```typescript
+it("should assert view with given options", async ({ browser }) => {
+    await browser.url("some/url");
+    await browser.assertView("plain", ".form", {
+        ignoreElements: [".link"],
+        tolerance: 5,
+        antialiasingTolerance: 4,
+        allowViewportOverflow: true,
+        captureElementFromTop: true,
+        compositeImage: true,
+        screenshotDelay: 10,
+        selectorToScroll: ".modal",
+    });
+});
+```
+
+## Связанные команды {#related}
+
+-   [element.assertView](../../element/assertView)
+-   [browser.saveRecordingScreen](../saveRecordingScreen)
+-   [browser.saveScreenshot](../saveScreenshot)
+-   [element.saveScreenshot](../../element/saveScreenshot)
+
+[webdriverio-api]: https://webdriver.io/docs/api
+[browsers-tolerance]: ../../../reference/config/browsers#tolerance
+[browsers-antialiasing-tolerance]: ../../../reference/config/browsers#antialiasing_tolerance
+[wait-for-static-to-load]: ../waitForStaticToLoad

@@ -1,0 +1,23 @@
+# getComputedRole
+
+## Обзор {#overview}
+
+Используйте команду `getComputedRole`, чтобы получить вычисленную [WAI-ARIA][wai-aria] роль элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getComputedRole();
+```
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the getComputedRole command", async ({ browser }) => {
+    await browser.url("https://www.google.com/ncr");
+    const elem = await browser.$('*[name="q"]');
+    console.log(await elem.getComputedRole()); // выведет: "combobox"
+});
+```
+
+[wai-aria]: https://ru.wikipedia.org/wiki/WAI-ARIA

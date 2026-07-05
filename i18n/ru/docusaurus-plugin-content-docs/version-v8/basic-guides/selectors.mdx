@@ -1,0 +1,496 @@
+# Селекторы
+
+Testplane предоставляет множество способов для поиска элементов на странице браузера.
+
+## Рекомендации по использованию селекторов
+
+Мы рекомендуем искать элементы так же, как это делают пользователи тестируемого приложения.
+
+При выборе можно руководствоваться 3 факторами:
+
+-   Ориентация на пользователя — селектор отражает то, что видит и использует пользователь
+-   Стабильность — селектор не ломается при рефакторинге, изменениях CSS или структуры страницы
+-   Уникальность — селектор однозначно идентифицирует нужный элемент
+
+| Селектор / Способ выбора                                                    | Рекомендация | Примечания                                                                                                                                                                  |
+| --------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| По видимому содержимому — тексту, роли, ... (`getByRole`, `getByText`, ...) | ✅ Лучший    | Ищем элементы так же, как это делают пользователи: по тексту, роли, label — стабильный и "честный" способ поиска.                                                           |
+| По атрибуту `data-testid` (например, `[data-testid="submit"]`)              | ✅ Хорошо    | Атрибут `data-testid` создан специально для автоматизации: не влияет на стили/доступность, стабилен, явно обозначает цель элемента, но требует ручной разметки такими ID.   |
+| По ID (например, `#main`)                                                   | ⚠️ Редко     | ID стабильнее классов, но все равно может зависеть от JS‑логики или изменений в разметке. Используйте, только если ID гарантированно устойчив.                              |
+| По типу атрибута (например, `input[type="text"]`)                           | ⚠️ Редко     | Работает, если тип атрибута семантически значим и стабилен. Но может быть слишком общим (много элементов одного типа).                                                      |
+| По атрибутам (кроме `data-testid`, например, `[name="email"]`)              | ⚠️ Редко     | Зависит от семантики HTML‑атрибутов. Может быть нестабильным (атрибуты меняют значение или удаляются).                                                                      |
+| XPath (например, `(//button)[2]`)                                           | 🔴 Плохо     | Позиция элемента может измениться, селекторы XPath как правило сложно поддерживать. Однако они могут быть полезны, так как дают максимум возможностей для поиска элементов. |
+| По классу (например, `.sidebar .list-item.state-opened-qU1azF`)             | 🔴 Плохо     | Не связан с поведением пользователя и не отражает семантику, жесткая завязка на иерархию.                                                                                   |
+
+## WebdriverIO
+
+В Testplane поддерживается поиск элементов, совместимый с синтаксисом WebdriverIO: по CSS селекторам, по XPath, по тексту элементов и по другим признакам, которые описаны ниже.
+
+### Селекторы по тексту
+
+Данный вид селекторов позволяет искать элементы по содержащемуся в них тексту:
+
+-   `="text"` — точный поиск текста
+-   `*="text"` — поиск по частичному совпадению текста
+-   `a*=text` — поиск по тексту внутри тега `<a>`
+-   `div.=text` — case-insensitive поиск текста внутри тега `<div>`
+
+```javascript
+describe("Селектор Link Text", () => {
+    it("Поиск элемента по совпадающему тексту", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/");
+
+        // Полное совпадение текста ссылки
+        const docsLink = await browser.$("=Документация");
+        const isDocsLinkFound = await docsLink.isExisting();
+        console.log(`Элемент с полным текстом "Документация" найден: ${isDocsLinkFound}`);
+
+        // Частичное совпадение текста ссылки
+        const partialLink = await browser.$("*=Докум");
+        const isPartialLinkFound = await partialLink.isExisting();
+        console.log(`Элемент с частичным текстом "Докум" найден: ${isPartialLinkFound}`);
+
+        // Частичное совпадение с указанием тега <a>
+        const tagPartialLink = await browser.$("a*=Документ");
+        const isTagPartialLinkFound = await tagPartialLink.isExisting();
+        console.log(`Элемент <a> с частичным текстом "Документ" найден: ${isTagPartialLinkFound}`);
+
+        // Case-insensitive поиск с тегом div
+        const divCaseInsensitive = await browser.$("div.=testplane");
+        const isDivCaseInsensitiveFound = await divCaseInsensitive.isExisting();
+        console.log(
+            `Элемент <div> с case-insensitive текстом "testplane" найден: ${isDivCaseInsensitiveFound}`,
+        );
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   текст элементов стабилен
+-   вам необходимо, чтобы тест был максимально приближен к реальным пользовательским сценариям
+
+### CSS-селекторы
+
+#### По атрибуту data-testid
+
+Данный способ подходит для поиска элементов, которые размечены атрибутами для тестирования.
+
+```javascript
+describe("CSS-селектор по атрибуту data-testid", () => {
+    it("Поиск элемента по data-testid", async ({ browser }) => {
+        // Открываем страницу и ждем ее загрузки
+        await browser.openAndWait("https://testplane.io/");
+
+        // Ищем элемент по атрибуту data-testid
+        const element = await browser.$('[data-testid="main-content"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await element.isExisting();
+        console.log("Элемент с data-testid существует:", isExisting);
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   создаете селекторы специально для тестирования
+-   нужна стабильность селекторов независимо от изменений UI/стилей
+
+#### По классу
+
+Чтобы найти элемент на странице по классу, используйте селектор `".class-name"`.
+
+```javascript
+describe("CSS-селектор по классу", () => {
+    it("Поиск элемента на главной странице", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Ищем элемент по классу "navbar"
+        const navbar = await browser.$(".navbar");
+
+        // Проверяем, отображается ли элемент на странице
+        const isDisplayed = await navbar.isDisplayed();
+        console.log("Навбар отображается:", isDisplayed);
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   класс является стабильным и не генерируется динамически
+-   нужен быстрый и простой способ найти элемент
+-   класс семантически описывает элемент (например, `.error-message`, `.success-banner`)
+-   вы работаете с компонентными библиотеками, где классы являются частью API
+
+#### По id
+
+Чтобы найти элемент по `id` используйте селектор вида `"#id"`.
+
+```javascript
+describe("CSS-селектор по id", () => {
+    it("Поиск элемента по id на главной странице", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Ищем элемент по id "__docusaurus"
+        const main = await browser.$("#__docusaurus");
+
+        // Проверяем, отображается ли элемент на странице
+        const isDisplayed = await main.isDisplayed();
+        console.log("Элемент отображается:", isDisplayed);
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   вам необходим быстрый и простой способ поиска элементов
+-   `id` является частью публичного API компонента
+-   нужна максимальная производительность селектора (`id` — самый быстрый селектор)
+
+#### По типу атрибута
+
+Для поиска элемента по атрибуту используйте селектор вида `input[type="name"]`.
+
+```javascript
+describe("CSS-селектор по типу атрибута", () => {
+    it("Поиск элемента по типу атрибута", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Ищем кнопку по атрибуту type="button"
+        // Формат селектора: element[type="value"]
+        const button = await browser.$('button[type="button"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await button.isExisting();
+        console.log("Кнопка существует:", isExisting);
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   нужно найти все элементы определенного типа (все чекбоксы, все радиокнопки)
+-   нужно работать с семантическими HTML5 типами (`email`, `tel`, `url`, `date`)
+
+### XPath-селекторы
+
+#### По тексту элемента
+
+Чтобы найти элемент по содержащемуся в нем тексту, используйте селектор `//element[text()="text"]`.
+
+```javascript
+// Точное совпадение текста
+describe("XPath-селектор по тексту элемента", () => {
+    it("Поиск элемента по тексту", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Ищем элемент по тексту внутри него
+        const link = await browser.$('//a[text()="Docs"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await link.isExisting();
+        console.log("Элемент с текстом существует:", isExisting);
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   текст элемента уникален и стабилен (названия кнопок, заголовки)
+-   другие стратегии поиска элементов оказались неприменимы
+
+#### По атрибутам
+
+Для поиска элемента по атрибуту используйте селектор вида `//element[@type="atribute"]`.
+
+```javascript
+describe("XPath-селектор по атрибуту", () => {
+    it("Поиск элемента по атрибуту", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Ищем элемент по атрибуту type
+        const button = await browser.$('//button[@type="button"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await button.isExisting();
+        console.log("Элемент с атрибутом существует:", isExisting);
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   нужны сложные условия поиска (комбинации атрибутов)
+-   работаете с динамическими атрибутами (`data`-атрибуты с переменными значениями)
+-   нужна гибкость в поиске (частичные совпадения, начало/конец строки)
+-   CSS-селекторы не могут выразить нужную логику
+-   нужно найти элемент по отсутствию атрибута
+
+#### Навигация по DOM
+
+Используя XPath, вы можете навигировать по DOM-дереву.
+
+```javascript
+// Прямой родитель
+const parentDiv = await browser.$("//input[@name="email"]/..");
+
+// Предок с условием
+const formContainer = await browser.$("//input[@name="email"]/ancestor::form[@id="registration"]");
+
+// Следующий сиблинг
+const errorLabel = await browser.$("//input[@class="invalid"]/following-sibling::span[@class="error"][1]");
+
+// Предыдущий сиблинг
+const label = await browser.$("//input[@name="password"]/preceding-sibling::label[1]");
+
+// Все потомки
+const allInputs = await browser.$$("//form[@id="checkout"]//input");
+
+// Прямые дети
+const directChildren = await browser.$$("//ul[@class="menu"]/li");
+
+// Поиск «дяди» элемента (родитель -> сиблинг родителя)
+const siblingSection = await browser.$("//h2[text()="Контакты"]/../following-sibling::section[1]");
+```
+
+Подобный вид навигации по дереву не рекомендуется использовать из-за своей хрупкости, но он возможен.
+
+#### XPath: индексы и позиции
+
+XPath позволяет выбирать элементы по их позиции в наборе результатов.
+
+```javascript
+describe("XPath-селектор: индексы и позиции", () => {
+    it("Поиск элемента по индексу", async ({ browser }) => {
+        await browser.openAndWait("https://testplane.io/");
+
+        // Ищем третий элемент ссылки в навигации (индекс начинается с 1)
+        // Формат селектора: (//element)[index]
+        const thirdLink = await browser.$("(//a)[3]");
+
+        // Ждем появления элемента и его отображения
+        await thirdLink.waitForDisplayed({ timeout: 5000 });
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await thirdLink.isExisting();
+        console.log("Третий элемент существует:", isExisting);
+
+        // Получаем текст элемента
+        const text = await thirdLink.getText();
+        console.log("Текст третьего элемента:", text);
+    });
+});
+```
+
+Стоит использовать, если:
+
+-   нужен доступ к элементу по его позиции в наборе результатов
+-   тестируете пагинацию или списки с определенным порядком
+-   работаете с таблицами, и нужна конкретная строка
+-   нужен первый или последний элемент среди нескольких одинаковых
+-   тестируете сортировку (проверка, что элемент на правильной позиции)
+
+### Shadow-DOM-селекторы
+
+Shadow-DOM-селекторы позволяют работать с элементами внутри Shadow DOM — инкапсулированной части DOM-дерева. Например, если у вас есть кастомный элемент `my-custom-element`, вы можете найти кнопку внутри его Shadow DOM с помощью `shadow$("button")`.
+
+```javascript
+// Простой доступ в Shadow DOM
+const customElement = await browser.$("my-custom-element");
+const button = await customElement.shadow$("button");
+await button.click();
+
+// Множественные элементы в Shadow DOM
+const slotElements = await customElement.shadow$$(".slot-item");
+```
+
+Стоит использовать, если:
+
+-   работаете с Web Components и Custom Elements
+-   приложение использует Shadow DOM для инкапсуляции стилей
+-   тестируете компоненты из сторонних библиотек (Lit, Stencil, native Web Components)
+-   нужен доступ к элементам внутри shadow root
+-   работаете с дизайн-системой на базе Web Components
+
+## Testing Library
+
+Testing Library позволяет искать элементы так, как их ищут на странице пользователи — по тексту, типу элемента или другим атрибутам, которые не зависят от деталей вашей верстки.
+
+Чтобы использовать данный вид селекторов, необходимо [установить Testing Library](../../guides/how-to-add-testing-library).
+
+### ByRole
+
+`getByRole` — основной метод в Testing Library, который позволяет находить элементы по их ARIA-ролям. Например, если вы используете метод `browser.getByRole("button", { name: /submit/i })`, то найдете кнопку с текстом, содержащим `submit`.
+
+```javascript
+describe("getByRole", () => {
+    it("Поиск кнопки с помощью метода getByRole", async ({ browser }) => {
+        await browser.url("https://testplane.io/");
+
+        const button = await browser.getByRole("button", { name: "Get started" });
+
+        await button.click();
+    });
+});
+```
+
+### ByLabelText
+
+Для поиска элементов форм по тексту их меток (`label`) используйте метод `getByLabelText`.
+
+```javascript
+describe("Поиск поля ввода с помощью метода getByLabelText", () => {
+    it("Найти и использовать поле поиска", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/docs/v8/html-reporter/overview/");
+
+        // Находим кнопку поиска
+        const searchButton = await browser.getByLabelText(/search|поиск/i);
+
+        // Кликаем на кнопку, чтобы открыть модальное окно поиска
+        await searchButton.click();
+    });
+});
+```
+
+### ByPlaceholderText
+
+Чтобы найти поле ввода по тексту `placeholder`, используйте селектор `getByPlaceholderText`.
+
+```javascript
+describe("getByPlaceholderText", () => {
+    it("Поиск поля ввода с помощью метода getByPlaceholderText", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/docs/v8/html-reporter/overview/");
+
+        // Открываем модальное окно поиска
+        const searchButton = await browser.$(".DocSearch-Button");
+        await searchButton.click();
+
+        // Ждем появления модального окна
+        await browser.pause(500);
+
+        // Находим поле ввода по placeholder
+        const searchInput = await browser.getByPlaceholderText("Поиск");
+        await searchInput.waitForDisplayed({ timeout: 3000 });
+
+        // Проверяем, что элемент видим
+        await expect(searchInput).toBeDisplayed();
+    });
+});
+```
+
+### ByText
+
+Чтобы найти текстовый элемент по его содержимому, используйте метод `getByText`.
+
+```javascript
+describe("getByText", () => {
+    it("Поиск элемента с помощью метода getByText", async ({ browser }) => {
+        // Открываем главную страницу testplane
+        await browser.url("https://testplane.io/");
+
+        // Находим кнопку "Get started"
+        const button = await browser.getByText("Get started");
+
+        // Проверяем, что элемент найден и виден
+        await expect(button).toBeDisplayed();
+        await expect(button).toBeClickable();
+
+        // Кликаем по кнопке
+        await button.click();
+
+        // Ждем загрузки новой страницы
+        await browser.pause(1000);
+
+        // Проверяем, что произошла навигация
+        const url = await browser.getUrl();
+        expect(url).toContain("/docs");
+    });
+});
+```
+
+### ByDisplayValue
+
+Для поиска элемента по их текущему значению используйте метод `getByDisplayValue`.
+
+```javascript
+describe("Поиск с помощью метода getByDisplayValue", () => {
+    it("Найти и проверить значение", async ({ browser }) => {
+        await browser.url("https://testplane.io/ru/docs/v8/html-reporter/overview/");
+
+        // Открываем поиск
+        const searchButton = await browser.$(".DocSearch-Button");
+        await searchButton.click();
+        await browser.pause(500);
+
+        // Вводим текст
+        const searchInput = await browser.$('input[type="search"]');
+        await searchInput.setValue("html-reporter");
+
+        // Ищем по полному значению
+        const input = await browser.getByDisplayValue("html-reporter");
+        await expect(input).toBeDisplayed();
+
+        // Проверяем значение
+        const value = await input.getValue();
+        expect(value).toBe("html-reporter");
+    });
+});
+```
+
+### ByAltText
+
+Для поиска изображения по тексту `alt` используйте метод `getByAltText`.
+
+```javascript
+describe("Поиск элемента с помощью метода getByAltText", () => {
+    it("Поиск <img> элемента по alt атрибуту", async ({ browser }) => {
+        // Открываем страницу
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        // Находим изображение книги по атрибуту alt
+        const bookImage = await browser.getByAltText("The Great Gatsby");
+
+        // Подтверждаем, что элемент найден
+        await expect(bookImage).toBeExisting();
+    });
+});
+```
+
+### ByTitle
+
+Чтобы найти элемент по атрибуту title, используйте метод `getByTitle`.
+
+```javascript
+describe("Поиск элемента с помощью метода getByTitle", () => {
+    it("Поиск <a> элемента", async ({ browser }) => {
+        // Открываем страницу
+        await browser.url("https://testplane.io/docs/v8/");
+
+        // Находим элемент <a> по атрибуту title
+        const linkElement = await browser.getByTitle("Direct link to Rich Debugging Capabilities");
+
+        // Подтверждаем, что элемент найден
+        await expect(linkElement).toBeExisting();
+    });
+});
+```
+
+### ByTestId
+
+`getByTestId` используется как последний вариант, когда другие методы не подходят. Например, если вы используете `browser.getByTestId("submit-button")`, то найдите элемент с атрибутом `data-testid="submit-button"`
+
+```javascript
+describe("Поиск элемента с помощью метода getByTestId", () => {
+    it("Поиск элемента по data-testid атрибуту", async ({ browser }) => {
+        // Открываем страницу
+        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+
+        // Находим элемент по атрибуту data-testid
+        const searchInput = await browser.getByTestId("search-input");
+
+        // Подтверждаем, что элемент найден
+        await expect(searchInput).toBeExisting();
+    });
+});
+```

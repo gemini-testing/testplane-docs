@@ -1,0 +1,255 @@
+import Admonition from "@theme/Admonition";
+
+# Разработка плагинов
+
+Плагины позволяют добавлять собственные UI-компоненты в интерфейс HTML Reporter. Например, вы можете показать статистику стабильности теста или добавить кнопку для интеграции с внешним сервисом. В HTML Reporter есть несколько точек расширения, в которых может отображаться UI плагина — например, на панели настроек или на странице результатов запуска теста.
+
+## Быстрый старт
+
+Пример плагина, в котором настроена сборка и используются основные возможности плагинной системы, доступен в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/).
+
+Мы рекомендуем использовать этот пример как шаблон для своего плагина.
+
+## Как работают плагины
+
+Плагины подключаются к HTML Reporter в конфиге, например:
+
+```typescript title="testplane.config.ts"
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            pluginsEnabled: true,
+            plugins: [
+                {
+                    name: "my-plugin-package",
+                    component: "MyPlugin",
+                    point: "result_meta",
+                    position: "after",
+                },
+            ],
+        },
+    },
+};
+```
+
+В этом случае HTML Reporter будет искать плагин в npm-пакете `my-plugin-package`, а именно:
+
+-   В `my-plugin-package/plugin.js` HTML Reporter будет искать реализацию компонента `MyPlugin`, который будет отображаться в точке расширения `result_meta`
+-   В `my-plugin-package/middleware.js` HTML Reporter будет искать реализацию серверных эндпоинтов
+
+Поэтому типичный плагин состоит из трёх частей:
+
+```
+my-plugin/
+├── ui/                     # UI плагина — собирается в бандл plugin.js с помощью Vite
+├── server/                 # Серверная часть плагина (опционально) — входная точка ожидается в файле middleware.js
+└── preset-for-config/      # Пресет для удобного подключения (опционально)
+```
+
+## Создание UI плагина
+
+### 1. Настройка сборки
+
+#### Формат выходного файла
+
+Результатом сборки UI плагина должен быть 1 файл — бандл `plugin.js` следующего формата:
+
+```javascript title="ui/build/plugin.js"
+__testplane_html_reporter_register_plugin__([
+    "react",
+    function (React, options) {
+        // ...
+        return { MyPlugin, reducers: [] };
+    },
+]);
+```
+
+Файл должен содержать только вызов функции `__testplane_html_reporter_register_plugin__`.
+
+Единственный аргумент функции — массив. В нём декларируются нужные плагину зависимости (доступные зависимости см. в [справочнике по Plugins SDK][plugins-sdk-reference]), последний элемент массива — функция, она будет вызвана с перечисленными зависимостями и должна вернуть объект с компонентом и редьюсерами.
+
+Подробнее о том, с чем именно вызывается эта функция, см. в [исходном коде HTML Reporter](https://github.com/gemini-testing/html-reporter/blob/885b2208e3fa2aeb1888d4a674e302b072c67e26/lib/static/modules/load-plugin.js#L107).
+
+#### Переиспользование зависимостей
+
+Для корректной работы React и хуков критично, чтобы зависимости не дублировались, а везде использовались одни и те же экземпляры — и в HTML Reporter, и в плагине.
+
+HTML Reporter предоставляет плагинам ряд зависимостей, которые можно переиспользовать, включая React и Gravity UI.
+
+Чтобы переиспользовать эти зависимости, нужно указать их в `external` в конфигурации Vite.
+
+#### Пример конфигурации Vite
+
+На практике нужные характеристики бандла достигаются с помощью сборки через Vite с `external` зависимостями и специальной обёрткой. Пример конфига можно посмотреть в [репозитории HTML Reporter](https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example/ui/vite.config.ts).
+
+### 2. Реализация компонента
+
+В зависимости от того, какая точка расширения используется, HTML Reporter может передавать в props некоторые данные, например, текущий результат запуска теста (см. подробнее в справочнике по Plugins SDK):
+
+```tsx title="ui/Plugin.tsx"
+import { Button } from "@gravity-ui/uikit";
+
+export const MyPlugin = ({ result }: { result: { id: string; suitePath: string[] } }) => {
+    const fullName = result.suitePath.join(" ");
+
+    return (
+        <div>
+            <div>Test Full Name: {fullName}</div>
+            <Button onClick={() => window.open(`example-tms.com/test/${result.id}`, "_blank")}>
+                Open test in TMS
+            </Button>
+        </div>
+    );
+};
+```
+
+Главный файл плагина можно организовать так:
+
+```typescript title="ui/index.tsx"
+import { MyPlugin } from "./Plugin";
+
+export default {
+    MyPlugin,
+    reducers: [],
+};
+```
+
+При разработке плагинов рекомендуется использовать Gravity UI и компоненты из Plugins SDK для визуальной консистентности с остальной частью интерфейса HTML Reporter.
+
+#### Работа с Redux (опционально)
+
+Для хранения и получения данных плагина используйте Redux.
+
+##### Создание actions
+
+Определите типы действий с уникальным префиксом:
+
+```typescript title="ui/actions.ts"
+export const actions = {
+    LOADING: "plugins/myPlugin/loading",
+    LOADED: "plugins/myPlugin/loaded",
+    ERROR: "plugins/myPlugin/error",
+} as const;
+```
+
+##### Создание thunk для запросов
+
+Для асинхронных операций используйте thunk-действия:
+
+```typescript title="ui/actions.ts"
+export const fetchData = (resultId: string) => async dispatch => {
+    dispatch({ type: actions.LOADING, payload: { resultId } });
+
+    const endpoint = `${pluginOptions.pluginServerEndpointPrefix}/data`;
+    const { data } = await axios.get(endpoint);
+
+    dispatch({ type: actions.LOADED, payload: { resultId, data } });
+};
+```
+
+Глобальная переменная `pluginOptions.pluginServerEndpointPrefix` содержит базовый URL для запросов к серверу плагина.
+
+##### Создание reducer
+
+Reducer обновляет состояние плагина. Используйте Immer для иммутабельных обновлений:
+
+```typescript title="ui/reducers.ts"
+import produce from "immer";
+
+export default produce((draft, action) => {
+    if (!draft.plugins.myPlugin) {
+        draft.plugins.myPlugin = { byResultId: {} };
+    }
+
+    switch (action.type) {
+        case actions.LOADING: {
+            const { resultId } = action.payload;
+            draft.plugins.myPlugin.byResultId[resultId] = {
+                ...defaultResultState,
+                status: "loading",
+            };
+            break;
+        }
+        // ...
+    }
+});
+```
+
+##### Чтение состояния
+
+Используйте `useSelector` для чтения данных из store:
+
+```tsx
+const data = useSelector(state => state.plugins.myPlugin?.byResultId[result.id]);
+```
+
+Подробнее о структуре Redux store см. в [исходном коде HTML Reporter](https://github.com/gemini-testing/html-reporter/blob/885b2208e3fa2aeb1888d4a674e302b072c67e26/lib/static/new-ui/types/store.ts#L257).
+
+Имя компонента (`MyPlugin`) должно совпадать с полем `component` в конфигурации плагина.
+
+### 3. Серверная часть (опционально)
+
+Серверная часть получает Express Router с префиксом `/plugin-routes/{plugin-name}/`:
+
+```typescript title="server/index.ts"
+import type { Router } from "express";
+
+export default function (router: Router) {
+    router.get("/data", (req, res) => {
+        res.json({ value: 42 });
+    });
+}
+```
+
+Этот эндпоинт будет доступен по адресу `/plugin-routes/my-plugin/data`.
+
+Рекомендуется получать адрес серверной части из глобальной переменной `pluginOptions.pluginServerEndpointPrefix`, так название плагина трансформируется на стороне HTML Reporter и может не совпадать с именем пакета.
+
+### 4. Пресет конфигурации (опционально)
+
+Пресет упрощает подключение плагина для пользователей:
+
+```typescript title="preset-for-config/index.ts"
+import { ExtensionPointName } from "html-reporter/plugins-sdk";
+
+export = function (config = {}) {
+    return [
+        {
+            name: "my-plugin-package",
+            component: "MyPlugin",
+            point: ExtensionPointName.ResultMeta,
+            position: "after",
+            config,
+        },
+    ];
+};
+```
+
+Благодаря пресету вместо того, чтобы указывать в конфиге полный дескриптор плагина, пользователи смогут импортировать этот объект и использовать его.
+
+### 5. Подключение плагина
+
+После публикации пользователи подключают плагин так:
+
+```typescript title="testplane.config.ts"
+import myPlugin from "my-plugin-package";
+
+export default {
+    plugins: {
+        "html-reporter/testplane": {
+            pluginsEnabled: true,
+            plugins: myPlugin(),
+        },
+    },
+};
+```
+
+### Дополнительные материалы
+
+-   [API-справочник](../html-reporter-plugins-api) — зависимости, компоненты SDK, точки расширения
+-   [Конфигурация плагинов](../html-reporter-setup#plugins) — параметры подключения
+-   [Пример плагина][example-plugin] — полный рабочий код
+
+[example-plugin]: https://github.com/gemini-testing/html-reporter/tree/master/examples/random-number-plugin-example
+[gravity-ui]: https://gravity-ui.com/
+[plugins-sdk-reference]: ../html-reporter-plugins-api

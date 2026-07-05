@@ -1,0 +1,40 @@
+# Testplane Skill
+
+Testplane Skill provides AI agents concise reference documentation along with scripts for browser automation and Testplane tooling integrations.
+
+## Getting Started
+
+We recommend using a wonderful setup wizard by [skills.sh](https://www.skills.sh/gemini-testing/testplane-skill/testplane-skill) to install Testplane Skill in your system:
+
+```shell
+npx skills add gemini-testing/testplane-skill
+```
+
+This works with Claude Code, Cursor, GitHub Copilot and any other agent harness with skills support.
+
+## Features
+
+Testplane Skill is based on our [CLI package](./testplane-cli.mdx), therefore it provides all browser interaction features the CLI has.
+Besides that, it teaches agents how to solve effectively various tasks:
+
+-   What commands does Testplane have and how does it work overall
+-   How to run CLI and interact with the browser
+-   Where to look for config files and how to run tests
+-   What best practices to follow when generating tests
+-   How to debug tests locally via various tools, including REPL
+-   How to investigate tests failed in CI runs and fix them
+
+## How It Works
+
+Testplane Skill is a set of instructions to AI agents + scripts for browser automation. It follows classic "progressive discovery" pattern to optimse tokens usage.
+
+Overall, a typical workflow looks like this:
+
+1. User asks an agent to do something related to Testplane tests
+2. Agent sees descriptions of all skills initially, user's request triggers Testplane Skill use
+3. Agent reads instructions packed into Testplane Skill
+4. Optionally, it reaches for `@testplane/cli` to interact with browser and enrich context with web app state
+
+## Next Steps
+
+-   [Learn](./testplane-cli.mdx) the capabilities of Testplane CLI

@@ -1,0 +1,42 @@
+# addValue
+
+## Обзор {#overview}
+
+Используйте команду `addValue`, чтобы добавить значение в элемент типа `<input>` или `<textarea>`.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).addValue(value);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>value</td><td>String или Number</td><td>Значение, которое необходимо добавить.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the addValue command", async ({ browser }) => {
+    let input = await browser.$(".input");
+    await input.addValue("test");
+    await input.addValue(123);
+
+    value = await input.getValue();
+    assert.equal(value, "test123"); // true
+});
+```
+
+## Связанные команды {#related}
+
+-   [element.clearValue](../clearValue)
+-   [element.setValue](../setValue)
+-   [browser.keys](../../browser/keys)

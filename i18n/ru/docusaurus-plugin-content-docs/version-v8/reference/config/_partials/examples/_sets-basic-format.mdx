@@ -1,0 +1,16 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        /* ... */
+    },
+    sets: {
+        "<set-id>": {
+            files: ["path-1", "some/folder/**/*.some-ext"],
+            ignoreFiles: ["ignorePath-1", "some/ignore/folder/**/"],
+            browsers: ["browser-1", "browser-2"],
+        },
+    },
+} satisfies ConfigInput;
+```

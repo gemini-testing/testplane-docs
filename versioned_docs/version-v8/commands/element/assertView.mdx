@@ -1,0 +1,77 @@
+import Admonition from "@theme/Admonition";
+import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
+
+# assertView
+
+## Overview {#overview}
+
+Use the `assertView` command to take a screenshot of an element for a specific test state and compare it with a reference.
+
+<Admonition type="info">
+    This command is implemented within Testplane and is not available in the [API
+    WebDriverIO][webdriverio-api].
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).assertView(state, options);
+```
+
+<Admonition type="warning">
+    During execution, the _assertView_ command calls [waitForExist][wait-for-exist] with
+    [waitTimeout][wait-timeout] and [waitInterval][wait-interval].
+</Admonition>
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>[state](#state)</td><td>String</td><td>Required parameter. The name of the test state. It must be unique within a single test.</td></tr>
+<tr><td>[options](#options)</td><td>Object</td><td>Settings for the _assertView_ command.</td></tr>
+
+</tbody>
+</table>
+
+### state
+
+Required parameter. Specifies the name of the test state. The name must be unique within a single test.
+
+### options
+
+Specifies the settings for the `assertView` command:
+
+<AssertViewOptions />
+
+## Usage Examples {#examples}
+
+**example.js**
+
+```javascript
+it("should assert view", async ({ browser }) => {
+    await browser.url("some/url");
+
+    const elem = await browser.$(".button");
+
+    await elem.assertView("plain");
+    await elem.click();
+    await elem.assertView("clicked");
+});
+```
+
+## Related Commands {#related}
+
+-   [browser.assertView](../../browser/assertView)
+-   [browser.saveRecordingScreen](../../browser/saveRecordingScreen)
+-   [browser.saveScreenshot](../../browser/saveScreenshot)
+-   [element.saveScreenshot](../saveScreenshot)
+
+[webdriverio-api]: https://webdriver.io/docs/api
+[wait-for-exist]: ../waitForExist
+[wait-timeout]: ../../../reference/config/browsers#wait_timeout
+[wait-interval]: ../../../reference/config/browsers#wait_interval
+[browsers-tolerance]: ../../../reference/config/browsers#tolerance
+[browsers-antialiasing-tolerance]: ../../../reference/config/browsers#antialiasing_tolerance

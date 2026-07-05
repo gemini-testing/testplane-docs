@@ -1,0 +1,12 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    lastFailed: {
+        only: false,
+        input: [".testplane/failed.json"],
+        output: ".testplane/failed.json",
+    },
+} satisfies ConfigInput;
+```

@@ -1,0 +1,65 @@
+# waitUntil
+
+## Overview {#overview}
+
+Use the `waitUntil` command to wait until a specific condition is met on the page in the browser.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).waitUntil(condition, { timeout, timeoutMsg, interval });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Default**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>condition</td><td>Function</td><td>_N/A_</td><td>The condition to wait for.</td></tr>
+<tr><td>timeout</td><td>Number</td><td>5000</td><td>Timeout in milliseconds.</td></tr>
+<tr><td>timeoutMsg</td><td>String</td><td>_N/A_</td><td>Error message to throw when the timeout is reached.</td></tr>
+<tr><td>interval</td><td>Number</td><td>500</td><td>Interval in milliseconds between condition checks.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+**example.html**
+
+```html
+<div id="someText">I am some text</div>
+<script>
+    setTimeout(() => {
+        document.getElementById("someText").innerHTML = "I am now different";
+    }, 1000);
+</script>
+```
+
+**waitUntil.js**
+
+```javascript
+it("should wait until text has changed", async ({ browser }) => {
+    const elem = await browser.$("#someText");
+
+    await elem.waitUntil(
+        async function () {
+            return (await this.getText()) === "I am now different";
+        },
+        {
+            timeout: 5000,
+            timeoutMsg: "expected text to be different after 5s",
+        },
+    );
+});
+```
+
+## Related Commands {#related}
+
+-   [browser.waitUntil](../../browser/waitUntil)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/waitUntil), from which we drew some information while writing our version.

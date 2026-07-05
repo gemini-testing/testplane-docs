@@ -1,0 +1,64 @@
+import Admonition from "@theme/Admonition";
+import Version from "../../_partials/specs/version.mdx";
+
+# waitForStaticToLoad
+
+<Version version="8.32.0" />
+
+## Обзор {#overview}
+
+Используйте команду `waitForStaticToLoad`, чтобы дождаться загрузки статических элементов на странице, таких как шрифты, CSS-стили и картинки.
+
+По достижении таймаута, если страница все еще не загружена, не выбрасывает ошибку, а возвращает результат с причиной.
+
+Автоматически вызывается при выполнении `assertView`.
+
+<Admonition type="warning">
+    Если картинка загружается из-за свойства `background-image`, описанного во внешних CSS-стилях,
+    Testplane сможет дождаться этой картинки только если эти стили раздаются с локального сервера,
+    либо если у элемента присутствует атрибут `crossorigin` в значении `anonymous`.
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+const result = await browser.waitForStaticToLoad({ timeout: 5000, interval: 300 });
+// { ready: true }
+// { ready: false, reason: "Document is loading" }
+// { ready: false, reason: "JavaScript is running" }
+// { ready: false, reason: "Fonts are loading" }
+// { ready: false, reason: "Image from https://example.com/image.jpg is loading" }
+// { ready: false, reason: "Styles from https://example.com/style.css are loading" }
+// { ready: false, reason: "Resources are not loaded", pendingResources: ["https://example.com/image.jpg"] }
+```
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**По&nbsp;умолчанию**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>timeout</td>
+            <td>Number</td>
+            <td>5000</td>
+            <td>Таймаут в миллисекундах.</td>
+        </tr>
+        <tr>
+            <td>interval</td>
+            <td>Number</td>
+            <td>500</td>
+            <td>Интервал в миллисекундах между проверками условия.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Связанные команды {#related}
+
+-   [browser.assertView](../../browser/assertView)

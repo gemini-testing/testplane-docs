@@ -1,0 +1,65 @@
+# deleteCookies
+
+## Обзор {#overview}
+
+Используйте команду `deleteCookies`, чтобы удалить все или конкретные _cookies_ для текущей страницы.
+
+Чтобы удалить конкретные _cookies_, нужно указать имя _cookie_ в виде строки или список имен _cookies_ в виде массива строк.
+
+## Использование {#usage}
+
+```javascript
+await browser.deleteCookies(names);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>names</td><td>String или String[]</td><td>Необязательный параметр. Имя _cookie_ или список имен _cookies_, которые необходимо удалить. При отсутствии параметра будут удалены все _cookies_ для текущей страницы.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should delete cookies", async ({ browser }) => {
+    await browser.setCookies([
+        { name: "test", value: "123" },
+        { name: "test2", value: "456" },
+        { name: "test3", value: "789" },
+    ]);
+
+    let cookies = await browser.getCookies();
+    console.log(cookies);
+    // выведет:
+    // [
+    //     { name: 'test', value: '123' },
+    //     { name: 'test2', value: '456' }
+    //     { name: 'test3', value: '789' }
+    // ]
+
+    await browser.deleteCookies(["test3"]);
+
+    cookies = await browser.getCookies();
+    console.log(cookies);
+    // выведет:
+    // [
+    //     { name: 'test', value: '123' },
+    //     { name: 'test2', value: '456' }
+    // ]
+
+    await browser.deleteCookies();
+    cookies = await browser.getCookies();
+    console.log(cookies); // выведет: []
+});
+```
+
+## Связанные команды {#related}
+
+-   [getCookies](../getCookies)
+-   [setCookies](../setCookies)

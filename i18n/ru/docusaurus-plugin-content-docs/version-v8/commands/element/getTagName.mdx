@@ -1,0 +1,29 @@
+# getTagName
+
+## Обзор {#overview}
+
+Используйте команду `getTagName`, чтобы получить имя тега DOM-элемента.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getTagName();
+```
+
+## Примеры использования {#examples}
+
+**index.html**
+
+```javascript
+<div id="elem">Lorem ipsum</div>
+```
+
+**getTagName.js**
+
+```javascript
+it("should demonstrate the getTagName command", async ({ browser }) => {
+    const tagName = await browser.$("#elem").getTagName();
+
+    console.log(tagName); // выведет: "div"
+});
+```

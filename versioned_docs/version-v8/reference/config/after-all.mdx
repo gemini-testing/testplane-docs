@@ -1,0 +1,30 @@
+import Version from "../../_partials/specs/version.mdx";
+
+# afterAll
+
+<Version version="8.31.7" />
+
+## Overview {#overview}
+
+This parameter is a hook. The function specified for this parameter will be automatically called after tests are completed.
+
+The context of the function is the Testplane config. Function receives config in arguments.
+
+## Usage Example {#example}
+
+Here is an example of using this hook to remove a file with a page state.
+
+```typescript title="testplane.config.ts"
+import * as fs from "fs";
+
+export default {
+    // ...
+    afterAll: async () => {
+        await fs.unlink("./dump.json");
+    },
+};
+```
+
+## Related {#related}
+
+-   [beforeAll](../before-all)

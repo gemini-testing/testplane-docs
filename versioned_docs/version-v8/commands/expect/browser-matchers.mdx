@@ -1,0 +1,51 @@
+# expect for the browser
+
+## toHaveUrl
+
+Checks if the browser is on the specified page.
+
+For example:
+
+```javascript
+await browser.url("https://testplane.io/");
+await expect(browser).toHaveUrl("https://testplane.io");
+```
+
+## toHaveUrlContaining
+
+Checks if the specified substring is contained in the URL of the page the browser is on.
+
+For example:
+
+```javascript
+await browser.url("https://testplane.io/");
+await expect(browser).toHaveUrlContaining("testplane");
+```
+
+## toHaveTitle
+
+Checks if the website has the specified title.
+
+For example:
+
+```javascript
+await browser.url("https://testplane.io/");
+await expect(browser).toHaveTitle(
+    "Fast, scalable and robust end-to-end web testing solution | Testplane",
+);
+```
+
+## toHaveTitleContaining
+
+Checks if the specified substring is contained in the website's title.
+
+For example:
+
+```javascript
+await browser.url("https://testplane.io/");
+await expect(browser).toHaveTitleContaining("Testplane");
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/expect-webdriverio), from which we drew some information while writing our version.
