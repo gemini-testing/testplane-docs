@@ -2,7 +2,7 @@ import { AnimatedAppear } from "@site/src/components/AnimatedAppear";
 import { Heading } from "@site/src/components/FeaturesDemo/AnimatedHeading";
 import React, { useRef } from "react";
 import Typed from "typed.js";
-import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import Link from "@docusaurus/Link";
 import { useLatestVersion } from "@docusaurus/plugin-content-docs/client";
 import Translate from "@docusaurus/Translate";

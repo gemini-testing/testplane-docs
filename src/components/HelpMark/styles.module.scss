@@ -1,0 +1,45 @@
+@reference "../../scss/custom.scss";
+
+.trigger {
+    display: inline;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transform: translateY(2px);
+}
+
+.tooltip {
+    position: fixed;
+    z-index: 2147483647;
+    box-sizing: border-box;
+    max-width: 280px;
+    padding: 0.5rem 0.625rem;
+    font-size: 15px;
+    line-height: 1.4;
+    pointer-events: auto;
+    border-radius: 10px;
+    opacity: 0;
+    @apply bg-neutral-900 text-neutral-50 shadow-xl shadow-neutral-950/20;
+}
+
+.ready {
+    opacity: 1;
+}
+
+:global(body) .tooltip :global(p) {
+    margin: 0;
+    color: inherit;
+    line-height: inherit;
+    background: transparent;
+}
+
+:global(body) .tooltip :global(li) {
+    color: inherit;
+}
+
+:global(body) .tooltip :global(a) {
+    color: inherit;
+    text-decoration: underline !important;
+}

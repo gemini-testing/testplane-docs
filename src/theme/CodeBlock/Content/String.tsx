@@ -10,11 +10,11 @@ import {
 } from "@docusaurus/theme-common/internal";
 import { Highlight } from "prism-react-renderer";
 import Line from "@theme/CodeBlock/Line";
-import CopyButton from "@theme/CodeBlock/CopyButton";
-import WordWrapButton from "@theme/CodeBlock/WordWrapButton";
 import Container from "@theme/CodeBlock/Container";
 import type { Props } from "@theme/CodeBlock/Content/String";
 
+import CopyButton from "../CopyButton";
+import WordWrapButton from "../WordWrapButton";
 import styles from "./styles.module.css";
 
 // Prism languages are always lowercase
@@ -52,7 +52,7 @@ export default function CodeBlockString({
         language,
         magicComments,
     });
-    const showLineNumbers = showLineNumbersProp ?? containsLineNumbers(metastring);
+    const showLineNumbers = Boolean(showLineNumbersProp ?? containsLineNumbers(metastring));
 
     return (
         <Container
@@ -70,7 +70,7 @@ export default function CodeBlockString({
                     {({ tokens, getLineProps, getTokenProps }) => (
                         <pre
                             tabIndex={0}
-                            ref={wordWrap.codeBlockRef}
+                            ref={wordWrap.codeBlockRef as React.RefObject<HTMLPreElement>}
                             className={clsx(
                                 styles.codeBlock,
                                 "thin-scrollbar rounded-xl border border-neutral-200 bg-white dark:border-neutral-300/20 dark:bg-neutral-950",
@@ -97,11 +97,11 @@ export default function CodeBlockString({
                     )}
                 </Highlight>
                 <div className={styles.buttonGroup}>
-                    {(wordWrap.isEnabled || wordWrap.isCodeScrollable) && (
+                    {Boolean(wordWrap.isEnabled || wordWrap.isCodeScrollable) && (
                         <WordWrapButton
                             className={styles.codeButton}
                             onClick={() => wordWrap.toggle()}
-                            isEnabled={wordWrap.isEnabled}
+                            isEnabled={Boolean(wordWrap.isEnabled)}
                         />
                     )}
                     <CopyButton className={styles.codeButton} code={code} />

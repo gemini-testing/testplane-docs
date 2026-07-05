@@ -6,8 +6,8 @@ import Star4Sharp from "@site/static/img/landing/star-4-sharp.svg";
 import { FeaturesDemo } from "@site/src/components/FeaturesDemo";
 import { DemoStats } from "@site/src/components/DemoStats";
 import React from "react";
-import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
-import BrowserOnly from "@docusaurus/core/lib/client/exports/BrowserOnly";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import BrowserOnly from "@docusaurus/BrowserOnly";
 import { HeadingId } from "@site/src/components/FeaturesDemo/constants";
 import { translate } from "@docusaurus/Translate";
 

@@ -1,6 +1,9 @@
 import { CircleQuestion } from "@gravity-ui/icons";
+import clsx from "clsx";
 import React from "react";
 import { createPortal } from "react-dom";
+
+import styles from "./styles.module.scss";
 
 interface HelpMarkProps {
     children: React.ReactNode;
@@ -164,7 +167,7 @@ export function HelpMark({
             <button
                 ref={triggerRef}
                 type="button"
-                className={`inline translate-y-[2px] cursor-pointer ${className ?? ""}`.trim()}
+                className={clsx(styles.trigger, className)}
                 aria-describedby={isOpen ? id : undefined}
                 onMouseEnter={open}
                 onMouseLeave={close}
@@ -183,7 +186,7 @@ export function HelpMark({
                         role="tooltip"
                         onMouseEnter={open}
                         onMouseLeave={close}
-                        className={`pointer-events-auto fixed z-[2147483647] box-border rounded-[10px] bg-zinc-900 px-2.5 py-2 text-[15px] leading-[1.4] text-white shadow-[0_8px_24px_rgba(0,0,0,0.18)] ${position.ready ? "opacity-100" : "opacity-0"}`}
+                        className={clsx(styles.tooltip, position.ready && styles.ready)}
                         style={{
                             maxWidth,
                             top: position.top,

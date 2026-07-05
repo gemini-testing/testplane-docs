@@ -1,10 +1,15 @@
 import React from "react";
 import clsx from "clsx";
 import { translate } from "@docusaurus/Translate";
-import type { Props } from "@theme/CodeBlock/WordWrapButton";
 import IconWordWrap from "@theme/Icon/WordWrap";
 
 import styles from "./styles.module.css";
+
+interface Props {
+    className?: string;
+    onClick: () => void;
+    isEnabled: boolean;
+}
 
 export default function WordWrapButton({
     className,
