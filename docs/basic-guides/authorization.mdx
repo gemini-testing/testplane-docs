@@ -1,3 +1,318 @@
-# Authorization
+import Admonition from "@theme/Admonition";
 
-Draft
+# Authorization in Tests
+
+<Admonition title="What you'll learn">
+
+-   How the `saveState` and `restoreState` commands work
+-   How to save an authentication session and reuse it across tests
+-   How to work with multiple accounts and roles
+-   Best practices for storing state and running tests in parallel
+
+</Admonition>
+
+## Introduction
+
+When tests start, the browser has no authentication data. Logging in within every test is inefficient: it increases the overall run time and creates a dependency on the stability of the login form.
+
+The [`saveState`](../commands/browser/saveState.mdx) and [`restoreState`](../commands/browser/restoreState.mdx) commands let you save the browser state (cookies, localStorage, sessionStorage) after a single login and restore it in subsequent tests.
+
+## How the commands work
+
+### saveState
+
+The [`saveState`](../commands/browser/saveState.mdx) command saves the current browser state: cookies, localStorage, and sessionStorage. The data can be saved to a file or to a variable.
+
+```typescript
+// Save to a file
+await browser.saveState({ path: "./state.json" });
+
+// Save to a variable
+const state = await browser.saveState();
+```
+
+For pages with iframes, storage data is saved separately for each origin. IndexedDB is not included in the saved state.
+
+### restoreState
+
+The [`restoreState`](../commands/browser/restoreState.mdx) command restores a previously saved state.
+
+```typescript
+// Restore from a file
+await browser.restoreState({ path: "./state.json" });
+
+// Restore from a variable
+await browser.restoreState({ data: state });
+```
+
+<Admonition type="warning" title="Important">
+    Before calling `restoreState`, open a page on the target domain using the
+    [`url`](../commands/browser/url.mdx) command. This is a browser limitation: localStorage and
+    sessionStorage are bound to the origin, and cookies can only be set for the current domain.
+</Admonition>
+
+By default, after restoring the state the page is reloaded (`refresh: true`). This is required so that the application can "see" the restored data.
+
+### Working with cookies directly
+
+If authentication is stored only in cookies and localStorage/sessionStorage are not needed, you can use the [`getCookies`](../commands/browser/getCookies.mdx), [`setCookies`](../commands/browser/setCookies.mdx), and [`deleteCookies`](../commands/browser/deleteCookies.mdx) commands:
+
+```typescript
+// Get cookies
+const cookies = await browser.getCookies();
+
+// Set cookies
+await browser.setCookies([{ name: "session", value: "abc123", domain: ".example.com" }]);
+
+// Delete a specific cookie
+await browser.deleteCookies("session");
+```
+
+## Basic scenario: single account
+
+In this approach, authentication is performed once in `beforeAll`, and the state is saved to a file. Before each test, the [`@testplane/global-hook`](../plugins/testplane-global-hook.mdx) plugin opens the application and restores the saved state, so tests start with an already authenticated session.
+
+<details>
+
+    <summary>Configuration example</summary>
+
+    ```typescript title="testplane.config.ts"
+
+    import path from "node:path";
+    import type { ConfigInput, WdioBrowser } from "testplane";
+    import { launchBrowser } from "testplane/unstable";
+
+    const baseUrl = "http://localhost:3000";
+    const statePath = path.resolve(process.cwd(), ".testplane", "states", "user.json");
+
+    async function login(browser: WdioBrowser) {
+        await browser.url(`${baseUrl}/login`);
+        await browser.$("#email").setValue(process.env.E2E_USER_EMAIL);
+        await browser.$("#password").setValue(process.env.E2E_USER_PASSWORD);
+        await browser.$("#submit").click();
+        await browser.$("#welcome").waitForDisplayed();
+    }
+
+    export default {
+        gridUrl: "local",
+
+        browsers: {
+            chrome: {
+                desiredCapabilities: {
+                    browserName: "chrome"
+                }
+            }
+        },
+
+        sets: {
+            desktop: {
+                files: ["testplane/**/*.e2e.ts"],
+                browsers: ["chrome"]
+            }
+        },
+
+        beforeAll: async ({ config }) => {
+            const browser = await launchBrowser(config.browsers.chrome!);
+
+            await login(browser);
+            await browser.saveState({ path: statePath });
+
+            await browser.deleteSession();
+        },
+
+        plugins: {
+            "@testplane/global-hook": {
+                enabled: true,
+
+                beforeEach: async ({ browser }: { browser: WdioBrowser }) => {
+                    await browser.url(baseUrl);
+                    await browser.restoreState({ path: statePath });
+                }
+            }
+        }
+
+    } satisfies ConfigInput;
+    ```
+
+</details>
+
+<details>
+
+    <summary>Test example</summary>
+
+    ```typescript title="example.testplane.ts"
+    const baseUrl = "http://localhost:3000";
+
+    describe("authenticated user", () => {
+        it("opens the dashboard without re-logging in", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            await expect(browser.$("#role")).toHaveTextContaining("user");
+        });
+
+        it("restores localStorage and sessionStorage", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            const email = await browser.execute(() => localStorage.getItem("auth.email"));
+            const role = await browser.execute(() => localStorage.getItem("auth.role"));
+            const bannerDismissed = await browser.execute(() =>
+                sessionStorage.getItem("feature.bannerDismissed")
+            );
+
+            expect(email).toBe(process.env.E2E_USER_EMAIL);
+            expect(role).toBe("user");
+            expect(bannerDismissed).toBe("true");
+        });
+    });
+    ```
+
+</details>
+
+-   `beforeAll` performs the login only once and saves a browser snapshot to a file.
+-   `@testplane/global-hook` moves the repetitive state-restoration logic out of the tests themselves into a shared `beforeEach`.
+-   Before `restoreState`, `browser.url(baseUrl)` is always called — otherwise the browser cannot correctly restore cookies and storage for the required origin.
+
+## Multiple accounts (admin + user)
+
+In this approach, two state snapshots are prepared in `beforeAll`: one for a regular user and one for an administrator. The required snapshot is selected in `beforeEach`, and the tests can verify differences in permissions and UI elements.
+
+<details>
+
+    <summary>Configuration example</summary>
+
+    ```typescript title="testplane.config.ts"
+
+    import path from "node:path";
+    import type { ConfigInput, WdioBrowser } from "testplane";
+    import { launchBrowser } from "testplane/unstable";
+
+    const baseUrl = "http://localhost:3000";
+    const stateDir = path.resolve(process.cwd(), ".testplane", "states");
+    const userStatePath = path.join(stateDir, "user.json");
+    const adminStatePath = path.join(stateDir, "admin.json");
+
+    async function login(browser: WdioBrowser, email: string, password: string) {
+        await browser.url(`${baseUrl}/login`);
+        await browser.$("#email").setValue(email);
+        await browser.$("#password").setValue(password);
+        await browser.$("#submit").click();
+        await browser.$("#welcome").waitForDisplayed();
+    }
+
+    async function clearClientState(browser: WdioBrowser) {
+        await browser.url(`${baseUrl}/login`);
+        await browser.execute(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+        await browser.deleteCookies();
+    }
+
+    export default {
+        gridUrl: "local",
+
+        browsers: {
+            chrome: {
+                desiredCapabilities: {
+                    browserName: "chrome"
+                }
+            }
+        },
+
+        sets: {
+            desktop: {
+                files: ["testplane/**/*.e2e.ts"],
+                browsers: ["chrome"]
+            }
+        },
+
+        beforeAll: async ({ config }) => {
+            const browser = await launchBrowser(config.browsers.chrome!);
+
+            await login(
+                browser,
+                process.env.E2E_USER_EMAIL,
+                process.env.E2E_USER_PASSWORD
+            );
+            await browser.saveState({ path: userStatePath });
+
+            await clearClientState(browser);
+
+            await login(
+                browser,
+                process.env.E2E_ADMIN_EMAIL,
+                process.env.E2E_ADMIN_PASSWORD
+            );
+            await browser.saveState({ path: adminStatePath });
+
+            await browser.deleteSession();
+        },
+
+        plugins: {
+            "@testplane/global-hook": {
+                enabled: true,
+
+                beforeEach: async ({ browser, currentTest }: {
+                    browser: WdioBrowser;
+                    currentTest: { title: string };
+                }) => {
+                    const statePath = currentTest.title.includes("[admin]")
+                        ? adminStatePath
+                        : userStatePath;
+
+                    await browser.url(baseUrl);
+                    await browser.restoreState({ path: statePath });
+                }
+            }
+        }
+    } satisfies ConfigInput;
+    ```
+
+</details>
+
+<details>
+
+    <summary>Test example</summary>
+
+    ```typescript title="example.testplane.ts"
+    const baseUrl = "http://localhost:3000";
+
+    describe("accounts with different roles", () => {
+        it("opens the dashboard for a regular user", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            await expect(browser.$("#role")).toHaveTextContaining("user");
+            await expect(browser.$("#no-admin-message")).toBeDisplayed();
+        });
+
+        it("[admin] opens the dashboard for an administrator", async ({ browser }) => {
+            await browser.url(`${baseUrl}/dashboard`);
+
+            await expect(browser.$("#role")).toHaveTextContaining("admin");
+            await expect(browser.$("#admin-link")).toBeDisplayed();
+        });
+
+        it("denies the user access to the admin page", async ({ browser }) => {
+            await browser.url(`${baseUrl}/admin`);
+            await expect(browser.$("#forbidden-message")).toBeDisplayed();
+        });
+
+        it("[admin] allows the administrator access to the admin page", async ({ browser }) => {
+            await browser.url(`${baseUrl}/admin`);
+            await expect(browser.$("#manage-users")).toBeDisplayed();
+        });
+    });
+    ```
+
+</details>
+
+-   In `beforeAll`, two separate state files are saved — one per role — so they can be reused across tests.
+-   In `beforeEach`, the required state snapshot is selected; in this example the choice is based on the test title, but in a real project you can use any scheme that works for you.
+-   This approach clearly demonstrates that the same set of tests can be run under different roles without re-logging in before each case.
+
+## Best practices
+
+-   Don't commit state files to the repository: they may contain cookies and other sensitive data.
+-   Store logins and passwords in environment variables, not in test code.
+-   Keep the session lifetime in mind: if a state snapshot becomes stale, it must be recreated.
+-   If tests modify data on the server side, the same account can become a source of conflicts when run in parallel. In such cases, it's better to prepare separate accounts for each conflicting scenario.
