@@ -20,7 +20,11 @@ const config: Config = {
     projectName: "testplane-docs",
 
     onBrokenLinks: "throw",
-    onBrokenMarkdownLinks: "throw",
+    markdown: {
+        hooks: {
+            onBrokenMarkdownLinks: "throw",
+        },
+    },
 
     trailingSlash: true,
 

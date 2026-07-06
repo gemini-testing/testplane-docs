@@ -91,6 +91,7 @@ body {
     --docsearch-searchbox-background: transparent !important;
     --max-width: 92rem;
     --ifm-navbar-sidebar-width: 100vw;
+    --docsearch-subtle-color: transparent !important;
 }
 
 /* Dark mode. */
@@ -107,6 +108,7 @@ html[data-theme="dark"] {
     --ifm-color-primary-lighter: #32d8b4;
     --ifm-color-primary-lightest: #4fddbf;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+    --docsearch-subtle-color: transparent !important;
 }
 
 html[data-theme-override="light"] {

@@ -2,7 +2,7 @@ import { AnimatedAppear } from "@site/src/components/AnimatedAppear";
 import { Heading } from "@site/src/components/FeaturesDemo/AnimatedHeading";
 import { FeatureBlock, FeatureBlockLayout } from "@site/src/components/FeatureBlock";
 import { GradientUnderline } from "@site/src/components/GradientUnderline";
-import useBaseUrl from "@docusaurus/core/lib/client/exports/useBaseUrl";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import React from "react";
 import Translate, { translate } from "@docusaurus/Translate";
 

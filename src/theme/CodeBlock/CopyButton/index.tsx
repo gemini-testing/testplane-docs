@@ -2,10 +2,14 @@ import React, { useCallback, useState, useRef, useEffect } from "react";
 import clsx from "clsx";
 import copy from "copy-text-to-clipboard";
 import { translate } from "@docusaurus/Translate";
-import type { Props } from "@theme/CodeBlock/CopyButton";
 import { Copy, CopyCheck } from "@gravity-ui/icons";
 
 import styles from "./styles.module.css";
+
+interface Props {
+    className?: string;
+    code: string;
+}
 
 export default function CopyButton({ code, className }: Props): JSX.Element {
     const [isCopied, setIsCopied] = useState(false);

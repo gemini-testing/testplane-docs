@@ -3,7 +3,7 @@ import Heading from "@theme/Heading";
 import Translate from "@docusaurus/Translate";
 import Link from "@docusaurus/Link";
 import { useVersions, useLatestVersion } from "@docusaurus/plugin-content-docs/client";
-import useDocusaurusContext from "@docusaurus/core/lib/client/exports/useDocusaurusContext";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 
 function DocumentationLabel() {
     return <Translate id="versionsPage.versionEntry.link">Documentation</Translate>;
