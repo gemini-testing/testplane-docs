@@ -1,0 +1,52 @@
+import Admonition from "@theme/Admonition";
+
+# uploadFile
+
+## Обзор {#overview}
+
+Используйте команду `uploadFile`, чтобы загрузить файл на _[Selenium Standalone][selenium-file]_ сервер или в браузер через его драйвер (например, [Chromedriver][chromedriver]).
+
+<Admonition type="warning">
+    Команда _uploadFile_ поддерживается только в том случае, если вы используете [Selenium
+    Grid][selenium-grid] или [Chromedriver][chromedriver]. Это связано с тем, что она использует
+    неофициальную особенность протокола, которая реализована в данный момент только в _Chrome_ и при
+    запуске в [Selenium Grid][selenium-grid].
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.uploadFile(localPath);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>localPath</td><td>String</td><td>Путь к локальному файлу.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+const path = require("path");
+
+it("should upload a file", async ({ browser }) => {
+    await browser.url("https://the-internet.herokuapp.com/upload");
+
+    const filePath = "/path/to/some/file.png";
+    const remoteFilePath = await browser.uploadFile(filePath);
+
+    await browser.$("#file-upload").setValue(remoteFilePath);
+    await browser.$("#file-submit").click();
+});
+```
+
+[selenium-grid]: https://www.selenium.dev/documentation/grid/
+[selenium-file]: https://webdriver.io/docs/api/selenium/#file
+[chromedriver]: https://chromedriver.chromium.org/

@@ -1,0 +1,75 @@
+import Admonition from "@theme/Admonition";
+
+# newWindow
+
+## Обзор {#overview}
+
+Используйте команду `newWindow`, чтобы открыть новое окно в браузере.
+
+Эта команда эквивалентна функции [window.open()][window-open].
+
+Обратите внимание, что при выполнении эта команда автоматически переключит вас в новое окно.
+
+<Admonition type="warning">Команда _newWindow_ не работает в мобильных окружениях (!)</Admonition>
+
+<Admonition type="warning">
+    Команда может не работать c _devtools_ протоколом. Также она не дожидается загрузки страницы.
+    Чтобы решить эти проблемы, рекомендуется перезаписать команду (на стороне Testplane это будет сделано в версии 9.0.0):
+    ```javascript
+    browser.overwriteCommand("newWindow", async function(pageUrl, windowName, windowFeatures) {
+        if (browser.isDevTools) {
+            const puppeteer = await browser.getPuppeteer();
+            await puppeteer.newPage();
+        } else {
+            await browser.newWindow("about:blank", windowName, windowFeatures);
+        }
+
+        await browser.url(pageUrl);
+    });
+    ```
+
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.newWindow(url, { windowName, windowFeatures });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>url</td><td>String</td><td>URL веб-сайта, который нужно открыть.</td></tr>
+<tr><td>windowName</td><td>String</td><td>Имя нового окна.</td></tr>
+<tr><td>windowFeatures</td><td>String</td><td>Настройки открываемого окна, например: _size_, _position_, _scrollbars_, и т. д.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should open a new tab", async ({ browser }) => {
+    await browser.url("http://google.com");
+    console.log(await browser.getTitle());
+    // выведет: "Google"
+
+    await browser.newWindow(
+        "https://webdriver.io",
+        "WebdriverIO window",
+        "width=420,height=230,resizable,scrollbars=yes,status=1",
+    );
+    console.log(await browser.getTitle());
+    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+
+    await browser.closeWindow();
+    console.log(await browser.getTitle());
+    // выведет: "Google"
+});
+```
+
+[window-open]: https://developer.mozilla.org/en-US/docs/Web/API/Window/open

@@ -1,0 +1,115 @@
+```yaml
+- body:
+ - main.body__wrapper:
+  - div.headline:
+   - div.headline__personal:
+    - a.home-link2.alice.headline__personal-item.home-link2_color_quaternary[aria-label=Алиса href="https://alice.yandex.ru/?utm_source=yandex&utm_campaign=morda_header_oknyx&utm_medium=interface"]:
+     - svg.alice__icon
+    - div:
+     - div:
+      - a.home-link2.headline__personal-item.headline__personal-item_services[aria-label=Сервисы href=https://yandex.ru/all title=Сервисы role=button]:
+       - div.headline__personal-icon:
+        - svg
+    - a.home-link2.headline__personal-enter.home-link2_color_black[href="https://passport.yandex.ru/auth?retpath=https%3A%2F%2Fsso.passport.yandex.ru%2Fpush%3Fretpath%3Dhttp..."] "Войти"
+    - div:
+     - div.usermenu-portal:
+      - div:
+       - a.home-link2.headline__personal-menu.headline__personal-item[aria-label="Профиль, вход не выполнен" role=button tabindex=0 href="https://passport.yandex.ru/auth?origin=morda&retpath=https%3A%2F%2Fya.ru%2F%3Fnr%3D1%26redirect_ts%3..."]:
+        - div.headline__personal-icon:
+         - svg
+   - div[@hidden]:
+    - div.alerts[role=complementary aria-label=Уведомления]:
+     - h1.a11y-hidden[@hidden] "Уведомления"
+     - div.alert:
+      - a.home-link2.alert__content.home-link2_color_inherit[href="https://yandex.ru/pogoda/146?lat=44.948237&lon=34.100318&utm_content=GroupedTomorrow&utm_medium=aler..."]:
+       - "div.alert__left-content-wrapper[aria-label=\"Завтра: дождь, грозы · +15⁠…⁠+19⁠° · слабый ветер 3⁠–⁠5 м⁠/⁠с, порывы до 11 м⁠/⁠с\"]":
+        - span.alert__text "Завтра: дождь, грозы · +15⁠…⁠+19⁠° · слабый ветер 3⁠–⁠5 м⁠/⁠с, порывы до 11 м⁠/⁠с"
+      - button.alert__close[aria-label=Закрыть @hidden]
+  - div.body__content:
+   - form.mini-suggest.i-mini-bem.mini-suggest_search_yes.mini-suggest_personal_yes.mini-suggest_request_xhr.mini-suggest_favicon_yes.mini-suggest_hide-on-scroll_yes.mini-suggest_direct_yes.mini-suggest_re-request_yes.mini-suggest_direct-disclaimer_yes.mini-suggest_autofocus_yes.mini-suggest_delete-on-hover_yes.mini-suggest_grouping_yes.mini-suggest_theme_tile.mini-suggest_prevent-empty_yes.mini-suggest_entity-suggest_yes.mini-suggest_overlay_yaru.mini-suggest_type-icon_yes.mini-suggest_redesigned-navs_yes.mini-suggest_redesign-type_block.mini-suggest_expanding_yes.mini-suggest_reasoning_yes.mini-suggest_redesign-serp_yes.search3.search3_redesign-type_block.search3_keyboard_yes.search3_voice_yes.search3_camera_yes.mini-suggest_js_inited[action=https://ya.ru/search/ role=search aria-label="Поиск в интернете"]:
+    - div.search3__inner-wrapper:
+     - div:
+      - section.reasoning-section.reasoning-section_on-top_yes.reasoning-section_justify_center:
+       - ul.reasoning-section__list:
+        - li.reasoning-section__item.reasoning-section__item_type_rect:
+         - a.home-link2.reasoning-section__item-link.home-link2_color_inherit[href="https://yandex.ru/finance?utm_source=subclasses_product&utm_content=fin_5&utm_campaign=morda_web&per..."]:
+          - span.reasoning-section__item-title "Финансы"
+        - li.reasoning-section__item.reasoning-section__item_type_rect:
+         - a.home-link2.reasoning-section__item-link.home-link2_color_inherit[href="https://yandex.ru/products?utm_source=subclasses_product&utm_content=ecom&utm_campaign=morda_web&per..."]:
+          - span.reasoning-section__item-title "Товары"
+        - li.reasoning-section__item.reasoning-section__item_type_rect:
+         - a.home-link2.reasoning-section__item-link.home-link2_color_inherit[href="https://yandex.ru/realty?utm_source=subclasses_realty&utm_content=realty&utm_campaign=morda_web&pers..."]:
+          - span.reasoning-section__item-title "Квартиры"
+     - div.search3__inner:
+      - label.search3__input-wrapper-wrapper[for=text]:
+       - div.search3__input-wrapper:
+        - div.search3__input-outer-container:
+         - div.search3__input-inner-container:
+          - input.search3__input.mini-suggest__control[aria-label=Запрос name placeholder="Подробно опишите сложную задачу или вопрос" @hidden]
+          - textarea.search3__input.mini-suggest__input#text[placeholder="Подробно опишите сложную задачу или вопрос" name=text role=combobox]
+          - svg.search3__magnifier
+        - div.search3__action-buttons.search3__action-buttons_submit-button-icon_yes:
+         - div.search3__reasoning-root:
+          - div.search3__reasoning:
+           - div.reasoning-dropdown__root:
+            - div.reasoning-dropdown:
+             - button.reasoning-dropwdown__button[type=button aria-label=Подробнее title=Подробнее]:
+              - svg.search3__reasoning-qmark
+         - div:
+          - button.search3__keyboard.search3__action[title=Клавиатура type=button @hidden]:
+           - svg.search3__svg_keyboard
+         - div.search3__voice-wrapper:
+          - button.Button.VoiceInput.search3__voice.search3__voice_type_depot.VoiceInput_futuris[aria-label="Голосовой поиск" type=button title="Голосовой поиск"]:
+           - span.Button-Text:
+            - svg.VoiceInput-Icon
+         - div:
+          - button.search3__action.search3__camera#image-search[title="Поиск по картинке" type=button]:
+           - svg.search3__svg_camera
+         - button.search3__button.search3__button_icon_yes.mini-suggest__button[type=submit tabindex=-1 aria-label=Найти @hidden]:
+          - svg
+    - input[type=hidden name=lr value=146 @value=146 @hidden]
+    - input[type=hidden name=msid value=1749915681851623-7074561989186018597-balancer-l7leveler-kubr-yp-vla-119-BAL @value=1749915681851623-7074561989186018597-balancer-l7leveler-kubr-yp-vla-119-BAL @hidden]
+    - input[type=hidden name=search_source value=yaru_desktop_common @value=yaru_desktop_common @hidden]
+    - input[type=hidden name=search_domain value=yaru @value=yaru @hidden]
+   - aside.informers3[aria-label=Информеры]:
+    - a.home-link2.informers3__item.informers3-weather.home-link2_color_quaternary.home-link2_hover_tertiary[aria-label="Погода в Симферополе 21°, Облачно с прояснениями" href="https://yandex.ru/pogoda/146?lat=44.948237&lon=34.100318&utm_campaign=informer&utm_content=main_info..."]:
+     - div.informers3-weather__text "+21°"
+    - div:
+     - a.home-link2.informers3__pollen.informers3__item.informers3__pollen_level_yellow.informers3__pollen_animate_yes[aria-label="Низкая активность злаков" href="https://yandex.ru/pogoda/allergies?allergen=cereals&lat=44.948237&lon=34.100318&utm_campaign=informe..."]:
+      - div.simple-tooltip.force-dark.informers-tooltip.simple-tooltip_hidden_yes.simple-tooltip_direction_right[@hidden] "Низкая активность злаков"
+    - section.informers3__stocks:
+     - h2.a11y-hidden "Курсы ЦБ РФ"
+     - div.informers3__stocks-item-wrapper:
+      - a.home-link2.informers3__stocks-item.home-link2_color_quaternary.home-link2_hover_tertiary[aria-label="USD ЦБ 79,00" href="https://ya.ru/search/?lr=146&search_source=ya_morda_stocks&text=USD+%D0%A6%D0%91&wiz=finance"]:
+       - span "USD 79,00"
+     - div.informers3__stocks-item-wrapper:
+      - a.home-link2.informers3__stocks-item.home-link2_color_quaternary.home-link2_hover_tertiary[aria-label="EUR ЦБ 90,01" href="https://ya.ru/search/?lr=146&search_source=ya_morda_stocks&text=EUR+%D0%A6%D0%91&wiz=finance"]:
+       - span "EUR 90,01"
+     - div.informers3__stocks-item-wrapper:
+      - a.home-link2.informers3__stocks-item.home-link2_color_quaternary.home-link2_hover_tertiary[aria-label="YDEX 3998,50" href="https://ya.ru/search/?lr=146&search_source=ya_morda_stocks&text=YDEX&wiz=finance"]:
+       - span "YDEX 3998,50"
+    - a.home-link2.informers3__geo.home-link2_color_quaternary.home-link2_hover_tertiary[aria-label="Ваш город определён как Симферополь" href="https://ya.ru/tune/geo?retpath=https%3A%2F%2Fya.ru%2F%3Fnr%3D1%26redirect_ts%3D1749915681.00000&nosy..."] "Симферополь"
+   - div.main-home-banner:
+    - div[@hidden]:
+     - div.main-home-banner__content.banner-tgo.banner-tgo_title_m:
+      - div.banner-tgo__content:
+       - div.banner-tgo__title "Простой переход на Яндекс Браузер"
+       - div.banner-tgo__subtitle:
+        - div.banner-tgo__domain "yandex.ru"
+        - span.home-link2.banner-tgo__mark "Реклама • 0+"
+      - a.home-link2.banner-tgo__link[aria-label="Простой переход на Яндекс Браузер" href=https://yandex.ru/an/count/WgyejI_zOoVX2Lci0WqL00Eca4kmIQS4p0bKyOO9wCsxD-yN0juA2EWchcZT7ALIUK0NwFEvt...]
+      - div.direct-close-block.direct-close-block_state_idle.direct-close-block_tgo:
+       - button.direct-close-block__close-button.direct-close-block__close-button_idle[aria-label="Действия с рекламой"]:
+        - div.direct-close-block__close-icon:
+         - svg
+ - div.ladybug:
+  - span.home-link2.ladybug__item.ladybug__butterfly#butterfly:
+   - div#butterfly-button:
+    - div:
+     - div.YndxBug.Bug__container1k5BDO.Bug__container_position_left35lf2v:
+      - div.YndxBug-Icon.Bug__icon3lvpsr:
+       - svg[@hidden]
+ - div[@hidden]:
+  - div.page-info[@hidden] "{\"static\":\"2025-06-11-855\",\"content\":\"big\",\"domain\":\"ru\",\"nodeVersion\":\"v22.10.0\"}"
+ - span#requestId[@hidden] "1749915681851623-7074561989186018597-balancer-l7leveler-kubr-yp-vla-119-BAL"
+```

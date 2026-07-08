@@ -1,0 +1,15 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        "<browser-id>": {
+            desiredCapabilities: {
+                browserName: "<browser-name>",
+                // ...
+            },
+            // ...
+        },
+    },
+} satisfies ConfigInput;
+```

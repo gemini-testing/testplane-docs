@@ -1,0 +1,27 @@
+```typescript title="my-plugin.ts"
+let workers;
+
+exports = testplane => {
+    testplane.on(testplane.events.RUNNER_START, async runner => {
+        const workerFilepath = require.resolve("./worker");
+        const exportedMethods = ["foo"];
+        workers = runner.registerWorkers(workerFilepath, exportedMethods);
+
+        // outputs `FOO_RUNNER_START`
+        console.log(await workers.foo("RUNNER_START"));
+    });
+
+    testplane.on(testplane.events.RUNNER_END, async () => {
+        // outputs `FOO_RUNNER_END`
+        console.log(await workers.foo("RUNNER_END"));
+    });
+};
+```
+
+```typescript title="worker.ts"
+exports = {
+    foo: async function (event) {
+        return "FOO_" + event;
+    },
+};
+```

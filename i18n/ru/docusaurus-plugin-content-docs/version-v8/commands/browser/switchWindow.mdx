@@ -1,0 +1,41 @@
+# switchWindow
+
+## Обзор {#overview}
+
+Используйте команду `switchWindow`, чтобы перевести фокус на конкретную вкладку или конкретное окно.
+
+## Использование {#usage}
+
+```javascript
+await browser.switchWindow(urlOrTitleToMatch);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>urlOrTitleToMatch</td><td>String или RegExp</td><td>Строка или регулярное выражение, соответствующее заголовку или URL-адресу страницы.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should switch to another window", async ({ browser }) => {
+    // открываем url
+    await browser.url("https://google.com");
+
+    // создаем новое окно
+    await browser.newWindow("https://webdriver.io");
+
+    // переключаемся назад через соответствие заданному урлу
+    await browser.switchWindow("google.com");
+
+    // снова переключаемся через соответствие заданному заголовку страницы
+    await browser.switchWindow("Next-gen browser and mobile automation test framework for Node.js");
+});
+```

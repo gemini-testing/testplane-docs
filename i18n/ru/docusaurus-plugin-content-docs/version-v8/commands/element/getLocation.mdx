@@ -1,0 +1,42 @@
+# getLocation
+
+## Обзор {#overview}
+
+Используйте команду `getLocation`, чтобы определить местоположение элемента на странице.
+
+Точка `(0, 0)` относится к верхнему левому углу страницы.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).getLocation(prop);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>prop</td><td>String</td><td>Необязательный параметр. Может быть "x" или "y", чтобы сразу получить нужное значение для упрощения проверок. Если параметр не указан, команда возвращает объект вида _\{ x, y }_.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should demonstrate the getLocation function", async ({ browser }) => {
+    await browser.url("http://github.com");
+    const logo = await browser.$(".octicon-mark-github");
+    const location = await logo.getLocation();
+    console.log(location); // выведет: { x: 150, y: 20 }
+
+    const xLocation = await logo.getLocation("x");
+    console.log(xLocation); // выведет: 150
+
+    const yLocation = await logo.getLocation("y");
+    console.log(yLocation); // выведет: 20
+});
+```

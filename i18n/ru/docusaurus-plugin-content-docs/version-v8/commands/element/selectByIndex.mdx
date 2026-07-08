@@ -1,0 +1,55 @@
+# selectByIndex
+
+## Обзор {#overview}
+
+Используйте команду `selectByIndex`, чтобы выбрать опцию с определенным значением.
+
+## Использование {#usage}
+
+```javascript
+await browser.$(selector).selectByIndex(index);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>index</td><td>Number</td><td>Индекс (опции), по которому нужно выбрать опцию.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+**example.html**
+
+```javascript
+<select id="selectbox">
+    <option value="someValue0">uno</option>
+    <option value="someValue1">dos</option>
+    <option value="someValue2">tres</option>
+    <option value="someValue3">cuatro</option>
+    <option value="someValue4">cinco</option>
+    <option value="someValue5">seis</option>
+</select>
+```
+
+**selectByIndex.js**
+
+```javascript
+it("should demonstrate the selectByIndex command", async ({ browser }) => {
+    const selectBox = await browser.$("#selectbox");
+    console.log(await selectBox.getValue()); // выведет: "someValue0"
+
+    await selectBox.selectByIndex(4);
+    console.log(await selectBox.getValue()); // выведет: "someValue4"
+});
+```
+
+## Связанные команды {#related}
+
+-   [selectByAttribute](../selectByAttribute)
+-   [selectByVisibleText](../selectByVisibleText)

@@ -1,0 +1,139 @@
+import Admonition from "@theme/Admonition";
+
+# click
+
+## Overview {#overview}
+
+Use the `click` command to click on an element.
+
+<Admonition type="warning">
+If you have elements with fixed positions (e.g., a fixed header or footer) that cover the selected element after scrolling to it, the click will be executed at the given coordinates but will be intercepted by your fixed (overlaying) element. In such cases, the following error is issued:
+
+_Element is not clickable at point (x, x). Other element would receive the click: ..._
+
+To bypass this, try finding the overlaying element and remove it using the [execute][execute] command, so it does not interfere with the click. You can also try to scroll the element manually using scroll offset to match your scenario.
+
+</Admonition>
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).click({ button, x, y, skipRelease });
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>button</td><td>String or Number</td><td>The button to use for the click. Can be _0, 1, 2_ or _"left", "middle", "right"_ respectively.</td></tr>
+<tr><td>x</td><td>Number</td><td>The x-coordinate to click.</td></tr>
+<tr><td>y</td><td>Number</td><td>The y-coordinate to click.</td></tr>
+<tr><td>skipRelease</td><td>Boolean</td><td>If _true_, no _releaseActions_ will be sent after the click.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+### Example 1
+
+**example-1.html**
+
+```javascript
+<button id="myButton" onclick="document.getElementById('someText').innerHTML='I was clicked'">Click me</button>
+<div id="someText">I was not clicked</div>
+```
+
+**click-1.js**
+
+```javascript
+it("should demonstrate the click command", async ({ browser }) => {
+    const myButton = await browser.$("#myButton");
+    await myButton.click();
+
+    const myText = await browser.$("#someText");
+    const text = await myText.getText();
+
+    assert.equal(text, "I was clicked"); // true
+});
+```
+
+**example-1.js**
+
+```javascript
+it("should fetch menu links and visit each page", async ({ browser }) => {
+    const links = await browser.$$("#menu a");
+
+    for (let link of links) {
+        await link.click();
+    }
+});
+```
+
+### Example 2
+
+**example-2.html**
+
+```javascript
+<button id="myButton">Click me</button>
+```
+
+**example-2.js**
+
+```javascript
+it("should demonstrate a click using an offset", async ({ browser }) => {
+    const myButton = await browser.$("#myButton");
+
+    // Click 30 horizontal pixels
+    // from the button's position (from the center of the element)
+    await myButton.click({ x: 30 });
+});
+```
+
+### Example 3
+
+**example-3.html**
+
+```javascript
+<button id="myButton">Click me</button>
+```
+
+**example-3.js**
+
+```javascript
+it("should demonstrate a right click passed as string", async ({ browser }) => {
+    const myButton = await browser.$("#myButton");
+
+    // Open context menu at the button's location
+    await myButton.click({ button: "right" });
+});
+
+it("should demonstrate a right click passed as number while adding an offset", async ({
+    browser,
+}) => {
+    const myButton = await browser.$("#myButton");
+
+    // Open context menu 30 horizontal and 40 vertical pixels
+    // from the button's position (from the center of the element)
+    await myButton.click({ button: 2, x: 30, y: 40 });
+});
+
+it("should skip sending releaseAction command that causes unexpected alert closure", async ({
+    browser,
+}) => {
+    const myButton = await browser.$("#myButton");
+
+    // Skip sending releaseActions
+    await myButton.click({ button: 2, x: 30, y: 40, skipRelease: true });
+});
+```
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/click), from which we drew some information while writing our version.
+
+[execute]: ../../browser/execute
+[webdriver-click]: https://w3c.github.io/webdriver/#dfn-element-click

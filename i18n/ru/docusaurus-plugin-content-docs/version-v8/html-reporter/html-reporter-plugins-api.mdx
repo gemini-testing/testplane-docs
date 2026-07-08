@@ -1,0 +1,271 @@
+---
+sidebar_position: 3
+sidebar_label: Plugins SDK
+sidebar_class_name: hidden
+---
+
+# Plugins SDK для HTML Reporter
+
+Справочник по доступным зависимостям, компонентам SDK и точкам расширения для разработки плагинов.
+
+## Доступные зависимости
+
+Плагины могут использовать следующие зависимости, предоставляемые HTML Reporter во время выполнения. Эти зависимости не нужно включать в бандл — они будут переданы через wrapper-функцию.
+
+| Зависимость                    | Описание                                      |
+| ------------------------------ | --------------------------------------------- |
+| `@gravity-ui/icons`            | [Иконки Gravity UI][gravity-ui-icons]         |
+| `@gravity-ui/uikit`            | Компоненты [Gravity UI][gravity-ui]           |
+| `axios`                        | HTTP-клиент для запросов к серверу            |
+| `classnames`                   | Утилита для работы с CSS-классами             |
+| `html-reporter/plugins-sdk`    | SDK для серверной части (ExtensionPointName)  |
+| `html-reporter/plugins-sdk/ui` | SDK для UI-компонентов                        |
+| `immer`                        | Иммутабельные обновления состояния            |
+| `lodash`                       | Утилиты для работы с данными                  |
+| `react`                        | React 18                                      |
+| `react-dom`                    | React DOM                                     |
+| `react-redux`                  | React-биндинги для Redux                      |
+| `react/jsx-runtime`            | JSX Runtime                                   |
+| `redux`                        | Redux для управления состоянием               |
+| `redux-thunk`                  | Middleware для асинхронных действий (встроен) |
+| `reselect`                     | Мемоизированные селекторы для Redux           |
+
+## Plugins SDK UI {#plugins-sdk-ui}
+
+Модуль `html-reporter/plugins-sdk/ui` экспортирует компоненты и типы для создания UI плагинов.
+
+### CollapsibleSection
+
+Раскрывающаяся секция, интегрированная с Redux-состоянием отчета.
+
+```typescript
+import { CollapsibleSection } from "html-reporter/plugins-sdk/ui";
+
+interface CollapsibleSectionProps {
+    /** Уникальный идентификатор секции */
+    id: string;
+    /** Заголовок секции */
+    title: string;
+    /** Содержимое секции */
+    children?: ReactNode;
+    /** CSS-класс */
+    className?: string;
+    /** Раскрыта ли секция по умолчанию */
+    defaultExpanded?: boolean;
+    /** Колбэк при изменении состояния */
+    onUpdate?: (expanded: boolean) => void;
+}
+```
+
+Пример использования:
+
+```tsx
+<CollapsibleSection
+    id="plugins.my-plugin.section"
+    title="Моя секция"
+    defaultExpanded={false}
+    onUpdate={expanded => {
+        if (expanded) {
+            // Загрузить данные при раскрытии
+        }
+    }}
+>
+    <div>Содержимое секции</div>
+</CollapsibleSection>
+```
+
+### PanelSection
+
+Секция для панели настроек.
+
+```typescript
+import { PanelSection } from "html-reporter/plugins-sdk/ui";
+
+interface PanelSectionProps {
+    /** Заголовок секции */
+    title: ReactNode;
+    /** Описание */
+    description?: ReactNode;
+    /** Содержимое */
+    children?: ReactNode;
+}
+```
+
+### State
+
+Тип корневого состояния Redux store.
+
+```typescript
+import { State } from "html-reporter/plugins-sdk/ui";
+
+// Используйте для типизации селекторов
+const mySelector = (state: State) => state.tree.results.byId;
+```
+
+### Features
+
+Флаги доступных функций отчета.
+
+```typescript
+import { Features } from "html-reporter/plugins-sdk/ui";
+
+const availableFeatures = useSelector(state => {
+    return state.app.availableFeatures;
+});
+if (!availableFeatures.some(feature => feature.name === Features.RunTestsFeature.name)) {
+    return null;
+}
+```
+
+## Объект pluginOptions {#plugin-options}
+
+В UI-компоненте плагина доступен глобальный объект `pluginOptions`:
+
+```typescript
+declare const pluginOptions: {
+    /** Имя плагина (из конфигурации) */
+    pluginName: string;
+    /** Конфигурация плагина (поле config из конфигурации) */
+    pluginConfig: object;
+    /** Префикс для серверных эндпоинтов: /plugin-routes/{pluginName}/ */
+    pluginServerEndpointPrefix: string;
+    /** Redux actions отчета */
+    actions: object;
+    /** Имена actions отчета */
+    actionNames: object;
+    /** Селекторы Redux Store, см. html-reporter/lib/static/modules/selectors */
+    selectors: object;
+};
+```
+
+## Точки расширения {#extension-points}
+
+Точки расширения определяют, где в интерфейсе отчета будет размещен компонент плагина.
+
+| Точка              | Описание                                        | Props компонента             |
+| ------------------ | ----------------------------------------------- | ---------------------------- |
+| `result_meta`      | Область результата теста, возле мета-информации | `result: ReporterTestResult` |
+| `settings-panel`   | Панель настроек                                 | —                            |
+| `run-test-options` | Опции запуска теста, возле кнопки запуска теста | —                            |
+
+### ExtensionPointName
+
+Используйте enum для указания точки расширения в пресете:
+
+```typescript
+import { ExtensionPointName } from "html-reporter/plugins-sdk";
+
+// Доступные значения:
+ExtensionPointName.ResultMeta; // "result_meta"
+ExtensionPointName.MenuBar; // "menu-bar"
+ExtensionPointName.Root; // "root"
+```
+
+### Позиционирование
+
+Параметр `position` определяет размещение компонента относительно точки расширения:
+
+| Значение   | Описание                             |
+| ---------- | ------------------------------------ |
+| `"before"` | Перед содержимым точки расширения    |
+| `"after"`  | После содержимого точки расширения   |
+| `"wrap"`   | Обернуть содержимое точки расширения |
+
+## CSS и стилизация {#css-styling}
+
+### CSS Modules
+
+Рекомендуется использовать CSS Modules для изоляции стилей:
+
+```css title="Plugin.module.css"
+.container {
+    padding: 16px;
+}
+
+.result {
+    display: flex;
+    gap: 8px;
+}
+```
+
+```tsx
+import styles from "./Plugin.module.css";
+
+<div className={styles.container}>
+    <div className={styles.result}>...</div>
+</div>;
+```
+
+### CSS-переменные Gravity UI
+
+HTML Reporter использует [тему Gravity UI][gravity-ui-theme]. Вы можете использовать CSS-переменные для согласованности стилей:
+
+```css
+.myElement {
+    /* Цвета текста */
+    color: var(--g-color-text-primary);
+    color: var(--g-color-text-secondary);
+    color: var(--g-color-text-brand);
+    color: var(--g-color-text-danger);
+
+    /* Цвета фона */
+    background: var(--g-color-base-background);
+    background: var(--g-color-base-brand);
+
+    /* Границы */
+    border-color: var(--g-color-line-generic);
+
+    /* Отступы и размеры */
+    padding: var(--g-spacing-2); /* 8px */
+    padding: var(--g-spacing-4); /* 16px */
+}
+```
+
+### Инъекция CSS в бандл
+
+Используйте плагин `vite-plugin-css-injected-by-js` для включения CSS в JavaScript-бандл:
+
+```typescript title="vite.config.ts"
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
+
+export default defineConfig({
+    plugins: [cssInjectedByJsPlugin()],
+});
+```
+
+## Типизация {#typing}
+
+### Расширение DefaultRootState
+
+Для типизации состояния плагина в Redux, расширьте `DefaultRootState`:
+
+```typescript title="types.d.ts"
+import type { State } from "html-reporter/plugins-sdk/ui";
+
+interface MyPluginState {
+    data: Record<string, { status: string; value: any }>;
+}
+
+declare module "react-redux" {
+    export interface DefaultRootState extends State {
+        plugins: {
+            myPlugin: MyPluginState;
+        };
+    }
+}
+```
+
+### Глобальный pluginOptions
+
+```typescript title="types.d.ts"
+declare global {
+    const pluginOptions: {
+        pluginConfig: MyPluginConfig;
+        pluginServerEndpointPrefix: string;
+    };
+}
+```
+
+[gravity-ui]: https://gravity-ui.com/
+[gravity-ui-icons]: https://gravity-ui.com/icons
+[gravity-ui-theme]: https://gravity-ui.com/design/themes

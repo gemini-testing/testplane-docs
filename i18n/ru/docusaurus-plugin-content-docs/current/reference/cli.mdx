@@ -581,7 +581,7 @@ testplane list-browsers --format json
 
 #### Пример {#list-browsers-example}
 
-Если у вас имеется следующий раздел "browsers" в вашей конфигурации [Testplane](/docs/v8/reference/config/main):
+Если у вас имеется следующий раздел "browsers" в вашей конфигурации [Testplane](/docs/reference/config/main):
 
 ```json
 {
@@ -651,9 +651,9 @@ testplane config --help
 
 ## Команда `install-deps` {#install-deps}
 
-Эта команда является частью рецепта [Как запустить Testplane в локальном браузере](/docs/v8/basic-guides/browsers-overview).
+Эта команда является частью рецепта [Как запустить Testplane в локальном браузере](/docs/basic-guides/browsers-overview).
 
-Используйте команду `install-deps`, чтобы загрузить все браузеры, указанные в [конфиге Testplane](/docs/v8/reference/config/main).
+Используйте команду `install-deps`, чтобы загрузить все браузеры, указанные в [конфиге Testplane](/docs/reference/config/main).
 
 Если эта команда запущена на поддерживаемой версии Ubuntu, также будут загружены все отсутствующие необходимые пакеты Ubuntu.
 
@@ -667,7 +667,7 @@ npx testplane install-deps
 
 Вы можете также указать, какие браузеры нужно загрузить.
 
-Например, если у вас описаны браузеры "chrome-dark", "firefox-dark" в <a href="/docs/v8/reference/config/main">конфигурации Testplane</a>, вы можете использовать следующую команду для загрузки только этих двух браузеров:
+Например, если у вас описаны браузеры "chrome-dark", "firefox-dark" в <a href="/docs/reference/config/main">конфигурации Testplane</a>, вы можете использовать следующую команду для загрузки только этих двух браузеров:
 
 ```bash
 npx testplane install-deps chrome-dark firefox-dark

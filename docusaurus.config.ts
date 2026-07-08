@@ -52,8 +52,11 @@ const config: Config = {
                     breadcrumbs: false,
                     versions: {
                         current: {
-                            label: "v8",
-                            path: "v8",
+                            label: "v9",
+                            badge: false,
+                        },
+                        v8: {
+                            badge: true,
                         },
                     },
                 },
@@ -144,15 +147,15 @@ const config: Config = {
                     items: [
                         {
                             label: "Overview",
-                            to: "/docs/v8",
+                            to: "/docs",
                         },
                         {
                             label: "Installation",
-                            to: "/docs/v8/quickstart",
+                            to: "/docs/quickstart",
                         },
                         {
                             label: "Why testplane?",
-                            to: "/docs/v8#why-testplane",
+                            to: "/docs#why-testplane",
                         },
                     ],
                 },
@@ -161,15 +164,15 @@ const config: Config = {
                     items: [
                         {
                             label: "Browser commands",
-                            href: "/docs/v8/commands/overview",
+                            href: "/docs/commands/overview",
                         },
                         {
                             label: "Testplane config",
-                            href: "/docs/v8/reference/config/main",
+                            href: "/docs/reference/config/main",
                         },
                         {
                             label: "Testplane UI",
-                            href: "/docs/v8/html-reporter/html-reporter-setup",
+                            href: "/docs/html-reporter/html-reporter-setup",
                         },
                     ],
                 },
@@ -178,15 +181,15 @@ const config: Config = {
                     items: [
                         {
                             label: "Testplane API",
-                            href: "/docs/v8/reference/testplane-api",
+                            href: "/docs/reference/testplane-api",
                         },
                         {
                             label: "Testplane events",
-                            href: "/docs/v8/reference/testplane-events",
+                            href: "/docs/reference/testplane-events",
                         },
                         {
                             label: "Plugins",
-                            href: "/docs/v8/plugins/hermione-browser-version-changer",
+                            href: "/docs/plugins/hermione-browser-version-changer",
                         },
                     ],
                 },
@@ -195,7 +198,7 @@ const config: Config = {
                     items: [
                         {
                             label: "Docs",
-                            href: "/docs/v8",
+                            href: "/docs",
                         },
                         {
                             label: "Blog",

@@ -1,0 +1,61 @@
+# abortOnce
+
+## Overview {#overview}
+
+Use the `abortOnce` command to abort a request once with a specified error.
+
+A request can be aborted with one of the following errors:
+
+-   Failed
+-   Aborted
+-   TimedOut
+-   AccessDenied
+-   ConnectionClosed | ConnectionReset | ConnectionRefused | ConnectionAborted | ConnectionFailed
+-   NameNotResolved
+-   InternetDisconnected
+-   AddressUnreachable
+-   BlockedByClient | BlockedByResponse
+
+## Usage {#usage}
+
+```javascript
+mock.abortOnce(errorCode);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>errorCode</td><td>ErrorCode</td><td>The response error code. Possible values are listed [above](#overview).</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should block mock only once", async ({ browser }) => {
+    const mock = await browser.mock("https://webdriver.io");
+    mock.abortOnce("Failed");
+
+    await browser
+        .url("https://webdriver.io")
+        // catch exception as the request to the page will fail
+        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
+
+    await browser.url("https://webdriver.io");
+    console.log(await browser.getTitle());
+    // will output: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+});
+```
+
+## Related Commands {#related}
+
+-   [abort](../abort)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/abortOnce), from which we drew some information while writing our version.

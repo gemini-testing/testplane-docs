@@ -1,0 +1,21 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+const SERVER_PORT = 3000;
+
+export default {
+    // ...
+    devServer: {
+        command: "npm run server:dev",
+        env: { PORT: SERVER_PORT },
+        reuseExisting: true,
+        readinessProbe: {
+            url: `http://localhost:${SERVER_PORT}/health`,
+            timeouts: {
+                // optional
+                waitServerTimeout: 60_000, // default value
+            },
+        },
+    },
+};
+```

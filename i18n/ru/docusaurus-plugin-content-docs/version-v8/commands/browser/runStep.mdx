@@ -1,0 +1,78 @@
+# runStep
+
+## Обзор {#overview}
+
+Используйте команду `runStep`, чтобы получить человекочитаемую историю выполнения теста, которая, в том числе, автоматически будет отображаться в [html-reporter][reporter].
+Шаги могут быть вложенными.
+
+## Использование {#usage}
+
+```typescript
+await browser.runStep(stepName, stepCb);
+```
+
+## Параметры команды {#parameters}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Имя**</td>
+            <td>**Тип**</td>
+            <td>**Описание**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`stepName`</td>
+            <td>`string`</td>
+            <td>Название шага.</td>
+        </tr>
+        <tr>
+            <td>`stepCb`</td>
+            <td>`() => Promise<any>`</td>
+            <td>Функция с набором команд, которые нужно объединить в единый шаг.</td>
+        </tr>
+    </tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```typescript
+it("test", async ({ browser }) => {
+    await browser.runStep("prepare page", async () => {
+        await browser.url("some/url");
+        await browser.setCookies(someCookies);
+    });
+
+    await browser.runStep("make an order", async () => {
+        await browser.runStep("navigate to the shopping cart", async () => {
+            await browser.$("not-exist-selector").click();
+        });
+    });
+});
+```
+
+Данный тест завершится с ошибкой "Cannot call click on element with selector 'not-exist-selector' because element wasn't found" из-за отсутствующего селектора и будет создана следующая история:
+
+```
+- testplane: init browser
+- prepare page
+- make an order
+    - navigate to the shopping cart
+        - $("not-exist-selector")
+        - click()
+            - waitForExist
+```
+
+В этом примере шаг `prepare page` свернут, т.к. он был выполнен успешно.
+
+Также, вы можете вернуть конкретное значение из шага.
+
+```typescript
+const parsedPage = await browser.runStep("parse page", async () => {
+    // ...
+    return someData;
+});
+```
+
+[reporter]: ../../../html-reporter/html-reporter-setup

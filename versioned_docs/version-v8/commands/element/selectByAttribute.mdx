@@ -1,0 +1,64 @@
+# selectByAttribute
+
+## Overview {#overview}
+
+Use the `selectByAttribute` command to select an option by a specific attribute value.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).selectByAttribute(attribute, value);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>attribute</td><td>String</td><td>The attribute (of the option) by which to select the option.</td></tr>
+<tr><td>value</td><td>String or Number</td><td>The value (of the option) by which to select the option.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+**example.html**
+
+```html
+<select id="selectbox">
+    <option value="someValue0">uno</option>
+    <option value="someValue1">dos</option>
+    <option value="someValue2">tres</option>
+    <option value="someValue3">cuatro</option>
+    <option value="someValue4">cinco</option>
+    <option name="someName5" value="someValue5">seis</option>
+</select>
+```
+
+**selectByAttribute.js**
+
+```javascript
+it("should demonstrate the selectByAttribute command", async ({ browser }) => {
+    const selectBox = await browser.$("#selectbox");
+    const value = await selectBox.getValue();
+    console.log(value); // outputs: "someValue0"
+
+    await selectBox.selectByAttribute("value", "someValue3");
+    console.log(await selectBox.getValue()); // outputs: "someValue3"
+
+    await selectBox.selectByAttribute("name", "someName5");
+    console.log(await selectBox.getValue()); // outputs: "someValue5"
+});
+```
+
+## Related Commands {#related}
+
+-   [selectByIndex](../selectByIndex)
+-   [selectByVisibleText](../selectByVisibleText)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/selectByAttribute), from which we drew some information while writing our version.

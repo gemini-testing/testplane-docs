@@ -1,0 +1,17 @@
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    args: ["--hide-scrollbars", "--headless=new"],
+                },
+            },
+        },
+    },
+} satisfies ConfigInput;
+```

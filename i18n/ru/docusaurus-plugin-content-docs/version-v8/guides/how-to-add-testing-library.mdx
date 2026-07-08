@@ -1,0 +1,77 @@
+# Подключение Testing Library
+
+## Введение {#preface}
+
+[Testing-library][testing-library] - это коллекция инструментов для тестирования пользовательского интерфейса веб-приложений, ориентированная на создание надежных и поддерживаемых тестов, сосредотачиваясь на пользовательском поведении. Основное преимущество `testing-library` заключается в фокусе на взаимодействии с элементами интерфейса. И в testplane можно пользоваться способами поиска элемента, представленными самой библиотекой `testing-library`.
+
+## Подключение
+
+Для того чтобы появилась возможность использования [запросов (queries)][queries] из `testing-library` в testplane-тестах, необходимо выполнить всего несколько шагов.
+
+1. Установите npm-пакет `@testplane/testing-library` (наша адаптация testing-library для testplane)
+
+```bash
+npm i -D @testplane/testing-library
+```
+
+2. Подключите реализацию в конфиге testplane в секции `prepareBrowser`
+
+```typescript
+// testplane.config.ts
+import { setupBrowser } from "@testplane/testing-library";
+
+export default {
+    prepareBrowser(browser) {
+        setupBrowser(browser);
+    },
+
+    // другие настройки testplane...
+};
+```
+
+Если у вас возникнут проблемы с типами, то добавьте типы явно в `tsconfig.json`
+
+```json
+{
+    "compilerOptions": {
+        "types": ["testplane", "@testplane/testing-library"]
+    }
+}
+```
+
+## Использование
+
+После подключения вы сможете использовать в тестах поиск по селекторам из `testing-library`, описанные в [официальной документации](https://testing-library.com/docs/queries/about/). Например, поиск элемента по его тексту
+
+```javascript
+it("example", async ({ browser }) => {
+    await browser.url("https://github.com/");
+
+    const newRepoButton = await browser.getByText("New");
+
+    await newRepoButton.click();
+});
+```
+
+В контексте найденных элементов эта возможность также будет доступна:
+
+```javascript
+it("example", async ({ browser }) => {
+    await browser.url("https://github.com/");
+
+    const sidebar = await browser.$(".dashboard-sidebar");
+    const newRepoButton = await sidebar.getByText("New");
+
+    await newRepoButton.click();
+});
+```
+
+Полный пример использования можно найти [здесь](https://github.com/gemini-testing/testplane/tree/master/examples/).
+
+## Полезные ссылки {#useful_links}
+
+-   [Testing-library][testing-library]
+-   [Testplane Testing Library](https://github.com/gemini-testing/testplane-testing-library)
+
+[testing-library]: https://testing-library.com/
+[queries]: https://testing-library.com/docs/queries/about

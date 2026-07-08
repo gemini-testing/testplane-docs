@@ -1,0 +1,42 @@
+# shadow$
+
+## Overview {#overview}
+
+Use the `shadow$` command to access an element within the [ShadowRoot][shadow-root] of a given element.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).shadow$(shadowSelector);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>shadowSelector</td><td>String or Function</td><td>Selector or JS function to get a specific element.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should return an element inside a ShadowRoot", async ({ browser }) => {
+    const innerEl = await browser.$(".input").shadow$("#innerEl");
+    console.log(await innerEl.getValue()); // outputs: 'test123'
+});
+```
+
+## Related Commands {#related}
+
+-   [shadow$$](../shadowDollarDollar)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/shadow$), from which we drew some information while writing our version.
+
+[shadow-root]: https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot

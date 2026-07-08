@@ -1,0 +1,97 @@
+# setCookies
+
+## Overview {#overview}
+
+Use the `setCookies` command to set cookies on the current page.
+
+Make sure you are on the page for which you want to set the cookies. You cannot set cookies for an arbitrary page without being on it.
+
+## Usage {#usage}
+
+```javascript
+await browser.setCookies(cookies);
+```
+
+## Command Parameters {#parameters}
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>cookies</td><td>WebDriver.Cookie or WebDriver.Cookie[]</td><td>A cookie object or an array of cookie objects.</td></tr>
+
+</tbody>
+</table>
+
+### WebDriver.Cookie Object Parameters
+
+<table>
+<thead>
+<tr><td>**Name**</td><td>**Type**</td><td>**Default**</td><td>**Description**</td></tr>
+</thead>
+<tbody>
+<tr><td>name</td><td>String</td><td>_N/A_</td><td>The name of the cookie.</td></tr>
+<tr><td>value</td><td>String</td><td>_N/A_</td><td>The value of the cookie.</td></tr>
+<tr><td>path</td><td>String</td><td>"/"</td><td>The path of the cookie.</td></tr>
+<tr><td>domain</td><td>String</td><td>_see description_</td><td>The domain the cookie is visible to. If omitted, defaults to the domain of the current document's URL in the browser context.</td></tr>
+<tr><td>secure</td><td>Boolean</td><td>false</td><td>The secure flag of the cookie.</td></tr>
+<tr><td>httpOnly</td><td>Boolean</td><td>false</td><td>The HTTP-only flag of the cookie.</td></tr>
+<tr><td>expiry</td><td>Number</td><td>_not set_</td><td>The expiry date of the cookie as the number of seconds since the Unix epoch.</td></tr>
+<tr><td>sameSite</td><td>String</td><td>"None"</td><td>The SameSite attribute of the cookie. Valid values are _"Lax"_ or _"Strict"_.</td></tr>
+
+</tbody>
+</table>
+
+## Usage Examples {#examples}
+
+```javascript
+it("should set a cookie for the page", async ({ browser }) => {
+    await browser.url("/");
+
+    // set a single cookie
+    await browser.setCookies({
+        name: "test1",
+        value: "one",
+        // Optional parameters:
+        // cookie path, defaults to "/"
+        //      path: '/foo',
+        // domain the cookie is visible to
+        // defaults to domain of the current document's URL in the browser context
+        //      domain: '.example.com',
+        // secure cookie flag, defaults to false
+        //      secure: true,
+        // HTTP-only cookie flag, defaults to false
+        //      httpOnly: true,
+        // expiry date of the cookie in seconds since the Unix epoch
+        //      expiry: 1551393875
+    });
+
+    // set multiple cookies
+    await browser.setCookies([
+        { name: "test2", value: "two" },
+        { name: "test3", value: "three" },
+    ]);
+
+    const cookies = await browser.getCookies();
+
+    await console.log(cookies);
+    // outputs:
+    // [
+    //      { name: 'test1', value: 'one', domain: 'www.example.com' },
+    //      { name: 'test2', value: 'two', domain: 'www.example.com' },
+    //      { name: 'test3', value: 'three', domain: 'www.example.com' }
+    // ]
+});
+```
+
+## Related Commands {#related}
+
+-   [getCookies](../getCookies)
+-   [deleteCookies](../deleteCookies)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/setCookies), from which we drew some information while writing our version.
+
+[same-site]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite

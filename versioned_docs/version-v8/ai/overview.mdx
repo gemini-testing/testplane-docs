@@ -1,0 +1,163 @@
+---
+sidebar_position: 1
+sidebar_label: Overview
+title: Testplane's AI Tools
+---
+
+import { HelpMark } from "@site/src/components/HelpMark";
+
+# Testplane's AI Tools
+
+Testplane provides a set of AI integration tools that help agents write, inspect, debug, and fix your Testplane tests.
+
+The goal of these tools is to turn a generic coding agent into Testplane expert that understands how Testplane projects are usually structured, how tests should be written, and how failures should be investigated.
+
+## Capabilities
+
+-   Let AI agents explore your app and "see" what's happening through token-efficient DOM snapshots
+-   Generate new tests based on the actual application state
+-   See how agents follow best practices when writing tests out of the box
+-   Handle authentication without reading secrets
+-   Enable agents investigate failures from CI reports
+-   Let agents debug tests via REPL
+
+## Available Tools
+
+[Testplane Skill](../toolkit/testplane-skill) teaches AI agents how to work with Testplane projects end to end, how to use `@testplane/cli`. It's packed with best practices and comprehensive documentation that agents can make use of.
+
+[Testplane CLI](../toolkit/testplane-cli) is what powers the Testplane Skill and makes browser automation accessible right from the CLI.
+
+[Testplane MCP](../toolkit/testplane-mcp) matches the capabilities of `@testplane/cli`, but offers another way to interact with the browser: through the MCP protocol.
+
+## Which tool to use?
+
+If unsure, prefer Testplane Skill. It works great for most workflows and is the best pick overall: coding agents love CLIs, it's token-efficient and provides enough context about all things Testplane.
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>Skill</th>
+            <th>CLI</th>
+            <th>MCP</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>**How it works**</td>
+            <td>
+                LLM reads a markdown file with instructions, reaches out to `@testplane/cli` for
+                browser automation
+            </td>
+            <td>LLM runs shell commands to interact with the browser</td>
+            <td>LLM interacts with the browser via MCP tool calls</td>
+        </tr>
+        <tr>
+            <td>**Token efficiency**</td>
+            <td>High, progressive discovery</td>
+            <td>High, concise CLI calls</td>
+            <td>
+                Lower, depends on the agent harness{" "}
+                <HelpMark side="right">
+                    Some agents harnesses may load all MCP tool schemas at once, polluting the
+                    context and spending tokens.
+                    <br />
+                    <br />
+                    Some tools, however, optimise this step by pre-generating tool schemas and loading
+                    them lazily, in which case token usage is comparable to CLI tools.
+                </HelpMark>
+            </td>
+        </tr>
+        <tr>
+            <td>**Default browser mode**</td>
+            <td>Headless</td>
+            <td>Headless</td>
+            <td>Headful</td>
+        </tr>
+        <tr>
+            <td>**Supported scenarios**</td>
+            <td>
+                Complex workflows + browser automation{" "}
+                <HelpMark side="right">
+                    Besides offering browser automation capabilities, skill teaches agents how to
+                    handle auth, debugging, choose best code style, understand common Testplane
+                    patterns and more.
+                </HelpMark>
+            </td>
+            <td>Interaction with browser, reports inspection</td>
+            <td>Same as CLI</td>
+        </tr>
+    </tbody>
+</table>
+
+## Comparison with other solutions
+
+Overall, we recommend using Testplane AI toolkit when working with Testplane projects, because it was designed specifically around this use case and provides deep integrations with Testplane ecosystem, allowing agents to:
+
+-   Read what Testplane code that was run on each Testplane CLI/MCP tool call and copy+paste it when writing tests
+-   Analyze Testplane reports (both local and from CI) and fix failed tests
+-   Inspect Time Travel snapshots to debug what went wrong and adjust tests as your app evolves
+-   Debug tests with agents-friendly REPL debugger
+-   Understand Testplane's capabilities and usage patterns through concise reference in Testplane Skill
+
+We've studied other tools for agentic browser automation — below is a brief comparison of the most notable projects in the field, hopefully helping you navigate through possible options.
+
+### Built-in browser in Cursor, CC, Cline, etc.
+
+[Cursor's Browser](https://cursor.com/docs/agent/tools/browser) and [Cline's Browser Automation](https://docs.cline.bot/tools-reference/browser-automation) are built-in ways to interact with the browser, providing tools for navigation, taking page snapshots, various interactions and reading browser's console logs.
+
+Cursor's built-in browser has a neat design sidebar that allows you to quickly modify your app's design and point at certain elements when writing prompts.
+
+However, these tools have major limitations when trying to use them for web apps testing:
+
+-   Cline doesn't have DOM snapshot tool at all — it relies solely on screenshots
+-   Cursor's snapshot tool returns accessibility tree which lacks CSS classes, almost all HTML attributes and has a flat structure, losing all DOM hierarchy data
+-   They offer very limited support for browsers: only Chrome with no mobile emulation and no special capabilities
+-   No way of securely handling auth data
+
+### Playwright
+
+[Playwright CLI](https://github.com/microsoft/playwright-cli) is a powerful and popular tool for browser automation. Its notable features include network requests inspection and devtools capabilities.
+
+The main limitations are:
+
+-   No report analysis, Time Travel snapshot inspection, or REPL debugging
+-   Tool responses are focused on Playwright code, which may confuse agents working with Testplane
+-   Snapshots are based on accessibility trees, without CSS classes, precise DOM structure, or many useful HTML attributes
+
+Playwright CLI is a popular choice, but it lacks several features that unlock powerful workflows and it doesn't have the Testplane-specific context.
+
+### Chrome DevTools MCP
+
+[Chrome Devtools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) besides regular browser tools provides niche features like taking memory snapshots and browser extension management.
+
+For Testplane projects, the main limitations are:
+
+-   It is specific to Chrome
+-   Snapshots are based on the accessibility tree, without CSS classes or precise DOM structure
+-   It doesn't integrate with Testplane tooling, reports, Time Travel snapshots, or the Testplane REPL
+
+Overall, it provides deep low-level integration with Chrome's devtools capabilities, but is not focused on web apps testing and doesn't have integrations with testplane tooling.
+
+### Vercel's agent-browser
+
+Vercel's [agent-browser](https://github.com/vercel-labs/agent-browser) is a generic browser automation, with a large set of tools, including network inspection and profiling.
+
+Its strength is flexibility, but it is not tied to any particular test runner or testing workflow.
+
+For Testplane usage, this means:
+
+-   It is not focused specifically on web app testing
+-   Snapshots are based on accessibility trees
+-   It doesn't integrate with Testplane tooling, reports, Time Travel snapshots, or the Testplane REPL
+
+agent-browser can be useful for general browser automation, but it lacks the Testplane-specific integrations agents need to write, debug, and fix tests effectively.
+
+## Staying informed
+
+Stumbled upon a bug, have a question or an idea? Let us now:
+
+-   [Telegram](https://t.me/testplane)
+-   [GitHub](https://github.com/gemini-testing/testplane)
+
+You can track new releases [over here](https://github.com/gemini-testing/testplane-mcp/releases).

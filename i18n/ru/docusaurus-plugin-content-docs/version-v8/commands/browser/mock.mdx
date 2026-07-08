@@ -1,0 +1,135 @@
+import Admonition from "@theme/Admonition";
+
+# mock
+
+## Обзор {#overview}
+
+Используйте команду `mock`, чтобы имитировать ответ на запрос.
+
+Вы можете включать имитацию в зависимости от урла, заголовков или статус-кода. Вызов метода `mock` возвращает объект-заглушку _(stub)_, который вы можете использовать, чтобы модифицировать ответ от веб-ресурса. С помощью объекта-заглушки вы можете возвращать ответ-имитацию или ронять запрос.
+
+Существует 3 способа модифицировать ответ:
+
+-   вернуть кастомный JSON-объект (например, чтобы имитировать ответ на API-запрос);
+-   заменить ответ локальным файлом (подсунуть модифицированный JavaScript-файл);
+-   перенаправить на другой URL и подсунуть полученный оттуда ответ.
+
+<Admonition type="warning">
+Команда _mock_ работает только при использовании _Chrome DevTools Protocol (CDP)_.
+
+Читайте подробности в разделе «[Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp]».
+
+А также читайте рецепт «[Как отслеживать и перехватывать сетевые запросы и ответы][how-to-intercept-requests-and-responses]».
+
+</Admonition>
+
+## Использование {#usage}
+
+```javascript
+await browser.mock(url, { method, headers, responseHeaders, postData, statusCode });
+```
+
+## Параметры команды {#parameters}
+
+<table>
+<thead>
+<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
+</thead>
+<tbody>
+<tr><td>url</td><td>String</td><td>URL, запрос которого нужно имитировать.</td></tr>
+<tr><td>method</td><td>String или Function</td><td>http-метод, по которому нужно фильтровать ресурс.</td></tr>
+<tr><td>headers</td><td>Object или Function</td><td>Заголовки запроса, по которым нужно фильтровать ресурс.</td></tr>
+<tr><td>responseHeaders</td><td>Object или Function</td><td>Заголовки ответа, по которым нужно фильтровать ресурс.</td></tr>
+<tr><td>postData</td><td>String или Function</td><td>postData запроса, по которому нужно фильтровать ресурс.</td></tr>
+<tr><td>statusCode</td><td>Number или Function</td><td>Код статуса, по которому нужно фильтровать ресурс.</td></tr>
+
+</tbody>
+</table>
+
+## Примеры использования {#examples}
+
+```javascript
+it("should mock network resources", async ({ browser }) => {
+    // используем статическую строку
+    const userListMock = await browser.mock("**" + "/users/list");
+
+    // также мы можем имитировать ответы в зависимости
+    // от заголовков запроса или ответа, статус-кода, или postData
+    const strictMock = await browser.mock("**", {
+        // мокаем все json-ответы
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        responseHeaders: { "Cache-Control": "no-cache" },
+        postData: "foobar",
+    });
+
+    // функция-компаратор
+    const apiV1Mock = await browser.mock("**" + "/api/v1", {
+        statusCode: statusCode => statusCode >= 200 && statusCode <= 203,
+        headers: headers =>
+            headers["Authorization"] && headers["Authorization"].startsWith("Bearer "),
+        responseHeaders: headers => headers["Impersonation"],
+        postData: data => typeof data === "string" && data.includes("foo"),
+    });
+});
+
+it("should modify API responses", async ({ browser }) => {
+    // фильтруем по методу
+    const todoMock = await browser.mock("**" + "/todos", {
+        method: "get",
+    });
+
+    // имитируем ответ эндпойнта заготовленной фикстурой
+    mock.respond([
+        {
+            title: "Injected Todo",
+            order: null,
+            completed: false,
+            url: "http://todo-backend-express-knex.herokuapp.com/916",
+        },
+    ]);
+
+    // отвечаем другим статус-кодом или заголовком
+    mock.respond(
+        [
+            {
+                title: "Injected Todo",
+                order: null,
+                completed: false,
+                url: "http://todo-backend-express-knex.herokuapp.com/916",
+            },
+        ],
+        {
+            statusCode: 404,
+            headers: {
+                "x-custom-header": "foobar",
+            },
+        },
+    );
+});
+
+it("should modify text assets", async ({ browser }) => {
+    const scriptMock = await browser.mock("**" + "/script.min.js");
+    scriptMock.respond("./tests/fixtures/script.js");
+});
+
+it("should redirect web resources", async ({ browser }) => {
+    const headerMock = await browser.mock("**" + "/header.png");
+    headerMock.respond("https://media.giphy.com/media/F9hQLAVhWnL56/giphy.gif");
+
+    const pageMock = await browser.mock("https://google.com/");
+    pageMock.respond("https://webdriver.io");
+    await browser.url("https://google.com");
+
+    console.log(await browser.getTitle());
+    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+});
+```
+
+## Связанные команды {#related}
+
+-   [mockClearAll](../mockClearAll)
+-   [mockRestoreAll](../mockRestoreAll)
+
+[how-to-use-cdp]: ../../../guides/how-to-use-cdp
+[how-to-intercept-requests-and-responses]: ../../../guides/how-to-intercept-requests-and-responses

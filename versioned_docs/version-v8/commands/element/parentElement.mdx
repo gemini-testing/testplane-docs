@@ -1,0 +1,43 @@
+# parentElement
+
+## Overview {#overview}
+
+Use the `parentElement` command to get the parent element of the selected DOM element.
+
+## Usage {#usage}
+
+```javascript
+await browser.$(selector).parentElement();
+```
+
+## Usage Examples {#examples}
+
+**index.html**
+
+```html
+<div class="parent">
+    <p>Sibling One</p>
+    <p>Sibling Two</p>
+    <p>Sibling Three</p>
+</div>
+```
+
+**parentElement.js**
+
+```javascript
+it("should get class from parent element", async ({ browser }) => {
+    const elem = await browser.$$("p");
+    const parent = await elem[2].parentElement();
+
+    console.log(await parent.getAttribute("class")); // outputs: "parent"
+});
+```
+
+## Related Commands {#related}
+
+-   [previousElement](../previousElement)
+-   [nextElement](../nextElement)
+
+## References
+
+We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/element/parentElement), from which we drew some information while writing our version.

@@ -1,0 +1,271 @@
+---
+sidebar_position: 3
+sidebar_label: Plugins SDK
+sidebar_class_name: hidden
+---
+
+# Plugins SDK for HTML Reporter
+
+Reference for available dependencies, SDK components, and extension points for plugin development.
+
+## Available Dependencies
+
+Plugins can use the following dependencies provided by HTML Reporter at runtime. These dependencies do not need to be included in the bundle — they will be passed through the wrapper function.
+
+| Dependency                     | Description                              |
+| ------------------------------ | ---------------------------------------- |
+| `@gravity-ui/icons`            | [Gravity UI Icons][gravity-ui-icons]     |
+| `@gravity-ui/uikit`            | [Gravity UI][gravity-ui] components      |
+| `axios`                        | HTTP client for server requests          |
+| `classnames`                   | Utility for working with CSS classes     |
+| `html-reporter/plugins-sdk`    | SDK for server part (ExtensionPointName) |
+| `html-reporter/plugins-sdk/ui` | SDK for UI components                    |
+| `immer`                        | Immutable state updates                  |
+| `lodash`                       | Data manipulation utilities              |
+| `react`                        | React 18                                 |
+| `react-dom`                    | React DOM                                |
+| `react-redux`                  | React bindings for Redux                 |
+| `react/jsx-runtime`            | JSX Runtime                              |
+| `redux`                        | Redux for state management               |
+| `redux-thunk`                  | Middleware for async actions (built-in)  |
+| `reselect`                     | Memoized selectors for Redux             |
+
+## Plugins SDK UI {#plugins-sdk-ui}
+
+The `html-reporter/plugins-sdk/ui` module exports components and types for creating plugin UIs.
+
+### CollapsibleSection
+
+A collapsible section integrated with the report's Redux state.
+
+```typescript
+import { CollapsibleSection } from "html-reporter/plugins-sdk/ui";
+
+interface CollapsibleSectionProps {
+    /** Unique section identifier */
+    id: string;
+    /** Section title */
+    title: string;
+    /** Section content */
+    children?: ReactNode;
+    /** CSS class */
+    className?: string;
+    /** Whether the section is expanded by default */
+    defaultExpanded?: boolean;
+    /** Callback when state changes */
+    onUpdate?: (expanded: boolean) => void;
+}
+```
+
+Usage example:
+
+```tsx
+<CollapsibleSection
+    id="plugins.my-plugin.section"
+    title="My Section"
+    defaultExpanded={false}
+    onUpdate={expanded => {
+        if (expanded) {
+            // Load data when expanded
+        }
+    }}
+>
+    <div>Section content</div>
+</CollapsibleSection>
+```
+
+### PanelSection
+
+Section for the settings panel.
+
+```typescript
+import { PanelSection } from "html-reporter/plugins-sdk/ui";
+
+interface PanelSectionProps {
+    /** Section title */
+    title: ReactNode;
+    /** Description */
+    description?: ReactNode;
+    /** Content */
+    children?: ReactNode;
+}
+```
+
+### State
+
+Type of the root Redux store state.
+
+```typescript
+import { State } from "html-reporter/plugins-sdk/ui";
+
+// Use for typing selectors
+const mySelector = (state: State) => state.tree.results.byId;
+```
+
+### Features
+
+Flags for available report features.
+
+```typescript
+import { Features } from "html-reporter/plugins-sdk/ui";
+
+const availableFeatures = useSelector(state => {
+    return state.app.availableFeatures;
+});
+if (!availableFeatures.some(feature => feature.name === Features.RunTestsFeature.name)) {
+    return null;
+}
+```
+
+## The pluginOptions Object {#plugin-options}
+
+A global `pluginOptions` object is available in the plugin UI component:
+
+```typescript
+declare const pluginOptions: {
+    /** Plugin name (from configuration) */
+    pluginName: string;
+    /** Plugin configuration (config field from configuration) */
+    pluginConfig: object;
+    /** Prefix for server endpoints: /plugin-routes/{pluginName}/ */
+    pluginServerEndpointPrefix: string;
+    /** Report Redux actions */
+    actions: object;
+    /** Report action names */
+    actionNames: object;
+    /** Redux Store selectors, see html-reporter/lib/static/modules/selectors */
+    selectors: object;
+};
+```
+
+## Extension Points {#extension-points}
+
+Extension points determine where in the report interface the plugin component will be placed.
+
+| Point              | Description                                | Component Props              |
+| ------------------ | ------------------------------------------ | ---------------------------- |
+| `result_meta`      | Test result area, near meta information    | `result: ReporterTestResult` |
+| `settings-panel`   | Settings panel                             | —                            |
+| `run-test-options` | Test run options, near the run test button | —                            |
+
+### ExtensionPointName
+
+Use enum to specify the extension point in the preset:
+
+```typescript
+import { ExtensionPointName } from "html-reporter/plugins-sdk";
+
+// Available values:
+ExtensionPointName.ResultMeta; // "result_meta"
+ExtensionPointName.MenuBar; // "menu-bar"
+ExtensionPointName.Root; // "root"
+```
+
+### Positioning
+
+The `position` parameter determines the component placement relative to the extension point:
+
+| Value      | Description                        |
+| ---------- | ---------------------------------- |
+| `"before"` | Before the extension point content |
+| `"after"`  | After the extension point content  |
+| `"wrap"`   | Wrap the extension point content   |
+
+## CSS and Styling {#css-styling}
+
+### CSS Modules
+
+It is recommended to use CSS Modules for style isolation:
+
+```css title="Plugin.module.css"
+.container {
+    padding: 16px;
+}
+
+.result {
+    display: flex;
+    gap: 8px;
+}
+```
+
+```tsx
+import styles from "./Plugin.module.css";
+
+<div className={styles.container}>
+    <div className={styles.result}>...</div>
+</div>;
+```
+
+### Gravity UI CSS Variables
+
+HTML Reporter uses the [Gravity UI theme][gravity-ui-theme]. You can use CSS variables for style consistency:
+
+```css
+.myElement {
+    /* Text colors */
+    color: var(--g-color-text-primary);
+    color: var(--g-color-text-secondary);
+    color: var(--g-color-text-brand);
+    color: var(--g-color-text-danger);
+
+    /* Background colors */
+    background: var(--g-color-base-background);
+    background: var(--g-color-base-brand);
+
+    /* Borders */
+    border-color: var(--g-color-line-generic);
+
+    /* Spacing and sizes */
+    padding: var(--g-spacing-2); /* 8px */
+    padding: var(--g-spacing-4); /* 16px */
+}
+```
+
+### CSS Injection into Bundle
+
+Use the `vite-plugin-css-injected-by-js` plugin to include CSS in the JavaScript bundle:
+
+```typescript title="vite.config.ts"
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
+
+export default defineConfig({
+    plugins: [cssInjectedByJsPlugin()],
+});
+```
+
+## Typing {#typing}
+
+### Extending DefaultRootState
+
+To type the plugin state in Redux, extend `DefaultRootState`:
+
+```typescript title="types.d.ts"
+import type { State } from "html-reporter/plugins-sdk/ui";
+
+interface MyPluginState {
+    data: Record<string, { status: string; value: any }>;
+}
+
+declare module "react-redux" {
+    export interface DefaultRootState extends State {
+        plugins: {
+            myPlugin: MyPluginState;
+        };
+    }
+}
+```
+
+### Global pluginOptions
+
+```typescript title="types.d.ts"
+declare global {
+    const pluginOptions: {
+        pluginConfig: MyPluginConfig;
+        pluginServerEndpointPrefix: string;
+    };
+}
+```
+
+[gravity-ui]: https://gravity-ui.com/
+[gravity-ui-icons]: https://gravity-ui.com/icons
+[gravity-ui-theme]: https://gravity-ui.com/design/themes

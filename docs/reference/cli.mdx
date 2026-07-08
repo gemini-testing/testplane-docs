@@ -580,7 +580,7 @@ testplane list-browsers --format json
 
 #### Example {#list-browsers-example}
 
-If you have the following "browsers" section in your [Testplane config](/docs/v8/reference/config/main):
+If you have the following "browsers" section in your [Testplane config](/docs/reference/config/main):
 
 ```json
 {
@@ -649,9 +649,9 @@ testplane config --help
 
 ## `install-deps` command {#install-deps}
 
-This command is a part of the guide [How to launch Testplane in the local browser](/docs/v8/basic-guides/browsers-overview).
+This command is a part of the guide [How to launch Testplane in the local browser](/docs/basic-guides/browsers-overview).
 
-Use the `install-deps` command to download all browsers, specified in [Testplane config](/docs/v8/reference/config/main).
+Use the `install-deps` command to download all browsers, specified in [Testplane config](/docs/reference/config/main).
 
 If this command is launched on supported ubuntu version, all missing necessary ubuntu packages would be downloaded too.
 
@@ -665,7 +665,7 @@ npx testplane install-deps
 
 You can also specify, which browsers are need to be downloaded.
 
-For example, if you have browsers "chrome-dark", "firefox-dark" described in <a href="/docs/v8/reference/config/main">Testplane config</a>, you can use the following command to only download these two browsers:
+For example, if you have browsers "chrome-dark", "firefox-dark" described in <a href="/docs/reference/config/main">Testplane config</a>, you can use the following command to only download these two browsers:
 
 ```bash
 npx testplane install-deps chrome-dark firefox-dark

@@ -25,7 +25,7 @@ import Admonition from "@theme/Admonition";
 
 ## Настройка
 
-Для включения селективности достаточно добавить в конфигурацию Testplane секцию [`selectivity`](/docs/v8/reference/config/browsers#selectivity) с параметром `enabled: true`:
+Для включения селективности достаточно добавить в конфигурацию Testplane секцию [`selectivity`](/docs/reference/config/browsers#selectivity) с параметром `enabled: true`:
 
 ```typescript
 // testplane.config.ts
@@ -183,7 +183,7 @@ describe("test examples", () => {
 
 ### Сбор браузерных зависимостей
 
-Testplane записывает браузерные зависимости только в браузере Chrome, поскольку сбор зависимостей работает по [Chrome Devtools Protocol](/docs/v8/reference/webdriver-vs-cdp). Однако, если у вас несколько браузеров (например, Chrome и Firefox), то Firefox сможет использовать список браузерных зависимостей теста, собранных браузером Chrome.
+Testplane записывает браузерные зависимости только в браузере Chrome, поскольку сбор зависимостей работает по [Chrome Devtools Protocol](/docs/reference/webdriver-vs-cdp). Однако, если у вас несколько браузеров (например, Chrome и Firefox), то Firefox сможет использовать список браузерных зависимостей теста, собранных браузером Chrome.
 
 ### Требование SourceMap
 

@@ -1,0 +1,29 @@
+# clearSession
+
+## Обзор {#overview}
+
+Команда браузера, которая очищает состояние сессии (удаляет куки, очищает локальное и сессионное хранилища).
+
+## Использование {#usage}
+
+```javascript
+await browser.clearSession();
+```
+
+## Примеры использования {#examples}
+
+```typescript
+it("test", async ({ browser }) => {
+    await browser.url("https://github.com/gemini-testing/testplane");
+
+    (await browser.getCookies()).length; // 5
+    await browser.execute(() => localStorage.length); // 2
+    await browser.execute(() => sessionStorage.length); // 1
+
+    await browser.clearSession();
+
+    (await browser.getCookies()).length; // 0
+    await browser.execute(() => localStorage.length); // 0
+    await browser.execute(() => sessionStorage.length); // 0
+});
+```

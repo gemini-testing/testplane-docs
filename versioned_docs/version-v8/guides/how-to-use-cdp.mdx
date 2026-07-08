@@ -1,0 +1,131 @@
+---
+unlisted: true
+sidebar_class_name: hidden
+---
+
+<!-- This page was hidden, because at its current state it brings very little value to users -->
+
+import Admonition from "@theme/Admonition";
+
+# How to Use Chrome DevTools Protocol in Testplane
+
+## Introduction {#preface}
+
+<Admonition type="warning">
+    Install Hermione (Testplane) version 4 or higher in your project to use _Chrome DevTools
+    Protocol (CDP)_ in Testplane tests.
+</Admonition>
+
+The `WebDriver` protocol has been used in Testplane for a long time, but the possibility of using [CDP][CDP] appeared only after migrating to _[WebdriverIO@7](https://webdriver.io/versions)_ in Hermione version 4.
+
+CDP support in _WebdriverIO@7_ is implemented using [puppeteer][puppeteer], which is a wrapper with a convenient API over CDP.
+
+For a comparison of the _WebDriver_ and _CDP_ protocols, see the "WebDriver vs CDP" section in the Reference Manual.
+
+## Local Usage {#local_usage}
+
+<Admonition type="danger" title="Removed in Testplane 9">
+    Starting from **Testplane 9**, the value `"devtools"` for the `automationProtocol` option (as well as the `--devtools` CLI flag) has been **removed**. It caused a number of hard-to-reproduce errors that never occurred with `automationProtocol: "webdriver"`, and the underlying [WebdriverIO](https://webdriver.io) — on which Testplane is based — has also dropped its `devtools` automation protocol. The only supported value is now `"webdriver"` (which is also the default).
+
+    Note that this does **not** deprecate the Chrome DevTools Protocol itself: you can still use CDP directly (see the [Remote Usage](#remote_usage) section below and the rest of this page). Only the `devtools` automation protocol provided by WebdriverIO has been removed.
+
+</Admonition>
+
+To run your tests in a locally installed browser, use `gridUrl: "local"` (or the `--local` CLI flag) — Testplane will automatically download the required browsers and drivers and launch them via WebDriver:
+
+```javascript
+// .testplane.conf.js
+
+module.exports = {
+    browsers: {
+        chrome: {
+            gridUrl: "local",
+            desiredCapabilities: {
+                browserName: "chrome",
+                // ...
+            },
+        },
+
+        // other browser settings...
+    },
+
+    // other Testplane settings...
+};
+```
+
+After this, all subsequent runs will be performed in your locally installed Chrome.
+
+If you need to launch tests on a local browser just once, you can pass the `--local` CLI option instead:
+
+```bash
+npx testplane ... --local
+```
+
+See the [Running on Local Browsers](/blog/local-browsers-intro) blog post for a step-by-step guide.
+
+Once the browser is started locally via WebDriver, you can still call [CDP commands][how-to-intercept-requests-and-responses] inside the test as described in the [Remote Usage](#remote_usage) section.
+
+## Remote Usage {#remote_usage}
+
+When using CDP on a remote machine (e.g., in a grid), Testplane will first start the browser using the WebDriver protocol and then, upon user request (i.e., when calling a CDP command), switch to CDP connection. Thus, in a single test scenario with a remote browser, we will interact using both protocols.
+
+It looks something like this:
+
+![Remote CDP Usage Diagram](/img/docs/guides/how-to-use-cdp.remote-scheme.png)
+
+To connect to a remote browser via CDP, you need to:
+
+-   use `automationProtocol: webdriver` (default value);
+-   add the vendor-specific field `selenoid:options` in the browser’s `desiredCapabilities`: this option is necessary for _webdriverio_ to understand that it needs to connect to a remote machine instead of a local browser.
+
+```javascript
+// .testplane.conf.js
+
+module.exports = {
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                "selenoid:options": {},
+                // ...
+            },
+
+            // other browser settings...
+        },
+
+        // other browser settings...
+    },
+
+    // other Testplane settings...
+};
+```
+
+<Admonition type="warning" title="Limitations">
+    Full CDP usage is only supported from **Chrome@77** and higher. This is due to the internal
+    implementation in _webdriverio._
+</Admonition>
+
+## What Capabilities Does CDP Provide {#what_does_cdp_give}
+
+With CDP, you can:
+
+-   [track and intercept network requests and responses][how-to-intercept-requests-and-responses]
+-   [test page accessibility][how-to-check-accessibility]
+-   [manage network bandwidth][how-to-manage-network-bandwidth]
+-   [control CPU performance][how-to-manage-cpu-performance]
+-   [hide scrollbars][how-to-hide-scrollbars-by-cdp]
+
+## Useful Links {#useful_links}
+
+-   [WebDriver vs CDP][webdriver-vs-cdp]
+-   [Web Performance Recipes With Puppeteer](https://addyosmani.com/blog/puppeteer-recipes/)
+-   [About Chrome DevTools Protocol][CDP]
+-   [puppeteer][puppeteer]
+
+[CDP]: https://chromedevtools.github.io/devtools-protocol/
+[puppeteer]: https://pptr.dev/
+[how-to-intercept-requests-and-responses]: ../how-to-intercept-requests-and-responses
+[how-to-check-accessibility]: ../how-to-check-accessibility
+[how-to-manage-network-bandwidth]: ../../basic-guides/emulation
+[how-to-manage-cpu-performance]: ../../basic-guides/emulation
+[how-to-hide-scrollbars-by-cdp]: ../visual-checks-best-practices/hiding-scrollbars
+[webdriver-vs-cdp]: ../../reference/webdriver-vs-cdp

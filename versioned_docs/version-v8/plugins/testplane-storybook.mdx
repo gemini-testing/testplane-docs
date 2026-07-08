@@ -1,0 +1,311 @@
+import Admonition from "@theme/Admonition";
+
+# @testplane/storybook
+
+## Overview {#overview}
+
+Use the [@testplane/storybook][testplane-storybook] plugin to automatically check the changes in your Storybook components with screenshot testing without a single line of test code.
+
+This plugin adds:
+
+-   automatic screenshot tests for storybook stories;
+-   an ability to write Testplane tests for storybook stories right inside of the stories.
+
+## Installation {#install}
+
+```bash
+npm install @testplane/storybook --save-dev
+```
+
+## Setup {#setup}
+
+<Admonition type="info">Storybook 6.4+ is required to use this plugin.</Admonition>
+
+### Storybook
+
+If you use `storybook@6`, you will need to enable [buildStoriesJson][build-stories] feature in your `storybook` config:
+
+```typescript tytle=".storybook/main.js"
+export default {
+    // ...
+    features: {
+        // ...
+        buildStoriesJson: true,
+    },
+};
+```
+
+You don't need to do this with storybook@7 or storybook@8.
+
+### Testplane
+
+Add `@testplane/storybook` plugin into your Testplane config:
+
+```typescript title=".testplane.conf.ts"
+export default {
+    plugins: {
+        "@testplane/storybook": {},
+
+        // other Testplane plugins...
+    },
+
+    // other Testplane settings...
+};
+```
+
+With this minimal config, you will be able to run `npx testplane --storybook` to autotest each storybook story with [Testplane assertView][assert-view] command. Testplane will open each story, wait for play function to finish (if defined), and then call `assertView` command. These tests would be generated in runtime.
+
+### Description of configuration parameters {#setup_description}
+
+<table>
+    <thead>
+        <tr>
+            <td>**Parameter**</td>
+            <td>**Type**</td>
+            <td>**Default**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>`Boolean`</td>
+            <td>true</td>
+            <td>Enable / disable plugin.</td>
+        </tr>
+        <tr>
+            <td>storybookConfigDir</td>
+            <td>`String`</td>
+            <td>".storybook"</td>
+            <td>Path to the storybook configuration directory.</td>
+        </tr>
+        <tr>
+            <td>autoScreenshots</td>
+            <td>`Boolean`</td>
+            <td>true</td>
+            <td>Enable / disable auto-screenshot tests</td>
+        </tr>
+        <tr>
+            <td>autoscreenshotSelector</td>
+            <td>`String`</td>
+            <td>""</td>
+            <td>Custom selector, which will be used in auto-screenshot tests</td>
+        </tr>
+        <tr>
+            <td>autoScreenshotStorybookGlobals</td>
+            <td>`Record<string, Record<string, unknown>>`</td>
+            <td>{}</td>
+            <td>Run multiple auto-screenshot tests with different [storybook globals](https://storybook.js.org/docs/7/essentials/toolbars-and-globals#globals). Only works with storybook >= 8</td>
+        </tr>
+        <tr>
+            <td>localport</td>
+            <td>`Number`</td>
+            <td>6006</td>
+            <td>Port to launch storybook dev server on.</td>
+        </tr>
+        <tr>
+            <td>remoteStorybookUrl</td>
+            <td>`String`</td>
+            <td>""</td>
+            <td>URL of the remote Storybook. If specified, local storybook dev sever would not be launched.</td>
+        </tr>
+        <tr>
+            <td>browserIds</td>
+            <td>`Array<String | RegExp>`</td>
+            <td>[]</td>
+            <td>Array of `browserId` to run storybook tests on. By default, all of browsers, specified in Testplane config would be used</td>
+        </tr>
+        <tr>
+            <td>waitStorybookJsonTimeout</td>
+            <td>`Number`</td>
+            <td>30000</td>
+            <td>Timeout for fetching Storybook stories data. Consider increasing this value if Storybook requires additional time to build the development server (e.g., when using webpack)</td>
+        </tr>
+    </tbody>
+</table>
+
+<Admonition type="info">
+    Storybook tests performance greatly depends on [Testplane testsPerSession][testsPerSession]
+    parameter, as these tests speeds up on reusing existing sessions, so setting values around 20+
+    is preferred. These tests ignore [Testplane isolation][isolation]. It would be turned off
+    unconditionally.
+</Admonition>
+
+#### autoScreenshotStorybookGlobals
+
+<Admonition type="warning">Storybook >= 8 is required.</Admonition>
+
+For example, with `autoScreenshotStorybookGlobals` set to:
+
+```json
+{
+    "default": {},
+    "light theme": {
+        "theme": "light"
+    },
+    "dark theme": {
+        "theme": "dark"
+    }
+}
+```
+
+3 autoscreenshot tests will be generated for each story, each test having its corresponding storybook globals value:
+
+-   `... Autoscreenshot default`
+-   `... Autoscreenshot light theme`
+-   `... Autoscreenshot dark theme`
+
+## Advanced usage
+
+If you have `ts-node` in your project, you can write your Testplane tests right inside of storybook story files:
+
+```typescript title="stories/Primary.stories.ts"
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    args: {
+        primary: true,
+        label: "Button",
+    },
+    testplane: {
+        "my test": async ({ browser, expect }) => {
+            const element = await browser.$(".storybook-button");
+
+            await expect(element).toHaveText("Button");
+        },
+    },
+};
+```
+
+You can also specify extra options in story default config:
+
+```typescript
+import type { WithTestplane } from "@testplane/storybook";
+import type { Meta, StoryObj } from "@storybook/react";
+
+const meta: WithTestplane<Meta<typeof Button>> = {
+    title: "Example/Button",
+    component: Button,
+    testplaneConfig: {
+        // If true, skips all Testplane tests from this story file
+        skip: false,
+        // Overrides default "autoScreenshots" value from plugin config
+        autoScreenshots: true,
+        // Overrides default "autoscreenshotSelector" value from plugin config
+        autoscreenshotSelector: ".my-selector",
+        // Extends default "autoScreenshotStorybookGlobals" value from plugin config
+        autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
+        // Testplane browsers to run tests from this story file
+        browserIds: ["chrome"],
+        // Overrides default assertView options for tests from this file
+        assertViewOpts: {
+            ignoreDiffPixelCount: 5,
+        },
+    },
+};
+
+export default meta;
+```
+
+And then override these options for specific exports:
+
+```typescript
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    args: {
+        primary: true,
+        label: "Button",
+    },
+    testplaneConfig: {
+        // Overrides testplaneConfig.skip from default export
+        skip: true,
+        // Extends testplaneConfig.assertViewOpts from default export
+        assertViewOpts: {
+            // "ignoreDiffPixelCount: 5" config value will be inherited from default export
+            ignoreElements: [".some-selector"],
+        },
+        // Add extra globals set
+        autoScreenshotStorybookGlobals: { "eng locale": { locale: "en" } },
+    },
+};
+```
+
+You can also disable specific sets for the whole story-file (in default export) and for the single story (in named export) by setting null value to the set:
+
+```typescript
+import type { WithTestplane } from "@testplane/storybook";
+import type { Meta, StoryObj } from "@storybook/react";
+
+const meta: WithTestplane<Meta<typeof Button>> = {
+    title: "Example/Button",
+    component: Button,
+    testplaneConfig: {
+        autoScreenshotStorybookGlobals: { "dark theme": { theme: "dark" } },
+    },
+};
+
+export default meta;
+
+export const Primary: WithTestplane<StoryObj> = {
+    // ...other Storybook properties
+    testplaneConfig: {
+        // Don't test this story in dark theme
+        autoScreenshotStorybookGlobals: { "dark theme": null },
+    },
+};
+```
+
+Besides extending and disabling, you also can overwrite "autoScreenshotStorybookGlobals", providing the value as a function:
+
+```typescript
+import type { StoryObj } from "@storybook/react";
+import type { WithTestplane } from "@testplane/storybook";
+
+export const Primary: WithTestplane<StoryObj> = {
+    // ...other Storybook properties
+    testplaneConfig: {
+        // Replaces all global sets with this one
+        autoScreenshotStorybookGlobals: () => ({ "eng locale": { locale: "en" } }),
+    },
+};
+```
+
+If you decide to create separate config for storybook auto-tests (which is suggested), you need to specify config path via CLI option. For example:
+
+```bash
+npx testplane --storybook -c .testplane.storybook.conf.ts
+```
+
+This allows you to store references next to your story files:
+
+```typescript title=".testplane.conf.ts"
+import path from "path";
+import { getStoryFile } from "@testplane/storybook";
+
+export default {
+    screenshotsDir: test => {
+        const relativeStoryFilePath = getStoryFile(test);
+        const relativeStoryFileDirPath = path.dirname(relativeStoryFilePath);
+
+        return path.join(relativeStoryFileDirPath, "screens", test.id, test.browserId);
+    },
+    // other Testplane settings...
+};
+```
+
+In this example, screenshot references would be stored in `screens/<testId>/<browserId>` folder, next to each of your story files.
+
+## Useful links {#useful_links}
+
+-   [@testplane/storybook plugin sources][testplane-storybook]
+-   [assertView command][assert-view]
+
+[assert-view]: ../commands/browser/assertView.mdx
+[build-stories]: https://storybook.js.org/docs/6.4/configure/overview#feature-flags
+[isolation]: ../reference/config/browsers.mdx#isolation
+[testplane-storybook]: https://github.com/gemini-testing/testplane-storybook
+[testplane]: https://github.com/gemini-testing/testplane
+[testsPerSession]: ../reference/config/browsers.mdx#tests_per_session

@@ -1,0 +1,103 @@
+import Admonition from "@theme/Admonition";
+
+# Скроллбары на скриншотах
+
+Скроллбары могут быть источником нестабильности в визуальных тестах — они могут случайно появляться, исчезать и менять свое положение. Мы настоятельно рекомендуем скрывать их при выполнении визуальных проверок.
+
+Пример диффа из-за скроллбара:
+
+![](/img/docs/guides/how-to-hide-scrollbars.diff-in-screenshot.png)
+
+## Решение 1: использование флага `--hide-scrollbars` (рекомендуется) {#solution_1}
+
+Chrome, начиная примерно с версии 50, поддерживает флаг `--hide-scrollbars` (другие браузеры на основе Chromium также имеют этот флаг). Вы можете указать его в настройках браузера так:
+
+```diff
+module.exports = {
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    args: ["--hide-scrollbars"],
+                },
+            },
+        },
+    },
+};
+```
+
+## Решение 2: screenshotDelay {#solution_2}
+
+Это решение актуально только для браузеров, в которых скроллбары исчезают при отсутствии взаимодействия.
+
+Вы можете использовать опцию `screenshotDelay`, чтобы дождаться исчезновения скроллбара.
+
+В настройках Testplane есть обязательная опция `browsers`, которая задает набор браузеров, доступных в проекте, и их свойства. Выберите браузер, в котором у вас возникают диффы из-за скроллбаров, и добавьте для него опцию `screenshotDelay`:
+
+```javascript
+module.exports = {
+    browsers: {
+        iphone: {
+            screenshotDelay: 600, // Задержка перед снятием скриншота в мс
+
+            // другие настройки браузера...
+        },
+
+        // другие браузеры...
+    },
+
+    // другие настройки Testplane...
+};
+```
+
+Опция `screenshotDelay` задает паузу в миллисекундах, которую Testplane должна выдержать перед снятием скриншота (прежде чем выполнять команду `assertView`).
+
+### Как это может помочь? {#how_can_it_help}
+
+Часто скриншоты генерируют диффы из-за того, что тест должен подскроллить страницу к требуемому элементу непосредственно перед снятием скриншота. После того как подскролл выполнен, скроллбар может еще какое-то время оставаться видимым на экране и, соответственно, попасть на скриншот, если тот будет выполнен немедленно. Задержка `screenshotDelay` дает скроллбару время на то, чтобы исчезнуть.
+
+Однако этот метод работает не всегда, так как зависит от реализации и поведения браузеров.
+
+## Решение 3: отключение скроллбаров с помощью CDP {#solution_3}
+
+Это решение полезно для очень старых версий Chrome или браузеров, которые не поддерживают флаг `--hide-scrollbars`, но поддерживают метод CDP `Emulation.setScrollbarsHidden`.
+
+Если скроллбары появляются на скриншотах в браузере Chrome, их можно отключить с помощью [протокола DevTools][CDP].
+
+Для этого добавьте в свой проект плагин [hermione-hide-scrollbars][hermione-hide-scrollbars] и укажите в его настройках список браузеров, для которых необходимо отключать скроллбары в тестах.
+
+<Admonition type="warning">
+    Обновите Chrome-браузер до версии 72.1 и выше, чтобы данная функциональность работала в ваших
+    тестах. Более ранние версии Chrome не поддерживают команду _Emulation.setScrollbarsHidden_,
+    которая используется для отключения скроллбаров.
+</Admonition>
+
+Плагин `hermione-hide-scrollbars` основан на методе CDP `Emulation.setScrollbarsHidden`, поэтому в качестве альтернативы вы можете сделать это самостоятельно:
+
+```javascript
+it("should hide scrollbar", async function ({ browser }) {
+    // Получаем экземпляр puppeteer
+    const puppeteer = await browser.getPuppeteer();
+
+    // Получаем первую открытую страницу (считая её активной)
+    const [page] = await puppeteer.pages();
+
+    // Создаем CDP-сессию
+    const client = await page.target().createCDPSession();
+
+    // Скрываем скроллбар
+    await client.send("Emulation.setScrollbarsHidden", { hidden: true });
+
+    await browser.url("https://yandex.ru");
+});
+```
+
+## Ключевые слова {#keywords}
+
+-   screenshotDelay
+-   hermione-hide-scrollbars
+
+[hermione-hide-scrollbars]: ../../../plugins/hermione-hide-scrollbars
+[CDP]: https://chromedevtools.github.io/devtools-protocol/
