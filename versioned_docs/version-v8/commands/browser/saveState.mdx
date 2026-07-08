@@ -4,11 +4,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 <Version version="8.33.0" />
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Browser command that saves session state (cookies, local and session storages).
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 This command returns a state of the page state, including cookies, localStorage, and sessionStorage.
 You can use parameters to exclude specific types of data if needed.
@@ -27,7 +27,7 @@ const stateDump: SaveStateData = await browser.saveState({
 });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
     <thead>
@@ -83,7 +83,7 @@ const stateDump: SaveStateData = await browser.saveState({
     </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 Save state in file.
 
@@ -98,7 +98,7 @@ it("test", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [restoreState](../restoreState)
 -   [afterAll](../../../reference/config/after-all)

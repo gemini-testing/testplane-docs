@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # mock
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `mock` command to mock the response to a request.
 
@@ -23,13 +23,13 @@ Also, see the recipe "[How to intercept requests and responses][how-to-intercept
 
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.mock(url, { method, headers, responseHeaders, postData, statusCode });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -46,7 +46,7 @@ await browser.mock(url, { method, headers, responseHeaders, postData, statusCode
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should mock network resources", async ({ browser }) => {
@@ -126,7 +126,7 @@ it("should redirect web resources", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [mockClearAll](../mockClearAll)
 -   [mockRestoreAll](../mockRestoreAll)

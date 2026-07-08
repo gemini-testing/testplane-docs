@@ -3,7 +3,7 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
 
 # assertView
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `assertView`, чтобы снять скриншот элемента для определенного состояния теста и сравнить его с эталонным.
 
@@ -11,7 +11,7 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
     Эта команда реализована внутри Testplane, в [API WebDriverIO][webdriverio-api] её нет.
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.$(selector).assertView(state, options);
@@ -22,7 +22,7 @@ await browser.$(selector).assertView(state, options);
     [waitTimeout][wait-timeout] и [waitInterval][wait-interval].
 </Admonition>
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -45,7 +45,7 @@ await browser.$(selector).assertView(state, options);
 
 <AssertViewOptions />
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 **example.js**
 
@@ -61,7 +61,7 @@ it("should assert view", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [browser.assertView](../../browser/assertView)
 -   [browser.saveRecordingScreen](../../browser/saveRecordingScreen)

@@ -1,6 +1,6 @@
 # execute
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте `execute`, чтобы выполнить _синхронно_ указанный JavaScript-код на странице текущего выбранного фрейма.
 
@@ -10,13 +10,13 @@
 
 Аргументами могут быть любые JSON-примитивы, массивы или объекты JSON. Объекты JSON, которые определяют ссылку на _WebElement,_ будут преобразованы в соответствующий элемент DOM. Аналогично, любые _WebElements_ в результате скрипта будут возвращены клиенту в виде объектов _WebElement JSON_.
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.execute(script, arguments);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -29,7 +29,7 @@ await browser.execute(script, arguments);
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should inject javascript on the page", async ({ browser }) => {
@@ -49,7 +49,7 @@ it("should inject javascript on the page", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [executeAsync](../executeAsync)
 -   [setTimeout](../setTimeout)

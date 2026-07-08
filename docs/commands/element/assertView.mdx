@@ -3,7 +3,7 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
 
 # assertView
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `assertView` command to take a screenshot of an element for a specific test state and compare it with a reference.
 
@@ -12,7 +12,7 @@ Use the `assertView` command to take a screenshot of an element for a specific t
     WebDriverIO][webdriverio-api].
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.$(selector).assertView(state, options);
@@ -23,7 +23,7 @@ await browser.$(selector).assertView(state, options);
     [waitTimeout][wait-timeout] and [waitInterval][wait-interval].
 </Admonition>
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -46,7 +46,7 @@ Specifies the settings for the `assertView` command:
 
 <AssertViewOptions />
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 **example.js**
 
@@ -62,7 +62,7 @@ it("should assert view", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [browser.assertView](../../browser/assertView)
 -   [browser.saveRecordingScreen](../../browser/saveRecordingScreen)

@@ -1,6 +1,6 @@
 # abortOnce
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `abortOnce`, чтобы прервать запрос один раз с заданной ошибкой.
 
@@ -16,13 +16,13 @@
 -   AddressUnreachable
 -   BlockedByClient | BlockedByResponse
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 mock.abortOnce(errorCode);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -34,7 +34,7 @@ mock.abortOnce(errorCode);
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should block mock only once", async ({ browser }) => {
@@ -52,6 +52,6 @@ it("should block mock only once", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [abort](../abort)

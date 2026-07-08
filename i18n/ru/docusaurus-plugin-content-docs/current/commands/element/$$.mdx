@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 
 # $$
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `$$` вместо [findElements][find-elements] как более краткую команду, чтобы получить несколько элементов на странице в области видимости элемента. Эта команда похожа на команду [browser.$$()](../../browser/_dollardollar), и отличается только тем, что поиск элементов будет осуществляться среди потомков _(children)_ текущего элемента.
 
@@ -16,13 +16,13 @@ import Admonition from "@theme/Admonition";
     селекторы][how-to-use-selectors]».
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.$(selector).$$(subSelector);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -34,7 +34,7 @@ await browser.$(selector).$$(subSelector);
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 **index.html**
 

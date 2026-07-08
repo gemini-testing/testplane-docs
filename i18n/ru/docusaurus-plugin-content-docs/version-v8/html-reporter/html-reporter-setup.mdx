@@ -8,11 +8,11 @@ import Version from "../_partials/specs/version.mdx";
 
 # Конфигурация
 
-## Примеры настройки {#setup}
+## Примеры настройки {/* #setup */}
 
 <ConfigExamples />
 
-## Справочник по параметрам конфигурации {#setup_description}
+## Справочник по параметрам конфигурации {/* #setup_description */}
 
 <table>
 <thead>
@@ -245,7 +245,7 @@ throw err;
 
 Плагины позволяют расширять интерфейс отчета собственными UI-компонентами. Подробнее о разработке плагинов — в разделе «[Разработка плагинов](../html-reporter-plugins)».
 
-#### Использование с пресетом {#plugins-with-preset}
+#### Использование с пресетом {/* #plugins-with-preset */}
 
 Если плагин предоставляет пресет конфигурации, подключение выглядит так:
 
@@ -265,7 +265,7 @@ export default {
 };
 ```
 
-#### Ручная конфигурация {#plugins-manual-config}
+#### Ручная конфигурация {/* #plugins-manual-config */}
 
 Плагины можно настроить вручную, указав массив объектов:
 
@@ -291,7 +291,7 @@ export default {
 };
 ```
 
-#### Параметры плагина {#plugin-params}
+#### Параметры плагина {/* #plugin-params */}
 
 <table>
     <thead>
@@ -454,7 +454,7 @@ describe("badges", () => {
     </tbody>
 </table>
 
-### Передача параметров через CLI {#setup_by_cli}
+### Передача параметров через CLI {/* #setup_by_cli */}
 
 Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--html-reporter-` для опций командной строки и `html_reporter_` — для переменных окружения.
 
@@ -468,7 +468,7 @@ testplane path/to/mytest.js --html-reporter-path custom/dir
 html_reporter_path=custom/dir testplane path/to/mytest.js
 ```
 
-## Хранение данных {#data_storage}
+## Хранение данных {/* #data_storage */}
 
 Как уже было сказано выше, `html-reporter` сохраняет результаты прогона тестов в базу данных [SQLite][sqlite].
 

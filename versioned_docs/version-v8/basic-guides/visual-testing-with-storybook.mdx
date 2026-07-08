@@ -9,7 +9,7 @@ With the [@testplane/storybook][testplane-storybook] plugin, you can automatical
 You just need to describe your component in `Storybook` and Testplane will automatically generate all necessary tests upon execution, run them in the required browsers and provide a visual report for updating screenshots.
 Additionally, if a [play function][play-function] has been declared for the components, Testplane will execute it before the test begins to set the component to the desired state.
 
-## How to use? {#how_to_use}
+## How to use? {/* #how_to_use */}
 
 ### Step 1: Install dependencies
 
@@ -67,7 +67,7 @@ export default {
 };
 ```
 
-## Custom tests {#custom_tests}
+## Custom tests {/* #custom_tests */}
 
 Here's the translation:
 
@@ -136,7 +136,7 @@ export default {
 
 The entire list of available options can be viewed on the [plugin page][plugin-link].
 
-## Additional settings {#extra_config}
+## Additional settings {/* #extra_config */}
 
 Other types of testing can already be configured in your project, which can be run using Testplane. In order not to mix entities, we recommend using a separate config for Storybook tests and specifying it when running tests.
 
@@ -169,7 +169,7 @@ export default {
 
 In this example, screenshot references would be stored in `screens/<testId>/<browserId>` folder, next to each of your story files.
 
-## Optimization of test runs {#optimize_run}
+## Optimization of test runs {/* #optimize_run */}
 
 Storybook tests themselves are quite fast, because they do not need a complex environment, and only one component is rendered on the page.
 In the context of the browser, Storybook testing environments are created one time and reused from test to test. Therefore, for the maximum speed of passing the tests, we recommend setting the [testsPerSession][tests-per-session] option with a value of at least 20 (more is better) to reuse the browser session as long as possible:

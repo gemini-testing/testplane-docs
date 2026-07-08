@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # react$$
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `react$$` command to find multiple React components on the page by their actual name, while filtering them by props and state.
 
@@ -13,13 +13,13 @@ Read more about React selectors in the recipe "[How to use selectors][how-to-use
 
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.react$$(reactComponentSelector, { props, state });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -33,7 +33,7 @@ await browser.react$$(reactComponentSelector, { props, state });
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should calculate 7 * 6", async ({ browser }) => {
@@ -48,7 +48,7 @@ it("should calculate 7 * 6", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [browser.react$](../reactDollar)
 -   [element.react$](../../element/reactDollar)

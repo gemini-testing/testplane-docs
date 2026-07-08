@@ -4,7 +4,7 @@ sidebar_class_name: hidden
 
 # Объект HTML Reporter
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Html-reporter добавляет к объекту `testplane` объект `htmlReporter` со своим API.
 
@@ -42,7 +42,7 @@ Html-reporter добавляет к объекту `testplane` объект `htm
 
 Интерфейс для сохранения изображений в хранилище пользователя.
 
-### Пример использования {#images_saver_usage_example}
+### Пример использования {/* #images_saver_usage_example */}
 
 ```javascript
 const MyStorage = require("my-storage");
@@ -78,7 +78,7 @@ module.exports = (testplane, opts) => {
 
 Интерфейс для сохранения sqlite баз данных в хранилище пользователя.
 
-### Пример использования {#reports_saver_usage_example}
+### Пример использования {/* #reports_saver_usage_example */}
 
 ```javascript
 const MyStorage = require("my-storage");
@@ -114,7 +114,7 @@ module.exports = (testplane, opts) => {
 
 Интерфейс для сохранения DOM-снапшотов в хранилище пользователя.
 
-### Пример использования {#snapshots_saver_usage_example}
+### Пример использования {/* #snapshots_saver_usage_example */}
 
 ```javascript
 const MyStorage = require("my-storage");
@@ -150,13 +150,13 @@ module.exports = (testplane, opts) => {
 
 Добавляет дополнительный пункт в виде ссылки в бургер-меню html-отчета.
 
-### Пример вызова {#add_extra_item_call_example}
+### Пример вызова {/* #add_extra_item_call_example */}
 
 ```javascript
 testplane.htmlReporter.addExtraItem(caption, url);
 ```
 
-### Параметры вызова {#add_extra_item_call_params}
+### Параметры вызова {/* #add_extra_item_call_params */}
 
 Все параметры являются обязательными.
 
@@ -175,7 +175,7 @@ testplane.htmlReporter.addExtraItem(caption, url);
 
 Скачивает все базы данных из переданных файлов `databaseUrls.json`.
 
-### Пример вызова {#download_databases_call_example}
+### Пример вызова {/* #download_databases_call_example */}
 
 ```javascript
 const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.json"], {
@@ -183,7 +183,7 @@ const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.j
 });
 ```
 
-### Параметры вызова {#download_databases_call_params}
+### Параметры вызова {/* #download_databases_call_params */}
 
 Функция принимает 2 аргумента — список путей до файлов `databaseUrls.json` в виде массива строк и объект с ключом `pluginConfig`, в значении которого хранится конфиг плагина.
 
@@ -193,13 +193,13 @@ const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.j
 
 Объединяет все переданные базы данных и сохраняет итоговый отчет по заданному пути.
 
-### Пример вызова {#merge_databases_call_example}
+### Пример вызова {/* #merge_databases_call_example */}
 
 ```javascript
 await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
 ```
 
-### Параметры вызова {#merge_databases_call_params}
+### Параметры вызова {/* #merge_databases_call_params */}
 
 <table>
 <thead>
@@ -216,17 +216,17 @@ await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
 
 Асинхронно возвращает дерево тестов из переданной базы данных.
 
-### Пример вызова {#get_tests_tree_from_database_call_example}
+### Пример вызова {/* #get_tests_tree_from_database_call_example */}
 
 ```javascript
 const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 ```
 
-### Параметры вызова {#get_tests_tree_from_database_call_params}
+### Параметры вызова {/* #get_tests_tree_from_database_call_params */}
 
 Функция принимает один аргумент — путь к базе данных с результатом прогона тестов.
 
-### Пример использования {#get_tests_tree_from_database_usage_example}
+### Пример использования {/* #get_tests_tree_from_database_usage_example */}
 
 ```javascript
 async function getSuccessTestRunIds({ testplane, mergedDbPath }) {

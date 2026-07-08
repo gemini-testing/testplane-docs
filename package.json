@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.2.25",
+    "@docusaurus/faster": "3.10.1",
     "@docusaurus/module-type-aliases": "3.10.1",
     "@docusaurus/tsconfig": "3.10.1",
     "@docusaurus/types": "3.10.1",

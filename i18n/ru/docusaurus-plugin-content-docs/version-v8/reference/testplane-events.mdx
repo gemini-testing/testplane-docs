@@ -2,9 +2,9 @@ import Admonition from "@theme/Admonition";
 
 # События Testplane
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
-### Как устроено описание событий {#how_is_events_description_made}
+### Как устроено описание событий {/* #how_is_events_description_made */}
 
 Ниже описаны все события testplane, на которые можно подписаться в своем плагине.
 
@@ -22,7 +22,7 @@ import Admonition from "@theme/Admonition";
 -   параметры обработчика события;
 -   и опционально, примеры использования данного события в плагине или плагинах.
 
-### Схема генерации событий {#events_scheme}
+### Схема генерации событий {/* #events_scheme */}
 
 [//]: # "<style>"
 [//]: # '.yc-root_theme_light img[src*="-dark-mode-ru"] { display: none }'
@@ -33,7 +33,7 @@ import Admonition from "@theme/Admonition";
 
 [//]: # "![Генерация testplane-событий](/img/docs/reference/testplane-events-dark-mode-ru.png)"
 
-### Описание последовательности событий {#events_scheme_description}
+### Описание последовательности событий {/* #events_scheme_description */}
 
 Testplane можно запускать как через [CLI (командную строку)][cli-wiki], так и через её API: из скрипта с помощью команды [run][testplane-run].
 
@@ -126,7 +126,7 @@ Testplane можно запускать как через [CLI (командну
 
 Если во время прогона тестов, testplane получит сигнал [SIGTERM][sigterm] (например, в результате нажатия клавиш `Ctrl + C`), то testplane стриггерит событие [EXIT](#exit) и досрочно прервет выполнение тестов.
 
-### Про перехват событий {#events_interception}
+### Про перехват событий {/* #events_interception */}
 
 Testplane позволяет разработчику перехватывать ряд событий и изменять их на другие, игнорировать или задерживать их обработку.
 
@@ -164,7 +164,7 @@ module.exports = testplane => {
 };
 ```
 
-#### Оставляем событие as is {#events_interception_leaving_event_as_is}
+#### Оставляем событие as is {/* #events_interception_leaving_event_as_is */}
 
 Если по какой-либо причине перехваченное событие нужно оставить _как есть_, то его обработчик должен вернуть точно такой же объект или любое _falsey_ значение: _undefined, null_ или _false._
 
@@ -184,7 +184,7 @@ module.exports = testplane => {
 };
 ```
 
-#### Игнорируем событие {#events_interception_ignoring_event}
+#### Игнорируем событие {/* #events_interception_ignoring_event */}
 
 Чтобы проигнорировать какое-либо событие и не дать ему распространяться дальше, нужно вернуть из обработчика (в котором перехватывается событие) пустой объект:
 
@@ -200,7 +200,7 @@ module.exports = testplane => {
 };
 ```
 
-#### Задерживаем обработку события {#events_interception_delaying_events}
+#### Задерживаем обработку события {/* #events_interception_delaying_events */}
 
 Приведенный выше подход с игнорированием события можно использовать для задержки появления тех или иных событий, например:
 
@@ -222,7 +222,7 @@ module.exports = testplane => {
 };
 ```
 
-### Передача информации между обработчиками событий {#events_handlers_info_interchange}
+### Передача информации между обработчиками событий {/* #events_handlers_info_interchange */}
 
 События, которые триггерятся в мастер-процессе и в воркерах testplane не могут обмениваться информацией через глобальные переменные.
 
@@ -268,7 +268,7 @@ module.exports = (testplane, opts) => {
 
 Или следующим образом: смотрите [пример](#new_worker_process_usage) из описания события [NEW_WORKER_PROCESS](#new_worker_process).
 
-### Параллельное выполнение кода плагина {#plugin_code_parallel_execution}
+### Параллельное выполнение кода плагина {/* #plugin_code_parallel_execution */}
 
 У раннера тестов есть метод `registerWorkers`, который регистрирует код плагина для параллельного выполнения в воркерах testplane. Метод принимает следующие параметры:
 
@@ -298,7 +298,7 @@ module.exports = (testplane, opts) => {
 
 Файл с путем `workerFilepath` должен экспортировать объект, который содержит асинхронные функции с именами из `exportedMethods`.
 
-#### Пример параллельного выполнения кода плагина {#plugin_code_parallel_execution_example}
+#### Пример параллельного выполнения кода плагина {/* #plugin_code_parallel_execution_example */}
 
 **Код плагина: plugin.js**
 
@@ -333,13 +333,13 @@ module.exports = {
 };
 ```
 
-## CLI {#cli}
+## CLI {/* #cli */}
 
 **sync | master**
 
 Событие `CLI` триггерится сразу при запуске, до того, как testplane распарсит [CLI][cli-wiki]. Обработчик события выполняется синхронно. С помощью него можно добавить новые команды или расширить справку testplane.
 
-### Подписка на событие {#cli_subscription}
+### Подписка на событие {/* #cli_subscription */}
 
 ```javascript
 testplane.on(testplane.events.CLI, cli => {
@@ -353,11 +353,11 @@ testplane.on(testplane.events.CLI, cli => {
 });
 ```
 
-#### Параметры обработчика {#cli_cb_params}
+#### Параметры обработчика {/* #cli_cb_params */}
 
 В обработчик события передается объект типа [Commander][commander].
 
-### Пример использования {#cli_usage}
+### Пример использования {/* #cli_usage */}
 
 Рассмотрим в качестве примера [реализацию][testplane-test-repeater-index] плагина [@testplane/test-repeater][testplane-test-repeater].
 
@@ -396,7 +396,7 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-## INIT {#init}
+## INIT {/* #init */}
 
 **async | master, worker**
 
@@ -404,7 +404,7 @@ module.exports = (testplane, opts) => {
 
 Событие триггерится один раз в мастер-процессе и один раз в каждом воркере.
 
-### Подписка на событие {#init_subscription}
+### Подписка на событие {/* #init_subscription */}
 
 ```javascript
 testplane.on(testplane.events.INIT, async () => {
@@ -412,11 +412,11 @@ testplane.on(testplane.events.INIT, async () => {
 });
 ```
 
-#### Параметры обработчика {#init_cb_params}
+#### Параметры обработчика {/* #init_cb_params */}
 
 В обработчик события никакие данные не передаются.
 
-### Пример использования {#init_usage}
+### Пример использования {/* #init_usage */}
 
 В обработчике события [INIT](#init) можно организовать, например, запуск dev-сервера для вашего проекта.
 
@@ -462,13 +462,13 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-## BEFORE_FILE_READ {#before_file_read}
+## BEFORE_FILE_READ {/* #before_file_read */}
 
 **sync | master | worker**
 
 Событие `BEFORE_FILE_READ` триггерится перед тем, как будет прочитан файл с тестом, чтобы распарсить его. Обработчик события выполняется синхронно. Событие также доступно в воркерах testplane.
 
-### Подписка на событие {#before_file_read_subscription}
+### Подписка на событие {/* #before_file_read_subscription */}
 
 ```javascript
 testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }) => {
@@ -480,7 +480,7 @@ testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }
 });
 ```
 
-#### Параметры обработчика {#before_file_read_cb_params}
+#### Параметры обработчика {/* #before_file_read_cb_params */}
 
 В обработчик события передается объект следующего формата:
 
@@ -492,7 +492,7 @@ testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }
 }
 ```
 
-#### testParser: TestParserAPI {#test_parser}
+#### testParser: TestParserAPI {/* #test_parser */}
 
 Объект `testParser` типа `TestParserAPI` передается в обработчик события `BEFORE_FILE_READ`. С помощью него можно управлять процессом парсинга файлов с тестами. Объект поддерживает метод `setController`, с помощью которого можно создать свои хелперы для тестов.
 
@@ -507,7 +507,7 @@ testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }
     Контроллер будет удален, как только закончится парсинг текущего файла.
 </Admonition>
 
-### Пример использования {#before_file_read_usage}
+### Пример использования {/* #before_file_read_usage */}
 
 Создадим в качестве примера специальный хелпер `testplane.logger.log()`, с помощью которого мы сможем логировать информацию о парсинге интересующего нас теста.
 
@@ -547,13 +547,13 @@ describe("foo", () => {
 
 Ещё один пример использования события [BEFORE_FILE_READ](#before_file_read) можно посмотреть в разделе «[Запуск тестов с хелперами](#usage_running_tests_with_helpers)».
 
-## AFTER_FILE_READ {#after_file_read}
+## AFTER_FILE_READ {/* #after_file_read */}
 
 **sync | master | worker**
 
 Событие `AFTER_FILE_READ` триггерится после того, как будет прочтен файл с тестом. Обработчик события выполняется синхронно. Событие также доступно в воркерах testplane.
 
-### Подписка на событие {#after_file_read_subscription}
+### Подписка на событие {/* #after_file_read_subscription */}
 
 ```javascript
 testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
@@ -561,7 +561,7 @@ testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
 });
 ```
 
-#### Параметры обработчика {#after_file_read_cb_params}
+#### Параметры обработчика {/* #after_file_read_cb_params */}
 
 В обработчик события передается объект следующего формата:
 
@@ -572,7 +572,7 @@ testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
 }
 ```
 
-## AFTER_TESTS_READ {#after_tests_read}
+## AFTER_TESTS_READ {/* #after_tests_read */}
 
 **sync | master | worker**
 
@@ -580,7 +580,7 @@ testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
 
 Подписавшись на это событие, вы можете выполнить в обработчике те или иные манипуляции над коллекцией тестов до того, как они будут запущены. Например, вы можете исключить какие-либо тесты из запусков.
 
-### Подписка на событие {#after_tests_read_subscription}
+### Подписка на событие {/* #after_tests_read_subscription */}
 
 ```javascript
 testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
@@ -588,11 +588,11 @@ testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
 });
 ```
 
-#### Параметры обработчика {#after_tests_read_cb_params}
+#### Параметры обработчика {/* #after_tests_read_cb_params */}
 
 В обработчик события передается объект `testCollection` типа [TestCollection][test-collection].
 
-### Пример использования {#after_tests_read_usage}
+### Пример использования {/* #after_tests_read_usage */}
 
 Рассмотрим [реализацию][testplane-global-hook-index] плагина [testplane-global-hook][testplane-global-hook], с помощью которого можно вынести действия, повторяющиеся перед запуском и завершением каждого теста, в отдельные _beforeEach_- и _afterEach_-обработчики.
 
@@ -628,13 +628,13 @@ module.exports = (testplane, opts) => {
 
 Ещё примеры использования события [AFTER_TESTS_READ](#after_tests_read) можно посмотреть в разделах «[Запуск тестов из заданного списка](#usage_running_filtered_tests)» и «[Запуск тестов с хелперами](#usage_running_tests_with_helpers)».
 
-## RUNNER_START {#runner_start}
+## RUNNER_START {/* #runner_start */}
 
 **async | master**
 
 Событие `RUNNER_START` триггерится после инициализации всех воркеров testplane и перед выполнением тестов. Обработчик события может быть асинхронным: в таком случае тесты начнут выполняться только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
 
-### Подписка на событие {#runner_start_subscription}
+### Подписка на событие {/* #runner_start_subscription */}
 
 ```javascript
 testplane.on(testplane.events.RUNNER_START, async runner => {
@@ -642,11 +642,11 @@ testplane.on(testplane.events.RUNNER_START, async runner => {
 });
 ```
 
-#### Параметры обработчика {#runner_start_cb_params}
+#### Параметры обработчика {/* #runner_start_cb_params */}
 
 В обработчик события передается ссылка на инстанс раннера. Используя этот инстанс, можно триггерить различные события или подписаться на них.
 
-### Пример использования {#runner_start_usage}
+### Пример использования {/* #runner_start_usage */}
 
 Предположим, мы хотим автоматически поднимать ssh-туннель при запуске тестов и перенаправлять все урлы в тестах в поднятый туннель. Для этого мы можем воспользоваться событиями [RUNNER_START](#runner_start) и [RUNNER_END](#runner_end), чтобы открывать туннель при запуске раннера и закрывать его после завершения работы раннера.
 
@@ -682,13 +682,13 @@ module.exports = (testplane, opts) => {
 
 Похожую [реализацию][ssh-tunneler-index] можно посмотреть в плагине [ssh-tunneler][ssh-tunneler].
 
-## RUNNER_END {#runner_end}
+## RUNNER_END {/* #runner_end */}
 
 **async | master**
 
 Событие `RUNNER_END` триггерится после выполнения теста и перед тем, как будут завершены все воркеры. Обработчик события может быть асинхронным: в таком случае все воркеры будут завершены только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
 
-### Подписка на событие {#runner_end_subscription}
+### Подписка на событие {/* #runner_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.RUNNER_END, async result => {
@@ -696,7 +696,7 @@ testplane.on(testplane.events.RUNNER_END, async result => {
 });
 ```
 
-#### Параметры обработчика {#runner_end_cb_params}
+#### Параметры обработчика {/* #runner_end_cb_params */}
 
 В обработчик события передается объект со статистикой прогона тестов следующего вида:
 
@@ -710,17 +710,17 @@ testplane.on(testplane.events.RUNNER_END, async result => {
 };
 ```
 
-### Пример использования {#runner_end_usage}
+### Пример использования {/* #runner_end_usage */}
 
 Смотрите пример [выше](#runner_start_usage) про открытие и закрытие туннеля при запуске и остановке раннера.
 
-## NEW_WORKER_PROCESS {#new_worker_process}
+## NEW_WORKER_PROCESS {/* #new_worker_process */}
 
 **sync | master**
 
 Событие `NEW_WORKER_PROCESS` триггерится после порождения нового подпроцесса (воркера) testplane. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#new_worker_process_subscription}
+### Подписка на событие {/* #new_worker_process_subscription */}
 
 ```javascript
 testplane.on(testplane.events.NEW_WORKER_PROCESS, workerProcess => {
@@ -728,11 +728,11 @@ testplane.on(testplane.events.NEW_WORKER_PROCESS, workerProcess => {
 });
 ```
 
-#### Параметры обработчика {#new_worker_process_cb_params}
+#### Параметры обработчика {/* #new_worker_process_cb_params */}
 
 В обработчик события передается объект-обертка над порожденным подпроцессом, с одним единственным методом [send][process-send] для обмена сообщениями.
 
-### Пример использования {#new_worker_process_usage}
+### Пример использования {/* #new_worker_process_usage */}
 
 В примере ниже показано, как можно использовать событие [NEW_WORKER_PROCESS](#new_worker_process), чтобы организовать взаимодействие мастер-процесса со всеми воркерами testplane. Например, для того, чтобы обновить значение какого-либо параметра во всех воркерах testplane из мастер-процесса перед началом прогона всех тестов.
 
@@ -789,13 +789,13 @@ module.exports = plugin;
 
 </details>
 
-## SESSION_START {#session_start}
+## SESSION_START {/* #session_start */}
 
 **async | master**
 
 Событие `SESSION_START` триггерится после инициализации сессии браузера. Обработчик события может быть асинхронным: в таком случае тесты начнут выполняться только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
 
-### Подписка на событие {#session_start_subscription}
+### Подписка на событие {/* #session_start_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessionId }) => {
@@ -803,14 +803,14 @@ testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessio
 });
 ```
 
-#### Параметры обработчика {#session_start_cb_params}
+#### Параметры обработчика {/* #session_start_cb_params */}
 
 В обработчик события передаются 2 аргумента:
 
 -   первый аргумент — инстанс `WebdriverIO`;
 -   второй аргумент — объект вида `{ browserId, sessionId }`, где _browserId_ — это имя браузера, а _sessionId_ — идентификатор сессии браузера.
 
-### Пример использования {#session_start_usage}
+### Пример использования {/* #session_start_usage */}
 
 Рассмотрим пример, в котором плагин подписывается на событие [SESSION_START](#session_start), чтобы отключить скролл-бары в браузерах с помощью Chrome DevTools Protocol'а.
 
@@ -860,13 +860,13 @@ module.exports = (testplane, opts) => {
 
 Более подробную [реализацию][hermione-hide-scrollbars-index] можно посмотреть в плагине [hermione-hide-scrollbars][hermione-hide-scrollbars].
 
-## SESSION_END {#session_end}
+## SESSION_END {/* #session_end */}
 
 **async | master**
 
 Событие `SESSION_END` триггерится после того, как завершается сессия браузера. Обработчик события может быть асинхронным: в таком случае тесты продолжат выполняться только после того, как будет разрезолвлен _Promise_, возвращаемый обработчиком события.
 
-### Подписка на событие {#session_end_subscription}
+### Подписка на событие {/* #session_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionId }) => {
@@ -874,20 +874,20 @@ testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionI
 });
 ```
 
-#### Параметры обработчика {#session_end_cb_params}
+#### Параметры обработчика {/* #session_end_cb_params */}
 
 В обработчик события передаются 2 аргумента:
 
 -   первый аргумент — инстанс `WebdriverIO`;
 -   второй аргумент — объект вида `{ browserId, sessionId }`, где _browserId_ — это имя браузера, а _sessionId_ — идентификатор сессии браузера.
 
-## BEGIN {#begin}
+## BEGIN {/* #begin */}
 
 **sync | master**
 
 Событие `BEGIN` триггерится перед выполнением теста, но после того как все раннеры будут инициализированы. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#begin_subscription}
+### Подписка на событие {/* #begin_subscription */}
 
 ```javascript
 testplane.on(testplane.events.BEGIN, () => {
@@ -895,21 +895,21 @@ testplane.on(testplane.events.BEGIN, () => {
 });
 ```
 
-#### Параметры обработчика {#begin_cb_params}
+#### Параметры обработчика {/* #begin_cb_params */}
 
 В обработчик события никакие данные не передаются.
 
-### Пример использования {#begin_usage}
+### Пример использования {/* #begin_usage */}
 
 Смотрите пример [выше](#new_worker_process_usage) про организацию взаимодействия мастер-процесса testplane со всеми воркерами.
 
-## END {#end}
+## END {/* #end */}
 
 **sync | master**
 
 Событие `END` триггерится прямо перед событием `RUNNER_END`. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#end_subscription}
+### Подписка на событие {/* #end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.END, () => {
@@ -917,21 +917,21 @@ testplane.on(testplane.events.END, () => {
 });
 ```
 
-#### Параметры обработчика {#end_cb_params}
+#### Параметры обработчика {/* #end_cb_params */}
 
 В обработчик события никакие данные не передаются.
 
-### Пример использования {#end_usage}
+### Пример использования {/* #end_usage */}
 
 В качестве примера использования события [END](#end) смотрите раздел «[Задерживаем обработку события](#events_interception_delaying_events)».
 
-## SUITE_BEGIN {#suite_begin}
+## SUITE_BEGIN {/* #suite_begin */}
 
 **sync | master | can be intercepted**
 
 Событие `SUITE_BEGIN` триггерится перед выполнением набора тестов _(suite)_. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#suite_begin_subscription}
+### Подписка на событие {/* #suite_begin_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SUITE_BEGIN, suite => {
@@ -939,11 +939,11 @@ testplane.on(testplane.events.SUITE_BEGIN, suite => {
 });
 ```
 
-#### Параметры обработчика {#suite_begin_cb_params}
+#### Параметры обработчика {/* #suite_begin_cb_params */}
 
 В обработчик события передается инстанс _suite_.
 
-### Перехват события {#suite_begin_interception}
+### Перехват события {/* #suite_begin_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
@@ -951,13 +951,13 @@ testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
 });
 ```
 
-## SUITE_END {#suite_end}
+## SUITE_END {/* #suite_end */}
 
 **sync | master | can be intercepted**
 
 Событие `SUITE_END` триггерится после окончания выполнения набора тестов _(suite)_. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#suite_end_subscription}
+### Подписка на событие {/* #suite_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SUITE_END, suite => {
@@ -965,11 +965,11 @@ testplane.on(testplane.events.SUITE_END, suite => {
 });
 ```
 
-#### Параметры обработчика {#suite_end_cb_params}
+#### Параметры обработчика {/* #suite_end_cb_params */}
 
 В обработчик события передается инстанс _suite_.
 
-### Перехват события {#suite_end_interception}
+### Перехват события {/* #suite_end_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
@@ -977,13 +977,13 @@ testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
 });
 ```
 
-## TEST_BEGIN {#test_begin}
+## TEST_BEGIN {/* #test_begin */}
 
 **sync | master | can be intercepted**
 
 Событие `TEST_BEGIN` триггерится перед выполнением теста. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#test_begin_subscription}
+### Подписка на событие {/* #test_begin_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_BEGIN, test => {
@@ -999,11 +999,11 @@ testplane.on(testplane.events.TEST_BEGIN, test => {
 });
 ```
 
-#### Параметры обработчика {#test_begin_cb_params}
+#### Параметры обработчика {/* #test_begin_cb_params */}
 
 В обработчик события передается инстанс теста.
 
-### Перехват события {#test_begin_interception}
+### Перехват события {/* #test_begin_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
@@ -1014,17 +1014,17 @@ testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
 });
 ```
 
-### Пример использования {#test_begin_usage}
+### Пример использования {/* #test_begin_usage */}
 
 Смотрите в качестве примера «[Профилирование прогона тестов](#usage_profiling_tests_runs)».
 
-## TEST_END {#test_end}
+## TEST_END {/* #test_end */}
 
 **sync | master | can be intercepted**
 
 Событие `TEST_END` триггерится после окончания выполнения теста. Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
 
-### Подписка на событие {#test_end_subscription}
+### Подписка на событие {/* #test_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_END, test => {
@@ -1040,11 +1040,11 @@ testplane.on(testplane.events.TEST_END, test => {
 });
 ```
 
-#### Параметры обработчика {#test_end_cb_params}
+#### Параметры обработчика {/* #test_end_cb_params */}
 
 В обработчик события передается инстанс теста.
 
-### Перехват события {#test_end_interception}
+### Перехват события {/* #test_end_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
@@ -1055,17 +1055,17 @@ testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
 });
 ```
 
-### Пример использования {#test_end_usage}
+### Пример использования {/* #test_end_usage */}
 
 Смотрите в качестве примера «[Профилирование прогона тестов](#usage_profiling_tests_runs)».
 
-## TEST_PASS {#test_pass}
+## TEST_PASS {/* #test_pass */}
 
 **sync | master | can be intercepted**
 
 Событие `TEST_PASS` триггерится, если тест успешно прошел. Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
 
-### Подписка на событие {#test_pass_subscription}
+### Подписка на событие {/* #test_pass_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_PASS, test => {
@@ -1076,11 +1076,11 @@ testplane.on(testplane.events.TEST_PASS, test => {
 });
 ```
 
-#### Параметры обработчика {#test_pass_cb_params}
+#### Параметры обработчика {/* #test_pass_cb_params */}
 
 В обработчик события передается инстанс теста.
 
-### Перехват события {#test_pass_interception}
+### Перехват события {/* #test_pass_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
@@ -1091,17 +1091,17 @@ testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
 });
 ```
 
-### Пример использования {#test_pass_usage}
+### Пример использования {/* #test_pass_usage */}
 
 Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
 
-## TEST_FAIL {#test_fail}
+## TEST_FAIL {/* #test_fail */}
 
 **sync | master | can be intercepted**
 
 Событие `TEST_FAIL` триггерится, если тест упал. Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
 
-### Подписка на событие {#test_fail_subscription}
+### Подписка на событие {/* #test_fail_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_FAIL, test => {
@@ -1112,11 +1112,11 @@ testplane.on(testplane.events.TEST_FAIL, test => {
 });
 ```
 
-#### Параметры обработчика {#test_fail_cb_params}
+#### Параметры обработчика {/* #test_fail_cb_params */}
 
 В обработчик события передается инстанс теста.
 
-### Перехват события {#test_fail_interception}
+### Перехват события {/* #test_fail_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
@@ -1127,17 +1127,17 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 });
 ```
 
-### Пример использования {#test_fail_usage}
+### Пример использования {/* #test_fail_usage */}
 
 Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
 
-## TEST_PENDING {#test_pending}
+## TEST_PENDING {/* #test_pending */}
 
 **sync | master**
 
 Событие `TEST_PENDING` триггерится, если тест отключен. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#test_pending_subscription}
+### Подписка на событие {/* #test_pending_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_PENDING, test => {
@@ -1148,15 +1148,15 @@ testplane.on(testplane.events.TEST_PENDING, test => {
 });
 ```
 
-#### Параметры обработчика {#test_pending_cb_params}
+#### Параметры обработчика {/* #test_pending_cb_params */}
 
 В обработчик события передается инстанс теста.
 
-### Пример использования {#test_pending_usage}
+### Пример использования {/* #test_pending_usage */}
 
 Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
 
-## RETRY {#retry}
+## RETRY {/* #retry */}
 
 **sync | master | can be intercepted**
 
@@ -1164,7 +1164,7 @@ testplane.on(testplane.events.TEST_PENDING, test => {
 
 Обработчик события выполняется синхронно. Также событие можно перехватить и изменить в специальном обработчике.
 
-### Подписка на событие {#retry_subscription}
+### Подписка на событие {/* #retry_subscription */}
 
 ```javascript
 testplane.on(testplane.events.RETRY, test => {
@@ -1175,11 +1175,11 @@ testplane.on(testplane.events.RETRY, test => {
 });
 ```
 
-#### Параметры обработчика {#retry_cb_params}
+#### Параметры обработчика {/* #retry_cb_params */}
 
 В обработчик события передается инстанс теста.
 
-### Перехват события {#retry_interception}
+### Перехват события {/* #retry_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.RETRY, ({ event, data: test }) => {
@@ -1190,17 +1190,17 @@ testplane.intercept(testplane.events.RETRY, ({ event, data: test }) => {
 });
 ```
 
-### Пример использования {#test_retry_usage}
+### Пример использования {/* #test_retry_usage */}
 
 Смотрите в качестве примера «[Сбор статистики о прогоне тестов](#usage_collecting_stats)».
 
-## ERROR {#error}
+## ERROR {/* #error */}
 
 **sync | master**
 
 Событие `ERROR` триггерится только из [перехватчиков событий](#events_interception) в случае критической ошибки. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#error_subscription}
+### Подписка на событие {/* #error_subscription */}
 
 ```javascript
 testplane.on(testplane.events.ERROR, error => {
@@ -1208,33 +1208,33 @@ testplane.on(testplane.events.ERROR, error => {
 });
 ```
 
-#### Параметры обработчика {#error_cb_params}
+#### Параметры обработчика {/* #error_cb_params */}
 
 В обработчик события передается [объект с ошибкой][error-object].
 
-### Пример использования {#error_usage}
+### Пример использования {/* #error_usage */}
 
 Смотрите в качестве примера «[Профилирование прогона тестов](#usage_profiling_tests_runs)».
 
-## INFO {#info}
+## INFO {/* #info */}
 
 **reserved**
 
 Зарезервировано.
 
-## WARNING {#warning}
+## WARNING {/* #warning */}
 
 **reserved**
 
 Зарезервировано.
 
-## EXIT {#exit}
+## EXIT {/* #exit */}
 
 **async | master**
 
 Событие `EXIT` триггерится при получении сигнала [SIGTERM][sigterm] (например, после нажатия `Ctrl + C`). Обработчик события может быть асинхронным.
 
-### Подписка на событие {#exit_subscription}
+### Подписка на событие {/* #exit_subscription */}
 
 ```javascript
 testplane.on(testplane.events.EXIT, async () => {
@@ -1242,17 +1242,17 @@ testplane.on(testplane.events.EXIT, async () => {
 });
 ```
 
-#### Параметры обработчика {#exit_cb_params}
+#### Параметры обработчика {/* #exit_cb_params */}
 
 В обработчик события никакие данные не передаются.
 
-## NEW_BROWSER {#new_browser}
+## NEW_BROWSER {/* #new_browser */}
 
 **sync | worker**
 
 Событие `NEW_BROWSER` триггерится после того, как создан новый инстанс браузера. Обработчик события выполняется синхронно. Событие доступно только в воркерах testplane.
 
-### Подписка на событие {#new_browser_subscription}
+### Подписка на событие {/* #new_browser_subscription */}
 
 ```javascript
 testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId, browserVersion }) => {
@@ -1260,14 +1260,14 @@ testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId, browserVersion
 });
 ```
 
-#### Параметры обработчика {#new_browser_cb_params}
+#### Параметры обработчика {/* #new_browser_cb_params */}
 
 В обработчик события передаются 2 аргумента:
 
 -   первый аргумент — инстанс `WebdriverIO`;
 -   второй аргумент — объект вида `{ browserId, versionId }`, где _browserId_ — это имя браузера, а _browserVersion_ — версия браузера.
 
-### Пример реализации {#new_browser_usage}
+### Пример реализации {/* #new_browser_usage */}
 
 Событие [NEW_BROWSER](#new_browser) часто используют для того, чтобы добавить новые команды к браузеру, или как-то дополнить уже существующие команды. Например, некоторые плагины добавляют кастомные команды к браузеру в обработчике события [NEW_BROWSER](#new_browser).
 
@@ -1296,13 +1296,13 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-## UPDATE_REFERENCE {#update_reference}
+## UPDATE_REFERENCE {/* #update_reference */}
 
 **sync | worker**
 
 Событие `UPDATE_REFERENCE` триггерится после обновления эталонных скриншотов. Обработчик события выполняется синхронно. Событие доступно только в воркерах testplane.
 
-### Подписка на событие {#update_reference_subscription}
+### Подписка на событие {/* #update_reference_subscription */}
 
 ```javascript
 testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
@@ -1310,7 +1310,7 @@ testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
 });
 ```
 
-#### Параметры обработчика {#update_reference_cb_params}
+#### Параметры обработчика {/* #update_reference_cb_params */}
 
 В обработчик события передается объект следующего формата:
 
@@ -1323,7 +1323,7 @@ testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
 
 Параметр _refImg.path_ хранит путь к эталонному скриншоту на файловой системе, а _refImg.size.width_ и _refImg.size.height_ хранят, соответственно, ширину и высоту эталонного скриншота.
 
-### Пример использования {#update_reference_usage}
+### Пример использования {/* #update_reference_usage */}
 
 Рассмотрим в качестве примера [реализацию][testplane-image-minifier-index] плагина [testplane-image-minifier][testplane-image-minifier], в котором при сохранении эталонных скриншотов происходит их автоматическое сжатие с заданным уровнем компрессии.
 
@@ -1358,7 +1358,7 @@ module.exports = (testplane, opts) => {
 
 ## Примеры использования событий
 
-### Запуск тестов из заданного списка {#usage_running_filtered_tests}
+### Запуск тестов из заданного списка {/* #usage_running_filtered_tests */}
 
 Рассмотрим в качестве примера [реализацию][testplane-test-filter-index] плагина [testplane-test-filter][testplane-test-filter], с помощью которого можно запускать только заданные в json-файле тесты.
 
@@ -1426,7 +1426,7 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-### Сбор статистики о прогоне тестов {#usage_collecting_stats}
+### Сбор статистики о прогоне тестов {/* #usage_collecting_stats */}
 
 Рассмотрим в качестве примера [реализацию][json-reporter-index] плагина [json-reporter][json-reporter].
 
@@ -1483,7 +1483,7 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-### Автоматический запуск dev-севера {#usage_starting_dev_server}
+### Автоматический запуск dev-севера {/* #usage_starting_dev_server */}
 
 Реализуем схематично плагин `testplane-dev-server` для testplane, чтобы при каждом запуске testplane автоматически поднимать dev-сервер.
 
@@ -1597,7 +1597,7 @@ describe("example", async () => {
 
 </details>
 
-### Запуск тестов с хелперами {#usage_running_tests_with_helpers}
+### Запуск тестов с хелперами {/* #usage_running_tests_with_helpers */}
 
 Рассмотрим [реализацию][testplane-passive-browsers-index] плагина [testplane-passive-browsers][testplane-passive-browsers].
 
@@ -1718,7 +1718,7 @@ describe("suite", () => {
 
 </details>
 
-### Профилирование прогона тестов {#usage_profiling_tests_runs}
+### Профилирование прогона тестов {/* #usage_profiling_tests_runs */}
 
 Рассмотрим схематичную реализацию профилирования прогона тестов. При каждом запуске теста мы будем засекать время его запуска, а при завершении — время завершения. Всю информацию мы будем сохранять в стрим, который по завершению раннера будет закрываться.
 

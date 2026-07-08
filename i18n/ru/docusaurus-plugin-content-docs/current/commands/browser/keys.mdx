@@ -1,6 +1,6 @@
 # keys
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `keys`, чтобы отправить последовательность нажатий клавиш в активный элемент.
 
@@ -8,13 +8,13 @@
 
 Модификаторы типа `Ctrl`, `Shift`, `Alt` и `Meta` остаются нажатыми, пока вы сами не освободите их повторным вызовом. Однако модификация клика требует использования метода [performActions][perform-actions] из _WebDriver Actions API_.
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.keys(value);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -26,7 +26,7 @@ await browser.keys(value);
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("copies text out of active element", async ({ browser }) => {

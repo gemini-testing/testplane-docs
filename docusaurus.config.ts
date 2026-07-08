@@ -71,6 +71,11 @@ const config: Config = {
         ],
     ],
 
+    future: {
+        v4: true,
+        faster: true,
+    },
+
     themeConfig: {
         colorMode: {
             disableSwitch: false,

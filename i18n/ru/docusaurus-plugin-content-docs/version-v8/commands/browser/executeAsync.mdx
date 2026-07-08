@@ -1,6 +1,6 @@
 # executeAsync
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `executeAsync`, чтобы выполнить _асинхронно_ указанный JavaScript-код на странице текущего выбранного фрейма.
 
@@ -10,13 +10,13 @@
 
 Аргументами могут быть любые JSON-примитивы, массивы или объекты JSON. Объекты JSON, которые определяют ссылку на _WebElement,_ будут преобразованы в соответствующий элемент DOM. Аналогично, любые _WebElements_ в результате скрипта будут возвращены клиенту в виде объектов _WebElement JSON_.
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.executeAsync(script, arguments);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -29,7 +29,7 @@ await browser.executeAsync(script, arguments);
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should execute async JavaScript on the page", async ({ browser }) => {
@@ -53,7 +53,7 @@ it("should execute async JavaScript on the page", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [execute](../execute)
 -   [setTimeout](../setTimeout)

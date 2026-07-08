@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # setValue
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `setValue`, чтобы отправить последовательность нажатий клавиш элементу после того, как поле ввода было предварительно очищено.
 
@@ -13,13 +13,13 @@ import Admonition from "@theme/Admonition";
     одного ввода в другой, используйте команду [keys][keys].
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.$(selector).setValue(value);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -31,7 +31,7 @@ await browser.$(selector).setValue(value);
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should set value for a certain element", async ({ browser }) => {
@@ -43,7 +43,7 @@ it("should set value for a certain element", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [element.addValue][add-value]
 -   [element.clearValue](../clearValue)

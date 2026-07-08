@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 
 # $$
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `$$` command instead of [findElements][find-elements] as a shorter command to get multiple elements on the page.
 
@@ -20,13 +20,13 @@ You can chain `$` or `$$` together to traverse down the DOM tree.
     selectors][how-to-use-selectors]".
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.$$(selector);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -38,7 +38,7 @@ await browser.$$(selector);
 </tbody>
 </table>
 
-## Examples {#examples}
+## Examples {/* #examples */}
 
 **index.html**
 
@@ -82,7 +82,7 @@ it("should get text of a menu link - JS Function", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [browser.$](../_dollar)
 -   [element.$](../../element/_dollar)

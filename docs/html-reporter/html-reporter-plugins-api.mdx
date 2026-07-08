@@ -30,7 +30,7 @@ Plugins can use the following dependencies provided by HTML Reporter at runtime.
 | `redux-thunk`                  | Middleware for async actions (built-in)  |
 | `reselect`                     | Memoized selectors for Redux             |
 
-## Plugins SDK UI {#plugins-sdk-ui}
+## Plugins SDK UI {/* #plugins-sdk-ui */}
 
 The `html-reporter/plugins-sdk/ui` module exports components and types for creating plugin UIs.
 
@@ -117,7 +117,7 @@ if (!availableFeatures.some(feature => feature.name === Features.RunTestsFeature
 }
 ```
 
-## The pluginOptions Object {#plugin-options}
+## The pluginOptions Object {/* #plugin-options */}
 
 A global `pluginOptions` object is available in the plugin UI component:
 
@@ -138,7 +138,7 @@ declare const pluginOptions: {
 };
 ```
 
-## Extension Points {#extension-points}
+## Extension Points {/* #extension-points */}
 
 Extension points determine where in the report interface the plugin component will be placed.
 
@@ -171,7 +171,7 @@ The `position` parameter determines the component placement relative to the exte
 | `"after"`  | After the extension point content  |
 | `"wrap"`   | Wrap the extension point content   |
 
-## CSS and Styling {#css-styling}
+## CSS and Styling {/* #css-styling */}
 
 ### CSS Modules
 
@@ -233,7 +233,7 @@ export default defineConfig({
 });
 ```
 
-## Typing {#typing}
+## Typing {/* #typing */}
 
 ### Extending DefaultRootState
 

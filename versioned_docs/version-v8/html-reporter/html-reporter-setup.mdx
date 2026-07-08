@@ -10,11 +10,11 @@ import Version from "../_partials/specs/version.mdx";
 
 # Configuration
 
-## Config Examples {#setup}
+## Config Examples {/* #setup */}
 
 <ConfigExamples />
 
-## Configuration Reference {#setup_description}
+## Configuration Reference {/* #setup_description */}
 
 <table>
 <thead>
@@ -247,7 +247,7 @@ A list of plugins with their settings. Default: `[]`.
 
 Plugins allow you to extend the report interface with custom UI components. For more information about developing plugins, see the section "[Developing Plugins](../html-reporter-plugins)".
 
-#### Using with Preset {#plugins-with-preset}
+#### Using with Preset {/* #plugins-with-preset */}
 
 If the plugin provides a configuration preset, the connection looks like this:
 
@@ -267,7 +267,7 @@ export default {
 };
 ```
 
-#### Manual Configuration {#plugins-manual-config}
+#### Manual Configuration {/* #plugins-manual-config */}
 
 Plugins can be configured manually by specifying an array of objects:
 
@@ -293,7 +293,7 @@ export default {
 };
 ```
 
-#### Plugin Parameters {#plugin-params}
+#### Plugin Parameters {/* #plugin-params */}
 
 <table>
     <thead>
@@ -456,7 +456,7 @@ describe("badges", () => {
     </tbody>
 </table>
 
-### Passing parameters via the CLI {#setup_by_cli}
+### Passing parameters via the CLI {/* #setup_by_cli */}
 
 All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--html-reporter-` for command line options and `html_reporter_` for environment variables.
 
@@ -470,7 +470,7 @@ testplane path/to/mytest.js --html-reporter-path custom/dir
 html_reporter_path=custom/dir testplane path/to/mytest.js
 ```
 
-## Data storage {#data_storage}
+## Data storage {/* #data_storage */}
 
 As mentioned above, `html-reporter` saves the tests run results to the [SQLite][sqlite] database.
 

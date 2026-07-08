@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # respondOnce
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `respondOnce` command to respond once with the specified overwrite.
 
@@ -15,13 +15,13 @@ If you use only `respondOnce` and access the resource more times than `respondOn
     Responses][how-to-intercept-requests-and-responses]".
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -36,7 +36,7 @@ mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 async function getToDos(browser) {
@@ -101,7 +101,7 @@ it("should demonstrate the respondOnce command", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [respond](../respond)
 

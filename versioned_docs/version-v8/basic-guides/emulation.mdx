@@ -12,7 +12,7 @@ This feature only works with browsers supporting _Chrome DevTools Protocol (CDP)
 
 The CPU speed on mobile devices is significantly slower than on computers. Therefore, to emulate CPU speed in _puppeteer_, there is a method called [emulateCPUThrottling][emulate-cpu-throttling].
 
-### Example: Slowing Down CPU Speed by 8x {#example}
+### Example: Slowing Down CPU Speed by 8x {/* #example */}
 
 Let's use this method to slow down CPU speed by 8 times:
 
@@ -55,7 +55,7 @@ Besides custom settings, the [throttle][throttle] method supports the following 
 -   DSL
 -   WiFi
 
-### Example 1: Emulating a 2G Connection {#example_1}
+### Example 1: Emulating a 2G Connection {/* #example_1 */}
 
 Let's emulate a 2G connection and open yandex.ru in Chrome with phone emulation:
 
@@ -68,7 +68,7 @@ it("should open yandex.ru with emulation of 2G-connection", async function ({ br
 });
 ```
 
-### Example 2: Emulating a Network with Given Characteristics {#example_2}
+### Example 2: Emulating a Network with Given Characteristics {/* #example_2 */}
 
 We can also emulate a connection with specific characteristics:
 

@@ -2,7 +2,7 @@ import LastFailedExample from "@site/docs/reference/config/_partials/examples/_l
 
 # lastFailed
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Testplane can rerun tests that failed in the last run. To do this, it saves a JSON file with information about the failed tests after each run.
 
@@ -10,13 +10,13 @@ With the `lastFailed` section, you can configure the location of this file and o
 
 To run only the failed tests from the CLI, use the `--last-failed-only` option or the environment variable `testplane_last_failed_only=true`.
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 The `lastFailed` section has the following format:
 
 <LastFailedExample />
 
-### Configuration Parameter Descriptions {#setup_description}
+### Configuration Parameter Descriptions {/* #setup_description */}
 
 <table>
     <thead>
@@ -49,19 +49,19 @@ The `lastFailed` section has the following format:
     </tbody>
 </table>
 
-### only {#only}
+### only {/* #only */}
 
 Enables the rerun mode for failed tests. In this mode, only tests from the list specified in `input` are run if set to `true`.
 
 Default: `false`.
 
-### input {#input}
+### input {/* #input */}
 
 Path or list of paths to read the list of failed tests. If a list of file paths is specified, all tests that appear in at least one of them are rerun.
 
 Default: `.testplane/failed.json`.
 
-### output {#output}
+### output {/* #output */}
 
 Path to save the list of failed tests. Always used, regardless of the `only` option.
 

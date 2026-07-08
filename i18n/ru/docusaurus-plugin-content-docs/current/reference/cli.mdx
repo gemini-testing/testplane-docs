@@ -1,7 +1,7 @@
 import Admonition from "@theme/Admonition";
 import Version from "../_partials/specs/version.mdx";
 
-# CLI {#cli}
+# CLI {/* #cli */}
 
 ## Команда `testplane`
 
@@ -42,9 +42,9 @@ import Version from "../_partials/specs/version.mdx";
 npx testplane --config ./config.js --reporter flat --browser firefox --grep name
 ```
 
-### Опции {#testplane-options}
+### Опции {/* #testplane-options */}
 
-#### Version {#testplane-version}
+#### Version {/* #testplane-version */}
 
 Вывести текущую версию `testplane`.
 
@@ -52,7 +52,7 @@ npx testplane --config ./config.js --reporter flat --browser firefox --grep name
 testplane --version
 ```
 
-#### Config {#testplane-config}
+#### Config {/* #testplane-config */}
 
 Использовать пользовательский файл конфигурации.
 
@@ -60,7 +60,7 @@ testplane --version
 testplane --config ./local.testplane.config.ts
 ```
 
-#### Browser {#testplane-browser}
+#### Browser {/* #testplane-browser */}
 
 Запускать тесты только в указанном браузере.
 
@@ -68,7 +68,7 @@ testplane --config ./local.testplane.config.ts
 testplane --browser chrome
 ```
 
-#### Set {#testplane-set}
+#### Set {/* #testplane-set */}
 
 Запускать тесты только в указанном наборе.
 
@@ -76,7 +76,7 @@ testplane --browser chrome
 testplane --set desktop
 ```
 
-#### Require {#testplane-require}
+#### Require {/* #testplane-require */}
 
 Загрузить внешние модули, локально существующие на вашей машине, перед запуском `testplane`. Это полезно для загрузчиков, таких как ECMAScript модули через [esm](https://www.npmjs.com/package/esm).
 
@@ -84,7 +84,7 @@ testplane --set desktop
 testplane --require ./tsconfig-register-paths.js
 ```
 
-#### Reporter {#testplane-reporter}
+#### Reporter {/* #testplane-reporter */}
 
 Может использоваться для установки одного из следующих репортеров:
 
@@ -108,11 +108,11 @@ testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --r
 
 Помимо этих терминальных репортеров, вы можете использовать плагин [html-reporter][html-reporter], чтобы генерировать HTML-отчеты.
 
-#### Grep {#testplane-grep}
+#### Grep {/* #testplane-grep */}
 
 Запускать только тесты, полное название которых совпадает с шаблоном.
 
-##### Пример {#testplane-grep-example}
+##### Пример {/* #testplane-grep-example */}
 
 Если у вас есть некоторые тесты:
 
@@ -137,13 +137,13 @@ testplane --grep "with nested path"
 testplane --grep "test with nested path"
 ```
 
-#### Tag {#testplane-tag}
+#### Tag {/* #testplane-tag */}
 
 <Version version="8.37.0" />
 
 Запуск только тестов, соответствующих паттерну.
 
-##### Example {#testplane-tag-example}
+##### Example {/* #testplane-tag-example */}
 
 Вы можете назначить теги тесту с помощью второго параметре `describe` или `it` (пример ниже).
 Также вы можете добавлять теги динамически во время выполнения теста с помощью команды [addTag][add-tag],
@@ -181,7 +181,7 @@ testplane --tag "desktop|slow"
 testplane --tag "!slow"
 ```
 
-#### Update-refs {#testplane-update-refs}
+#### Update-refs {/* #testplane-update-refs */}
 
 Запуск тестов с обновлением всех ссылок на скриншоты, созданных командой [assertView][assert-view].
 
@@ -194,7 +194,7 @@ testplane --update-refs
     [html-reporter][html-reporter].
 </Admonition>
 
-#### Inspect {#testplane-inspect}
+#### Inspect {/* #testplane-inspect */}
 
 Запускает тесты Testplane с использованием [инспектора nodejs](https://nodejs.org/en/docs/inspector).
 
@@ -207,7 +207,7 @@ testplane --inspect
     Используйте этот режим с опцией `sessionsPerBrowser=1`, чтобы отлаживать тесты поодиночке.
 </Admonition>
 
-#### Inspect break {#testplane-inspect-brk}
+#### Inspect break {/* #testplane-inspect-brk */}
 
 То же, что и [Инспекция](#testplane-inspect), но с точкой останова в начале.
 
@@ -215,7 +215,7 @@ testplane --inspect
 testplane --inspect-brk
 ```
 
-#### REPL {#testplane-repl}
+#### REPL {/* #testplane-repl */}
 
 Включает [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). Также отключает ограничение времени выполнения теста. Можно использовать, указав следующие опции CLI:
 
@@ -232,7 +232,7 @@ testplane --repl --grep 'my test name' --browser chrome
     [switchToRepl][switch-to-repl].
 </Admonition>
 
-#### Keep browser {#testplane-keep-browser}
+#### Keep browser {/* #testplane-keep-browser */}
 
 -   `--keep-browser` - в этом режиме браузер не закроется по завершению выполнения тестов, в консоли будет выведена информация как подключиться к оставшемуся браузеру
 -   `--keep-browser-on-fail` - то же, что и опция `--keep-browser`, только браузер останется только в том случае, если тесты завершатся неуспешно
@@ -254,7 +254,7 @@ testplane --repl --grep 'my test name' --browser chrome
 
 ```
 
-#### Devtools {#testplane-devtools}
+#### Devtools {/* #testplane-devtools */}
 
 <Admonition type="danger" title="Удалено в Testplane 9">
     CLI-опция `--devtools` (и соответствующее ей значение `automationProtocol: "devtools"`) **удалена** в Testplane 9. Протокол автоматизации `devtools`, который предоставлял WebdriverIO, вызывал ряд трудновоспроизводимых ошибок, которых не было при использовании WebDriver, и в самом WebdriverIO протокол автоматизации `devtools` тоже был удалён. Единственным поддерживаемым значением `automationProtocol` теперь является `"webdriver"` (оно же и значение по умолчанию).
@@ -265,7 +265,7 @@ testplane --repl --grep 'my test name' --browser chrome
 
 </Admonition>
 
-#### Help {#testplane-help}
+#### Help {/* #testplane-help */}
 
 Выводит информацию о параметрах и командах. Плагины Testplane могут добавлять свои собственные команды и параметры.
 
@@ -306,9 +306,9 @@ testplane --help
 npx testplane list-tests --config ./config.js --browser firefox --grep name --formatter tree
 ```
 
-### Опции {#list-tests-options}
+### Опции {/* #list-tests-options */}
 
-#### Config {#list-tests-config}
+#### Config {/* #list-tests-config */}
 
 Использовать пользовательский файл конфигурации.
 
@@ -316,7 +316,7 @@ npx testplane list-tests --config ./config.js --browser firefox --grep name --fo
 testplane list-tests --config ./local.testplane.config.ts
 ```
 
-#### Browser {#list-tests-browser}
+#### Browser {/* #list-tests-browser */}
 
 Выводит тесты только в указанном браузере.
 
@@ -324,7 +324,7 @@ testplane list-tests --config ./local.testplane.config.ts
 testplane list-tests --browser chrome
 ```
 
-#### Set {#list-tests-set}
+#### Set {/* #list-tests-set */}
 
 Выводит тесты только в указанном наборе.
 
@@ -332,7 +332,7 @@ testplane list-tests --browser chrome
 testplane list-tests --set desktop
 ```
 
-#### Require {#list-tests-require}
+#### Require {/* #list-tests-require */}
 
 Загрузить внешние модули, локально существующие на вашей машине, перед выводом тестов `testplane`. Это полезно для загрузчиков, таких как ECMAScript модули через [esm](https://www.npmjs.com/package/esm).
 
@@ -340,11 +340,11 @@ testplane list-tests --set desktop
 testplane list-tests --require ./tsconfig-register-paths.js
 ```
 
-#### Grep {#list-tests-grep}
+#### Grep {/* #list-tests-grep */}
 
 Выводит только тесты, полное название которых совпадает с шаблоном.
 
-##### Пример {#list-tests-grep-example}
+##### Пример {/* #list-tests-grep-example */}
 
 Если у вас есть некоторые тесты:
 
@@ -369,7 +369,7 @@ testplane list-tests --grep "with nested path"
 testplane list-tests --grep "test with nested path"
 ```
 
-#### Silent {#list-tests-silent}
+#### Silent {/* #list-tests-silent */}
 
 Выводит тесты без генерации событий.
 
@@ -377,7 +377,7 @@ testplane list-tests --grep "test with nested path"
 testplane list-tests --silent
 ```
 
-#### Output file {#list-tests-output-file}
+#### Output file {/* #list-tests-output-file */}
 
 Сохранить список тестов в указанный файл.
 
@@ -385,11 +385,11 @@ testplane list-tests --silent
 testplane list-tests --output-file "./tests.json"
 ```
 
-#### Formatter {#list-tests-formatter}
+#### Formatter {/* #list-tests-formatter */}
 
 Выводит тесты в указанном формате. Доступные форматтеры: `list` (по умолчанию) и `tree`.
 
-##### List formatter {#list-tests-formatter-list}
+##### List formatter {/* #list-tests-formatter-list */}
 
 Выводит тесты в формате `list`.
 
@@ -450,7 +450,7 @@ it("test2", () => {});
 -   `pending` (`Boolean`) - флаг, означающий, что тест отключен или нет;
 -   `skipReason` (`String`) - причина, по которой тест был отключен.
 
-##### Tree formatter {#list-tests-formatter-tree}
+##### Tree formatter {/* #list-tests-formatter-tree */}
 
 Выводит тесты в формате `tree`.
 
@@ -527,7 +527,7 @@ it("test2", () => {});
 -   `pending` (`Boolean`) - флаг, означающий, что тест отключен или нет;
 -   `skipReason` (`String`) - причина, по которой тест был отключен.
 
-#### Help {#list-tests-help}
+#### Help {/* #list-tests-help */}
 
 Выводит информацию о параметрах и командах. Плагины Testplane могут добавлять свои собственные команды и параметры.
 
@@ -561,9 +561,9 @@ testplane list-tests --help
 npx testplane list-browsers --type ids --format plain
 ```
 
-### Опции {#list-browsers-options}
+### Опции {/* #list-browsers-options */}
 
-#### Type {#list-browsers-type}
+#### Type {/* #list-browsers-type */}
 
 Укажите тип выводимых данных: browserId из конфигурации или browserName с browserVersion.
 
@@ -571,7 +571,7 @@ npx testplane list-browsers --type ids --format plain
 testplane list-browsers --type tags
 ```
 
-#### Format {#list-browsers-format}
+#### Format {/* #list-browsers-format */}
 
 Укажите формат выводимых данных: обычный текст или json.
 
@@ -579,7 +579,7 @@ testplane list-browsers --type tags
 testplane list-browsers --format json
 ```
 
-#### Пример {#list-browsers-example}
+#### Пример {/* #list-browsers-example */}
 
 Если у вас имеется следующий раздел "browsers" в вашей конфигурации [Testplane](/docs/reference/config/main):
 
@@ -599,7 +599,7 @@ testplane list-browsers --format json
 | `testplane list-browsers --type tags --format plain` |                             `chrome@130.0 safari`                              |
 | `testplane list-browsers --type tags --format json`  | `[{"browserName":"chrome","browserVersion":"130.0"},{"browserName":"safari"}]` |
 
-#### Help {#list-browsers-help}
+#### Help {/* #list-browsers-help */}
 
 Выводит информацию команде и ее опциях.
 
@@ -631,9 +631,9 @@ testplane list-browsers --help
 npx testplane config --space 4
 ```
 
-### Опции {#config-options}
+### Опции {/* #config-options */}
 
-#### Space {#config-space}
+#### Space {/* #config-space */}
 
 Укажите количество пробелов, используемых для форматирования человекочитаемого вывода команды.
 
@@ -641,7 +641,7 @@ npx testplane config --space 4
 testplane config --space 4
 ```
 
-#### Help {#config-help}
+#### Help {/* #config-help */}
 
 Выводит информацию команде и ее опциях.
 
@@ -649,7 +649,7 @@ testplane config --space 4
 testplane config --help
 ```
 
-## Команда `install-deps` {#install-deps}
+## Команда `install-deps` {/* #install-deps */}
 
 Эта команда является частью рецепта [Как запустить Testplane в локальном браузере](/docs/basic-guides/browsers-overview).
 
@@ -657,13 +657,13 @@ testplane config --help
 
 Если эта команда запущена на поддерживаемой версии Ubuntu, также будут загружены все отсутствующие необходимые пакеты Ubuntu.
 
-### Использование {#usage}
+### Использование {/* #usage */}
 
 ```bash
 npx testplane install-deps
 ```
 
-### Аргументы команды {#arguments}
+### Аргументы команды {/* #arguments */}
 
 Вы можете также указать, какие браузеры нужно загрузить.
 
@@ -679,7 +679,7 @@ npx testplane install-deps chrome-dark firefox-dark
 npx testplane install-deps chrome@130 firefox@104
 ```
 
-### Директория установки {#directory}
+### Директория установки {/* #directory */}
 
 По умолчанию браузеры и драйверы загружаются в директорию ".testplane" в домашней директории.
 
@@ -690,7 +690,7 @@ TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
 TESTPLANE_BROWSERS_PATH=~/.testplane npx testplane install-deps
 ```
 
-## Переопределение настроек {#overriding-settings}
+## Переопределение настроек {/* #overriding-settings */}
 
 Все параметры можно переопределить с помощью флагов командной строки или переменных окружения с приоритетами в следующем порядке по убыванию:
 
@@ -702,11 +702,11 @@ TESTPLANE_BROWSERS_PATH=~/.testplane npx testplane install-deps
 
 -   Значение по умолчанию.
 
-## Команда `selectivity-merge-dumps` {#selectivity-merge-dumps}
+## Команда `selectivity-merge-dumps` {/* #selectivity-merge-dumps */}
 
 Эта команда полезна, когда необходимо объединить дампы селективности из нескольких частей (чанков) в один.
 
-### Использование {#usage}
+### Использование {/* #usage */}
 
 ```bash
 npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4 -d ./selectivity-full
@@ -714,17 +714,17 @@ npx testplane selectivity-merge-dumps -d ./selectivity-full ./selectivity-chunk-
 npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4
 ```
 
-### Опции команды {#options}
+### Опции команды {/* #options */}
 
 Вы можете указать директорию, в которую будет записан результат, с помощью аргумента "-d" ("--destination").
 
 Его можно не указывать. В этом случае будет использован "testDependenciesPath" из секции конфигурации "selectivity".
 
-### Аргументы команды {#arguments}
+### Аргументы команды {/* #arguments */}
 
 Список путей к частям (чанкам) отчета селективности
 
-## Переопределение с помощью CLI опции {#overriding-cli-settings}
+## Переопределение с помощью CLI опции {/* #overriding-cli-settings */}
 
 Чтобы переопределить настройку в конфигурации с помощью опции CLI, преобразуйте полный путь параметра в `--kebab-case`.
 
@@ -740,7 +740,7 @@ testplane path/to/mytest.js --base-url http://example.com
 testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
 ```
 
-## Переопределение с помощью переменной окружения {#overriding-env-settings}
+## Переопределение с помощью переменной окружения {/* #overriding-env-settings */}
 
 Чтобы переопределить настройку с помощью переменной окружения, преобразуйте её полный путь в `snake_case` и добавьте префикс `testplane_`.
 

@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # addCommand
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `addCommand`, чтобы добавить свою команду к браузеру _(browser)_ или к элементу _(element)_. Добавляемая команда может быть как синхронной, так и асинхронной.
 
@@ -11,13 +11,13 @@ import Admonition from "@theme/Admonition";
     команды][how-to-add-custom-commands]».
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 browser.addCommand(name, callback, elementScope);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
     <thead>
@@ -49,7 +49,7 @@ browser.addCommand(name, callback, elementScope);
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 // добавляем команду getUrlAndTitle
@@ -73,7 +73,7 @@ it("should use my add command", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [overwriteCommand](../overwriteCommand)
 
