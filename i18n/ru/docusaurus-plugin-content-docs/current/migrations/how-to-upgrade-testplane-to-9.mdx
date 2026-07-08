@@ -1,0 +1,344 @@
+import Admonition from "@theme/Admonition";
+import hoverExpected from "@site/static/img/docs/migrations/to-testplane-9/hovers/ref.png";
+import hoverActual from "@site/static/img/docs/migrations/to-testplane-9/hovers/actual.png";
+import hoverDiff from "@site/static/img/docs/migrations/to-testplane-9/hovers/diff.png";
+import tooltipExpected from "@site/static/img/docs/migrations/to-testplane-9/tooltips/ref.png";
+import tooltipActual from "@site/static/img/docs/migrations/to-testplane-9/tooltips/actual.png";
+import tooltipDiff from "@site/static/img/docs/migrations/to-testplane-9/tooltips/diff.png";
+import interferenceExpected from "@site/static/img/docs/migrations/to-testplane-9/interferences/ref.png";
+import interferenceActual from "@site/static/img/docs/migrations/to-testplane-9/interferences/actual.png";
+import interferenceDiff from "@site/static/img/docs/migrations/to-testplane-9/interferences/diff.png";
+
+# Testplane v8 → v9
+
+## Что изменилось? {/* #what_is_new */}
+
+Testplane 9 включает крупные улучшения визуального тестирования, более удобную работу с глобальными объектами и ряд других изменений. Подробнее о релизе можно прочитать в [статье в блоге](/blog/testplane-9).
+
+## Руководство по миграции {/* #how_to_move */}
+
+### 1. Проверьте системные требования и обновите Testplane
+
+Для Testplane 9 нужен Node 22 или новее. Мы рекомендуем использовать актуальную версию 22.x или выше, но минимально необходимая версия — 22.12.
+
+Установите Testplane 9:
+
+```bash
+npm install -D testplane@9
+```
+
+### 2. Проверьте изменения в визуальных проверках
+
+#### Примите изменившиеся скриншоты `assertView`
+
+В Testplane 9 существенно изменилась логика работы `assertView`: визуальные проверки стали надежнее, а снятые скриншоты — корректнее.
+
+При обновлении на Testplane 9 изменится примерно 5% скриншотов `assertView`. Чаще всего достаточно просто принять все изменившиеся эталоны. Для этого можно:
+
+-   Запустить `testplane --update-refs`, чтобы обновить все эталоны
+-   Использовать [HTML Reporter](/docs/html-reporter/overview/) и принять изменения после ревью (рекомендуется)
+
+Если вы заметили нежелательные изменения в скриншотах, посмотрите раздел [Типовые проблемы](#common_issues) ниже. Если там нет подходящего решения, напишите нам в [github issues](https://github.com/gemini-testing/testplane/issues).
+
+#### Опция `selectorToScroll` устарела
+
+В Testplane 9 `assertView` автоматически определяет элемент, который нужно скроллить, поэтому передавать этот селектор вручную больше не стоит.
+
+Опция `selectorToScroll` все еще поддерживается, но после миграции нескольких крупных проектов на Testplane 9 мы не нашли ни одного случая, где она действительно была бы полезна. Если же передать некорректный селектор, это только навредит.
+
+#### Теперь можно снимать скриншоты псевдоэлементов
+
+Если раньше вы использовали обходные пути, чтобы снять скриншот псевдоэлементов, теперь это поддерживается из коробки:
+
+```javascript
+await browser.assertView("menu-highlight", "[data-testid=menu]::after");
+```
+
+Один из частых сценариев — скриншоты подсветок фона, которые появляются вокруг элементов списка или меню при наведении.
+
+#### Теперь скриншоты можно обрезать через `cropMargins`
+
+Если раньше вы использовали хаки для обрезки скриншотов, например чтобы убрать скроллбары на Android-эмуляторах, теперь это можно сделать нативно.
+
+Например, чтобы обрезать скроллбар на Android-эмуляторах, можно сделать так:
+
+```typescript title="testplane.config.js"
+export default {
+    browsers: {
+        browserName: "android-webview",
+        platformName: "android",
+        assertViewOpts: {
+            cropMargins: { right: 16 },
+        },
+    },
+};
+```
+
+### 3. Обновите работу с глобальными объектами в TypeScript
+
+Testplane 9 больше не добавляет `it`, `describe` и другие глобальные объекты в глобальное пространство типов.
+
+#### Если вы хотите оставить прежнее поведение
+
+Установите небольшой пакет с глобальными типами:
+
+```bash
+npm install -D @testplane/globals
+```
+
+Затем добавьте его в `tsconfig.json`:
+
+```json
+{
+    "compilerOptions": {
+        "types": ["@testplane/globals"]
+    }
+}
+```
+
+Либо используйте triple-slash directive: `/// <reference types="@testplane/globals" />`.
+
+#### Если вы предпочитаете явные импорты
+
+Можно импортировать глобальные объекты явно:
+
+```typescript
+import { it, describe } from "testplane";
+
+describe("my test", () => {
+    it("should do something", () => {
+        /* ... */
+    });
+});
+```
+
+### 4. Не используйте `automationProtocol: "devtools"`
+
+Testplane 9 больше не поддерживает значение `"devtools"` для опции `automationProtocol`. Этот режим долго был источником разных проблем, а для всех его возможностей сейчас есть более удачные альтернативы:
+
+-   Для запуска Testplane с локальными браузерами используйте `gridUrl: "local"`, подробнее [здесь](/docs/basic-guides/browsers-overview/#local-browsers)
+-   Для CDP используйте Puppeteer через `browser.getPuppeteer()` или [экспериментальный CDP API](https://github.com/gemini-testing/testplane/releases/tag/v8.34.0) через `browser.getCDP()`
+
+### 5. Если вы используете Testplane программно, добавьте `await` перед `Testplane.create()`
+
+В Testplane 9 вызов `Testplane.create()` стал асинхронным, поэтому его нужно вызывать с `await`:
+
+<table>
+    <thead>
+        <tr>
+            <th>Testplane v8</th>
+            <th>Testplane v9</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                ```javascript
+                const Testplane = require("testplane");
+
+                export const run = async () => {
+                    const testplane = Testplane.create();
+                    /* ... */
+                };
+                ```
+            </td>
+            <td>
+                ```javascript
+                const Testplane = require("testplane");
+
+                export const run = async () => {
+                    const testplane = await Testplane.create();
+                    /* ... */
+                };
+                ```
+            </td>
+        </tr>
+    </tbody>
+
+</table>
+
+Скорее всего, также придется обновить пакеты, которые создают инстансы Testplane, до версий, совместимых с Testplane 9.
+
+## Типовые проблемы {/* #common_issues */}
+
+<Admonition type="info">
+    Если вас устраивают обновленные скриншоты, этот раздел можно пропустить. Здесь собраны частые
+    вопросы о новой логике работы `assertView`.
+</Admonition>
+
+### На некоторых скриншотах пропали hover-эффекты
+
+В Testplane 9 у `assertView` есть опция `disableHover`. По умолчанию она включается, если для снятия скриншота нужен скролл, например когда целевой элемент не помещается во вьюпорт или в свой scroll-контейнер:
+
+<table style={{ tableLayout: "fixed", width: "100%" }}>
+    <colgroup>
+        <col style={{ width: "33.33%" }} />
+        <col style={{ width: "33.33%" }} />
+        <col style={{ width: "33.33%" }} />
+    </colgroup>
+    <thead>
+        <tr>
+            <th>Expected</th>
+            <th>Actual</th>
+            <th>Diff</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>
+            <img src={hoverExpected} alt="Expected" />
+        </td>
+
+        <td>
+            <img src={hoverActual} alt="Actual" />
+        </td>
+
+        <td>
+            <img src={hoverDiff} alt="Diff" />
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+Почти всегда это полезное поведение: если сохранять hover-эффекты, в скриншоте могут появиться артефакты вроде нескольких элементов в состоянии hover или элементов с частично примененным hover-состоянием.
+
+Если нужно вернуть старое поведение, передайте `disableHover: "never"`:
+
+```javascript
+await browser.assertView("menu", "[data-testid=menu]", {
+    disableHover: "never",
+});
+```
+
+### На некоторых скриншотах пропали тултипы, поповеры, action-меню и похожие элементы
+
+Если элемент скрывается сразу после скролла, что часто бывает с тултипами, поповерами, action-меню и похожими элементами, он может исчезнуть со скриншота:
+
+<table>
+    <thead>
+        <tr>
+            <th>Expected</th>
+            <th>Actual</th>
+            <th>Diff</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>
+            <img src={tooltipExpected} alt="Expected" style={{ maxHeight: 500 }} />
+        </td>
+
+        <td>
+            <img src={tooltipActual} alt="Actual" style={{ maxHeight: 500 }} />
+        </td>
+
+        <td>
+            <img src={tooltipDiff} alt="Diff" style={{ maxHeight: 500 }} />
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+Причина в новой логике обхода мешающих элементов и скролла: в редких случаях она может немного проскроллить страницу, из-за чего такие элементы пропадают.
+
+Можно полностью отключить скролл во время снятия скриншота:
+
+```javascript
+await browser.assertView("menu", "[data-testid=menu]", {
+    captureElementFromTop: false,
+    allowViewportOverflow: true,
+});
+```
+
+Коротко новая логика обхода мешающих элементов работает так:
+
+1. Вычисляется «безопасная область», свободная от sticky-, fixed- и других мешающих элементов, которые не входят в целевой элемент. Области с border-radius тоже считаются небезопасными.
+2. Во время всего процесса снятия скриншота `assertView` старается держать целевой элемент в безопасной области, в том числе в самом начале.
+
+### `assertView` теперь снимает другую область
+
+Самая вероятная причина — область в Testplane 8 на самом деле была некорректной. Проверьте селекторы и положение элемента, например с помощью Time Travel. Скорее всего, окажется, что новый скриншот правильнее.
+
+Мы видели случаи, когда в Testplane 8 скриншот был просто изображением мешающего элемента поверх страницы, не относящегося к цели. Теперь такие случаи исправлены.
+
+Другая возможная причина — вы используете кастомную команду поверх `assertView`, которая рисует прозрачный оверлей поверх страницы и снимает его. В таком случае рекомендуем использовать обычный `assertView`.
+
+### Элементы, которые раньше рендерились поверх целевого элемента, исчезли
+
+Раньше на скриншот могли случайно попадать sticky/fixed-элементы, которые рендерятся поверх целевого элемента:
+
+<table style={{ tableLayout: "fixed", width: "100%" }}>
+    <colgroup>
+        <col style={{ width: "33.33%" }} />
+        <col style={{ width: "33.33%" }} />
+        <col style={{ width: "33.33%" }} />
+    </colgroup>
+    <thead>
+        <tr>
+            <th>Expected</th>
+            <th>Actual</th>
+            <th>Diff</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>
+            <img src={interferenceExpected} alt="Expected" />
+        </td>
+
+        <td>
+            <img src={interferenceActual} alt="Actual" />
+        </td>
+
+        <td>
+            <img src={interferenceDiff} alt="Diff" />
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+Это ожидаемое поведение: именно для этого и нужна логика обхода мешающих элементов.
+
+Если эти элементы должны быть на скриншоте, явно добавьте их в список целевых селекторов:
+
+```diff
+- await browser.assertView("price-card", "[data-testid=price-card]");
++ await browser.assertView("price-card", ["[data-testid=price-card]", "[data-testid=close-button]"]);
+```
+
+Другой вариант — отключить скролл, а вместе с ним и обход мешающих элементов, с помощью опций `captureElementFromTop: false` и `allowViewportOverflow: true`.
+
+### Неожиданные ошибки `move target is out of bounds`, падения при клике на элементы и похожие проблемы
+
+В Testplane 8 `assertView` скроллил страницу к целевому элементу, если он не был виден, снимал скриншот и оставлял страницу в измененном, проскролленном состоянии.
+
+В Testplane 9 `assertView` восстанавливает исходное состояние страницы после снятия скриншота, даже если во время снятия был скролл.
+
+Это значит, что если вы рассчитывали, что после `assertView` страница останется проскролленной, теперь это нужно делать явно:
+
+```javascript
+await browser.assertView("price-card", "[data-testid=price-card]");
+
+await browser.$("[data-testid=buy-button]").scrollIntoView();
+await browser.$("[data-testid=buy-button]").moveTo();
+/* ... */
+```
+
+Примечание: `assertView` по-прежнему скроллит страницу к целевому элементу, если он не был виден. Разница в том, что команда больше не оставляет страницу в измененном состоянии.
+
+## Поддержка {/* #support */}
+
+Если во время миграции возникнут проблемы или вопросы, приходите в [github issues][gh-issues] — мы обязательно поможем!
+
+[how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
+[how-to-upgrade-hermione-to-5]: ../../migrations/how-to-upgrade-hermione-to-5
+[how-to-upgrade-hermione-to-6]: ../../migrations/how-to-upgrade-hermione-to-6
+[how-to-upgrade-hermione-to-7]: ../../migrations/how-to-upgrade-hermione-to-7
+[how-to-upgrade-hermione-to-8]: ../../migrations/how-to-upgrade-hermione-to-8
+[tp-ctx]: https://github.com/gemini-testing/testplane/blob/master/docs/typescript.md#testplanectx-typings
+[screenshotsdir]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#https://github.com/gemini-testing/testplane/blob/master/docs/config.md#screenshotsdir
+[sets]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#sets
+[gh-issues]: https://github.com/gemini-testing/testplane/issues/

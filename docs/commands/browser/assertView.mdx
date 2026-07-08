@@ -1,5 +1,6 @@
 import Admonition from "@theme/Admonition";
 import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
+import AssertViewHistory from "../../_partials/specs/assert-view-history.mdx";
 
 # assertView
 
@@ -8,13 +9,11 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
 Use the `assertView` command to take a screenshot for a specific test state and compare it with a reference.
 
 <Admonition type="info">
-    This command is implemented within Testplane, it's not available in the [API
-    WebDriverIO][webdriverio-api].
-</Admonition>
+    The `assertView` command uses [waitForExist][wait-for-exist] (with
+    [waitTimeout][wait-timeout] and [waitInterval][wait-interval]) to wait for the element to exist before taking a screenshot.
 
-<Admonition type="info">
-    Automatically calls the [waitForStaticToLoad][wait-for-static-to-load] command before taking a
-    screenshot.
+    It also automatically waits for static (fonts, images, etc.) to load using the [waitForStaticToLoad][wait-for-static-to-load] command.
+
 </Admonition>
 
 ## Usage {/* #usage */}
@@ -27,15 +26,36 @@ await browser.assertView(state, selector, options);
 ## Command Parameters {/* #parameters */}
 
 <table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>[state](#state)</td><td>String</td><td>Required parameter. The name of the test state. It must be unique within a single test.</td></tr>
-<tr><td>[selector](#selector)</td><td>String or String[]</td><td>Optional parameter. Can be skipped. The DOM element selector to capture. If skipped, current viewport is captured.</td></tr>
-<tr><td>[options](#options)</td><td>Object</td><td>Settings for the _assertView_ command.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>[state](#state)</td>
+            <td>`string`</td>
+            <td>
+                Required parameter. The name of the test state. It must be unique within a single
+                test.
+            </td>
+        </tr>
+        <tr>
+            <td>[selector](#selector)</td>
+            <td>`string | string[]`</td>
+            <td>
+                Optional parameter. Can be skipped. The DOM element selector to capture. If skipped,
+                current viewport is captured.
+            </td>
+        </tr>
+        <tr>
+            <td>[options](#options)</td>
+            <td>`AssertViewOpts`</td>
+            <td>Optional settings for the _assertView_ command.</td>
+        </tr>
+    </tbody>
 </table>
 
 ### state
@@ -44,18 +64,13 @@ Required parameter. Specifies the name of the test state. The name must be uniqu
 
 ### selector
 
-Optional parameter. Specifies the selector of the DOM element to capture. If not specified or skipped, will be set to `body` and the following options will be automatically added to `options`:
+Optional parameter. Specifies the selector of the DOM element to capture:
 
-```
-{
-    allowViewportOverflow: true,
-    compositeImage: false,
-    captureElementFromTop: false
-}
-```
+-   If not specified, `assertView` will take a screenshot of the current viewport
 
-These additional options will have higher priority than `assertViewOpts` from config, but lower priority than options from `options` parameter passed by user.
-So, assertView without `selector` parameter will take a screenshot of the current viewport.
+-   If an array of selectors is passed, `assertView` will take a screenshot of an area covering all passed selectors
+
+-   If any of the selectors matches multiple elements, `assertView` will take a screenshot of the first one
 
 ### options
 
@@ -108,6 +123,10 @@ it("should assert view with given options", async ({ browser }) => {
 });
 ```
 
+## History
+
+<AssertViewHistory />
+
 ## Related Commands {/* #related */}
 
 -   [element.assertView](../../element/assertView)
@@ -115,7 +134,9 @@ it("should assert view with given options", async ({ browser }) => {
 -   [browser.saveScreenshot](../saveScreenshot)
 -   [element.saveScreenshot](../../element/saveScreenshot)
 
-[webdriverio-api]: https://webdriver.io/docs/api
 [browsers-tolerance]: ../../../reference/config/browsers#tolerance
 [browsers-antialiasing-tolerance]: ../../../reference/config/browsers#antialiasing_tolerance
 [wait-for-static-to-load]: ../waitForStaticToLoad
+[wait-for-exist]: ../../element/waitForExist
+[wait-timeout]: ../../../reference/config/browsers#wait_timeout
+[wait-interval]: ../../../reference/config/browsers#wait_interval

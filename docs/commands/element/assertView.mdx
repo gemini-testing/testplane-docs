@@ -1,5 +1,6 @@
 import Admonition from "@theme/Admonition";
 import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
+import AssertViewHistory from "../../_partials/specs/assert-view-history.mdx";
 
 # assertView
 
@@ -7,33 +8,45 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
 
 Use the `assertView` command to take a screenshot of an element for a specific test state and compare it with a reference.
 
-<Admonition type="info">
-    This command is implemented within Testplane and is not available in the [API
-    WebDriverIO][webdriverio-api].
-</Admonition>
-
 ## Usage {/* #usage */}
 
 ```javascript
 await browser.$(selector).assertView(state, options);
 ```
 
-<Admonition type="warning">
-    During execution, the _assertView_ command calls [waitForExist][wait-for-exist] with
-    [waitTimeout][wait-timeout] and [waitInterval][wait-interval].
+<Admonition type="info">
+    The `assertView` command uses [waitForExist][wait-for-exist] (with
+    [waitTimeout][wait-timeout] and [waitInterval][wait-interval]) to wait for the element to exist before taking a screenshot.
+
+    It also automatically waits for static (fonts, images, etc.) to load using the [waitForStaticToLoad][wait-for-static-to-load] command.
+
 </Admonition>
 
 ## Command Parameters {/* #parameters */}
 
 <table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>[state](#state)</td><td>String</td><td>Required parameter. The name of the test state. It must be unique within a single test.</td></tr>
-<tr><td>[options](#options)</td><td>Object</td><td>Settings for the _assertView_ command.</td></tr>
-
-</tbody>
+    <thead>
+        <tr>
+            <td>**Name**</td>
+            <td>**Type**</td>
+            <td>**Description**</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>[state](#state)</td>
+            <td>`string`</td>
+            <td>
+                Required parameter. The name of the test state. It must be unique within a single
+                test.
+            </td>
+        </tr>
+        <tr>
+            <td>[options](#options)</td>
+            <td>`AssertViewOpts`</td>
+            <td>Settings for the _assertView_ command.</td>
+        </tr>
+    </tbody>
 </table>
 
 ### state
@@ -62,6 +75,10 @@ it("should assert view", async ({ browser }) => {
 });
 ```
 
+## History
+
+<AssertViewHistory />
+
 ## Related Commands {/* #related */}
 
 -   [browser.assertView](../../browser/assertView)
@@ -69,9 +86,9 @@ it("should assert view", async ({ browser }) => {
 -   [browser.saveScreenshot](../../browser/saveScreenshot)
 -   [element.saveScreenshot](../saveScreenshot)
 
-[webdriverio-api]: https://webdriver.io/docs/api
 [wait-for-exist]: ../waitForExist
 [wait-timeout]: ../../../reference/config/browsers#wait_timeout
 [wait-interval]: ../../../reference/config/browsers#wait_interval
 [browsers-tolerance]: ../../../reference/config/browsers#tolerance
 [browsers-antialiasing-tolerance]: ../../../reference/config/browsers#antialiasing_tolerance
+[wait-for-static-to-load]: ../../browser/waitForStaticToLoad
