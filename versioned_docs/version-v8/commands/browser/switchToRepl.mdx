@@ -2,19 +2,19 @@ import Admonition from "@theme/Admonition";
 
 # switchToRepl
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `switchToRepl` command to stop the test execution and open an interactive `REPL` interface in the terminal where you can execute code line by line and observe the results in real-time. This mode allows for convenient debugging of problematic tests both in a locally installed browser and in a remote grid (for example, using [VNC][vnc]).
 
 For more convenient use of the `REPL` mode, it is recommended to use the [VS Code extension][extension].
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```typescript
 await browser.runStep(stepName, stepCb);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
     <thead>
@@ -38,7 +38,7 @@ await browser.runStep(stepName, stepCb);
     </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```typescript
 it("test", async ({ browser }) => {

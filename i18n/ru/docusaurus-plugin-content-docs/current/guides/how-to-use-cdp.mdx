@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 
 # Как использовать Chrome DevTools Protocol в testplane
 
-## Введение {#preface}
+## Введение {/* #preface */}
 
 <Admonition type="warning">
     Установите в своем проекте testplane 4-й версии и выше, чтобы использовать _Chrome DevTools
@@ -20,7 +20,7 @@ import Admonition from "@theme/Admonition";
 
 Про сравнение протоколов _WebDriver_ и _CDP_ читайте в разделе Справочника «[WebDriver vs CDP][webdriver-vs-cdp]».
 
-## Локальное использование {#local_usage}
+## Локальное использование {/* #local_usage */}
 
 <Admonition type="danger" title="Удалено в Testplane 9">
     Начиная с **Testplane 9** значение `"devtools"` у опции `automationProtocol` (а также CLI-флаг `--devtools`) **удалены**. Этот режим вызывал ряд трудновоспроизводимых ошибок, которых не было при `automationProtocol: "webdriver"`, и в [WebdriverIO](https://webdriver.io), на котором основан Testplane, протокол автоматизации `devtools` также был удалён. Единственное поддерживаемое значение теперь — `"webdriver"` (оно же и значение по умолчанию).
@@ -63,7 +63,7 @@ npx testplane ... --local
 
 После того как браузер поднят локально по WebDriver, в тесте по-прежнему можно вызывать [CDP-команды][how-to-intercept-requests-and-responses] так же, как описано в секции [Удалённое использование](#remote_usage).
 
-## Удаленное использование {#remote_usage}
+## Удаленное использование {/* #remote_usage */}
 
 При использовании CDP на удаленной машине (например, в гриде) testplane сначала поднимет браузер с использованием WebDriver-протокола и только потом, по запросу пользователя (т. е. при вызове CDP-команды), перейдет на подключение по CDP. Таким образом, с удаленным браузером в одном тестовом сценарии мы будем общаться сразу по двум протоколам.
 
@@ -102,7 +102,7 @@ module.exports = {
     внутренней реализацией в _webdriverio._
 </Admonition>
 
-## Какие возможности открывает CDP {#what_does_cdp_give}
+## Какие возможности открывает CDP {/* #what_does_cdp_give */}
 
 С помощью CDP вы можете:
 
@@ -112,7 +112,7 @@ module.exports = {
 -   [управлять быстродействием процессора][how-to-manage-cpu-performance]
 -   [скрывать скроллбары][how-to-hide-scrollbars-by-cdp]
 
-## Полезные ссылки {#useful_links}
+## Полезные ссылки {/* #useful_links */}
 
 -   [WebDriver vs CDP][webdriver-vs-cdp]
 -   [Web Performance Recipes With Puppeteer](https://addyosmani.com/blog/puppeteer-recipes/)

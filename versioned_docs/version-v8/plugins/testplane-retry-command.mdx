@@ -2,17 +2,17 @@ import Admonition from "@theme/Admonition";
 
 # @testplane/retry-command
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the [`@testplane/retry-command`][testplane-retry-command] plugin to retry commands at low level.
 
-## Install {#install}
+## Install {/* #install */}
 
 ```bash
 npm install -D @testplane/retry-command
 ```
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 Add the plugin to the `plugins` section of the `testplane` config:
 
@@ -44,7 +44,7 @@ module.exports = {
 };
 ```
 
-### Description of configuration parameters {#setup_description}
+### Description of configuration parameters {/* #setup_description */}
 
 <table>
 <thead>
@@ -57,7 +57,7 @@ module.exports = {
 </tbody>
 </table>
 
-### rules {#setup_rules}
+### rules {/* #setup_rules */}
 
 The `rules` parameter is an array of objects. Each object describes a separate rule for retrying commands.
 
@@ -77,22 +77,22 @@ Parameters this rule consists of:
 </tbody>
 </table>
 
-### condition {#setup_rules_condition}
+### condition {/* #setup_rules_condition */}
 
 The condition under which you need to retry. There are 2 values available:
 
 -   `blank-screenshot` — retry the low-level screenshot command [takeScreenshot][take-screenshot] if an empty screenshot is returned as a result of the command;
 -   `assert-view-failed` — retry testplane's high-level command [assertView][assert-view] to take a screenshot if it failed.
 
-### browsers {#setup_rules_browsers}
+### browsers {/* #setup_rules_browsers */}
 
 A list of browsers in which you need to apply low-level retries for commands. It can be set as a string (if it is one browser), a regular expression, or an array of strings/regular expressions. By default, the `browsers` parameter has the value `/.*/`, which all browsers fall under.
 
-### retryCount {#setup_rules_retry_count}
+### retryCount {/* #setup_rules_retry_count */}
 
 The parameter determines how many times the command needs to be retried if the condition specified in the `condition` parameter is met.
 
-### retryInterval {#setup_rules_retry_interval}
+### retryInterval {/* #setup_rules_retry_interval */}
 
 The parameter specifies the time in milliseconds to wait before trying to repeat the command again.
 
@@ -101,11 +101,11 @@ The parameter specifies the time in milliseconds to wait before trying to repeat
     the speed of your tests.
 </Admonition>
 
-### retryOnlyFirst {#setup_rules_retry_only_first}
+### retryOnlyFirst {/* #setup_rules_retry_only_first */}
 
 Allows to retry only the first `assertView` command in the test if the value is set to `true`. This parameter is not used for other conditions.
 
-### Passing parameters via the CLI {#setup_by_cli}
+### Passing parameters via the CLI {/* #setup_by_cli */}
 
 All plugin parameters that can be defined in the config can also be passed as command-line options or through environment variables during the launch of Testplane. Use the prefix `--retry-command-` for command line options and `testplane_retry_command_` for environment variables. For example:
 

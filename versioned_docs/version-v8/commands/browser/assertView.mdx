@@ -3,7 +3,7 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
 
 # assertView
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `assertView` command to take a screenshot for a specific test state and compare it with a reference.
 
@@ -17,14 +17,14 @@ Use the `assertView` command to take a screenshot for a specific test state and 
     screenshot.
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```typescript
 await browser.assertView(state, options);
 await browser.assertView(state, selector, options);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -63,7 +63,7 @@ Specifies the settings for the `assertView` command:
 
 <AssertViewOptions />
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 **Visual check of certain element**
 
@@ -108,7 +108,7 @@ it("should assert view with given options", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [element.assertView](../../element/assertView)
 -   [browser.saveRecordingScreen](../saveRecordingScreen)

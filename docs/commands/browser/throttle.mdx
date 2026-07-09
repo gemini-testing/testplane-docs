@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # throttle
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `throttle` command to simulate different types of network connections for the user.
 
@@ -27,13 +27,13 @@ Also, see the recipe "[How to manage network bandwidth][how-to-manage-network-ba
 
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -48,7 +48,7 @@ await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput 
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should throttle the network", async ({ browser }) => {

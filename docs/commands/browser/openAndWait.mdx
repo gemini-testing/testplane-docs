@@ -1,12 +1,12 @@
 # openAndWait
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `openAndWait` command to open a page and wait for it to load (based on a combination of specified factors).
 
 Functions for waiting for network idle and failing on network errors are only available when using browsers that support _Chrome DevTools Protocol (CDP)_.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.openAndWait("some/url", {
@@ -20,7 +20,7 @@ await browser.openAndWait("some/url", {
 });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -52,7 +52,7 @@ await browser.openAndWait("some/url", {
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("some test", async ({ browser }) => {

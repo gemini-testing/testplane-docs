@@ -9,9 +9,9 @@ We recommend upgrading hermione in stages, ensuring at each stage that all proje
 
 </Admonition>
 
-## What Has Changed? {#what_is_new}
+## What Has Changed? {/* #what_is_new */}
 
-### New Default Configurations {#changes_in_config_options}
+### New Default Configurations {/* #changes_in_config_options */}
 
 The first thing to note during the upgrade is the change in default values for some configuration options. All changes aim to speed up test execution with basic hermione setup and provide more information about tests after execution.
 
@@ -37,7 +37,7 @@ Additionally, the `screenshotOnReject` and `screenshotOnRejectTimeout` options, 
 
 You can read more about these options [here][config-browsers]. If the new values suit you and there are no apparent reasons to override them, you can skip this section during the migration.
 
-### CLI Reporters {#changes_in_reporters}
+### CLI Reporters {/* #changes_in_reporters */}
 
 This section discusses CLI reporters that come out of the box and not the html-reporter.
 
@@ -47,13 +47,13 @@ This section discusses CLI reporters that come out of the box and not the html-r
 
 So, if you did not use the teamcity reporter or did not write new reporters, you can skip this section during migration.
 
-### testParserAPI {#changes_in_test_parser_api}
+### testParserAPI {/* #changes_in_test_parser_api */}
 
 The [testParser][test-parser] object, which could be obtained by subscribing to the [BEFORE_FILE_READ][before-file-read] event, is no longer an instance of `EventEmitter`. This means that you can no longer use it to subscribe to the [SUITE_BEGIN][event-suite-begin] and [TEST_BEGIN][event-test-begin] events.
 
 To be fair, this initially did not work correctly, and no one used it. Therefore, this functionality was removed. You can read about all available events [here][hermione-events].
 
-## Support {#support}
+## Support {/* #support */}
 
 If you encounter any issues during the migration to the new version or have any questions, visit [github issues][gh-issues] — we will definitely help you!
 

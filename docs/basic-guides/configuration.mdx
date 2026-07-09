@@ -20,7 +20,7 @@ The configuration file is the primary source of settings: it specifies browsers,
 
 For a complete reference of parameters, see the [configuration documentation](../reference/config/main.mdx).
 
-## Configuration file {#config-location}
+## Configuration file {/* #config-location */}
 
 When launched, Testplane looks for a configuration file in the current working directory. The following file names are supported (in order of priority):
 
@@ -37,7 +37,7 @@ If you need to use a config from a different location, specify the path using th
 npx testplane --config ./configs/testplane.local.ts
 ```
 
-## Setting parameters {#config-sources}
+## Setting parameters {/* #config-sources */}
 
 Testplane configuration parameters can be set in three ways:
 
@@ -45,7 +45,7 @@ Testplane configuration parameters can be set in three ways:
 2. Environment variables: convenient for CI/CD and sensitive data
 3. CLI arguments: for quick overrides at runtime
 
-### Overriding via environment variables {#env-override}
+### Overriding via environment variables {/* #env-override */}
 
 Any configuration parameter can be overridden via environment variables. The variable name is formed from the parameter name in the config:
 
@@ -61,7 +61,7 @@ testplane_grid_url=local npx testplane
 testplane_browsers_firefox_headless=false npx testplane
 ```
 
-### Overriding via CLI {#cli-override}
+### Overriding via CLI {/* #cli-override */}
 
 Parameters can also be overridden via CLI arguments:
 
@@ -77,7 +77,7 @@ npx testplane --grid-url local
 npx testplane --browsers-firefox-headless false
 ```
 
-### Parameter priority {#priority}
+### Parameter priority {/* #priority */}
 
 When values conflict, the following priority applies (from highest to lowest):
 
@@ -88,11 +88,11 @@ When values conflict, the following priority applies (from highest to lowest):
 | 3        | Configuration file   | `baseUrl: "http://example.com"`         |
 | 4        | Default value        | —                                       |
 
-## Parameter inheritance {#inheritance}
+## Parameter inheritance {/* #inheritance */}
 
 Testplane supports cascading parameter inheritance: settings defined at the root level of the config apply to all browsers. Browsers can override these values.
 
-### Inheritance example {#inheritance-example}
+### Inheritance example {/* #inheritance-example */}
 
 ```typescript title="testplane.config.ts"
 import type { ConfigInput } from "testplane";
@@ -131,9 +131,9 @@ In this example:
     defined for each browser separately.
 </Admonition>
 
-## Basic parameters {#basic-params}
+## Basic parameters {/* #basic-params */}
 
-### Retries (retry) {#retry}
+### Retries (retry) {/* #retry */}
 
 The [`retry`](../reference/config/browsers.mdx#retry) parameter determines how many times Testplane will restart a failed test.
 
@@ -154,7 +154,7 @@ export default {
 } satisfies ConfigInput;
 ```
 
-### Test file locations {#test-files}
+### Test file locations {/* #test-files */}
 
 Test file sets and browsers for running them are specified in the `sets` section:
 
@@ -187,7 +187,7 @@ npx testplane --set desktop
 
 For more details about sets, see the [sets documentation](../reference/config/sets.mdx).
 
-### Dev Server {#dev-server}
+### Dev Server {/* #dev-server */}
 
 The `devServer` section allows you to automatically start a development server before tests:
 
@@ -223,7 +223,7 @@ Testplane will run the command and wait for the server to be ready at the specif
 
 For more details, see the [devServer documentation](../reference/config/dev-server.mdx).
 
-### Execution parallelism {#parallelism}
+### Execution parallelism {/* #parallelism */}
 
 Testplane runs tests in parallel, which significantly speeds up the test run. Two main parameters are used to configure parallelism: `sessionsPerBrowser` and `workers`.
 
@@ -257,7 +257,7 @@ export default {
 
 In this example, Testplane can run up to 5 parallel Chrome sessions and up to 3 Firefox sessions, distributing tests among 4 worker processes.
 
-## Timeouts {#timeouts}
+## Timeouts {/* #timeouts */}
 
 Testplane allows you to configure timeouts to control operation execution time:
 
@@ -288,11 +288,11 @@ export default {
 
 For a complete list of timeouts and their descriptions, see the [documentation](../reference/config/browsers.mdx#timeouts).
 
-## Connecting plugins {#plugins}
+## Connecting plugins {/* #plugins */}
 
 Plugins are connected and configured in the `plugins` section of the configuration file. Each key is the npm package name of the plugin, and the value is an object with its parameters.
 
-### Example with html-reporter {#html-reporter-example}
+### Example with html-reporter {/* #html-reporter-example */}
 
 [html-reporter](../html-reporter/html-reporter-setup.mdx) is a plugin for generating HTML test reports.
 
@@ -348,11 +348,11 @@ If a parameter is specified in multiple places, the value with the highest prior
 
 This allows flexible control of plugin behavior in CI/CD without modifying the config.
 
-## Setting defaults for commands {#command-defaults}
+## Setting defaults for commands {/* #command-defaults */}
 
 Testplane allows you to set default values for parameters of certain commands. Instead of passing the same options with each call, you can specify them once in the configuration.
 
-### assertViewOpts {#assert-view-opts}
+### assertViewOpts {/* #assert-view-opts */}
 
 Default settings for screenshot testing. Allows you to specify which elements to ignore, acceptable pixel difference, delay before capture, and other screenshot comparison parameters.
 
@@ -368,7 +368,7 @@ export default {
 
 For a complete list of parameters, see the [assertView](../commands/browser/assertView.mdx) documentation.
 
-### expectOpts {#expect-opts}
+### expectOpts {/* #expect-opts */}
 
 Settings for asynchronous assertions with waiting.
 
@@ -386,7 +386,7 @@ export default {
 
 For a complete list of parameters, see the [expect matchers](../commands/expect/overview.mdx) documentation.
 
-### stateOpts {#state-opts}
+### stateOpts {/* #state-opts */}
 
 Settings for browser state save and restore commands. Defines what to save (cookies, localStorage, sessionStorage), where to save, and whether to delete the file after tests.
 

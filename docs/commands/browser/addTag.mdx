@@ -4,11 +4,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 <Version version="8.37.0" />
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `addTag` command to add a tag (or multiple tags) to a test during execution.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```typescript
 await browser.addTag("one");
@@ -32,7 +32,7 @@ function getTag(): TestTag[];
 `getTag` returns an array of the tag objects mentioned above.
 Each object has a `title` and a `dynamic` field, which indicates that the tag was added during the test.
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
     <thead>

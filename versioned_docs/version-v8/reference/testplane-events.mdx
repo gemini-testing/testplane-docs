@@ -2,9 +2,9 @@ import Admonition from "@theme/Admonition";
 
 # Testplane Events
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
-### How event descriptions are organized {#how_is_events_description_made}
+### How event descriptions are organized {/* #how_is_events_description_made */}
 
 Below are described all the Testplane events you can subscribe to in your plugin.
 
@@ -22,7 +22,7 @@ Next are:
 -   the event handler parameters;
 -   and optionally, examples of using this event in a plugin or plugins.
 
-### Event generation scheme {#events_scheme}
+### Event generation scheme {/* #events_scheme */}
 
 [//]: # "<style>"
 [//]: # '.yc-root_theme_light img[src*="-dark-mode"] { display: none }'
@@ -33,7 +33,7 @@ Next are:
 
 [//]: # "![Testplane event generation](/img/docs/reference/testplane-events-dark-mode.png)"
 
-### Event sequence description {#events_scheme_description}
+### Event sequence description {/* #events_scheme_description */}
 
 Testplane can be launched through both the [CLI (command line interface)][cli-wiki] and its API: from a script using the [run][testplane-run] command.
 
@@ -125,7 +125,7 @@ If during the test run, a critical error occurs in one of the [event interceptor
 
 If during the test run, Testplane receives a [SIGTERM][sigterm] signal (for example, as a result of pressing `Ctrl + C`), Testplane triggers the [EXIT](#exit) event and prematurely terminates the test run.
 
-### About event interception {#events_interception}
+### About event interception {/* #events_interception */}
 
 Testplane allows the developer to intercept certain events and modify them to other events, ignore them, or delay their processing.
 
@@ -163,7 +163,7 @@ module.exports = testplane => {
 };
 ```
 
-#### Leaving the event as is {#events_interception_leaving_event_as_is}
+#### Leaving the event as is {/* #events_interception_leaving_event_as_is */}
 
 If for some reason the intercepted event needs to be left _as is_, its handler should return exactly the same object or any _falsey_ value: _undefined, null_ or _false._
 
@@ -183,7 +183,7 @@ module.exports = testplane => {
 };
 ```
 
-#### Ignoring an event {#events_interception_ignoring_event}
+#### Ignoring an event {/* #events_interception_ignoring_event */}
 
 To ignore an event and prevent it from propagating further, return an empty object from the handler (where the event is intercepted):
 
@@ -199,7 +199,7 @@ module.exports = testplane => {
 };
 ```
 
-#### Delaying event processing {#events_interception_delaying_events}
+#### Delaying event processing {/* #events_interception_delaying_events */}
 
 The approach above with ignoring an event can be used to delay the occurrence of certain events, for example:
 
@@ -221,7 +221,7 @@ module.exports = testplane => {
 };
 ```
 
-### Information sharing between event handlers {#events_handlers_info_interchange}
+### Information sharing between event handlers {/* #events_handlers_info_interchange */}
 
 Events triggered in the master process and in the Testplane workers cannot exchange information through global variables.
 
@@ -267,7 +267,7 @@ module.exports = (testplane, opts) => {
 
 Or as follows: see the [example](#new_worker_process_usage) from the description of the [NEW_WORKER_PROCESS](#new_worker_process) event.
 
-### Parallel execution of plugin code {#plugin_code_parallel_execution}
+### Parallel execution of plugin code {/* #plugin_code_parallel_execution */}
 
 The test runner has a `registerWorkers` method which registers the plugin code for parallel execution in the Testplane workers. The method takes the following parameters:
 
@@ -299,7 +299,7 @@ It returns an object which contains asynchronous functions with names from expor
 
 The file at the `workerFilepath` path should export an object containing asynchronous functions with names from `exportedMethods`.
 
-#### Example of parallel plugin code execution {#plugin_code_parallel_execution_example}
+#### Example of parallel plugin code execution {/* #plugin_code_parallel_execution_example */}
 
 **Plugin code: plugin.js**
 
@@ -334,13 +334,13 @@ module.exports = {
 };
 ```
 
-## CLI {#cli}
+## CLI {/* #cli */}
 
 **sync | master**
 
 The `CLI` event is triggered immediately upon startup, before Testplane parses the [CLI][cli-wiki]. The event handler executes synchronously. With it, you can add new commands or extend testplane's help.
 
-### Subscribing to the event {#cli_subscription}
+### Subscribing to the event {/* #cli_subscription */}
 
 ```javascript
 testplane.on(testplane.events.CLI, cli => {
@@ -354,11 +354,11 @@ testplane.on(testplane.events.CLI, cli => {
 });
 ```
 
-#### Handler parameters {#cli_cb_params}
+#### Handler parameters {/* #cli_cb_params */}
 
 An object of the [Commander][commander] type is passed to the event handler.
 
-### Example of usage {#cli_usage}
+### Example of usage {/* #cli_usage */}
 
 Let's consider an example of the [implementation][testplane-test-repeater-index] of the [@testplane/test-repeater][testplane-test-repeater] plugin.
 
@@ -397,7 +397,7 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-## INIT {#init}
+## INIT {/* #init */}
 
 **async | master, worker**
 
@@ -405,7 +405,7 @@ The `INIT` event is triggered before the [run][run] or [readTests][read-tests] t
 
 This event is emitted once in master process and once in each worker.
 
-### Subscribing to the event {#init_subscription}
+### Subscribing to the event {/* #init_subscription */}
 
 ```javascript
 testplane.on(testplane.events.INIT, async () => {
@@ -413,11 +413,11 @@ testplane.on(testplane.events.INIT, async () => {
 });
 ```
 
-#### Handler parameters {#init_cb_params}
+#### Handler parameters {/* #init_cb_params */}
 
 No data is passed to the event handler.
 
-### Example of usage {#init_usage}
+### Example of usage {/* #init_usage */}
 
 In the [INIT](#init) event handler, you can organize, for example, the launch of a dev server for your project.
 
@@ -463,13 +463,13 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-## BEFORE_FILE_READ {#before_file_read}
+## BEFORE_FILE_READ {/* #before_file_read */}
 
 **sync | master | worker**
 
 The `BEFORE_FILE_READ` event is triggered before the test file is read to parse it. The event handler is executed synchronously. The event is also available in Testplane workers.
 
-### Subscribing to the event {#before_file_read_subscription}
+### Subscribing to the event {/* #before_file_read_subscription */}
 
 ```javascript
 testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }) => {
@@ -481,7 +481,7 @@ testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }
 });
 ```
 
-#### Handler parameters {#before_file_read_cb_params}
+#### Handler parameters {/* #before_file_read_cb_params */}
 
 The event handler receives an object with the following format:
 
@@ -493,7 +493,7 @@ The event handler receives an object with the following format:
 }
 ```
 
-#### testParser: TestParserAPI {#test_parser}
+#### testParser: TestParserAPI {/* #test_parser */}
 
 The `testParser` object of type `TestParserAPI` is passed to the `BEFORE_FILE_READ` event handler. It allows you to manage the process of parsing test files. The object supports the `setController` method, which allows you to create your own helpers for tests.
 
@@ -508,7 +508,7 @@ The method adds a controller to the global `testplane` object, available inside 
     The controller will be removed as soon as the current file parsing is finished.
 </Admonition>
 
-### Usage example {#before_file_read_usage}
+### Usage example {/* #before_file_read_usage */}
 
 As an example, let's create a special helper `testplane.logger.log()` that allows us to log information about the parsing of the test we are interested in.
 
@@ -548,13 +548,13 @@ describe("foo", () => {
 
 Another example of using the [BEFORE_FILE_READ](#before_file_read) event can be found in the section “[Running tests with helpers](#usage_running_tests_with_helpers)”.
 
-## AFTER_FILE_READ {#after_file_read}
+## AFTER_FILE_READ {/* #after_file_read */}
 
 **sync | master | worker**
 
 The `AFTER_FILE_READ` event is triggered after the test file is read. The event handler is executed synchronously. The event is also available in Testplane workers.
 
-### Subscribing to the event {#after_file_read_subscription}
+### Subscribing to the event {/* #after_file_read_subscription */}
 
 ```javascript
 testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
@@ -562,7 +562,7 @@ testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
 });
 ```
 
-#### Handler parameters {#after_file_read_cb_params}
+#### Handler parameters {/* #after_file_read_cb_params */}
 
 The event handler receives an object with the following format:
 
@@ -573,7 +573,7 @@ The event handler receives an object with the following format:
 }
 ```
 
-## AFTER_TESTS_READ {#after_tests_read}
+## AFTER_TESTS_READ {/* #after_tests_read */}
 
 **sync | master | worker**
 
@@ -581,7 +581,7 @@ The `AFTER_TESTS_READ` event is triggered after the methods [readTests][read-tes
 
 By subscribing to this event, you can perform various manipulations on the test collection before they are run. For example, you can exclude certain tests from the runs.
 
-### Subscribing to the event {#after_tests_read_subscription}
+### Subscribing to the event {/* #after_tests_read_subscription */}
 
 ```javascript
 testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
@@ -589,11 +589,11 @@ testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
 });
 ```
 
-#### Handler parameters {#after_tests_read_cb_params}
+#### Handler parameters {/* #after_tests_read_cb_params */}
 
 The event handler receives a `testCollection` object of type [TestCollection][test-collection].
 
-### Usage example {#after_tests_read_usage}
+### Usage example {/* #after_tests_read_usage */}
 
 Consider the [implementation][testplane-global-hook-index] of the [testplane-global-hook][testplane-global-hook] plugin, which allows you to move actions that repeat before and after each test into separate _beforeEach_ and _afterEach_ handlers.
 
@@ -629,13 +629,13 @@ module.exports = (testplane, opts) => {
 
 More examples of using the [AFTER_TESTS_READ](#after_tests_read) event can be found in the sections “[Running tests from a specific list](#usage_running_filtered_tests)” and “[Running tests with helpers](#usage_running_tests_with_helpers)”.
 
-## RUNNER_START {#runner_start}
+## RUNNER_START {/* #runner_start */}
 
 **async | master**
 
 The `RUNNER_START` event is triggered after all Testplane workers are initialized and before the tests are run. The event handler can be asynchronous: in this case, the tests will start running only after the _Promise_ returned by the event handler is resolved.
 
-### Subscribing to the event {#runner_start_subscription}
+### Subscribing to the event {/* #runner_start_subscription */}
 
 ```javascript
 testplane.on(testplane.events.RUNNER_START, async runner => {
@@ -643,11 +643,11 @@ testplane.on(testplane.events.RUNNER_START, async runner => {
 });
 ```
 
-#### Handler parameters {#runner_start_cb_params}
+#### Handler parameters {/* #runner_start_cb_params */}
 
 The event handler receives a reference to the runner instance. Using this instance, you can trigger various events or subscribe to them.
 
-### Usage example {#runner_start_usage}
+### Usage example {/* #runner_start_usage */}
 
 Suppose we want to automatically set up an SSH tunnel when running tests and redirect all URLs in the tests to the established tunnel. To do this, we can use the [RUNNER_START](#runner_start) and [RUNNER_END](#runner_end) events to open the tunnel when the runner starts and close it after the runner finishes.
 
@@ -683,13 +683,13 @@ module.exports = (testplane, opts) => {
 
 A similar [implementation][ssh-tunneler-index] can be found in the [ssh-tunneler][ssh-tunneler] plugin.
 
-## RUNNER_END {#runner_end}
+## RUNNER_END {/* #runner_end */}
 
 **async | master**
 
 The `RUNNER_END` event is triggered after the test is run and before all workers are terminated. The event handler can be asynchronous: in this case, all workers will be terminated only after the _Promise_ returned by the event handler is resolved.
 
-### Subscribing to the event {#runner_end_subscription}
+### Subscribing to the event {/* #runner_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.RUNNER_END, async result => {
@@ -697,7 +697,7 @@ testplane.on(testplane.events.RUNNER_END, async result => {
 });
 ```
 
-#### Handler parameters {#runner_end_cb_params}
+#### Handler parameters {/* #runner_end_cb_params */}
 
 The event handler receives an object with the test run statistics in the following format:
 
@@ -711,17 +711,17 @@ The event handler receives an object with the test run statistics in the followi
 };
 ```
 
-### Usage example {#runner_end_usage}
+### Usage example {/* #runner_end_usage */}
 
 See the example [above](#runner_start_usage) about opening and closing the tunnel when the runner starts and stops.
 
-## NEW_WORKER_PROCESS {#new_worker_process}
+## NEW_WORKER_PROCESS {/* #new_worker_process */}
 
 **sync | master**
 
 The `NEW_WORKER_PROCESS` event is triggered after a new Testplane subprocess (worker) is spawned. The event handler is executed synchronously.
 
-### Subscribing to the event {#new_worker_process_subscription}
+### Subscribing to the event {/* #new_worker_process_subscription */}
 
 ```javascript
 testplane.on(testplane.events.NEW_WORKER_PROCESS, workerProcess => {
@@ -729,11 +729,11 @@ testplane.on(testplane.events.NEW_WORKER_PROCESS, workerProcess => {
 });
 ```
 
-#### Handler parameters {#new_worker_process_cb_params}
+#### Handler parameters {/* #new_worker_process_cb_params */}
 
 The event handler receives a wrapper object over the spawned subprocess, with a single [send][process-send] method for message exchange.
 
-### Usage example {#new_worker_process_usage}
+### Usage example {/* #new_worker_process_usage */}
 
 The example below shows how to use the [NEW_WORKER_PROCESS](#new_worker_process) event to organize interaction between the master process and all Testplane workers. For example, to update the value of a parameter in all Testplane workers from the master process before the test run starts.
 
@@ -790,13 +790,13 @@ module.exports = plugin;
 
 </details>
 
-## SESSION_START {#session_start}
+## SESSION_START {/* #session_start */}
 
 **async | master**
 
 The `SESSION_START` event is triggered after the browser session is initialized. The event handler can be asynchronous: in this case, the tests will start running only after the _Promise_ returned by the event handler is resolved.
 
-### Subscribing to the event {#session_start_subscription}
+### Subscribing to the event {/* #session_start_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessionId }) => {
@@ -804,14 +804,14 @@ testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessio
 });
 ```
 
-#### Handler parameters {#session_start_cb_params}
+#### Handler parameters {/* #session_start_cb_params */}
 
 The event handler receives 2 arguments:
 
 -   the first argument — an instance of `WebdriverIO`;
 -   the second argument — an object of the form `{ browserId, sessionId }`, where _browserId_ is the name of the browser, and _sessionId_ is the browser session identifier.
 
-### Usage example {#session_start_usage}
+### Usage example {/* #session_start_usage */}
 
 Consider an example where the plugin subscribes to the [SESSION_START](#session_start) event to disable scrollbars in browsers using the Chrome DevTools Protocol.
 
@@ -861,13 +861,13 @@ module.exports = (testplane, opts) => {
 
 A more detailed [implementation][hermione-hide-scrollbars-index] can be found in the [hermione-hide-scrollbars][hermione-hide-scrollbars] plugin.
 
-## SESSION_END {#session_end}
+## SESSION_END {/* #session_end */}
 
 **async | master**
 
 The `SESSION_END` event is triggered after the browser session ends. The event handler can be asynchronous: in this case, the tests will continue running only after the _Promise_ returned by the event handler is resolved.
 
-### Subscribing to the event {#session_end_subscription}
+### Subscribing to the event {/* #session_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionId }) => {
@@ -875,20 +875,20 @@ testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionI
 });
 ```
 
-#### Handler parameters {#session_end_cb_params}
+#### Handler parameters {/* #session_end_cb_params */}
 
 The event handler receives 2 arguments:
 
 -   the first argument — an instance of `WebdriverIO`;
 -   the second argument — an object of the form `{ browserId, sessionId }`, where _browserId_ is the name of the browser, and _sessionId_ is the browser session identifier.
 
-## BEGIN {#begin}
+## BEGIN {/* #begin */}
 
 **sync | master**
 
 The `BEGIN` event is triggered before the test is run, but after all runners are initialized. The event handler is executed synchronously.
 
-### Subscribing to the event {#begin_subscription}
+### Subscribing to the event {/* #begin_subscription */}
 
 ```javascript
 testplane.on(testplane.events.BEGIN, () => {
@@ -896,21 +896,21 @@ testplane.on(testplane.events.BEGIN, () => {
 });
 ```
 
-#### Handler parameters {#begin_cb_params}
+#### Handler parameters {/* #begin_cb_params */}
 
 No data is passed to the event handler.
 
-### Usage example {#begin_usage}
+### Usage example {/* #begin_usage */}
 
 See the example [above](#new_worker_process_usage) about organizing interaction between the Testplane master process and all workers.
 
-## END {#end}
+## END {/* #end */}
 
 **sync | master**
 
 The `END` event is triggered right before the `RUNNER_END` event. The event handler is executed synchronously.
 
-### Subscribing to the event {#end_subscription}
+### Subscribing to the event {/* #end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.END, () => {
@@ -918,21 +918,21 @@ testplane.on(testplane.events.END, () => {
 });
 ```
 
-#### Handler parameters {#end_cb_params}
+#### Handler parameters {/* #end_cb_params */}
 
 No data is passed to the event handler.
 
-### Usage example {#end_usage}
+### Usage example {/* #end_usage */}
 
 For an example of using the [END](#end) event, see the section “[Delaying event processing](#events_interception_delaying_events)”.
 
-## SUITE_BEGIN {#suite_begin}
+## SUITE_BEGIN {/* #suite_begin */}
 
 **sync | master | can be intercepted**
 
 The `SUITE_BEGIN` event is triggered before a test suite is run. The event handler is executed synchronously.
 
-### Subscribing to the event {#suite_begin_subscription}
+### Subscribing to the event {/* #suite_begin_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SUITE_BEGIN, suite => {
@@ -940,11 +940,11 @@ testplane.on(testplane.events.SUITE_BEGIN, suite => {
 });
 ```
 
-#### Handler Parameters {#suite_begin_cb_params}
+#### Handler Parameters {/* #suite_begin_cb_params */}
 
 An instance of _suite_ is passed to the event handler.
 
-### Event Interception {#suite_begin_interception}
+### Event Interception {/* #suite_begin_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
@@ -952,13 +952,13 @@ testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
 });
 ```
 
-## SUITE_END {#suite_end}
+## SUITE_END {/* #suite_end */}
 
 **sync | master | can be intercepted**
 
 The `SUITE_END` event is triggered after the test suite _(suite)_ has finished executing. The event handler is executed synchronously.
 
-### Event Subscription {#suite_end_subscription}
+### Event Subscription {/* #suite_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.SUITE_END, suite => {
@@ -966,11 +966,11 @@ testplane.on(testplane.events.SUITE_END, suite => {
 });
 ```
 
-#### Handler Parameters {#suite_end_cb_params}
+#### Handler Parameters {/* #suite_end_cb_params */}
 
 An instance of _suite_ is passed to the event handler.
 
-### Event Interception {#suite_end_interception}
+### Event Interception {/* #suite_end_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
@@ -978,13 +978,13 @@ testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
 });
 ```
 
-## TEST_BEGIN {#test_begin}
+## TEST_BEGIN {/* #test_begin */}
 
 **sync | master | can be intercepted**
 
 The `TEST_BEGIN` event is triggered before the test is executed. The event handler is executed synchronously.
 
-### Event Subscription {#test_begin_subscription}
+### Event Subscription {/* #test_begin_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_BEGIN, test => {
@@ -1000,11 +1000,11 @@ testplane.on(testplane.events.TEST_BEGIN, test => {
 });
 ```
 
-#### Handler Parameters {#test_begin_cb_params}
+#### Handler Parameters {/* #test_begin_cb_params */}
 
 An instance of the test is passed to the event handler.
 
-### Event Interception {#test_begin_interception}
+### Event Interception {/* #test_begin_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
@@ -1015,17 +1015,17 @@ testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
 });
 ```
 
-### Usage Example {#test_begin_usage}
+### Usage Example {/* #test_begin_usage */}
 
 See the example "Profiling Test Runs" [here](#usage_profiling_tests_runs).
 
-## TEST_END {#test_end}
+## TEST_END {/* #test_end */}
 
 **sync | master | can be intercepted**
 
 The `TEST_END` event is triggered after the test has finished executing. The event handler is executed synchronously. The event can also be intercepted and modified in a special handler.
 
-### Event Subscription {#test_end_subscription}
+### Event Subscription {/* #test_end_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_END, test => {
@@ -1041,11 +1041,11 @@ testplane.on(testplane.events.TEST_END, test => {
 });
 ```
 
-#### Handler Parameters {#test_end_cb_params}
+#### Handler Parameters {/* #test_end_cb_params */}
 
 An instance of the test is passed to the event handler.
 
-### Event Interception {#test_end_interception}
+### Event Interception {/* #test_end_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
@@ -1056,17 +1056,17 @@ testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
 });
 ```
 
-### Usage Example {#test_end_usage}
+### Usage Example {/* #test_end_usage */}
 
 See the example "Profiling Test Runs" [here](#usage_profiling_tests_runs).
 
-## TEST_PASS {#test_pass}
+## TEST_PASS {/* #test_pass */}
 
 **sync | master | can be intercepted**
 
 The `TEST_PASS` event is triggered if the test passes successfully. The event handler is executed synchronously. The event can also be intercepted and modified in a special handler.
 
-### Event Subscription {#test_pass_subscription}
+### Event Subscription {/* #test_pass_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_PASS, test => {
@@ -1077,11 +1077,11 @@ testplane.on(testplane.events.TEST_PASS, test => {
 });
 ```
 
-#### Handler Parameters {#test_pass_cb_params}
+#### Handler Parameters {/* #test_pass_cb_params */}
 
 An instance of the test is passed to the event handler.
 
-### Event Interception {#test_pass_interception}
+### Event Interception {/* #test_pass_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
@@ -1092,17 +1092,17 @@ testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
 });
 ```
 
-### Usage Example {#test_pass_usage}
+### Usage Example {/* #test_pass_usage */}
 
 See the example "Collecting Test Run Statistics" [here](#usage_collecting_stats).
 
-## TEST_FAIL {#test_fail}
+## TEST_FAIL {/* #test_fail */}
 
 **sync | master | can be intercepted**
 
 The `TEST_FAIL` event is triggered if the test fails. The event handler is executed synchronously. The event can also be intercepted and modified in a special handler.
 
-### Event Subscription {#test_fail_subscription}
+### Event Subscription {/* #test_fail_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_FAIL, test => {
@@ -1113,11 +1113,11 @@ testplane.on(testplane.events.TEST_FAIL, test => {
 });
 ```
 
-#### Handler Parameters {#test_fail_cb_params}
+#### Handler Parameters {/* #test_fail_cb_params */}
 
 An instance of the test is passed to the event handler.
 
-### Event Interception {#test_fail_interception}
+### Event Interception {/* #test_fail_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
@@ -1128,17 +1128,17 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 });
 ```
 
-### Usage Example {#test_fail_usage}
+### Usage Example {/* #test_fail_usage */}
 
 See the example "Collecting Test Run Statistics" [here](#usage_collecting_stats).
 
-## TEST_PENDING {#test_pending}
+## TEST_PENDING {/* #test_pending */}
 
 **sync | master**
 
 The `TEST_PENDING` event is triggered if the test is disabled. The event handler is executed synchronously.
 
-### Event Subscription {#test_pending_subscription}
+### Event Subscription {/* #test_pending_subscription */}
 
 ```javascript
 testplane.on(testplane.events.TEST_PENDING, test => {
@@ -1149,15 +1149,15 @@ testplane.on(testplane.events.TEST_PENDING, test => {
 });
 ```
 
-#### Handler Parameters {#test_pending_cb_params}
+#### Handler Parameters {/* #test_pending_cb_params */}
 
 An instance of the test is passed to the event handler.
 
-### Usage Example {#test_pending_usage}
+### Usage Example {/* #test_pending_usage */}
 
 See the example "Collecting Test Run Statistics" [here](#usage_collecting_stats).
 
-## RETRY {#retry}
+## RETRY {/* #retry */}
 
 **sync | master | can be intercepted**
 
@@ -1165,7 +1165,7 @@ The `RETRY` event is triggered if the test fails but is retried. The retry capab
 
 The event handler is executed synchronously. The event can also be intercepted and modified in a special handler.
 
-### Event Subscription {#retry_subscription}
+### Event Subscription {/* #retry_subscription */}
 
 ```javascript
 testplane.on(testplane.events.RETRY, test => {
@@ -1176,11 +1176,11 @@ testplane.on(testplane.events.RETRY, test => {
 });
 ```
 
-#### Handler Parameters {#retry_cb_params}
+#### Handler Parameters {/* #retry_cb_params */}
 
 An instance of the test is passed to the event handler.
 
-### Event Interception {#retry_interception}
+### Event Interception {/* #retry_interception */}
 
 ```javascript
 testplane.intercept(testplane.events.RETRY, ({ event, data: test }) => {
@@ -1191,17 +1191,17 @@ testplane.intercept(testplane.events.RETRY, ({ event, data: test }) => {
 });
 ```
 
-### Usage Example {#test_retry_usage}
+### Usage Example {/* #test_retry_usage */}
 
 See the example "Collecting Test Run Statistics" [here](#usage_collecting_stats).
 
-## ERROR {#error}
+## ERROR {/* #error */}
 
 **sync | master**
 
 The `ERROR` event is triggered only from [event interceptors](#events_interception) in case of a critical error. The event handler is executed synchronously.
 
-### Event Subscription {#error_subscription}
+### Event Subscription {/* #error_subscription */}
 
 ```javascript
 testplane.on(testplane.events.ERROR, error => {
@@ -1209,33 +1209,33 @@ testplane.on(testplane.events.ERROR, error => {
 });
 ```
 
-#### Handler Parameters {#error_cb_params}
+#### Handler Parameters {/* #error_cb_params */}
 
 An [error object][error-object] is passed to the event handler.
 
-### Usage Example {#error_usage}
+### Usage Example {/* #error_usage */}
 
 See the example "Profiling Test Runs" [here](#usage_profiling_tests_runs).
 
-## INFO {#info}
+## INFO {/* #info */}
 
 **reserved**
 
 Reserved.
 
-## WARNING {#warning}
+## WARNING {/* #warning */}
 
 **reserved**
 
 Reserved.
 
-## EXIT {#exit}
+## EXIT {/* #exit */}
 
 **async | master**
 
 The `EXIT` event is triggered upon receiving the [SIGTERM][sigterm] signal (e.g., after pressing `Ctrl + C`). The event handler can be asynchronous.
 
-### Event Subscription {#exit_subscription}
+### Event Subscription {/* #exit_subscription */}
 
 ```javascript
 testplane.on(testplane.events.EXIT, async () => {
@@ -1243,17 +1243,17 @@ testplane.on(testplane.events.EXIT, async () => {
 });
 ```
 
-#### Handler Parameters {#exit_cb_params}
+#### Handler Parameters {/* #exit_cb_params */}
 
 No data is passed to the event handler.
 
-## NEW_BROWSER {#new_browser}
+## NEW_BROWSER {/* #new_browser */}
 
 **sync | worker**
 
 The `NEW_BROWSER` event is triggered after a new browser instance is created. The event handler is executed synchronously. The event is only available in Testplane workers.
 
-### Event Subscription {#new_browser_subscription}
+### Event Subscription {/* #new_browser_subscription */}
 
 ```javascript
 testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId, browserVersion }) => {
@@ -1261,14 +1261,14 @@ testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId, browserVersion
 });
 ```
 
-#### Handler Parameters {#new_browser_cb_params}
+#### Handler Parameters {/* #new_browser_cb_params */}
 
 Two arguments are passed to the event handler:
 
 -   The first argument is an instance of `WebdriverIO`;
 -   The second argument is an object of the form `{ browserId, versionId }`, where _browserId_ is the name of the browser, and _browserVersion_ is the browser version.
 
-### Implementation Example {#new_browser_usage}
+### Implementation Example {/* #new_browser_usage */}
 
 The [NEW_BROWSER](#new_browser) event is often used to add new commands to the browser or to extend existing commands. For example, some plugins add custom commands to the browser in the [NEW_BROWSER](#new_browser) event handler.
 
@@ -1297,13 +1297,13 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-## UPDATE_REFERENCE {#update_reference}
+## UPDATE_REFERENCE {/* #update_reference */}
 
 **sync | worker**
 
 The `UPDATE_REFERENCE` event is triggered after the reference screenshots are updated. The event handler is executed synchronously. The event is only available in testplane workers.
 
-### Event Subscription {#update_reference_subscription}
+### Event Subscription {/* #update_reference_subscription */}
 
 ```javascript
 testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
@@ -1311,7 +1311,7 @@ testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
 });
 ```
 
-#### Handler Parameters {#update_reference_cb_params}
+#### Handler Parameters {/* #update_reference_cb_params */}
 
 An object of the following format is passed to the event handler:
 
@@ -1324,7 +1324,7 @@ An object of the following format is passed to the event handler:
 
 The _refImg.path_ parameter stores the path to the reference screenshot on the file system, while _refImg.size.width_ and _refImg.size.height_ store the width and height of the reference screenshot, respectively.
 
-### Usage Example {#update_reference_usage}
+### Usage Example {/* #update_reference_usage */}
 
 Consider the example of the [implementation][testplane-image-minifier-index] of the [testplane-image-minifier][testplane-image-minifier] plugin, which automatically compresses reference screenshots with a specified compression level when they are saved.
 
@@ -1359,7 +1359,7 @@ module.exports = (testplane, opts) => {
 
 ## Event Usage Examples
 
-### Running Tests from a Specified List {#usage_running_filtered_tests}
+### Running Tests from a Specified List {/* #usage_running_filtered_tests */}
 
 Consider the example of the [implementation][testplane-test-filter-index] of the [testplane-test-filter][testplane-test-filter] plugin, which allows running only the tests specified in a JSON file.
 
@@ -1427,7 +1427,7 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-### Collecting Test Run Statistics {#usage_collecting_stats}
+### Collecting Test Run Statistics {/* #usage_collecting_stats */}
 
 Consider the example of the [implementation][json-reporter-index] of the [json-reporter][json-reporter] plugin.
 
@@ -1484,7 +1484,7 @@ module.exports = (testplane, opts) => {
 
 </details>
 
-### Automatic Launch of the Dev Server {#usage_starting_dev_server}
+### Automatic Launch of the Dev Server {/* #usage_starting_dev_server */}
 
 We will schematically implement the `testplane-dev-server` plugin for testplane so that the dev server is automatically started each time testplane is launched.
 
@@ -1598,7 +1598,7 @@ describe("example", async () => {
 
 </details>
 
-### Running Tests with Helpers {#usage_running_tests_with_helpers}
+### Running Tests with Helpers {/* #usage_running_tests_with_helpers */}
 
 Let's consider the [implementation][testplane-passive-browsers-index] of the [testplane-passive-browsers][testplane-passive-browsers] plugin.
 
@@ -1719,7 +1719,7 @@ describe("suite", () => {
 
 </details>
 
-### Profiling Test Runs {#usage_profiling_tests_runs}
+### Profiling Test Runs {/* #usage_profiling_tests_runs */}
 
 Let's consider a schematic implementation of profiling test runs. Each time a test starts, we will record its start time, and upon completion, the end time. All information will be saved to a stream, which will be closed upon the runner's completion.
 

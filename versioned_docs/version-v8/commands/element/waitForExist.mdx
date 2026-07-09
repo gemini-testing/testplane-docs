@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # waitForExist
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `waitForExist` command to wait until an element appears in the DOM within a specified number of milliseconds.
 
@@ -13,13 +13,13 @@ The command returns `true` if the selector matches at least one element existing
     this command.
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.$(selector).waitForExist({ timeout, reverse, timeoutMsg, interval });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -34,7 +34,7 @@ await browser.$(selector).waitForExist({ timeout, reverse, timeoutMsg, interval 
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should display a notification message after successful form submit", async ({ browser }) => {

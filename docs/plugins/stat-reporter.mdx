@@ -5,13 +5,13 @@ import Admonition from "@theme/Admonition";
 
 # stat-reporter
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the [stat-reporter][stat-reporter] plugin to get a report(s) with test run statistics in [testplane][testplane].
 
 The plugin allows you to receive a report both in the console and as an html and/or json file. At the same time, the reports are not mutually exclusive: after running the tests, you can get 3 types of reports at once.
 
-### Report format {#report_format}
+### Report format {/* #report_format */}
 
 In the plugin report, the test run results are split by browsers. The maximum execution time _(Duration)_ in minutes and seconds and the result of running tests _(Status)_ in each browser are also displayed. Such a report allows you to understand which browsers have problems: the most tests do not pass or the execution time has increased dramatically.
 
@@ -54,13 +54,13 @@ By default, only the report in the console is enabled:
     report.
 </Admonition>
 
-## Install {#install}
+## Install {/* #install */}
 
 ```bash
 npm install -D stat-reporter
 ```
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 Add the plugin to the `plugins` section of the `testplane` config:
 
@@ -119,7 +119,7 @@ Add the plugin to the `plugins` section of the `testplane` config:
 
 </Tabs>
 
-### Description of configuration parameters {#setup_description}
+### Description of configuration parameters {/* #setup_description */}
 
 <table>
 <thead>
@@ -132,11 +132,11 @@ Add the plugin to the `plugins` section of the `testplane` config:
 </tbody>
 </table>
 
-### enabled {#setup_enabled}
+### enabled {/* #setup_enabled */}
 
 Enable or disable the plugin. By default: `true`.
 
-### reporters {#setup_reporters}
+### reporters {/* #setup_reporters */}
 
 Optional parameter. Sets the settings for reports with test run statistics.
 
@@ -163,7 +163,7 @@ Also, reports of the type `html` and `json` have an additional parameter `path`â
 
 By default, the report is saved in the current working directory to a file `stat-reporter.html` or `stat-reporter.json` depending on the type of report.
 
-### Passing parameters via the CLI {#setup_by_cli}
+### Passing parameters via the CLI {/* #setup_by_cli */}
 
 All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--stat-reporter-` for command line options and `stat_reporter_` for environment variables. For example:
 
@@ -175,9 +175,9 @@ npx testplane --stat-reporter-reporters-html-enabled=true ...
 stat_reporter_reporters_html_enabled = true npx testplane ...
 ```
 
-## Commands {#commands}
+## Commands {/* #commands */}
 
-### merge-stat-reports {#commands_merge_stat_reports}
+### merge-stat-reports {/* #commands_merge_stat_reports */}
 
 The plugin adds the `merge-stat-reports` command to Testplane, with which you can merge several reports into one report in both html and json format. At the same time, the command allows you to get the output of the final reports in two formats at once.
 
@@ -187,7 +187,7 @@ To save the final report in the required format, you need to specify the appropr
 npx testplane merge-stat-reports src-report-1.json src-report-2.json --html dest-html-report --json report.json
 ```
 
-## Useful links {#useful_links}
+## Useful links {/* #useful_links */}
 
 -   [stat-reporter plugin sources][stat-reporter]
 

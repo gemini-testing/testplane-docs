@@ -1,18 +1,18 @@
 # @testplane/test-repeater
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the [@testplane/test-repeater][testplane-test-repeater] plugin to run the same test (or group of tests) the required number of times.
 
 This plugin can be useful in cases when you need to make sure that the written tests are stable. The plugin guarantees that the tests will be run as many times as you set, regardless of the results of their run in each attempt. In addition, the plugin allows you to run tests every time in a new browser session. This eliminates the impact of browser degradation or any other side effects that could occur during repeated runs in the same browser session.
 
-## Install {#install}
+## Install {/* #install */}
 
 ```bash
 npm install -D @testplane/test-repeater
 ```
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 Add the plugin to the `plugins` section of the `testplane` config:
 
@@ -34,7 +34,7 @@ module.exports = {
 };
 ```
 
-### Description of configuration parameters {#setup_description}
+### Description of configuration parameters {/* #setup_description */}
 
 <table>
     <thead>
@@ -79,7 +79,7 @@ module.exports = {
     </tbody>
 </table>
 
-### Passing parameters via the CLI {#setup_by_cli}
+### Passing parameters via the CLI {/* #setup_by_cli */}
 
 All plugin parameters that can be defined in the config can also be passed as command line options or through environment variables during Testplane startup. Use the prefix `--test-repeater-` for command line options and `testplane_test_repeater_` for environment variables. For example:
 
@@ -91,9 +91,9 @@ npx testplane --test-repeater-repeat 5
 testplane_test_repeater_repeat=5 npx testplane
 ```
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
-### Option --repeat {#usage_option_repeat}
+### Option --repeat {/* #usage_option_repeat */}
 
 The plugin also adds a special `--repeat` option to Testplane's [CLI][cli], with which you can run the test the right number of times in a more convenient way. For example:
 
@@ -101,7 +101,7 @@ The plugin also adds a special `--repeat` option to Testplane's [CLI][cli], with
 npx testplane --repeat 5
 ```
 
-## Usage Examples {#usage}
+## Usage Examples {/* #usage */}
 
 Below are examples of test runs, in which they were run 21 times (1 primary + 20 retries) to check their stability.
 
@@ -123,7 +123,7 @@ In the next screenshot, the first test is almost non-functional – out of 21 at
 
 ![Unstable Test](/img/docs/guides/how-to-check-test-stability.unstable-test.png)
 
-## Useful links {#useful_links}
+## Useful links {/* #useful_links */}
 
 -   [@testplane/test-repeater plugin sources][testplane-test-repeater]
 

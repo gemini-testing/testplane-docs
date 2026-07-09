@@ -4,7 +4,7 @@ sidebar_class_name: hidden
 
 # События HTML Reporter
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Плагин `html-reporter` добавляет в интерфейс Testplane специальный объект _htmlReporter_, через который, в том числе, можно подписаться на события отчета. Для этого `testplane.htmlReporter` предоставляет свойство `events` со списком событий, на которые можно подписаться:
 
@@ -18,7 +18,7 @@ sidebar_class_name: hidden
 
 Событие `DATABASE_CREATED` триггерится сразу после создания sqlite базы данных. Обработчик события выполняется синхронно.
 
-### Подписка на событие {#database_created_subscription}
+### Подписка на событие {/* #database_created_subscription */}
 
 ```javascript
 testplane.htmlReporter.on(testplane.htmlReporter.events.DATABASE_CREATED, db => {
@@ -26,11 +26,11 @@ testplane.htmlReporter.on(testplane.htmlReporter.events.DATABASE_CREATED, db => 
 });
 ```
 
-#### Параметры обработчика {#database_created_handler_params}
+#### Параметры обработчика {/* #database_created_handler_params */}
 
 В обработчик события передается инстанс базы данных [sql.js](https://www.npmjs.com/package/sql.js).
 
-### Пример использования {#database_created_example}
+### Пример использования {/* #database_created_example */}
 
 ```javascript
 const parseConfig = require("./config");
@@ -59,7 +59,7 @@ module.exports = (testplane, opts) => {
 
 Событие `TEST_SCREENSHOTS_SAVED` триггерится после сохранения скриншотов очередного теста. Обработчик события может быть асинхронным.
 
-### Подписка на событие {#test_screenshots_saved_subscription}
+### Подписка на событие {/* #test_screenshots_saved_subscription */}
 
 ```javascript
 testplane.htmlReporter.on(
@@ -89,7 +89,7 @@ testplane.htmlReporter.on(
 );
 ```
 
-#### Параметры обработчика {#test_screenshots_saved_handler_params}
+#### Параметры обработчика {/* #test_screenshots_saved_handler_params */}
 
 В обработчик события передается объект с информацией о тесте следующего вида:
 
@@ -107,7 +107,7 @@ testplane.htmlReporter.on(
 
 Событие `REPORT_SAVED` триггерится после сохранения всех файлов отчета. Обработчик события может быть асинхронным.
 
-### Подписка на событие {#report_saved_subscription}
+### Подписка на событие {/* #report_saved_subscription */}
 
 ```javascript
 testplane.htmlReporter.on(testplane.htmlReporter.events.REPORT_SAVED, async ({ reportPath }) => {
@@ -115,11 +115,11 @@ testplane.htmlReporter.on(testplane.htmlReporter.events.REPORT_SAVED, async ({ r
 });
 ```
 
-#### Параметры обработчика {#report_saved_handler_params}
+#### Параметры обработчика {/* #report_saved_handler_params */}
 
 В обработчик передается объект с ключом `reportPath`, в значении которого хранится путь к сохраненному отчету.
 
-### Пример использования {#report_saved_example}
+### Пример использования {/* #report_saved_example */}
 
 ```javascript
 testplane.htmlReporter.on(testplane.htmlReporter.events.REPORT_SAVED, async ({ reportPath }) => {

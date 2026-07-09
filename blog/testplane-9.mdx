@@ -1,0 +1,432 @@
+---
+title: Привет, Testplane 9!
+slug: testplane-9
+hide_table_of_contents: false
+date: 2026-06-16T17:00
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import coverImage from "@site/static/img/blog/testplane-9/cover.png";
+import scrollableContainerTestplane9Image from "@site/static/img/blog/testplane-9/scrollable-container/testplane-9.png";
+import scrollableContainerTestplane8Image from "@site/static/img/blog/testplane-9/scrollable-container/testplane-8.png";
+import scrollableContainerPlaywrightImage from "@site/static/img/blog/testplane-9/scrollable-container/playwright.png";
+import interferenceTestplane9Image from "@site/static/img/blog/testplane-9/interferences/testplane-9.png";
+import interferenceTestplane8Image from "@site/static/img/blog/testplane-9/interferences/testplane-8.png";
+import interferencePlaywrightImage from "@site/static/img/blog/testplane-9/interferences/playwright.png";
+import stickyTestplane9Image from "@site/static/img/blog/testplane-9/sticky/testplane-9.png";
+import stickyTestplane8Image from "@site/static/img/blog/testplane-9/sticky/testplane-8.png";
+import stickyPlaywrightImage from "@site/static/img/blog/testplane-9/sticky/playwright.png";
+import lazyLoadContentTestplane9Image from "@site/static/img/blog/testplane-9/lazy-load-content/testplane-9.jpg";
+import lazyLoadContentTestplane8Image from "@site/static/img/blog/testplane-9/lazy-load-content/testplane-8.jpg";
+import lazyLoadContentPlaywrightImage from "@site/static/img/blog/testplane-9/lazy-load-content/playwright.jpg";
+import hoverTestplane9Image from "@site/static/img/blog/testplane-9/hover/testplane-9.png";
+import hoverTestplane8Image from "@site/static/img/blog/testplane-9/hover/testplane-8-with-rects.png";
+import hoverPlaywrightImage from "@site/static/img/blog/testplane-9/hover/playwright.png";
+import pseudoElementsTestplane9Image from "@site/static/img/blog/testplane-9/pseudo-elements/testplane-9.png";
+import pseudoElementsTestplane8Image from "@site/static/img/blog/testplane-9/pseudo-elements/testplane-8.png";
+
+Встречайте Testplane 9: в этой версии заметно улучшились визуальные проверки, стала удобнее работа с глобальными объектами и появилось несколько полезных улучшений во всем фреймворке.
+
+<img src={coverImage} alt="Testplane 9" />
+
+{/* truncate */}
+
+## Переход на Testplane 9
+
+Руководство по миграции находится [здесь](/docs/migrations/how-to-upgrade-testplane-to-9). Ниже — обзор новых возможностей.
+
+## Полностью новый `assertView`
+
+Главное изменение в Testplane 9 — полностью переработанная логика работы `assertView`.
+
+Она лучше справляется с реальными интерфейсами: длинными страницами, скроллируемыми контейнерами, sticky-заголовками, fixed-оверлеями, шторками, модальными окнами, псевдоэлементами, тенями, обводками и другими случаями, из-за которых визуальные проверки часто становятся нестабильными.
+
+### Длинные скриншоты и контейнеры со скроллом
+
+`assertView` теперь гораздо лучше работает с элементами, которые не помещаются в один вьюпорт.
+
+Команда может автоматически определить, какой элемент нужно скроллить, найти неподвижные элементы и корректно обработать элементы с нестабильной высотой.
+
+<details>
+    <p><a href="/img/blog/testplane-9/scrollable-container/page.html" target="_blank">Страница для теста</a></p>
+
+    <summary>Код теста</summary>
+
+Testplane:
+
+```js
+it("should capture a screenshot with assertView", async ({ browser }) => {
+    await browser.url("file:///page.html");
+
+    await browser.assertView("visual-engine-comparison", "[data-testid=list-container]");
+});
+```
+
+Playwright:
+
+```js
+test("should capture a scrollable drawer list with toHaveScreenshot", async ({ page }) => {
+    await page.goto("file:///page.html");
+
+    await expect(page.locator("[data-testid=list-container]")).toHaveScreenshot(
+        "visual-engine-comparison.png",
+    );
+});
+```
+
+</details>
+
+<Tabs>
+    <TabItem value="testplane-v9" label="Testplane v9">
+        <img className="bordered-image" src={scrollableContainerTestplane9Image} alt="Скриншот скроллируемого контейнера в Testplane v9" />
+    </TabItem>
+
+    <TabItem value="testplane-v8" label="Testplane v8">
+        <img className="bordered-image" src={scrollableContainerTestplane8Image} alt="Скриншот скроллируемого контейнера в Testplane v8" />
+    </TabItem>
+
+    <TabItem value="playwright" label="Playwright">
+        <img className="bordered-image" src={scrollableContainerPlaywrightImage} alt="Скриншот скроллируемого контейнера в Playwright" />
+    </TabItem>
+
+</Tabs>
+
+### Избегание мешающих элементов
+
+В Testplane v9 `assertView` умеет скроллить элемент так, чтобы в итоговый скриншот не попадали наложения и нежелательные элементы.
+
+<details>
+    <p><a href="/img/blog/testplane-9/scrollable-container/page.html" target="_blank">Страница для теста</a></p>
+
+    <summary>Код теста</summary>
+
+Testplane:
+
+```js
+it("should capture a screenshot of review item", async ({ browser }) => {
+    await browser.url("file:///page.html");
+
+    await browser.$(".Review.Review_hasReactions.ReviewViewer-Review").scrollIntoView();
+
+    await browser.assertView(
+        "visual-engine-comparison",
+        ".Review.Review_hasReactions.ReviewViewer-Review",
+    );
+});
+```
+
+Playwright:
+
+```js
+test("should capture a screenshot of review item", async ({ page }) => {
+    await page.goto("file:///page.html");
+
+    const el = await page.locator(".Review.Review_hasReactions.ReviewViewer-Review").first();
+
+    await el.scrollIntoViewIfNeeded();
+
+    await expect(el).toHaveScreenshot("review.png");
+});
+```
+
+</details>
+
+<table>
+    <thead>
+        <tr>
+            <th>Testplane v9</th>
+            <th>Testplane v8</th>
+            <th>Playwright</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>
+            <img className="bordered-image" src={interferenceTestplane9Image} alt="Скриншот в Testplane v9" style={{ maxHeight: 500 }} />
+        </td>
+
+        <td>
+            <img className="bordered-image" src={interferenceTestplane8Image} alt="Скриншот в Testplane v8" style={{ maxHeight: 500 }} />
+        </td>
+
+        <td>
+            <img className="bordered-image" src={interferencePlaywrightImage} alt="Скриншот в Playwright" style={{ maxHeight: 500 }} />
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+### Sticky- и fixed-элементы
+
+Новая механика `assertView` вычисляет безопасную область до и во время съемки, поэтому sticky-заголовки, fixed-футеры и оверлеи не попадают в итоговый скриншот.
+
+<details>
+    <summary>Код теста</summary>
+
+Testplane:
+
+```javascript
+it("captures a card with fixed page chrome around it", async ({ browser }) => {
+    await browser.url("file:///page.html");
+
+    await browser.assertView("analytics-card", "[data-testid=analytics-card]");
+});
+```
+
+Playwright:
+
+```javascript
+test("captures a card with fixed page chrome around it", async ({ page }) => {
+    await page.goto("file:///page.html");
+
+    await expect(page.locator("[data-testid=analytics-card]")).toHaveScreenshot(
+        "analytics-card.png",
+    );
+});
+```
+
+</details>
+
+<table>
+    <thead>
+        <tr>
+            <th>Testplane v9</th>
+            <th>Testplane v8</th>
+            <th>Playwright</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>
+            <img className="bordered-image" src={stickyTestplane9Image} alt="Скриншот со sticky-элементами в Testplane v9" style={{ maxHeight: 500 }} />
+        </td>
+
+        <td>
+            <img className="bordered-image" src={stickyTestplane8Image} alt="Скриншот со sticky-элементами в Testplane v8" style={{ maxHeight: 500 }} />
+        </td>
+
+        <td>
+            <img className="bordered-image" src={stickyPlaywrightImage} alt="Скриншот со sticky-элементами в Playwright" style={{ maxHeight: 500 }} />
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+### Элементы с нестабильной высотой и lazy-load-контентом
+
+В Testplane 9 `assertView` умеет работать с контентом, который подгружается при скролле, и заранее прогружать всю нужную область.
+
+Если даже после такой прогрузки высота элемента меняется в процессе снятия скриншота, `assertView` постарается сделать скриншот без видимых разрывов.
+
+<details>
+    <summary>Код и сравнение скриншотов</summary>
+
+    ```javascript
+    it("should capture a full page screenshot with assertView", async ({browser}) => {
+        await browser.url("https://sp.yandex.ru/s7");
+
+        await browser.execute(() => {
+            document.querySelectorAll('.DialElement_root__CftHX h1').forEach(h1 => {
+                h1.style.display = 'none';
+            });
+        });
+
+        await browser.assertView("visual-engine-comparison", "#__next");
+    });
+    ```
+
+    *Примечание: изображения ниже сильно сжаты из-за большого исходного размера.*
+
+    *Кликните на изображение, чтобы открыть его в новой вкладке.*
+
+    <table>
+        <thead>
+            <tr>
+                <th>Testplane v9</th>
+                <th>Testplane v8</th>
+                <th>Playwright</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td>
+                <a href={lazyLoadContentTestplane9Image} target="_blank"><img className="bordered-image" src={lazyLoadContentTestplane9Image} alt="Скриншот страницы с lazy-load-контентом в Testplane v9" style={{ maxHeight: 1000 }} /></a>
+            </td>
+
+            <td>
+                <a href={lazyLoadContentTestplane8Image} target="_blank"><img className="bordered-image" src={lazyLoadContentTestplane8Image} alt="Скриншот страницы с lazy-load-контентом в Testplane v8" style={{ maxHeight: 1000 }} /></a>
+            </td>
+
+            <td>
+                <a href={lazyLoadContentPlaywrightImage} target="_blank"><img className="bordered-image" src={lazyLoadContentPlaywrightImage} alt="Скриншот страницы с lazy-load-контентом в Playwright" style={{ maxHeight: 1000 }} /></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</details>
+
+### Подавление hover-эффектов
+
+В команде `assertView` появилась опция `disableHover`, которая подавляет hover-эффекты во время снятия скриншота.
+
+По умолчанию она включается автоматически, когда для того, чтобы снять скриншот элемента целиком, нужен скролл.
+
+_Примечание: на скриншоте Testplane v8 прямоугольниками выделены области, где видны hover-эффекты. В Testplane v9 их нет._
+
+<table>
+    <thead>
+        <tr>
+            <th>Testplane v9</th>
+            <th>Testplane v8</th>
+            <th>Playwright</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>
+            <img className="bordered-image" src={hoverTestplane9Image} alt="Скриншот с подавленными hover-эффектами в Testplane v9" style={{ maxHeight: 1000 }} />
+        </td>
+
+        <td>
+            <img className="bordered-image" src={hoverTestplane8Image} alt="Скриншот с hover-эффектами в Testplane v8" style={{ maxHeight: 1000 }} />
+        </td>
+
+        <td>
+            <img className="bordered-image" src={hoverPlaywrightImage} alt="Скриншот с hover-эффектами в Playwright" style={{ maxHeight: 1000 }} />
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+### Поддержка псевдоэлементов
+
+Обновленный `assertView` умеет снимать псевдоэлементы, например `::before` и `::after`.
+
+В Testplane v8 для этого приходилось писать кастомную команду, которая сначала рисовала прямоугольник примерно поверх элемента, а затем снимала скриншот этой области.
+
+В Testplane v9 `assertView` работает с псевдоэлементами наравне с обычными элементами.
+
+<table>
+    <thead>
+        <tr>
+            <th>Testplane v9</th>
+            <th>Testplane v8</th>
+            <th>Playwright</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td>
+            <img className="bordered-image" src={pseudoElementsTestplane9Image} alt="Скриншот псевдоэлемента в Testplane v9" style={{ maxHeight: 1000 }} />
+        </td>
+
+        <td>
+            <img className="bordered-image" src={pseudoElementsTestplane8Image} alt="Скриншот псевдоэлемента в Testplane v8" style={{ maxHeight: 1000 }} />
+        </td>
+
+        <td>
+            <code maxWidth='150px'>TypeError: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined</code>
+        </td>
+    </tr>
+    </tbody>
+
+</table>
+
+### Другие заметные улучшения
+
+В Testplane 9 есть и другие изменения, которые делают визуальное тестирование удобнее и стабильнее:
+
+-   Значение `tolerance` по умолчанию теперь `3.0`, а не `2.3`, как в Testplane v8. То есть по умолчанию проверки `assertView` стали немного менее строгими.
+-   Поддержка симуляторов iOS 26+ с новым Safari.
+-   Опция `cropMargins` для обрезки скриншотов. Она полезна для обрезки скроллбаров в окружениях, где их нельзя скрыть.
+-   Улучшенная отладка скриншотов: подробный лог и пошаговые скриншоты.
+
+## Асинхронный конфиг и lifecycle-хуки
+
+Конфиг Testplane теперь может быть асинхронной функцией. Это позволяет, например, загружать секреты, обращаться к внешним сервисам, готовить временные тестовые данные или вычислять настройки браузеров перед запуском.
+
+```typescript
+import type { ConfigInput } from "testplane";
+
+export default async (): Promise<ConfigInput> => {
+    const baseUrl = await getPreviewUrl();
+
+    return {
+        baseUrl,
+        browsers: {
+            chrome: {
+                desiredCapabilities: { browserName: "chrome" },
+            },
+        },
+    };
+};
+```
+
+`prepareEnvironment` тоже может быть асинхронным:
+
+```typescript
+import type { ConfigInput } from "testplane";
+
+const config: ConfigInput = {
+    prepareEnvironment: async () => {
+        process.env.AUTH_TOKEN = await createTestToken();
+    },
+
+    browsers: {
+        chrome: {
+            desiredCapabilities: { browserName: "chrome" },
+        },
+    },
+};
+
+export default config;
+```
+
+Некоторые lifecycle-события теперь тоже умеют ждать асинхронные обработчики, включая `CLI` и `NEW_BROWSER`.
+
+```javascript
+const fs = require("node:fs/promises");
+
+module.exports = testplane => {
+    testplane.on(testplane.events.CLI, async cli => {
+        const environments = JSON.parse(await fs.readFile("./test-envs.json", "utf8"));
+
+        cli.option("--env <name>", `Environment: ${environments.join(", ")}`);
+    });
+};
+```
+
+## Testplane больше не засоряет глобальный namespace
+
+Исторически тесты Testplane опирались на глобальные объекты вроде `it`, `describe`, `beforeEach`, `afterEach`, `testplane.*` и `hermione.*`. В Testplane 9 эти хелперы явно экспортируются из пакета и по умолчанию не добавляются в глобальное пространство, чтобы не конфликтовать с другими test runner'ами:
+
+```typescript
+import { describe, it, beforeEach } from "testplane";
+
+describe("profile", () => {
+    beforeEach(async ({ browser }) => {
+        await browser.url("/profile");
+    });
+
+    it("shows user name", async ({ browser }) => {
+        await expect(browser.$("[data-testid=user-name]")).toHaveText("Alice");
+    });
+});
+```
+
+Но можно и вернуть всё как было: достаточно установить пакет [`@testplane/globals`](https://github.com/gemini-testing/testplane-globals).
+
+## Удаление `automationProtocol: "devtools"` и изменения в браузерных настройках по умолчанию
+
+Testplane 9 использует WebDriver как единственный `automationProtocol`. Старый режим `automationProtocol: "devtools"` удален, локальный запуск браузеров можно делать с помощью `gridUrl: "local"`.
+
+Примечание: CDP-протокол и все, что с ним связано, по-прежнему можно использовать. Это изменение касается только опции `automationProtocol`.
+
+## Прекращение поддержки Node 18 и 20
+
+Testplane 9 необходима Node 22 или новее для работы (мы рекомендуем v22.12+).

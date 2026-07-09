@@ -3,7 +3,7 @@ import SetsExample from "@site/docs/reference/config/_partials/examples/_sets-ex
 
 # sets
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Вы можете использовать сеты _(sets)_, чтобы привязать набор тестов к определенным браузерам и запускать их сразу одной командой — `testplane --set <set-name>`.
 
@@ -13,7 +13,7 @@ import SetsExample from "@site/docs/reference/config/_partials/examples/_sets-ex
 
 Если сетов в конфиге не будет, или вы не укажете их при запуске Testplane (см. раздел «[Использование](#usage)»), то будут запущены все тесты из папки `testplane` во всех браузерах, которые были указаны в разделе [browsers][browsers] конфига Testplane.
 
-## Настройка {#setup}
+## Настройка {/* #setup */}
 
 Раздел `sets` имеет следующий формат:
 
@@ -21,7 +21,7 @@ import SetsExample from "@site/docs/reference/config/_partials/examples/_sets-ex
 
 Где `<set-id>` — это имя сета, которое используется для его идентификации.
 
-### Справка по секции sets {#setup_description}
+### Справка по секции sets {/* #setup_description */}
 
 <table>
     <thead>
@@ -64,13 +64,13 @@ import SetsExample from "@site/docs/reference/config/_partials/examples/_sets-ex
     </tbody>
 </table>
 
-## Пример настройки {#setup_example}
+## Пример настройки {/* #setup_example */}
 
 <SetsExample />
 
 В данном примере сет **common** содержит все тесты в директории `common` и будет запускаться во всех браузерах. Сет **desktop** содержит все тесты в директория `common` и `desktop`, но будет запускаться только в `chrome` и `firefox`.
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 Используйте CLI-опцию `--set`, чтобы указать сет при запуске тестов.
 

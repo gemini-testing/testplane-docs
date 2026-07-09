@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # @testplane/storybook
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the [@testplane/storybook][testplane-storybook] plugin to automatically check the changes in your Storybook components with screenshot testing without a single line of test code.
 
@@ -11,13 +11,13 @@ This plugin adds:
 -   automatic screenshot tests for storybook stories;
 -   an ability to write Testplane tests for storybook stories right inside of the stories.
 
-## Installation {#install}
+## Installation {/* #install */}
 
 ```bash
 npm install @testplane/storybook --save-dev
 ```
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 <Admonition type="info">Storybook 6.4+ is required to use this plugin.</Admonition>
 
@@ -55,7 +55,7 @@ export default {
 
 With this minimal config, you will be able to run `npx testplane --storybook` to autotest each storybook story with [Testplane assertView][assert-view] command. Testplane will open each story, wait for play function to finish (if defined), and then call `assertView` command. These tests would be generated in runtime.
 
-### Description of configuration parameters {#setup_description}
+### Description of configuration parameters {/* #setup_description */}
 
 <table>
     <thead>
@@ -298,7 +298,7 @@ export default {
 
 In this example, screenshot references would be stored in `screens/<testId>/<browserId>` folder, next to each of your story files.
 
-## Useful links {#useful_links}
+## Useful links {/* #useful_links */}
 
 -   [@testplane/storybook plugin sources][testplane-storybook]
 -   [assertView command][assert-view]

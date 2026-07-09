@@ -1,6 +1,6 @@
 # @testplane/retry-progressive
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `@testplane/retry-progressive` plugin to additionally retry tests if the errors with which they fail correspond to a given set of patterns.
 
@@ -17,13 +17,13 @@ Tests can fail not only because of developer errors, races between scripts execu
     session deleted because of page crash * Couldn't connect to selenium server
 </details>
 
-## Install {#install}
+## Install {/* #install */}
 
 ```bash
 npm install -D @testplane/retry-progressive
 ```
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 Add the plugin to the `plugins` section of the `testplane` config:
 
@@ -49,7 +49,7 @@ module.exports = {
 };
 ```
 
-### Description of configuration parameters {#setup_description}
+### Description of configuration parameters {/* #setup_description */}
 
 <table>
 <thead>
@@ -63,7 +63,7 @@ module.exports = {
 </tbody>
 </table>
 
-### errorPatterns {#setup_error_patterns}
+### errorPatterns {/* #setup_error_patterns */}
 
 Each pattern in the `errorPatterns` array is either an object of the form:
 
@@ -85,7 +85,7 @@ or a string that will be interpreted by the plugin as an object of the form:
 
 The latter option is convenient if the readable format for the console and the error pattern completely match.
 
-### Passing parameters via the CLI {#setup_by_cli}
+### Passing parameters via the CLI {/* #setup_by_cli */}
 
 All plugin parameters that can be defined in the config can also be passed as command-line options or through environment variables during the launch of Testplane. Use the prefix `--retry-progressive-` for command line options and `testplane_retry_progressive_` for environment variables. For example:
 
@@ -97,7 +97,7 @@ npx testplane --retry-progressive-extra-retry 3
 testplane_retry_progressive_extra_retry=3 npx testplane
 ```
 
-## Useful links {#useful_links}
+## Useful links {/* #useful_links */}
 
 -   [@testplane/retry-progressive plugin sources][retry-progressive]
 

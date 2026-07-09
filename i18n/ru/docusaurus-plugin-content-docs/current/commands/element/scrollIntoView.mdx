@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # scrollIntoView
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `scrollIntoView`, чтобы выполнить подскролл к заданному элементу.
 
@@ -10,7 +10,7 @@ import Admonition from "@theme/Admonition";
     Читайте также [Element.scrollIntoView()][scroll-into-view] на MDN.
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.$(selector).scrollIntoView();
@@ -28,7 +28,7 @@ await browser.$(selector).scrollIntoView(alignToTop);
 await browser.$(selector).scrollIntoView({ behavior, block, inline });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -43,7 +43,7 @@ await browser.$(selector).scrollIntoView({ behavior, block, inline });
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should demonstrate the scrollIntoView command", async ({ browser }) => {
@@ -57,7 +57,7 @@ it("should demonstrate the scrollIntoView command", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [browser.scroll](../../browser/scroll)
 

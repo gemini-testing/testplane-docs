@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 
 # $
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `$` command instead of [findElement][find-element] as a shorter command to get a single element on the page.
 
@@ -20,13 +20,13 @@ You can chain `$` or `$$` together to traverse down the DOM tree.
     selectors][how-to-use-selectors]".
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.$(selector);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -38,7 +38,7 @@ await browser.$(selector);
 </tbody>
 </table>
 
-## Examples {#examples}
+## Examples {/* #examples */}
 
 **index.html**
 
@@ -105,7 +105,7 @@ it("should use Androids DataMatcher or ViewMatcher selector", async ({ browser }
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [browser.$$](../_dollardollar)
 -   [element.$](../../element/_dollar)

@@ -30,7 +30,7 @@ sidebar_class_name: hidden
 | `redux-thunk`                  | Middleware для асинхронных действий (встроен) |
 | `reselect`                     | Мемоизированные селекторы для Redux           |
 
-## Plugins SDK UI {#plugins-sdk-ui}
+## Plugins SDK UI {/* #plugins-sdk-ui */}
 
 Модуль `html-reporter/plugins-sdk/ui` экспортирует компоненты и типы для создания UI плагинов.
 
@@ -117,7 +117,7 @@ if (!availableFeatures.some(feature => feature.name === Features.RunTestsFeature
 }
 ```
 
-## Объект pluginOptions {#plugin-options}
+## Объект pluginOptions {/* #plugin-options */}
 
 В UI-компоненте плагина доступен глобальный объект `pluginOptions`:
 
@@ -138,7 +138,7 @@ declare const pluginOptions: {
 };
 ```
 
-## Точки расширения {#extension-points}
+## Точки расширения {/* #extension-points */}
 
 Точки расширения определяют, где в интерфейсе отчета будет размещен компонент плагина.
 
@@ -171,7 +171,7 @@ ExtensionPointName.Root; // "root"
 | `"after"`  | После содержимого точки расширения   |
 | `"wrap"`   | Обернуть содержимое точки расширения |
 
-## CSS и стилизация {#css-styling}
+## CSS и стилизация {/* #css-styling */}
 
 ### CSS Modules
 
@@ -233,7 +233,7 @@ export default defineConfig({
 });
 ```
 
-## Типизация {#typing}
+## Типизация {/* #typing */}
 
 ### Расширение DefaultRootState
 

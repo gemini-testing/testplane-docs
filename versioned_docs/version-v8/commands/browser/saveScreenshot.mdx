@@ -1,18 +1,18 @@
 # saveScreenshot
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `saveScreenshot` command to save a screenshot of the current browser context to a PNG file.
 
 Keep in mind that some browser drivers capture screenshots of the entire document (e.g., the [Gecko driver][gecko] for Firefox), while others capture only the current viewport (e.g., [Chromedriver][chromedriver] for Chrome).
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.saveScreenshot(filepath);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -24,7 +24,7 @@ await browser.saveScreenshot(filepath);
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should save a screenshot of the browser view", async ({ browser }) => {
@@ -32,7 +32,7 @@ it("should save a screenshot of the browser view", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [browser.savePDF](../savePDF)
 -   [browser.saveRecordingScreen](../saveRecordingScreen)

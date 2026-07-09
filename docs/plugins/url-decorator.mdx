@@ -5,17 +5,17 @@ import Admonition from "@theme/Admonition";
 
 # @testplane/url-decorator
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the [@testplane/url-decorator][url-decorator] plugin to automatically add the necessary query parameters to the urls in Testplane tests.
 
-## Install {#install}
+## Install {/* #install */}
 
 ```bash
 npm install -D @testplane/url-decorator
 ```
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 Add the plugin to the `plugins` section of the `testplane` config:
 
@@ -43,7 +43,7 @@ module.exports = {
 };
 ```
 
-### Description of configuration parameters {#setup_description}
+### Description of configuration parameters {/* #setup_description */}
 
 <table>
 <thead>
@@ -56,11 +56,11 @@ module.exports = {
 </tbody>
 </table>
 
-### enabled {#setup_enabled}
+### enabled {/* #setup_enabled */}
 
 Enable or disable the plugin. By default: `true`.
 
-### url {#setup_url}
+### url {/* #setup_url */}
 
 The `url` parameter is an object with a `query` field, the value of which can be either an array or an object.
 
@@ -150,15 +150,15 @@ Here the query parameter is an object with the following fields:
 </tbody>
 </table>
 
-#### name {#setup_query_param_name}
+#### name {/* #setup_query_param_name */}
 
 Name of the query parameter. If `query` is set as an object, then this field is not specified, since the key itself is the name of the query parameter.
 
-#### value {#setup_query_param_value}
+#### value {/* #setup_query_param_value */}
 
 The value of the query parameter. It can be specified as a string, a number, or an array of strings and/or numbers.
 
-#### mode {#setup_query_param_mode}
+#### mode {/* #setup_query_param_mode */}
 
 The mode of combining parameters. There are 2 possible values: `concat` _(concat parameters)_ and `override` _(override parameters)_. By default: `concat`.
 
@@ -219,7 +219,7 @@ url: {
 
 Then the resulting url in the test will be: `http://localhost/test/?nick=torin`.
 
-#### browsers {#setup_query_param_browsers}
+#### browsers {/* #setup_query_param_browsers */}
 
 A browser or a list of browsers, or a regular expression pattern for browsers to which the specified query parameters should be applied. If the parameter `browsers` is not specified, the query parameters will be applied for all browsers.
 
@@ -284,7 +284,7 @@ Below are examples of setting the `browsers` parameter in all ways:
 
 </Tabs>
 
-### Passing parameters via the CLI {#setup_by_cli}
+### Passing parameters via the CLI {/* #setup_by_cli */}
 
 #### HERMIONE*URL_QUERY*\*
 
@@ -321,7 +321,7 @@ Then your test will open the url of the following form: `http://localhost/test/?
     the plugin config.
 </Admonition>
 
-## Useful links {#useful_links}
+## Useful links {/* #useful_links */}
 
 -   [@testplane/url-decorator plugin sources][url-decorator]
 

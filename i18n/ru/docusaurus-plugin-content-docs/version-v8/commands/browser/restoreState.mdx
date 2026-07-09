@@ -5,11 +5,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 <Version version="8.33.0" />
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Команда для восстановления данных (cookies, local and session storages) из файла или объекта.
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 Вы можете восстановить состояние браузера из файла (с помощью параметра `path`) или непосредственно из объекта (с помощью параметра `data`).
 
@@ -34,7 +34,7 @@ await browser.restoreState({
 });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
     <thead>
@@ -91,7 +91,7 @@ await browser.restoreState({
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 Восстановление данных из файла.
 
@@ -151,7 +151,7 @@ export default {
 } satisfies ConfigInput;
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [saveState](../saveState)
 -   [afterAll](../../../reference/config/after-all)

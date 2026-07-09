@@ -2,13 +2,13 @@ import Admonition from "@theme/Admonition";
 
 # scrollIntoView
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `scrollIntoView` command to scroll to a specified element.
 
 <Admonition type="info">Also see [Element.scrollIntoView()][scroll-into-view] on MDN.</Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.$(selector).scrollIntoView();
@@ -26,7 +26,7 @@ or
 await browser.$(selector).scrollIntoView({ behavior, block, inline });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -41,7 +41,7 @@ await browser.$(selector).scrollIntoView({ behavior, block, inline });
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should demonstrate the scrollIntoView command", async ({ browser }) => {
@@ -55,7 +55,7 @@ it("should demonstrate the scrollIntoView command", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [browser.scroll](../../browser/scroll)
 

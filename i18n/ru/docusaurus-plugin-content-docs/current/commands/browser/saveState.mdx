@@ -4,11 +4,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 <Version version="8.33.0" />
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Команда для сохранения состояния страницы (cookies, local и session storages).
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 Эта команда возвращает снимок состояния страницы, включая cookies, localStorage и sessionStorage.
 С помощью параметров вы можете при необходимости исключить определённые типы данных.
@@ -27,7 +27,7 @@ const stateDump: SaveStateData = await browser.saveState({
 });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
     <thead>
@@ -81,7 +81,7 @@ const stateDump: SaveStateData = await browser.saveState({
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 Сохранение данных в файл.
 
@@ -96,7 +96,7 @@ it("test", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [restoreState](../restoreState)
 -   [afterAll](../../../reference/config/after-all)
