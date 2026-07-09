@@ -5,8 +5,8 @@
   "scripts": {
     "build": "docusaurus build",
     "start": "docusaurus start",
-    "lint": "eslint --cache src && prettier --check .",
-    "reformat": "eslint --cache --fix src && prettier --write .",
+    "lint": "eslint --cache src plugins && prettier --check .",
+    "reformat": "eslint --cache --fix src plugins && prettier --write .",
     "test": "npm run lint && npm run typecheck",
     "typecheck": "tsc",
     "storybook": "storybook dev -p 6006",

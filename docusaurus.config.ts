@@ -3,6 +3,7 @@ import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 import { tailwindPlugin } from "./plugins/tailwind";
 import { svgFixDuplicateIdsPlugin } from "./plugins/svg-fix";
+import { yandexMetricaFixedPlugin } from "./plugins/yandex-metrica-fixed";
 
 const config: Config = {
     title: "Testplane",
@@ -233,7 +234,7 @@ const config: Config = {
         tailwindPlugin,
         svgFixDuplicateIdsPlugin,
         [
-            "docusaurus-plugin-yandex-metrica",
+            yandexMetricaFixedPlugin,
             {
                 counterID: "97719088",
                 webvisor: true,
