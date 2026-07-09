@@ -419,10 +419,14 @@ describe("profile", () => {
 });
 ```
 
-Но можно и вернуть всё как было: достаточно установить пакет `@testplane/globals`.
+Но можно и вернуть всё как было: достаточно установить пакет [`@testplane/globals`](https://github.com/gemini-testing/testplane-globals).
 
 ## Удаление `automationProtocol: "devtools"` и изменения в браузерных настройках по умолчанию
 
 Testplane 9 использует WebDriver как единственный `automationProtocol`. Старый режим `automationProtocol: "devtools"` удален, локальный запуск браузеров можно делать с помощью `gridUrl: "local"`.
 
 Примечание: CDP-протокол и все, что с ним связано, по-прежнему можно использовать. Это изменение касается только опции `automationProtocol`.
+
+## Прекращение поддержки Node 18 и 20
+
+Testplane 9 необходима Node 22 или новее для работы (мы рекомендуем v22.12+).

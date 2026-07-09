@@ -397,10 +397,14 @@ describe("profile", () => {
 });
 ```
 
-However, you can still use globals without explicit imports by installing the `@testplane/globals` package.
+However, you can still use globals without explicit imports by installing the [`@testplane/globals`](https://github.com/gemini-testing/testplane-globals) package.
 
 ## Removal of "devtools" automation protocol and tweaks in browser defaults
 
 Testplane 9 uses WebDriver as the single automation protocol. The old `automationProtocol: "devtools"` mode is gone, but local browser runs remain simple: `gridUrl: "local"` is now the default browser endpoint.
 
 Note: you can still use CDP protocol and everything related to that — this change is purely about the `automationProtocol` config option that was laggy and unreliable.
+
+## End of support for Node 18 and 20
+
+Testplane 9 requires Node 22 or newer to work (we recommend v22.12+).

@@ -35,10 +35,10 @@ Testplane 9 introduces a new screenshot engine, that's aimed to improve visual c
 
 You can expect around 5% of `assertView` screenshots to change, and often it's enough to just accept them all. To accept changed screenshots, you can:
 
--   Run `testplane --update-refs`, which will update all references
 -   Use [HTML Reporter](/docs/html-reporter/overview/) to review and accept changed screenshots (recommended)
+-   Run `testplane --update-refs`, which will update all references
 
-If you notice some undesired changes in your screenshots, check the [Common issues](#common_issues) section below or, if you can't find a solution, let us know in [github issues](https://github.com/gemini-testing/testplane/issues).
+If you notice some undesired changes in your screenshots, check the [Common issues](#common_issues) section below or, if you can't find a solution, let us know in [github issues](https://github.com/gemini-testing/testplane/issues) or [community chat in Telegram](https://t.me/testplane).
 
 #### `selectorToScroll` option is deprecated
 
@@ -86,7 +86,7 @@ Install a tiny package with global type definitions:
 npm install -D @testplane/globals
 ```
 
-Then either add it to your tsconfig.json:
+Then add it to your tsconfig.json:
 
 ```json
 {
@@ -96,7 +96,9 @@ Then either add it to your tsconfig.json:
 }
 ```
 
-Alternatively, you can use triple-slash directive: `/// <reference types="@testplane/globals" />`.
+Make sure to remove `testplane` from `types` array if it was there before.
+
+Alternatively, you can use triple-slash directive in any of your TS files: `/// <reference types="@testplane/globals" />`.
 
 #### If you prefer explicit imports
 
@@ -254,8 +256,8 @@ await browser.assertView("menu", "[data-testid=menu]", {
 
 In short, the new "interference avoidance" logic works like this:
 
-1. Compute "safe area", that is free of sticky, fixed, and other interfering elements that are not part of the target element. Areas with border radiuses are also considered unsafe.
-2. At all times during the capture, the engine will try to keep the target element within the safe area, including at the very beginning.
+1. Compute "safe area", that is free of sticky, fixed, and other interfering elements that are not part of the target element. Areas near border radiuses inside scroll containers are also considered unsafe, as they will leave "corners" on the screenshot when scrolling.
+2. At all times during the capture, the engine will try to keep the target element within the safe area. This means that even if the target element is fully in the viewport, it may be scrolled to fit into the safe area.
 
 ### `assertView` now captures a different area
 
@@ -263,7 +265,7 @@ Most probable reason is that Testplane 8 area was actually incorrect. So double 
 
 We've seen cases where Testplane 8 screenshot was just a picture of some interfering element on top, unrelated to target, that's fixed now.
 
-The other reason might be that you are using a custom command on top of `assertView`, that draws transparent overlay on top of the page and screenshots that. In that case, we recommend to use bare `assertView` instead.
+The other reason might be that you are using a custom command on top of `assertView`, that draws transparent overlay on top of the page and screenshots that. Some projects used this workaround to screenshot pseudo-elements or crop scrollbars. In that case, we recommend to use bare `assertView` instead.
 
 ### Elements that used to render on top of the target element are gone
 
@@ -309,6 +311,8 @@ If you want those elements back, explicitly list those elements in target select
 + await browser.assertView("price-card", ["[data-testid=price-card]", "[data-testid=close-button]"]);
 ```
 
+Here, we'd screenshot the minimal area that covers both the price card and the close button.
+
 Alternatively, you can disable scrolling (and hence interference avoidance) by setting `captureElementFromTop: false` and `allowViewportOverflow: true` options.
 
 ### Sudden `move target is out of bounds` errors, failures to click on elements, etc.
@@ -333,11 +337,6 @@ Note: `assertView` still scrolls the target element into view if it was not visi
 
 If you encounter any problems during the migration or have any questions, come to [github issues][gh-issues] - and we will definitely help you!
 
-[how-to-upgrade-hermione-to-4]: ../../migrations/how-to-upgrade-hermione-to-4
-[how-to-upgrade-hermione-to-5]: ../../migrations/how-to-upgrade-hermione-to-5
-[how-to-upgrade-hermione-to-6]: ../../migrations/how-to-upgrade-hermione-to-6
-[how-to-upgrade-hermione-to-7]: ../../migrations/how-to-upgrade-hermione-to-7
-[how-to-upgrade-hermione-to-8]: ../../migrations/how-to-upgrade-hermione-to-8
 [tp-ctx]: https://github.com/gemini-testing/testplane/blob/master/docs/typescript.md#testplanectx-typings
 [screenshotsdir]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#https://github.com/gemini-testing/testplane/blob/master/docs/config.md#screenshotsdir
 [sets]: https://github.com/gemini-testing/testplane/blob/master/docs/config.md#sets
