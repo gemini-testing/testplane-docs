@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # react$$
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `react$$`, чтобы найти на странице множество React-компонентов по их настоящему имени, одновременно фильтруя их по props'ам и состоянию.
 
@@ -13,13 +13,13 @@ import Admonition from "@theme/Admonition";
 
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.react$$(reactComponentSelector, { props, state });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -33,7 +33,7 @@ await browser.react$$(reactComponentSelector, { props, state });
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should calculate 7 * 6", async ({ browser }) => {
@@ -48,7 +48,7 @@ it("should calculate 7 * 6", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [browser.react$](../reactDollar)
 -   [element.react$](../../element/reactDollar)

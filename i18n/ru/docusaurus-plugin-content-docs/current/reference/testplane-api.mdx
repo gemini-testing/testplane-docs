@@ -34,11 +34,11 @@ const testplane = new Testplane(config);
 </tbody>
 </table>
 
-## config {#testplane_config}
+## config {/* #testplane_config */}
 
 Объект с конфигом testplane или путь к конфигурационному файлу, относительно рабочей папки: `process.cwd()`.
 
-## events {#testplane_events}
+## events {/* #testplane_events */}
 
 [События testplane][testplane-events], на которые можно подписаться.
 
@@ -50,7 +50,7 @@ testplane.on(testplane.events.INIT, async () => {
 });
 ```
 
-## errors {#testplane_errors}
+## errors {/* #testplane_errors */}
 
 Testplane может возвращать ошибки следующего типа:
 
@@ -63,7 +63,7 @@ Testplane может возвращать ошибки следующего ти
 -   [ImageDiffError](#testplane_errors_image_diff_error)
 -   [NoRefImageError](#testplane_errors_no_ref_image_error)
 
-### CoreError {#testplane_errors_core_error}
+### CoreError {/* #testplane_errors_core_error */}
 
 Ошибка `CoreError` возвращается в случае неудачной калибровки пустой страницы (`about:blank`) в браузере.
 
@@ -73,7 +73,7 @@ Testplane может возвращать ошибки следующего ти
 Could not calibrate. This could be due to calibration page has failed to open properly
 ```
 
-### CancelledError {#testplane_errors_cancelled_error}
+### CancelledError {/* #testplane_errors_cancelled_error */}
 
 Ошибка `CancelledEror` возвращается в случае аварийного завершения по команде [halt](#testplane_halt).
 
@@ -83,7 +83,7 @@ Could not calibrate. This could be due to calibration page has failed to open pr
 Browser request was cancelled
 ```
 
-### ClientBridgeError {#testplane_errors_client_bridge_error}
+### ClientBridgeError {/* #testplane_errors_client_bridge_error */}
 
 Ошибка `ClientBridgeError` возвращается в случае неудачной инъекции кода JavaScript на стороне клиента (браузера). Testplane осуществляет инъекцию кода с помощью команды [execute][wdio-execute] WebDriverIO.
 
@@ -93,7 +93,7 @@ Browser request was cancelled
 Unable to inject client script
 ```
 
-### HeightViewportError {#testplane_errors_height_viewport_error}
+### HeightViewportError {/* #testplane_errors_height_viewport_error */}
 
 Ошибка `HeightViewportError` возвращается при попытке снять скриншот для области, чья нижняя граница не влезает в область вьюпорта.
 
@@ -110,7 +110,7 @@ Viewport size: <viewport.width>, <viewport.height>.
 
 При этом сообщение подсказывает пользователю testplane, какие настройки нужно установить в конфиге testplane, чтобы иметь возможность снять скриншот для указанной области.
 
-### OffsetViewportError {#testplane_errors_offset_viewport_error}
+### OffsetViewportError {/* #testplane_errors_offset_viewport_error */}
 
 Ошибка `OffsetViewportError` возвращается при попытке снять скриншот для области, чьи границы слева, справа или наверху выходят за пределы вьюпорта.
 
@@ -130,7 +130,7 @@ option "allowViewportOverflow" in "assertView" command.
 
 При этом сообщение подсказывает пользователю testplane, какие настройки нужно установить в конфиге testplane, чтобы иметь возможность снять скриншот для указанной области.
 
-### AssertViewError {#testplane_errors_assert_view_error}
+### AssertViewError {/* #testplane_errors_assert_view_error */}
 
 Ошибка `AssertViewError` возвращается при неудачной попытке снять скриншот.
 
@@ -148,7 +148,7 @@ element ("<selector>") still not existing after <this.options.waitforTimeout> ms
 element ("<this.selector>") still not existing after <this.options.waitforTimeout> ms
 ```
 
-### ImageDiffError {#testplane_errors_image_diff_error}
+### ImageDiffError {/* #testplane_errors_image_diff_error */}
 
 Ошибка `ImageDiffError` возвращается из команды `assertView`, если при снятии и сравнении скриншота с эталонным скриншотом обнаруживается дифф (разница в изображениях).
 
@@ -192,7 +192,7 @@ exports.handleImageDiff = (currImg, refImg, state, opts) => {
 };
 ```
 
-### NoRefImageError {#testplane_errors_no_ref_image_error}
+### NoRefImageError {/* #testplane_errors_no_ref_image_error */}
 
 Ошибка `NoRefImageError` возвращается из команды `assertView`, если при снятии и сравнении скриншота testplane не находит эталонный скриншот на файловой системе.
 
@@ -216,7 +216,7 @@ can not find reference image at <refImg.path> for "<stateName>" state
 </tbody>
 </table>
 
-## intercept {#testplane_intercept}
+## intercept {/* #testplane_intercept */}
 
 Функция, с помощью которой можно подписаться на [перехват событий][testplane-events-interception] testplane.
 
@@ -232,7 +232,7 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 
 Подробнее о перехвате событий читайте в разделе «[Про перехват событий][testplane-events-interception]».
 
-## init {#testplane_init}
+## init {/* #testplane_init */}
 
 Инициализирует инстанс testplane, загружает все плагины и т. д.
 
@@ -242,7 +242,7 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 await testplane.init();
 ```
 
-## run {#testplane_run}
+## run {/* #testplane_run */}
 
 Запускает прогон тестов, расположенных по заданным путям.
 
@@ -273,7 +273,7 @@ const success = await testplane.run(testPaths, options);
 </tbody>
 </table>
 
-## addTestToRun {#testplane_add_test_to_run}
+## addTestToRun {/* #testplane_add_test_to_run */}
 
 Добавляет тест к текущему запуску. Возвращает `false`, если текущий запуск уже закончился или был отменен. Иначе возвращает `true`.
 
@@ -298,7 +298,7 @@ const success = testplane.addTestToRun(test, browser);
 </tbody>
 </table>
 
-## readTests {#testplane_read_tests}
+## readTests {/* #testplane_read_tests */}
 
 Асинхронный метод. Возвращает объект типа [TestCollection](#test_collection).
 
@@ -326,7 +326,7 @@ await testplane.readTests(testPaths, options);
 </tbody>
 </table>
 
-## isFailed {#testplane_is_failed}
+## isFailed {/* #testplane_is_failed */}
 
 Возвращает `true` или `false` в зависимости от того, была ли ошибка или падение теста при запуске тестов. Может пригодиться в плагинах для того, чтобы определить текущий статус testplane.
 
@@ -336,7 +336,7 @@ await testplane.readTests(testPaths, options);
 const failed = testplane.isFailed();
 ```
 
-## isWorker {#testplane_is_worker}
+## isWorker {/* #testplane_is_worker */}
 
 Возвращает `true`, если метод был вызван из воркера testplane.
 Возвращает `false`, если метод был вызван из мастер-процесса testplane.
@@ -356,7 +356,7 @@ module.exports = testplane => {
 };
 ```
 
-## halt {#testplane_halt}
+## halt {/* #testplane_halt */}
 
 Аварийно завершает прогон тестов в случае критической ошибки. Если процессу не удается корректно завершить работу за заданное контрольное время _(timeout)_, то он будет принудительно завершен, кроме случаев, когда _timeout_ явно установлен в `0`.
 
@@ -379,11 +379,11 @@ testplane.halt(error, [timeout=60000ms]);
 </tbody>
 </table>
 
-## Test Collection {#test_collection}
+## Test Collection {/* #test_collection */}
 
 Объект типа `TestCollection` возвращается методом [testplane.readTests](#testplane_read_tests), а также передается в качестве аргумента в обработчик события [AFTER_TESTS_READ][after-tests-read].
 
-### getBrowsers {#test_collection_get_browsers}
+### getBrowsers {/* #test_collection_get_browsers */}
 
 Возвращает список браузеров, для которых в коллекции есть тесты.
 
@@ -393,7 +393,7 @@ testplane.halt(error, [timeout=60000ms]);
 const browsers = testCollection.getBrowsers();
 ```
 
-### mapTests {#test_collection_map_tests}
+### mapTests {/* #test_collection_map_tests */}
 
 Строит отображение тестов для заданного браузера.
 
@@ -407,7 +407,7 @@ const tests = testCollection.mapTests(browserId, (test, browserId) => {
 
 Если браузер не задан (то есть первым аргументом передан обратный вызов), то будет строиться отображение тестов для всех браузеров.
 
-### sortTests {#test_collection_sort_tests}
+### sortTests {/* #test_collection_sort_tests */}
 
 Сортирует тесты для заданного браузера.
 
@@ -421,7 +421,7 @@ testCollection.sortTests(browserId, (currentTest, nextTest) => {
 
 Если браузер не задан (то есть первым аргументом передан обратный вызов), то сортировка будет применена ко всем браузерам.
 
-### eachTest {#test_collection_each_test}
+### eachTest {/* #test_collection_each_test */}
 
 Выполняет итерацию по тестам для заданного браузера.
 
@@ -435,7 +435,7 @@ testCollection.eachTest(browserId, (test, browserId) => {
 
 Если браузер не задан (то есть первым аргументом передан обратный вызов), то итерация будет происходить по тестам для всех браузеров.
 
-### eachTestByVersions {#test_collection_each_test_by_versions}
+### eachTestByVersions {/* #test_collection_each_test_by_versions */}
 
 Выполняет итерацию по тестам и версиям браузера для заданного браузера.
 
@@ -449,7 +449,7 @@ testCollection.eachTestByVersions(browserId, (test, browserId, browserVersion) =
 });
 ```
 
-### disableAll {#test_collection_disable_all}
+### disableAll {/* #test_collection_disable_all */}
 
 Отключает все тесты или тесты для заданного браузера. Возвращает ссылку на инстанс коллекции тестов.
 
@@ -467,7 +467,7 @@ disableAll(browserId);
 
 Если браузер не задан, то будут отключены все тесты.
 
-### enableAll {#test_collection_enable_all}
+### enableAll {/* #test_collection_enable_all */}
 
 Включает все тесты или тесты для заданного браузера. Возвращает ссылку на инстанс коллекции тестов.
 
@@ -485,7 +485,7 @@ enableAll(browserId);
 
 Если браузер не задан, то будут включены все тесты.
 
-### disableTest {#test_collection_disable_test}
+### disableTest {/* #test_collection_disable_test */}
 
 Отключает указанный тест во всех браузерах или только в заданном браузере. Возвращает ссылку на инстанс коллекции тестов.
 
@@ -503,7 +503,7 @@ disableTest(fullTitle, browserId);
 
 Идентификатором теста является его полное название: `fullTitle`.
 
-### enableTest {#test_collection_enable_test}
+### enableTest {/* #test_collection_enable_test */}
 
 Включает указанный тест во всех браузерах или только в заданном браузере. Возвращает ссылку на инстанс коллекции тестов.
 
@@ -519,7 +519,7 @@ enableTest(fullTitle);
 enableTest(fullTitle, browserId);
 ```
 
-### getRootSuite {#test_collection_get_root_suite}
+### getRootSuite {/* #test_collection_get_root_suite */}
 
 Возвращает корневой suite для заданного браузера. Возвращает `undefined`, если в коллекции нет тестов для указанного браузера.
 
@@ -529,7 +529,7 @@ enableTest(fullTitle, browserId);
 const rootSuite = getRootSuite(browserId);
 ```
 
-### eachRootSuite {#test_collection_each_root_suite}
+### eachRootSuite {/* #test_collection_each_root_suite */}
 
 Выполняет итерацию по всем корневым suite в коллекции, в которых есть тесты.
 

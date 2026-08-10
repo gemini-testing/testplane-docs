@@ -4,7 +4,7 @@ import TestRunEnvExample from "@site/docs/reference/config/_partials/examples/_s
 
 # system
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 The `system` section in Testplane settings is not mandatory.
 
@@ -23,7 +23,7 @@ Example configuration of the `system` section:
 
 <SystemExample />
 
-## System Section Reference {#setup_description}
+## System Section Reference {/* #setup_description */}
 
 <table>
     <thead>
@@ -104,13 +104,13 @@ Example configuration of the `system` section:
     </tbody>
 </table>
 
-### debug {#debug}
+### debug {/* #debug */}
 
 Enables debug mode for WebDriver if set to `true`. In this mode, detailed information about each command sent to the browser will be output to the console.
 
 Default: `false`.
 
-### expectOpts {#expect_opts}
+### expectOpts {/* #expect_opts */}
 
 Options for [expect-webdriverio](https://webdriver.io/docs/api/expect-webdriverio/). Allows changing the timeout and interval between attempts to find an element.
 
@@ -123,7 +123,7 @@ const defaultExpectOpts = {
 };
 ```
 
-### mochaOpts {#mocha_opts}
+### mochaOpts {/* #mocha_opts */}
 
 Additional options for `mocha`, which are passed to `mocha.setup`. See the list of available options in the [Mocha documentation](https://mochajs.org/). Default: `{ timeout: 60000 }`.
 
@@ -140,7 +140,7 @@ export default {
 } satisfies ConfigInput;
 ```
 
-### ctx {#ctx}
+### ctx {/* #ctx */}
 
 Context that will be available in all tests via the `testplane.ctx` method. Intended for sharing some data between all tests without resorting to using global variables.
 
@@ -167,7 +167,7 @@ it("awesome test", function () {
 
 <Admonition type="tip">Use _testplane.ctx_ in tests instead of global variables.</Admonition>
 
-### patternsOnReject {#patterns_on_reject}
+### patternsOnReject {/* #patterns_on_reject */}
 
 The session will be closed if a test fails with an error matching one of the specified patterns in `patternsOnReject`. A new session will then be created to avoid infrastructure issues.
 
@@ -184,25 +184,25 @@ export default {
 } satisfies ConfigInput;
 ```
 
-### workers {#workers}
+### workers {/* #workers */}
 
 Testplane runs all tests in subprocesses to reduce CPU usage for the main process and avoid memory limitations for _Node.js._ This option sets the number of subprocesses that will be launched to run tests. Default: `1`.
 
-### testsPerWorker {#tests_per_worker}
+### testsPerWorker {/* #tests_per_worker */}
 
 Maximum number of tests that will be run in one subprocess before the subprocess is restarted. Default: `Infinity`.
 
-### diffColor {#diff_color}
+### diffColor {/* #diff_color */}
 
 Color for displaying the diff in visual checks using the [`browser.assertView`](../../../commands/browser/assertView) command.
 
 Default: `"#ff00ff"`.
 
-### parallelLimit {#parallel_limit}
+### parallelLimit {/* #parallel_limit */}
 
 By default, Testplane launches all browsers simultaneously. Sometimes (e.g., when using cloud services like [SauceLabs][sauce-labs]) you may need to limit the number of browsers that can be launched simultaneously. This option sets that limit. Default: `Infinity`.
 
-### fileExtensions {#file_extensions}
+### fileExtensions {/* #file_extensions */}
 
 File extensions in which Testplane will search the file system for tests to run. Default: `[".js", ".mjs", ".ts", ".mts", ".jsx", ".tsx"]`.
 

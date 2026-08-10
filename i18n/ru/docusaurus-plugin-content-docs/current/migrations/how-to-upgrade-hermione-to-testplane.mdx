@@ -14,22 +14,22 @@ import Admonition from "@theme/Admonition";
 
 </Admonition>
 
-## Что изменилось? {#what_is_new}
+## Что изменилось? {/* #what_is_new */}
 
 Этот проект ранее назывался Hermione, но со временем возникли некоторые проблемы с авторскими правами и товарными знаками, что привело к решению о ребрендинге. После некоторого обсуждения мы остановились на Testplane в качестве официального нового названия.
 Так как это изменение является простым ребрендингом, мы продолжили сквозное версионирование, вместо того, чтобы начинать версионирование заново. Таким образом, Testplane@8.x является простой заменой Hermione@8.x.
 Testplane имеет полную обратную совместимость c Hermione — умеет читать конфиги Hermione, поддерживает ее плагины, а для более плавного переезда экспортирует сразу 2 bin-файла (testplane и hermione).
 
-## Как переехать? {#how_to_move}
+## Как переехать? {/* #how_to_move */}
 
-### 1. Заменить npm-зависимости `hermione` на `testplane` в package.json {#uninstall_hermione}
+### 1. Заменить npm-зависимости `hermione` на `testplane` в package.json {/* #uninstall_hermione */}
 
 ```bash
 npm uninstall hermione
 npm install -D testplane
 ```
 
-### 2. В вашем ts-конфиге `tsconfig.json` заменить поле `hermione` на `testplane` {#update_ts_config}
+### 2. В вашем ts-конфиге `tsconfig.json` заменить поле `hermione` на `testplane` {/* #update_ts_config */}
 
 ```javascript
 {
@@ -41,13 +41,13 @@ npm install -D testplane
 }
 ```
 
-### 3. Заменить все импорты и декларации пакета hermione (при наличии) {#remove_from_code}
+### 3. Заменить все импорты и декларации пакета hermione (при наличии) {/* #remove_from_code */}
 
 -   `import ... from "hermione"` → `import ... from "testplane"`
 -   `require("hermione")` → `require("testplane")`
 -   `declare module "hermione"` → `declare module "testplane"`
 
-### 4. Опциональные изменения (не обязательны для переезда, но рекомендованные) {#optional_changes}
+### 4. Опциональные изменения (не обязательны для переезда, но рекомендованные) {/* #optional_changes */}
 
 -   при запуске используйте bin-файл `testplane` вместо `hermione`;
 -   переименуйте файл конфигурации `.hermione.conf.(t|j)s` в `.testplane.conf.(t|j)s`;
@@ -59,7 +59,7 @@ npm install -D testplane
 -   если вы используете дефолтное значение опции [screenshotsDir][screenshotsdir], то переименуйте папку со скриншотами "hermione/screens" в "testplane/screens" иил явно укажите в конфиге значение;
 -   если вы используете дефолтное значение опции [sets.files][sets], то переименуйте вашу папку с тестами "hermione → testplane" или укажите явно значение опции.
 
-## Поддержка {#support}
+## Поддержка {/* #support */}
 
 Если при переезде вы столкнетесь с проблемами или у вас возникнут какие-либо вопросы, то приходите в [github issues][gh-issues] — и мы обязательно вам поможем!
 

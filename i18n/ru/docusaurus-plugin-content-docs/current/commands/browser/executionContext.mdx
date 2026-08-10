@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # executionContext
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Во время прогона тестов testplane добавляет в `browser` свойство `executionContext` для хранения контекста исполнения.
 
@@ -12,7 +12,7 @@ import Admonition from "@theme/Admonition";
     Контекст исполнения добавляет testplane, в [API WebDriverIO][webdriverio-api] его нет.
 </Admonition>
 
-## Пример использования {#examples}
+## Пример использования {/* #examples */}
 
 ```javascript
 it("should log execution context", async ({ browser }) => {

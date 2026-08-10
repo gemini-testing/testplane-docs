@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 
 # $$
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `$$` command instead of [findElements][find-elements] as a shorter command to get multiple elements on the page within the scope of an element. This command is similar to the [browser.$$()](../../browser/_dollardollar) command but differs in that the search for elements will be among the children of the current element.
 
@@ -16,13 +16,13 @@ Use the `$$` command instead of [findElements][find-elements] as a shorter comma
     selectors][how-to-use-selectors]".
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.$(selector).$$(subSelector);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -34,7 +34,7 @@ await browser.$(selector).$$(subSelector);
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 **index.html**
 

@@ -4,7 +4,7 @@ sidebar_class_name: hidden
 
 # HTML Reporter Object
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Html-reporter adds an `htmlReporter` object to the `testplane` object with its own API.
 
@@ -42,7 +42,7 @@ To add elements, use the [addExtraItem](#addextraitem) method.
 
 Interface for saving images to the user's storage.
 
-### Usage example {#images_saver_usage_example}
+### Usage example {/* #images_saver_usage_example */}
 
 ```javascript
 const MyStorage = require("my-storage");
@@ -78,7 +78,7 @@ module.exports = (testplane, opts) => {
 
 Interface for saving sqlite databases to the user's storage.
 
-### Usage example {#reports_saver_usage_example}
+### Usage example {/* #reports_saver_usage_example */}
 
 ```javascript
 const MyStorage = require("my-storage");
@@ -150,13 +150,13 @@ module.exports = (testplane, opts) => {
 
 Adds an additional item to the burger menu of the report.
 
-### Example of a call {#add_extra_item_call_example}
+### Example of a call {/* #add_extra_item_call_example */}
 
 ```javascript
 testplane.htmlReporter.addExtraItem(caption, url);
 ```
 
-### Call parameters {#add_extra_item_call_params}
+### Call parameters {/* #add_extra_item_call_params */}
 
 All parameters are required.
 
@@ -175,7 +175,7 @@ All parameters are required.
 
 Downloads all databases from the given files of the type `databaseUrls.json`.
 
-### Example of a call {#download_databases_call_example}
+### Example of a call {/* #download_databases_call_example */}
 
 ```javascript
 const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.json"], {
@@ -183,7 +183,7 @@ const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.j
 });
 ```
 
-### Call parameters {#download_databases_call_params}
+### Call parameters {/* #download_databases_call_params */}
 
 The function takes 2 arguments—a list of paths to the files `databaseUrls.json` in the form of an array of strings and an object with the key `pluginConfig`, in the value of which the plugin config is stored.
 
@@ -193,13 +193,13 @@ The function returns a list of paths to saved databases.
 
 Merges all given databases and saves the final report on the specified path.
 
-### Example of a call {#merge_databases_call_example}
+### Example of a call {/* #merge_databases_call_example */}
 
 ```javascript
 await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
 ```
 
-### Call parameters {#merge_databases_call_params}
+### Call parameters {/* #merge_databases_call_params */}
 
 <table>
 <thead>
@@ -216,17 +216,17 @@ await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
 
 Resolves the test tree from the passed database.
 
-### Example of a call {#get_tests_tree_from_database_call_example}
+### Example of a call {/* #get_tests_tree_from_database_call_example */}
 
 ```javascript
 const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 ```
 
-### Call parameters {#get_tests_tree_from_database_call_params}
+### Call parameters {/* #get_tests_tree_from_database_call_params */}
 
 The function takes one argument—the path to the database with the result of the tests run.
 
-### Usage example {#get_tests_tree_from_database_usage_example}
+### Usage example {/* #get_tests_tree_from_database_usage_example */}
 
 ```javascript
 async function getSuccessTestRunIds({ testplane, mergedDbPath }) {

@@ -3,7 +3,7 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
 
 # assertView
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `assertView`, чтобы снять скриншот для определенного состояния теста и сравнить его с эталонным.
 
@@ -16,14 +16,14 @@ import AssertViewOptions from "../../_partials/specs/assert-view-options.mdx";
     скриншота.
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```typescript
 await browser.assertView(state, options);
 await browser.assertView(state, selector, options);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -61,7 +61,7 @@ await browser.assertView(state, selector, options);
 
 <AssertViewOptions />
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 **Визуальная проверка элемента**
 
@@ -106,7 +106,7 @@ it("should assert view with given options", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [element.assertView](../../element/assertView)
 -   [browser.saveRecordingScreen](../saveRecordingScreen)

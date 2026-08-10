@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # pause
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `pause`, чтобы приостановить выполнение теста на заданный промежуток времени.
 
@@ -12,13 +12,13 @@ import Admonition from "@theme/Admonition";
     [waitForExist][wait-for-exist] или другие команды _waitFor*_.
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.pause(milliseconds);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -30,7 +30,7 @@ await browser.pause(milliseconds);
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should pause the execution", async ({ browser }) => {

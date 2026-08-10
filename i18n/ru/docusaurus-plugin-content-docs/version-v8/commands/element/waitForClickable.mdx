@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # waitForClickable
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `waitForClickable`, чтобы подождать, пока элемент в течение указанного количества миллисекунд не станет кликабельным или не кликабельным.
 
@@ -11,13 +11,13 @@ import Admonition from "@theme/Admonition";
     выполнить эту команду.
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.$(selector).waitForClickable({ timeout, reverse, timeoutMsg, interval });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -32,7 +32,7 @@ await browser.$(selector).waitForClickable({ timeout, reverse, timeoutMsg, inter
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should detect when element is clickable", async ({ browser }) => {

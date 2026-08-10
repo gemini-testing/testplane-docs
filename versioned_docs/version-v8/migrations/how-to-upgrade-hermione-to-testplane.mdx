@@ -14,20 +14,20 @@ We recommend updating Hermione step by step, ensuring at each stage that all pro
 
 </Admonition>
 
-## What has changed? {#what_is_new}
+## What has changed? {/* #what_is_new */}
 
 This project was formerly known as "Hermione", but eventually some copyright and trademark issues surfaced, leading to the decision to rebrand. After some discussion, we settled on "Testplane" as the official new title. Considering this change as merely a rebranding, we've proceeded with the existing version count instead of starting anew. Thus, Testplane `v8.x` is a drop-in replacement for Hermione `v8.x`.
 
-## Migration Guide {#how_to_move}
+## Migration Guide {/* #how_to_move */}
 
-### 1. Replace hermione deps with tesplane in `package.json` {#uninstall_hermione}
+### 1. Replace hermione deps with tesplane in `package.json` {/* #uninstall_hermione */}
 
 ```bash
 npm uninstall hermione
 npm install -D testplane
 ```
 
-### 2. Replace "hermione" with "testplane" in compilerOptions.types field of your tsconfig.json file {#update_ts_config}
+### 2. Replace "hermione" with "testplane" in compilerOptions.types field of your tsconfig.json file {/* #update_ts_config */}
 
 ```javascript
 {
@@ -39,13 +39,13 @@ npm install -D testplane
 }
 ```
 
-### 3. Replace all imports, requires and declarations {#remove_from_code}
+### 3. Replace all imports, requires and declarations {/* #remove_from_code */}
 
 -   `import ... from "hermione"` → `import ... from "testplane"`
 -   `require("hermione")` → `require("testplane")`
 -   `declare module "hermione"` → `declare module "testplane"`
 
-### 4. Optional changes list (these are not required, but recommended) {#optional_changes}
+### 4. Optional changes list (these are not required, but recommended) {/* #optional_changes */}
 
 -   use `testplane` binary instead of `hermione` binary;
 -   rename `.hermione.conf.ts`, `.hermione.conf.js` configs to `.testplane.conf.ts`, `.testplane.conf.js`;
@@ -57,7 +57,7 @@ npm install -D testplane
 -   if you use default [screenshotsDir][screenshotsdir] value, rename "hermione/screens" directory to "testplane/screens" or specify the value "hermione/screens" explicitly;
 -   if you use default [sets.files][sets] value, move your tests from "hermione" to "testplane" directory or specify the value "hermione" explicitly.
 
-## Support {#support}
+## Support {/* #support */}
 
 If you encounter any problems during the migration or have any questions, come to [github issues][gh-issues] - and we will definitely help you!
 

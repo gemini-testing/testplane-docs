@@ -3,13 +3,13 @@ unlisted: true
 sidebar_class_name: hidden
 ---
 
-<!-- This page was hidden, because at its current state it brings very little value to users -->
+{/* This page was hidden, because at its current state it brings very little value to users */}
 
 import Admonition from "@theme/Admonition";
 
 # How to Use Chrome DevTools Protocol in Testplane
 
-## Introduction {#preface}
+## Introduction {/* #preface */}
 
 <Admonition type="warning">
     Install Hermione (Testplane) version 4 or higher in your project to use _Chrome DevTools
@@ -22,7 +22,7 @@ CDP support in _WebdriverIO@7_ is implemented using [puppeteer][puppeteer], whic
 
 For a comparison of the _WebDriver_ and _CDP_ protocols, see the "WebDriver vs CDP" section in the Reference Manual.
 
-## Local Usage {#local_usage}
+## Local Usage {/* #local_usage */}
 
 <Admonition type="danger" title="Removed in Testplane 9">
     Starting from **Testplane 9**, the value `"devtools"` for the `automationProtocol` option (as well as the `--devtools` CLI flag) has been **removed**. It caused a number of hard-to-reproduce errors that never occurred with `automationProtocol: "webdriver"`, and the underlying [WebdriverIO](https://webdriver.io) — on which Testplane is based — has also dropped its `devtools` automation protocol. The only supported value is now `"webdriver"` (which is also the default).
@@ -65,7 +65,7 @@ See the [Running on Local Browsers](/blog/local-browsers-intro) blog post for a 
 
 Once the browser is started locally via WebDriver, you can still call [CDP commands][how-to-intercept-requests-and-responses] inside the test as described in the [Remote Usage](#remote_usage) section.
 
-## Remote Usage {#remote_usage}
+## Remote Usage {/* #remote_usage */}
 
 When using CDP on a remote machine (e.g., in a grid), Testplane will first start the browser using the WebDriver protocol and then, upon user request (i.e., when calling a CDP command), switch to CDP connection. Thus, in a single test scenario with a remote browser, we will interact using both protocols.
 
@@ -104,7 +104,7 @@ module.exports = {
     implementation in _webdriverio._
 </Admonition>
 
-## What Capabilities Does CDP Provide {#what_does_cdp_give}
+## What Capabilities Does CDP Provide {/* #what_does_cdp_give */}
 
 With CDP, you can:
 
@@ -114,7 +114,7 @@ With CDP, you can:
 -   [control CPU performance][how-to-manage-cpu-performance]
 -   [hide scrollbars][how-to-hide-scrollbars-by-cdp]
 
-## Useful Links {#useful_links}
+## Useful Links {/* #useful_links */}
 
 -   [WebDriver vs CDP][webdriver-vs-cdp]
 -   [Web Performance Recipes With Puppeteer](https://addyosmani.com/blog/puppeteer-recipes/)

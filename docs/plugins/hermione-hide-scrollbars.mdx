@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # hermione-hide-scrollbars
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `hermione-hide-scrollbars` plugin to hide scrollbars in tests that run in Chrome browsers.
 
@@ -16,13 +16,13 @@ To hide scroll bars, the CDP [Emulation.setScrollbarsHidden][set-scrollbars-hidd
     _Emulation.setScrollbarsHidden_ command.
 </Admonition>
 
-## Install {#install}
+## Install {/* #install */}
 
 ```bash
 npm install -D hermione-hide-scrollbars
 ```
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 Add the plugin to the `plugins` section of the `testplane` config:
 
@@ -43,7 +43,7 @@ module.exports = {
 };
 ```
 
-### Description of configuration parameters {#setup_description}
+### Description of configuration parameters {/* #setup_description */}
 
 <table>
 <thead>
@@ -57,11 +57,11 @@ module.exports = {
 </tbody>
 </table>
 
-### Passing parameters via the CLI {#setup_by_cli}
+### Passing parameters via the CLI {/* #setup_by_cli */}
 
 All plugin parameters that can be defined in the config can also be passed as command-line options or through environment variables during the launch of Testplane. Use the prefix `--hide-scrollbars-` for command line options and `testplane_hide_scrollbars_` for environment variables.
 
-## Useful links {#useful_links}
+## Useful links {/* #useful_links */}
 
 -   [hermione-hide-scrollbars plugin sources][hermione-hide-scrollbars]
 -   [setScrollbarsHidden][set-scrollbars-hidden]

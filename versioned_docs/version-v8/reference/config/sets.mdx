@@ -3,7 +3,7 @@ import SetsExample from "@site/docs/reference/config/_partials/examples/_sets-ex
 
 # sets
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 You can use sets to bind a set of tests to specific browsers and run them all at once with the command `testplane --set <set-name>`.
 
@@ -13,7 +13,7 @@ A set of tests is specified as an array of paths to them or to folders containin
 
 If there are no sets in the config, or you do not specify them when running Testplane (see the “[Usage](#usage)” section), then all tests from the `testplane` folder will be run in all browsers specified in the [browsers][browsers] section of the Testplane config.
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 The `sets` section has the following format:
 
@@ -21,7 +21,7 @@ The `sets` section has the following format:
 
 Where `<set-id>` is the name of the set used for its identification.
 
-### Sets Section Reference {#setup_description}
+### Sets Section Reference {/* #setup_description */}
 
 <table>
     <thead>
@@ -65,13 +65,13 @@ Where `<set-id>` is the name of the set used for its identification.
     </tbody>
 </table>
 
-## Setup Example {#setup_example}
+## Setup Example {/* #setup_example */}
 
 <SetsExample />
 
 In this example, the **common** set contains all tests in the `common` directory and will run in all browsers. The **desktop** set contains all tests in the `common` and `desktop` directories but will only run in `chrome` and `firefox`.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 Use the CLI option `--set` to specify a set when running tests.
 

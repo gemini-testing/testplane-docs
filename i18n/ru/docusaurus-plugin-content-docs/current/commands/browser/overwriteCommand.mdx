@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # overwriteCommand
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `overwriteCommand`, чтобы переопределить уже существующие команды браузера _(browser)_ или элемента _(element)_.
 
@@ -10,13 +10,13 @@ import Admonition from "@theme/Admonition";
     Читайте также рецепт «[Как добавить свои команды][how-to-add-custom-commands]».
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.overwriteCommand(name, callback, elementScope);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
     <thead>
@@ -48,7 +48,7 @@ await browser.overwriteCommand(name, callback, elementScope);
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 // вывести время паузы в мс перед самой паузой и вернуть потом это значение
@@ -68,7 +68,7 @@ it("should use my overwrite command", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [addCommand](../addCommand)
 

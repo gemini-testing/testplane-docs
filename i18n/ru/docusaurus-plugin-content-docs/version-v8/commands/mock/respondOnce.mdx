@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # respondOnce
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `respondOnce`, чтобы ответить один раз заданной перезаписью.
 
@@ -15,13 +15,13 @@ import Admonition from "@theme/Admonition";
     ответы][how-to-intercept-requests-and-responses]».
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -36,7 +36,7 @@ mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 async function getToDos(browser) {
@@ -101,7 +101,7 @@ it("should demonstrate the respondOnce command", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [respond](../respond)
 

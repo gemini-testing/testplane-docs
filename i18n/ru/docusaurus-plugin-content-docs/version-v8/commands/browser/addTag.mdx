@@ -4,11 +4,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 <Version version="8.37.0" />
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `addTag`, чтобы добавить один или несколько тегов к тесту во время его выполнения.
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```typescript
 await browser.addTag("one");
@@ -32,7 +32,7 @@ function getTag(): TestTag[];
 Метод `getTag` возвращает массив объектов тегов, которые были упомянуты выше.
 Каждый объект имеет поле `title` и поле `dynamic`, которое указывает на то, что тег был добавлен в процессе теста.
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
     <thead>

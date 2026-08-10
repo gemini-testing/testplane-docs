@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # action
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `action`, чтобы выполнить действия ввода в одном из виртуализируемых устройств в веб-браузере.
 
@@ -25,7 +25,7 @@ await browser.action(...).perform(true);
     [iOS][appium-ios] и [Android][appium-android].
 </Admonition>
 
-## Управление клавиатурой {#keyboard_control}
+## Управление клавиатурой {/* #keyboard_control */}
 
 Используется при указании `key` в качестве аргумента команды `action`. Пример:
 
@@ -39,7 +39,7 @@ await browser.action("key");
 -   `up(value: string)` — создает действие отпускания клавиши;
 -   `pause(ms: number)` — указывает, что источник ввода ничего не делает указанное количество времени.
 
-### Специальные символы {#special_symbols}
+### Специальные символы {/* #special_symbols */}
 
 Для использования специальных символов (`Control`, `Page Up`, `Shift` и т.д.) можно использовать объект `Key` из пакета [webdriverio][webdriverio-npm]. В нем содержатся unicode представления всех нужных специальных символов. Пример:
 
@@ -49,7 +49,7 @@ import { Key } from "webdriverio";
 await browser.action("key").down(Key.Ctrl).perform();
 ```
 
-### Примеры использования {#keyboard_examples}
+### Примеры использования {/* #keyboard_examples */}
 
 ```typescript
 import { Key } from "webdriverio";
@@ -69,7 +69,7 @@ it("should emit key events using key action commands", async ({ browser }) => {
 
 Вместо серии `down/up` событий лучше использовать команду `setValue`. Пример исключительно для демонстрации принципов работы команды `action`.
 
-## Управление указателем {#pointer_control}
+## Управление указателем {/* #pointer_control */}
 
 Используется при указании `pointer` в качестве аргумента команды `action`, также можно указать тип указателя. Пример:
 
@@ -92,7 +92,7 @@ await browser.action("pointer", {
 
 Подробную информацию о типах параметров [PointerActionParams][pointer-action-params], [PointerActionMoveParams][pointer-action-move-params] и [PointerActionUpParams][pointer-action-up-params] можно найти в исходном коде webdriverio.
 
-### Примеры использования {#pointer_examples}
+### Примеры использования {/* #pointer_examples */}
 
 ```typescript
 it("drag and drop using pointer action command", async ({ browser }) => {
@@ -110,7 +110,7 @@ it("drag and drop using pointer action command", async ({ browser }) => {
 });
 ```
 
-## Управление колесом прокрутки {#scroll_wheel_control}
+## Управление колесом прокрутки {/* #scroll_wheel_control */}
 
 Используется при указании `wheel` в качестве аргумента команды `action`. Пример:
 
@@ -125,7 +125,7 @@ await browser.action("wheel");
 
 Подробную информацию о типе параметра [ScrollParams][scroll-params] можно найти в исходном коде webdriverio.
 
-### Примеры использования {#scroll_examples}
+### Примеры использования {/* #scroll_examples */}
 
 ```typescript
 it("should scroll using wheel action commands", async ({ browser }) => {
@@ -144,7 +144,7 @@ it("should scroll using wheel action commands", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [actions](../actions)
 

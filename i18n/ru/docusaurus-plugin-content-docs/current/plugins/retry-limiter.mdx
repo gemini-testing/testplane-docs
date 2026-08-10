@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # @testplane/retry-limiter
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте плагин [@testplane/retry-limiter][retry-limiter], чтобы ограничивать количество ретраев упавших тестов, а также время, в течение которого ретраи разрешены.
 
@@ -34,13 +34,13 @@ import Admonition from "@theme/Admonition";
     реальную проблему со стабильностью прогонов тестов.
 </Admonition>
 
-## Установка {#install}
+## Установка {/* #install */}
 
 ```bash
 npm install -D @testplane/retry-limiter
 ```
 
-## Настройка {#setup}
+## Настройка {/* #setup */}
 
 Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
 
@@ -60,7 +60,7 @@ module.exports = {
 };
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Расшифровка параметров конфигурации {/* #setup_description */}
 
 <table>
 <thead>
@@ -75,7 +75,7 @@ module.exports = {
 </tbody>
 </table>
 
-### Передача параметров через CLI {#setup_by_cli}
+### Передача параметров через CLI {/* #setup_by_cli */}
 
 Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--retry-limiter-` для опций командной строки и `retry_limiter_` — для переменных окружения. Например:
 
@@ -87,7 +87,7 @@ npx testplane --retry-limiter-time-limit=900 ...
 retry_limiter_time_limit=900 npx testplane ...
 ```
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 При использовании плагина в логах testplane вы можете увидеть сообщения следующего вида:
 
@@ -102,7 +102,7 @@ retry-limiter: with limit 0.3 will stop retrying tests after 1189 retries
 В первом сообщении плагин информирует об ограничении времени работы механизма ретраев.
 Во втором сообщении — об ограничении общего количества ретраев.
 
-## Полезные ссылки {#useful_links}
+## Полезные ссылки {/* #useful_links */}
 
 -   [Исходники плагина @testplane/retry-limiter][retry-limiter]
 

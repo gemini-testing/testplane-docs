@@ -1,16 +1,16 @@
 # @testplane/browser-version-changer
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте плагин [@testplane/browser-version-changer][testplane-browser-version-changer], чтобы управлять определением версии браузера для тестов.
 
-## Установка {#install}
+## Установка {/* #install */}
 
 ```bash
 npm install -D @testplane/browser-version-changer
 ```
 
-## Настройка {#setup}
+## Настройка {/* #setup */}
 
 Необходимо подключить плагин в разделе `plugins` конфига Testplane:
 
@@ -40,7 +40,7 @@ module.exports = {
 };
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Расшифровка параметров конфигурации {/* #setup_description */}
 
 <table>
 <thead>
@@ -54,17 +54,17 @@ module.exports = {
 </tbody>
 </table>
 
-### enabled {#setup_enabled}
+### enabled {/* #setup_enabled */}
 
 Включить или отключить плагин. По умолчанию: `true`.
 
-### initStore {#setup_init_store}
+### initStore {/* #setup_init_store */}
 
 Необязательный параметр. Функция для инициализации хранилища _(store)_, которое будет доступно в [predicate](#setup_predicate). Хранилище может использоваться для того, чтобы потом в [predicate](#setup_predicate) для любого теста определить, какая версия браузера к нему относится. По умолчанию: [\_.noop][noop] из библиотеки `lodash`.
 
 Функция может быть асинхронной.
 
-### browsers {#setup_browsers}
+### browsers {/* #setup_browsers */}
 
 Список браузеров и их настроек. Имеет следующий формат:
 
@@ -79,11 +79,11 @@ browsers: {
 }
 ```
 
-### predicate(test, version, store) {#setup_predicate}
+### predicate(test, version, store) {/* #setup_predicate */}
 
 Функция-предикат, которая получает инстанс теста _(test),_ версию браузера _(version)_ и ссылку на хранилище _(store)_. Должна вернуть `true`, если тест подходит под указанную версию браузера, иначе должна вернуть `false`.
 
-### Передача параметров через CLI {#setup_by_cli}
+### Передача параметров через CLI {/* #setup_by_cli */}
 
 Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--browser-version-changer-` для опций командной строки и `testplane_browser_version_changer_` — для переменных окружения. Например:
 
@@ -95,7 +95,7 @@ npx testplane --browser-version-changer-enabled false ...
 testplane_browser_version_changer_enabled=false npx testplane ...
 ```
 
-## Полезные ссылки {#useful_links}
+## Полезные ссылки {/* #useful_links */}
 
 -   [Исходники плагина @testplane/browser-version-changer][testplane-browser-version-changer]
 

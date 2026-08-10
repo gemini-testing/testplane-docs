@@ -8,11 +8,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 # browsers
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 The `browsers` section is mandatory in Testplane settings. It specifies all the browsers in which the tests will run.
 
-## Setup {#setup}
+## Setup {/* #setup */}
 
 This section has the following format:
 
@@ -26,7 +26,7 @@ To avoid repeating the same settings for different browsers, you can set all the
 
 In this example, the value `10` will be used for the `sessionsPerBrowser` option for **chrome**, and `5` for **firefox**.
 
-## Main browser settings {#browser_main_settings}
+## Main browser settings {/* #browser_main_settings */}
 
 <table>
     <thead>
@@ -104,7 +104,7 @@ In this example, the value `10` will be used for the `sessionsPerBrowser` option
     </tbody>
 </table>
 
-### desiredCapabilities {#desired_caps}
+### desiredCapabilities {/* #desired_caps */}
 
 Required parameter. Specifies the properties that the browser must have.
 
@@ -133,7 +133,7 @@ Example of an extended `desiredCapabilities` setting:
 
 <DesiredCapabilitiesExample />
 
-### gridUrl {#grid_url}
+### gridUrl {/* #grid_url */}
 
 Grid URL (the address where ChromeDriver/Selenium Standalone/Sauce Labs/etc. listens).
 
@@ -145,7 +145,7 @@ Default: `http://localhost:4444/wd/hub`.
     browser](/docs/v8/basic-guides/browsers-overview).
 </Admonition>
 
-### baseUrl {#base_url}
+### baseUrl {/* #base_url */}
 
 Base URL of the service being tested. Allows for more convenient use of the `browser.url` commands:
 
@@ -155,13 +155,13 @@ Base URL of the service being tested. Allows for more convenient use of the `bro
 
 Default: `http://localhost`.
 
-### browserWSEndpoint {#browser_ws_endpoint}
+### browserWSEndpoint {/* #browser_ws_endpoint */}
 
 Websocket endpoint for connecting to the browser via [Chrome DevTools Protocol (CDP)][how-to-use-cdp]. For example, you specify `browserWSEndpoint: "ws://YOUR_HOST/devtools"`, to which the browser session identifier will be added at the end: `ws://YOUR_HOST/devtools/12345`, where `12345` is the session identifier.
 
 Default value: `null`. It means that Testplane will try to determine the websocket endpoint automatically.
 
-### automationProtocol {#automation_protocol}
+### automationProtocol {/* #automation_protocol */}
 
 Protocol for communication with the browser. Available values: `webdriver` and `devtools`. See also [WebDriver vs CDP](../../webdriver-vs-cdp). Default: `webdriver`.
 
@@ -174,7 +174,7 @@ Protocol for communication with the browser. Available values: `webdriver` and `
 
 </Admonition>
 
-### sessionEnvFlags {#session_env_flags}
+### sessionEnvFlags {/* #session_env_flags */}
 
 Environment flags set the protocols that will be used in the created browser session. By default, environment flags are automatically set according to the specified `desiredCapabilities`. However, in rare cases, they may have incorrect values and can be explicitly set using this option.
 
@@ -224,7 +224,7 @@ For example:
 
 <SessionEnvFlags />
 
-### windowSize {#window_size}
+### windowSize {/* #window_size */}
 
 Browser window size. If not specified, the window size will depend on WebDriver. Can be specified as a string, for example, `800x1000` or as an object with `width` and `height` keys with integer values.
 
@@ -254,13 +254,13 @@ are equivalent.
     browsers only use fullscreen mode.
 </Admonition>
 
-### headless {#headless}
+### headless {/* #headless */}
 
 Allows managing the browser's headless mode (without visible browser display). Can be set as a `boolean` value, and from Chrome version 112, can be set as a string `"new" | "old"`. More about the new headless mode — [in Chrome blog](https://developer.chrome.com/docs/chromium/new-headless).
 
 Default: `null` (determined on the browser side).
 
-## Timeouts {#timeouts}
+## Timeouts {/* #timeouts */}
 
 <table>
     <thead>
@@ -327,7 +327,7 @@ Default: `null` (determined on the browser side).
     </tbody>
 </table>
 
-### waitTimeout {#wait_timeout}
+### waitTimeout {/* #wait_timeout */}
 
 Timeout for events on the web page, in milliseconds. Default: `3000` ms (3 seconds).
 
@@ -335,7 +335,7 @@ Applied in the [waitUntil][element-wait-until] command, which is used in all `wa
 
 For example, when executing the `browser.$('.element').click()` command, the `$('element')` subcommand will, by default, wait for the element's existence up to 3000 ms before clicking it.
 
-### waitInterval {#wait_interval}
+### waitInterval {/* #wait_interval */}
 
 Interval for events on the web page, in milliseconds. Default: `500` ms.
 
@@ -343,33 +343,33 @@ Applied in the [waitUntil][element-wait-until] command, which is used in all `wa
 
 For example, when executing the `browser.$('.element').click()` command, the `$('element')` subcommand will, by default, check for the existence of the element every 500 ms.
 
-### httpTimeout {#http_timeout}
+### httpTimeout {/* #http_timeout */}
 
 Timeout for any requests to the Selenium server, in milliseconds. Default: `30000` ms.
 
-### urlHttpTimeout {#url_http_timeout}
+### urlHttpTimeout {/* #url_http_timeout */}
 
 Timeout for the `/url` request to the Selenium server, in milliseconds. Sometimes, when opening a link on the server side, a lot of logic is executed in middleware, causing the link to take a long time to open. To avoid increasing the timeout for all commands due to this, Testplane allows you to set a separate timeout for the `/url` request.
 
-### pageLoadTimeout {#page_load_timeout}
+### pageLoadTimeout {/* #page_load_timeout */}
 
 Timeout for the full page load, in milliseconds. Default: `20000` ms.
 
-### sessionRequestTimeout {#session_request_timeout}
+### sessionRequestTimeout {/* #session_request_timeout */}
 
 Timeout for the browser session request, in milliseconds. By default, it takes the value of the `httpTimeout` setting.
 
-### sessionQuitTimeout {#session_quit_timeout}
+### sessionQuitTimeout {/* #session_quit_timeout */}
 
 Timeout for ending the session, in milliseconds. Default: `5000` ms.
 
-### testTimeout {#test_timeout}
+### testTimeout {/* #test_timeout */}
 
 Timeout for running the test, in milliseconds. When used for a test suite, it will apply to all tests and hooks within that suite.
 
 If the value is not set, the general timeout for all browsers, set with the [system.mochaOpts.timeout][system-mocha-opts] setting, will be used.
 
-## Running Tests {#test_run_settings}
+## Running Tests {/* #test_run_settings */}
 
 <table>
     <thead>
@@ -446,11 +446,11 @@ If the value is not set, the general timeout for all browsers, set with the [sys
     </tbody>
 </table>
 
-### sessionsPerBrowser {#sessions_per_browser}
+### sessionsPerBrowser {/* #sessions_per_browser */}
 
 Number of sessions that will be run simultaneously for a particular browser. Default: `1`.
 
-### testsPerSession {#tests_per_session}
+### testsPerSession {/* #tests_per_session */}
 
 This parameter specifies how many tests can be run sequentially in one browser session. It can be useful to limit the reuse of the session. If the same browser session is used many times for running different tests, at some point the browser may start to degrade. This can affect the test run, leading to failures. Once the limit of tests is reached, the session will be closed and a new session will start.
 
@@ -460,11 +460,11 @@ Default: `Infinity`. This means the session will be reused an infinite number of
     Be careful: this parameter has nothing to do with parallel test execution.
 </Admonition>
 
-### retry {#retry}
+### retry {/* #retry */}
 
 How many times to retry a test if it fails. Default: `0`.
 
-### shouldRetry {#should_retry}
+### shouldRetry {/* #should_retry */}
 
 Function that determines if a retry is needed. Should return a `Boolean` value. By default, a function is set that returns `true` if there are still retries available, and `false` if the retry limit for the test has been reached (see [retry](#retry) setting).
 
@@ -482,11 +482,11 @@ interface FailedTestData {
 }
 ```
 
-### strictTestsOrder {#strict_test_order}
+### strictTestsOrder {/* #strict_test_order */}
 
 This option guarantees strict order of reading tests. Default: `false`.
 
-### passive {#passive}
+### passive {/* #passive */}
 
 <Admonition type="warning">
     Available since testplane@8.16.0.
@@ -499,7 +499,7 @@ Allows making the browser passive. In passive browsers, tests do not run by defa
 
 Default: `false`.
 
-### openAndWaitOpts {#open-and-wait-opts}
+### openAndWaitOpts {/* #open-and-wait-opts */}
 
 Allows setting options to be used when calling the [`browser.openAndWait`](../../../commands/browser/openAndWait) command.
 
@@ -514,7 +514,7 @@ const defaultOpenAndWaitOpts = {
 };
 ```
 
-### isolation {#isolation}
+### isolation {/* #isolation */}
 
 Enables running tests in [isolated browser contexts](https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-createBrowserContext). This means that `testsPerSession` can be set to `Infinity` to run all tests in one session and significantly speed up the test run.
 
@@ -522,7 +522,7 @@ Works starting from Chrome 93 and higher.
 
 Default: `true` for Chrome 93 and higher, `false` otherwise.
 
-## Test and Failure Information {#info_when_test_fails}
+## Test and Failure Information {/* #info_when_test_fails */}
 
 <table>
     <thead>
@@ -537,11 +537,11 @@ Default: `true` for Chrome 93 and higher, `false` otherwise.
     </tbody>
 </table>
 
-### meta {#meta}
+### meta {/* #meta */}
 
 Additional data that will be returned by the `getMeta()` command. Data can also be added "on the fly" using the `setMeta()` command: before, during, or after the test run.
 
-### takeScreenshotOnFails {#take_screenshot_on_fails}
+### takeScreenshotOnFails {/* #take_screenshot_on_fails */}
 
 This option is set as an object:
 
@@ -556,7 +556,7 @@ These keys determine whether to take a screenshot of the browser page _(Page Scr
 
 Default: `{ testFail: true, assertViewFail: true }`.
 
-### takeScreenshotOnFailsMode {#take_screenshot_on_fails_mode}
+### takeScreenshotOnFailsMode {/* #take_screenshot_on_fails_mode */}
 
 Mode for taking a screenshot of the browser page upon test failure. Available values: `viewport` and `fullpage`:
 
@@ -565,11 +565,11 @@ Mode for taking a screenshot of the browser page upon test failure. Available va
 
 Default: `fullpage`.
 
-### takeScreenshotOnFailsTimeout {#take_screenshot_on_fails_timeout}
+### takeScreenshotOnFailsTimeout {/* #take_screenshot_on_fails_timeout */}
 
 Timeout for taking a screenshot of the browser page upon test failure, in milliseconds. Default: `5000` ms.
 
-### saveHistoryMode {#save_history_mode}
+### saveHistoryMode {/* #save_history_mode */}
 
 <Admonition type="warning">Available since hermione@7.</Admonition>
 
@@ -593,7 +593,7 @@ exports = testplane => {
 };
 ```
 
-## Preparing for Screenshot Taking {#prepare_to_take_screenshot}
+## Preparing for Screenshot Taking {/* #prepare_to_take_screenshot */}
 
 <table>
     <thead>
@@ -641,11 +641,11 @@ exports = testplane => {
     </tbody>
 </table>
 
-### calibrate {#calibrate}
+### calibrate {/* #calibrate */}
 
 Perform calibration before taking a screenshot. In some WebDriver implementations, when taking a screenshot, UI elements of the browser itself may appear on the image. Calibration helps solve this issue. Default: `false`.
 
-### orientation {#orientation}
+### orientation {/* #orientation */}
 
 Browser window orientation to set before each test run. Available values: `landscape`, `portrait`, `null`. Default: `null`.
 
@@ -657,11 +657,11 @@ Browser window orientation to set before each test run. Available values: `lands
     automatically without needing to set it in each test.
 </Admonition>
 
-### waitOrientationChange {#wait_orientation_change}
+### waitOrientationChange {/* #wait_orientation_change */}
 
 Wait for actual orientation change. Default: `true`. When set to `true`, testplane ensures that the `setOrientation` command will complete only after the orientation is actually changed to the specified one.
 
-### resetCursor {#reset_cursor}
+### resetCursor {/* #reset_cursor */}
 
 Move the cursor to point _(0, 0)_ in _body_ coordinates before each test run. Default: `false`. It may be needed in cases where the default cursor position affects test execution. For example, when a tooltip _(hint)_ pops up because of the cursor, which "spoils" the screenshot being taken.
 
@@ -669,7 +669,7 @@ Move the cursor to point _(0, 0)_ in _body_ coordinates before each test run. De
     Default value was changed from `true` to `false` in testplane@9.0.0.
 </Admonition>
 
-### screenshotsDir {#screenshots_dir}
+### screenshotsDir {/* #screenshots_dir */}
 
 Folder for saving reference screenshots with the `assertView` command. By default, it is the `testplane/screens` folder relative to the working directory: `process.cwd()`. The value of this option can also be a function that takes one argument — the test instance within which the `assertView` command was called, for example:
 
@@ -679,7 +679,7 @@ const browserOptions = {
 };
 ```
 
-## Taking and Comparing Screenshots {#taking_screenshots}
+## Taking and Comparing Screenshots {/* #taking_screenshots */}
 
 <table>
     <thead>
@@ -748,7 +748,7 @@ const browserOptions = {
     </tbody>
 </table>
 
-### tolerance {#tolerance}
+### tolerance {/* #tolerance */}
 
 Maximum allowed [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000) difference between colors. Used only in non-strict mode. Default: `2.3`. Starting from the value `2.3`, the color difference becomes perceptible to the human eye. The smaller the value, the stricter the screenshot comparison.
 
@@ -763,13 +763,13 @@ it("some-test", async function (browser) {
 });
 ```
 
-### antialiasingTolerance {#antialiasing_tolerance}
+### antialiasingTolerance {/* #antialiasing_tolerance */}
 
 Sets the sensitivity for detecting antialiasing, which will be ignored when comparing screenshots.
 
 Read more about this option in the [looks-same](https://github.com/gemini-testing/looks-same#comparing-images-with-ignoring-antialiasing) package.
 
-### compareOpts {#compare_opts}
+### compareOpts {/* #compare_opts */}
 
 Additional options for image comparison. See the list of available options in the [looks-same](https://github.com/gemini-testing/looks-same#comparing-images) documentation.
 
@@ -783,7 +783,7 @@ const defaultCompareOpts = {
 };
 ```
 
-### buildDiffOpts {#build_diff_opts}
+### buildDiffOpts {/* #build_diff_opts */}
 
 Additional options for building the diff (image showing the differences between screenshots). See the list of available options in the [looks-same](https://github.com/gemini-testing/looks-same#building-diff-image) documentation. Default:
 
@@ -794,7 +794,7 @@ const defaultBuildDiffOpts = {
 };
 ```
 
-### assertViewOpts {#assert_view_opts}
+### assertViewOpts {/* #assert_view_opts */}
 
 Options for the `assertView` command to take and compare screenshots, which will be used by default. They can be overridden when calling the `assertView` command.
 
@@ -814,11 +814,11 @@ const defaultAssertViewOpts = {
 };
 ```
 
-### compositeImage {#composite_image}
+### compositeImage {/* #composite_image */}
 
 Allows testing elements that do not fit within the viewport height. Default: `true`. If the tested block is taller than the viewport, the images of several viewports are stitched together into one image.
 
-### screenshotMode {#screenshot_mode}
+### screenshotMode {/* #screenshot_mode */}
 
 Screenshot mode. Default: `auto`.
 
@@ -832,11 +832,11 @@ By default, the `viewport` mode is set for android browsers to bypass a [bug in 
 
 In desktop browsers, it is possible to get an image of the entire page out of the box, without manually stitching images of separate viewports into one large screenshot. However, on mobile devices, there is no such functionality.
 
-### screenshotDelay {#screenshot_delay}
+### screenshotDelay {/* #screenshot_delay */}
 
 Delay in milliseconds before taking the screenshot. Default: `0` ms. The delay can be helpful in cases where the page contains elements using animation or a scrollbar that does not disappear immediately and affects the resulting screenshot.
 
-## Request and Response Parameters {#params_of_requests_and_responses}
+## Request and Response Parameters {/* #params_of_requests_and_responses */}
 
 <table>
     <thead>
@@ -851,11 +851,11 @@ Delay in milliseconds before taking the screenshot. Default: `0` ms. The delay c
     </tbody>
 </table>
 
-### agent {#agent}
+### agent {/* #agent */}
 
 Allows setting custom [agents][got-agent] for _http, https, http2_ requests. Default: `null` (in this case, default http agents from the [got][got] package will be used).
 
-### headers {#headers}
+### headers {/* #headers */}
 
 Allows setting custom [headers][got-headers] to be sent with each WebDriver request. Default: `null`. See also in the `WebDriverIO` [documentation](https://webdriver.io/docs/options/#headers).
 
@@ -864,7 +864,7 @@ Allows setting custom [headers][got-headers] to be sent with each WebDriver requ
     sent only in requests to WebDriver.
 </Admonition>
 
-### transformRequest {#transform_request}
+### transformRequest {/* #transform_request */}
 
 Allows intercepting and transforming [http-request options][got-options] before the request is sent to WebDriver. Default: `null`. If a function is passed, the `RequestOptions` object will be passed as the first argument. The function should return the modified `RequestOptions`.
 
@@ -893,7 +893,7 @@ const transformRequest = req => {
 };
 ```
 
-### transformResponse {#transform_response}
+### transformResponse {/* #transform_response */}
 
 Allows intercepting and transforming the [http-response][got-response] received from WebDriver. Default: `null`. If a function is passed, the `Response` object will be passed as the first argument, and the `RequestOptions` as the second argument. The function should return the modified `Response`.
 
@@ -903,11 +903,11 @@ Function type:
 type TransformResponsetFn = (res: Response, req: RequestOptions) => Response;
 ```
 
-### strictSSL {#strict_ssl}
+### strictSSL {/* #strict_ssl */}
 
 Whether the SSL certificate must be valid. If not set, the [default value][strict-ssl] from WebDriverIO will be used.
 
-## Cloud Settings {#cloud_settings}
+## Cloud Settings {/* #cloud_settings */}
 
 The following settings may be useful if you want to run your testplane tests in browsers of cloud services.
 
@@ -950,23 +950,23 @@ An example of such a cloud service could be [SauceLabs][sauce-labs], which [can 
     </tbody>
 </table>
 
-### user {#user}
+### user {/* #user */}
 
 Username in the cloud service. Default: `null`.
 
-### key {#key}
+### key {/* #key */}
 
 Access key or secret key for accessing the cloud service. Default: `null`.
 
-### region {#region}
+### region {/* #region */}
 
 Allows selecting different data centers in the cloud service. Default: `null`.
 
-### headless {#headless}
+### headless {/* #headless */}
 
 Allows running a headless browser in the cloud service. Default: `null`.
 
-## Time Travel {#time_travel}
+## Time Travel {/* #time_travel */}
 
 These settings allow you to configure test run snapshot recording for subsequent playback in the player.
 To learn more about Time Travel capabilities, see the [Time Travel guide][time-travel].
@@ -990,7 +990,7 @@ To learn more about Time Travel capabilities, see the [Time Travel guide][time-t
     </tbody>
 </table>
 
-### timeTravel {#time_travel}
+### timeTravel {/* #time_travel */}
 
 Time Travel settings. Default: `"off"`.
 
@@ -1029,7 +1029,7 @@ export = {
 };
 ```
 
-## Selectivity {#selectivity}
+## Selectivity {/* #selectivity */}
 
 This section allows you to configure Testplane's selective test execution, avoiding the launch of tests for which nothing has changed.
 
@@ -1124,9 +1124,9 @@ The section has the following parameters:
     </tbody>
 </table>
 
-### `mapDependencyRelativePath` examples {#mapDependencyRelativePath_examples}
+### `mapDependencyRelativePath` examples {/* #mapDependencyRelativePath_examples */}
 
-#### Ignore Next.js internal dependencies {#mapDependencyRelativePath_example_nextjs}
+#### Ignore Next.js internal dependencies {/* #mapDependencyRelativePath_example_nextjs */}
 
 ```ts
 {
@@ -1143,7 +1143,7 @@ The section has the following parameters:
 }
 ```
 
-#### Usage with @testplane/storybook plugin {#mapDependencyRelativePath_example_testplane_storybook}
+#### Usage with @testplane/storybook plugin {/* #mapDependencyRelativePath_example_testplane_storybook */}
 
 ```ts
 {
@@ -1166,9 +1166,9 @@ The section has the following parameters:
 }
 ```
 
-### `mapSourceMapUrl` examples {#mapSourceMapUrl_examples}
+### `mapSourceMapUrl` examples {/* #mapSourceMapUrl_examples */}
 
-#### Filter out third-party scripts {#mapSourceMapUrl_example_filter}
+#### Filter out third-party scripts {/* #mapSourceMapUrl_example_filter */}
 
 ```ts
 {
@@ -1186,7 +1186,7 @@ The section has the following parameters:
 }
 ```
 
-#### Remap source map URL to a local server {#mapSourceMapUrl_example_remap}
+#### Remap source map URL to a local server {/* #mapSourceMapUrl_example_remap */}
 
 ```ts
 {
@@ -1210,7 +1210,7 @@ The section has the following parameters:
     the application's backend source code.
 </Admonition>
 
-## stateOpts {#state_opts}
+## stateOpts {/* #state_opts */}
 
 <Version version="8.40.0" />
 

@@ -1,16 +1,16 @@
 # setTimeout
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `setTimeout` command to set timeouts for element searches on the page, document load waits, and script executions through the [execute][execute] or [executeAsync][execute-async] commands.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.setTimeout({ implicit, pageLoad, script });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -24,7 +24,7 @@ await browser.setTimeout({ implicit, pageLoad, script });
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should change timeout duration for session with long code duration", async ({ browser }) => {

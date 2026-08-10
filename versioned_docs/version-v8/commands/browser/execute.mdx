@@ -1,6 +1,6 @@
 # execute
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use `execute` to _synchronously_ execute the specified JavaScript code in the context of the currently selected frame.
 
@@ -10,13 +10,13 @@ The `script` argument defines the script to be executed as the body of a functio
 
 Arguments can be any JSON primitives, arrays, or JSON objects. JSON objects that define a reference to a _WebElement_ will be converted to the corresponding DOM element. Similarly, any _WebElements_ in the script result will be returned to the client as _WebElement JSON_ objects.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.execute(script, arguments);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -29,7 +29,7 @@ await browser.execute(script, arguments);
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should inject javascript on the page", async ({ browser }) => {
@@ -49,7 +49,7 @@ it("should inject javascript on the page", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [executeAsync](../executeAsync)
 -   [setTimeout](../setTimeout)

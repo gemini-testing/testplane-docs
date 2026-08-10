@@ -225,7 +225,7 @@ You can also disable selectivity manually using an environment variable:
 testplane_selectivity_enabled=false # disable
 ```
 
-## Recovering from a failed selectivity run {#recovering-incomplete-dump}
+## Recovering from a failed selectivity run {/* #recovering-incomplete-dump */}
 
 By default, if any test fails during a Testplane run, the selectivity dump is **not updated**. This means that if you ran Testplane to collect a selectivity dump (e.g. in CI) and only a few tests failed, you would need to re-run the **entire** test suite just to get a valid dump.
 

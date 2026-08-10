@@ -4,11 +4,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 <Version version="8.40.0" />
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 A browser command that restores the session state from a file which previously saved using the [saveState][saveState] command.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```typescript
 import type { SaveStateData } from "testplane";
@@ -18,7 +18,7 @@ const stateDump: SaveStateData = await browser.getState({
 });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
     <thead>
@@ -39,7 +39,7 @@ const stateDump: SaveStateData = await browser.getState({
     </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 Save state in file.
 
@@ -51,7 +51,7 @@ it("test", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [saveState][saveState]
 

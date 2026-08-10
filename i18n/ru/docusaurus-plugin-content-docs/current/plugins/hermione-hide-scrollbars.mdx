@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # hermione-hide-scrollbars
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте плагин [hermione-hide-scrollbars][hermione-hide-scrollbars], чтобы скрывать скроллбары в тестах, которые запускаются в Chrome-браузерах.
 
@@ -16,13 +16,13 @@ import Admonition from "@theme/Admonition";
     _Emulation.setScrollbarsHidden_.
 </Admonition>
 
-## Установка {#install}
+## Установка {/* #install */}
 
 ```bash
 npm install -D hermione-hide-scrollbars
 ```
 
-## Настройка {#setup}
+## Настройка {/* #setup */}
 
 Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
 
@@ -43,7 +43,7 @@ module.exports = {
 };
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Расшифровка параметров конфигурации {/* #setup_description */}
 
 <table>
 <thead>
@@ -57,11 +57,11 @@ module.exports = {
 </tbody>
 </table>
 
-### Передача параметров через CLI {#setup_by_cli}
+### Передача параметров через CLI {/* #setup_by_cli */}
 
 Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--hide-scrollbars-` для опций командной строки и `testplane_hide_scrollbars_` — для переменных окружения.
 
-## Полезные ссылки {#useful_links}
+## Полезные ссылки {/* #useful_links */}
 
 -   [Исходники плагина hermione-hide-scrollbars][hermione-hide-scrollbars]
 -   [Emulation.setScrollbarsHidden][set-scrollbars-hidden]

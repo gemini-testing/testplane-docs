@@ -1,6 +1,6 @@
 # keys
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `keys` command to send a sequence of key presses to the active element.
 
@@ -8,13 +8,13 @@ You can also use symbols like “Left Arrow” or “Right Arrow”. They will b
 
 Modifiers such as `Ctrl`, `Shift`, `Alt`, and `Meta` remain pressed until you release them by calling the function again. However, modifying clicks requires using the [performActions][perform-actions] method from the WebDriver Actions API.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.keys(value);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
     <thead>
@@ -33,7 +33,7 @@ await browser.keys(value);
     </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("copies text out of active element", async ({ browser }) => {

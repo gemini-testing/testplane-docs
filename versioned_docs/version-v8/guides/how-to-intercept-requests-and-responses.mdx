@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # Mocking Network Requests
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 [//]: # "TODO: add screencasts"
 
@@ -27,7 +27,7 @@ With this method, we can:
 
 Let's try writing tests using this API and cover different cases. To clarify, all graphical representations of the test execution process are slowed down by a factor of 2 because locally the tests run very quickly, making it difficult to observe anything.
 
-## Example 1: Mocking a Request to google.com and Returning Our Own Response {#example_1}
+## Example 1: Mocking a Request to google.com and Returning Our Own Response {/* #example_1 */}
 
 ```javascript
 it("should mock google.com", async function ({ browser }) {
@@ -73,7 +73,7 @@ it("should mock google.com using puppeteer api", async function ({ browser }) {
 });
 ```
 
-### Hardcore Example Using CDP Directly {#hardcore_example}
+### Hardcore Example Using CDP Directly {/* #hardcore_example */}
 
 Now, let's imagine that puppeteer doesn't yet have an API for mocking requests, but this is already implemented in the [Fetch][fetch] domain of CDP. In this case, we will use this domain's method by interacting with the CDP session directly. For this, puppeteer has the [CDPSession.send()][cdp-session-send] method:
 
@@ -119,7 +119,7 @@ it("should mock google.com using cdp fetch domain", async function ({ browser })
 
 Obviously, when using the _webdriverio_ API for mocking requests, the code is much shorter, but the _webdriverio_ API is very limited, and for more complex cases, it is necessary to use puppeteer's API. However, puppeteer itself might not have an API for some new methods or CDP domains. Therefore, in rare cases, direct communication via CDP using [CDPSession.send()][cdp-session-send] might come in handy.
 
-## Example 2: Canceling the Request for Google's Logo {#example_2}
+## Example 2: Canceling the Request for Google's Logo {/* #example_2 */}
 
 ```javascript
 it("should abort request to logo on google.com", async function ({ browser }) {
@@ -135,7 +135,7 @@ it("should abort request to logo on google.com", async function ({ browser }) {
 
 From the graphical representation, it is clear that the logo is not displayed, and there is a `net::ERR_FAILED` error in the log. This solution can be useful for disabling some scripts that hinder the quick execution of the test. For example, analytics collection scripts can be disabled.
 
-## Example 3: Loading google.com Using a Fixture for the Response {#example_3}
+## Example 3: Loading google.com Using a Fixture for the Response {/* #example_3 */}
 
 ```javascript
 it("should mock google.com and return answer from fixture", async function ({ browser }) {
@@ -152,7 +152,7 @@ it("should mock google.com and return answer from fixture", async function ({ br
 
 From the graphical representation, it is clear that instead of google.com's content, our fixture's data is displayed.
 
-## Example 4: Redirecting the Request from google.com to yandex.ru {#example_4}
+## Example 4: Redirecting the Request from google.com to yandex.ru {/* #example_4 */}
 
 ```javascript
 it("should redirect from google.com to yandex.ru", async function ({ browser }) {
@@ -166,7 +166,7 @@ it("should redirect from google.com to yandex.ru", async function ({ browser }) 
 });
 ```
 
-## Example 5: Modifying google.com's Response in Real-Time {#example_5}
+## Example 5: Modifying google.com's Response in Real-Time {/* #example_5 */}
 
 Puppeteer still does not have an API for conveniently modifying responses. There is an [issue#1191](https://github.com/puppeteer/puppeteer/issues/1191) on this. But this capability is already supported in CDP. Webdriverio uses CDP directly through [puppeteer][puppeteer], so it works in _webdriverio_.
 
@@ -212,7 +212,7 @@ it("should modify response from google.com", async function ({ browser }) {
 });
 ```
 
-## Example 6: Intercepting All Requests to yandex.ru and Collecting a List of All Loaded URLs {#example_6}
+## Example 6: Intercepting All Requests to yandex.ru and Collecting a List of All Loaded URLs {/* #example_6 */}
 
 Let's say we need to collect a list of all URLs loaded on the page. Using this information, we could determine if we have requests for external resources or neighboring services that we do not control. This means they could fail at any time and break our tests. Here's what our code might look like:
 
@@ -287,7 +287,7 @@ it("should mock yandex.ru and log all loaded urls (using puppeteer)", async func
 });
 ```
 
-## Example 7: Mocking the google.com Resource in All Chrome Tests {#example_7}
+## Example 7: Mocking the google.com Resource in All Chrome Tests {/* #example_7 */}
 
 To avoid manually mocking the same resources in all tests, you can use the [testplane-global-hook][testplane-global-hook] plugin. Configure it appropriately in the Testplane config:
 
@@ -332,7 +332,7 @@ it("should mock google.com inside global before each", async function ({ browser
 });
 ```
 
-## Useful Links {#useful_links}
+## Useful Links {/* #useful_links */}
 
 More usage examples can be found in the "[Mocks and Spies][wdio-mocks-and-spies]" guide on the _webdriverio_ website.
 

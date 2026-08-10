@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # setValue
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `setValue` command to send a sequence of key presses to an element after first clearing the input field.
 
@@ -13,13 +13,13 @@ If the element does not need to be cleared first, use the [addValue][add-value] 
     another, use the [keys][keys] command.
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.$(selector).setValue(value);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -31,7 +31,7 @@ await browser.$(selector).setValue(value);
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should set value for a certain element", async ({ browser }) => {
@@ -43,7 +43,7 @@ it("should set value for a certain element", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [element.addValue][add-value]
 -   [element.clearValue](../clearValue)

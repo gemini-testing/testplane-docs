@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # switchToRepl
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `switchToRepl`, чтобы остановить выполнение теста и открыть интерактивный интерфейс REPL в терминале, в котором можно выполнять код построчно и наблюдать за результатом выполнения в реальном времени.
 Этот режим позволяет удобно пошабого дебажить проблемные тесты как в локально установленном браузере, так и в удаленном гриде (например, с помощью [VNC][vnc]).
@@ -14,13 +14,13 @@ import Admonition from "@theme/Admonition";
     явно указать тест и браузер, т.к. в REPL-режиме нельзя запускать сразу несколько тестов.
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```typescript
 await browser.switchToRepl(ctx);
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
     <thead>
@@ -39,7 +39,7 @@ await browser.switchToRepl(ctx);
     </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```typescript
 it("test", async ({ browser }) => {

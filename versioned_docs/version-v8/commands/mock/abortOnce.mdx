@@ -1,6 +1,6 @@
 # abortOnce
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `abortOnce` command to abort a request once with a specified error.
 
@@ -16,13 +16,13 @@ A request can be aborted with one of the following errors:
 -   AddressUnreachable
 -   BlockedByClient | BlockedByResponse
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 mock.abortOnce(errorCode);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -34,7 +34,7 @@ mock.abortOnce(errorCode);
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should block mock only once", async ({ browser }) => {
@@ -52,7 +52,7 @@ it("should block mock only once", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [abort](../abort)
 

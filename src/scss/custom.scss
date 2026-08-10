@@ -73,6 +73,11 @@ body {
     }
 }
 
+.bordered-image {
+    border: 1px solid var(--ifm-color-emphasis-300);
+    box-sizing: border-box;
+}
+
 /* Infima variables. */
 :root {
     --ifm-color-primary: theme("colors.indigo.600");

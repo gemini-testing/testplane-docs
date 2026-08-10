@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # overwriteCommand
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `overwriteCommand` command to override existing commands of the browser or an element.
 
@@ -10,13 +10,13 @@ Use the `overwriteCommand` command to override existing commands of the browser 
     Also see the recipe "[How to add custom commands][how-to-add-custom-commands]".
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 await browser.overwriteCommand(name, callback, elementScope);
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
     <thead>
@@ -47,7 +47,7 @@ await browser.overwriteCommand(name, callback, elementScope);
 
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 // log the pause duration in ms before the pause and then return the value
@@ -67,7 +67,7 @@ it("should use my overwrite command", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [addCommand](../addCommand)
 

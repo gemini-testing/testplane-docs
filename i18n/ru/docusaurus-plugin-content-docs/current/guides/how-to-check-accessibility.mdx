@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # Тестирование доступности
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 <Admonition type="warning">
 Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
@@ -15,7 +15,7 @@ import Admonition from "@theme/Admonition";
 
 Для получения такого дерева в _puppeteer_ есть специальный [класс Accessibility][puppeteer-accessibility].
 
-## Пример {#example}
+## Пример {/* #example */}
 
 Вот пример, как его можно использовать:
 
@@ -35,7 +35,7 @@ it("should get accessibility tree of yandex.ru", async function ({ browser }) {
 });
 ```
 
-## Accessibility-дерево {#accessibility_tree}
+## Accessibility-дерево {/* #accessibility_tree */}
 
 А вот как выглядит получаемое accessibility-дерево:
 

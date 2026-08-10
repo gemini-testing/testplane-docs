@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # @testplane/storybook
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте плагин [@testplane/storybook][testplane-storybook] для автоматической проверки изменения ваших компонентов с помощью скриншотного тестирования без единой строчки кода теста.
 
@@ -11,13 +11,13 @@ import Admonition from "@theme/Admonition";
 -   автоматическую генерацию скриншотных проверок для ваших storybook-файлов;
 -   возможность писать testplane-тесты прямо внутри ваших storybook-историй.
 
-## Установка {#install}
+## Установка {/* #install */}
 
 ```bash
 npm install @testplane/storybook --save-dev
 ```
 
-## Настройка {#setup}
+## Настройка {/* #setup */}
 
 <Admonition type="info">Для плагина требуется Storybook версии 6.4+и выше.</Admonition>
 
@@ -55,7 +55,7 @@ export default {
 
 При такой минимальной конфигурации Вы уже сможете выполнить команду `npx testplane --storybook`, чтобы автоматически протестировать каждую историю в storybook с помощью команды [Testplane assertView][assert-view]. Testplane откроет каждую историю, подождет завершения функции play (если она определена), а затем вызовет команду `assertView` для компонента. Эти тесты будут сгенерированы в рантайме и не останутся на файловой системе после окончания тестов.
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Расшифровка параметров конфигурации {/* #setup_description */}
 
 <table>
     <thead>
@@ -302,7 +302,7 @@ export default {
 
 В примере выше эталонные скриншоты будут сохраняться по пути `screens/<testId>/<browserId>` рядом с Вашими файлами историй.
 
-## Полезные ссылки {#useful_links}
+## Полезные ссылки {/* #useful_links */}
 
 -   [исходники плагина @testplane/storybook][testplane-storybook]
 -   [команда assertView][assert-view]

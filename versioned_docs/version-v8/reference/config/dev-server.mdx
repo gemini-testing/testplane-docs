@@ -12,7 +12,7 @@ Keep in mind that the `devServer` configuration does not change the `baseUrl`, w
 
 </Admonition>
 
-## Example Usage {#example}
+## Example Usage {/* #example */}
 
 <DevServerExample />
 
@@ -88,33 +88,33 @@ Keep in mind that the `devServer` configuration does not change the `baseUrl`, w
     </tbody>
 </table>
 
-### command {#command}
+### command {/* #command */}
 
 Command to start the dev server. If not specified, the dev server will not be started.
 
-### reuseExisting {#reuseexisting}
+### reuseExisting {/* #reuseexisting */}
 
 Reuse an existing dev server if it's already running, instead of spawning a new one. When enabled, Testplane will check if a server is already available at the specified URL before attempting to start a new one.
 
 This option requires setting the `url` property in the `readinessProbe` section, which will be used to verify that the server is ready and accessible.
 
-### env {#env}
+### env {/* #env */}
 
 Environment variables to be passed to the dev server process, in addition to the main process's `process.env`.
 
-### args {#args}
+### args {/* #args */}
 
 Arguments to be passed to the dev server process.
 
-### cwd {#cwd}
+### cwd {/* #cwd */}
 
 Working directory of the dev server.
 
-### logs {#logs}
+### logs {/* #logs */}
 
 Enables streaming of dev server logs to the console with the prefix `[dev server]`.
 
-### readinessProbe {#readiness-probe}
+### readinessProbe {/* #readiness-probe */}
 
 Check that the server is ready to accept requests. If not specified, the check is disabled.
 

@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # action
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `action` command to perform input actions on one of the virtualizable devices in the web browser.
 
@@ -25,7 +25,7 @@ await browser.action(...).perform(true);
     [Android][appium-android].
 </Admonition>
 
-## Keyboard Control {#keyboard_control}
+## Keyboard Control {/* #keyboard_control */}
 
 Used when specifying `key` as the argument for the `action` command. Example:
 
@@ -39,7 +39,7 @@ Returns a `KeyAction` object that supports the following actions:
 -   `up(value: string)` — creates a key release action;
 -   `pause(ms: number)` — specifies that the input source does nothing for the specified amount of time.
 
-### Special Symbols {#special_symbols}
+### Special Symbols {/* #special_symbols */}
 
 To use special symbols (`Control`, `Page Up`, `Shift`, etc.), you can use the `Key` object from the [webdriverio][webdriverio-npm] package. It contains Unicode representations of all necessary special symbols. Example:
 
@@ -49,7 +49,7 @@ import { Key } from "webdriverio";
 await browser.action("key").down(Key.Ctrl).perform();
 ```
 
-### Usage Examples {#keyboard_examples}
+### Usage Examples {/* #keyboard_examples */}
 
 ```typescript
 import { Key } from "webdriverio";
@@ -69,7 +69,7 @@ it("should emit key events using key action commands", async ({ browser }) => {
 
 Instead of a series of `down/up` events, it is better to use the `setValue` command. The example is purely for demonstrating the principles of the `action` command.
 
-## Pointer Control {#pointer_control}
+## Pointer Control {/* #pointer_control */}
 
 Used when specifying `pointer` as the argument for the `action` command, and you can also specify the pointer type. Example:
 
@@ -92,7 +92,7 @@ Returns a `PointerAction` object that supports the following actions:
 
 Detailed information on the parameter types [PointerActionParams][pointer-action-params], [PointerActionMoveParams][pointer-action-move-params], and [PointerActionUpParams][pointer-action-up-params] can be found in the webdriverio source code.
 
-### Usage Examples {#pointer_examples}
+### Usage Examples {/* #pointer_examples */}
 
 ```typescript
 it("drag and drop using pointer action command", async ({ browser }) => {
@@ -110,7 +110,7 @@ it("drag and drop using pointer action command", async ({ browser }) => {
 });
 ```
 
-## Scroll Wheel Control {#scroll_wheel_control}
+## Scroll Wheel Control {/* #scroll_wheel_control */}
 
 Used when specifying `wheel` as the argument for the `action` command. Example:
 
@@ -125,7 +125,7 @@ Returns a `WheelAction` object that supports the following actions:
 
 Detailed information on the parameter type [ScrollParams][scroll-params] can be found in the webdriverio source code.
 
-### Usage Examples {#scroll_examples}
+### Usage Examples {/* #scroll_examples */}
 
 ```typescript
 it("should scroll using wheel action commands", async ({ browser }) => {
@@ -144,7 +144,7 @@ it("should scroll using wheel action commands", async ({ browser }) => {
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [actions](../actions)
 

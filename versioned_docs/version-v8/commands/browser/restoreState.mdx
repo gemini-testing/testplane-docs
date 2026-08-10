@@ -5,11 +5,11 @@ import Version from "../../_partials/specs/version.mdx";
 
 <Version version="8.33.0" />
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Browser command that restores session state (cookies, local and session storages) from a file or variable.
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 You can restore the browser state from either a file (using the `path` parameter) or directly from an object (using the `data` parameter).
 
@@ -34,7 +34,7 @@ await browser.restoreState({
 });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
     <thead>
@@ -93,7 +93,7 @@ await browser.restoreState({
     </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 Restore state from file.
 
@@ -150,7 +150,7 @@ export default {
 } satisfies ConfigInput;
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [saveState](../saveState)
 -   [afterAll](../../../reference/config/after-all)

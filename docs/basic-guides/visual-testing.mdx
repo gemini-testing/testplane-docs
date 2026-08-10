@@ -5,7 +5,7 @@ We recommend using the [html-reporter][html-reporter] plugin, which provides a u
 
 ![Html-report](/img/docs/html-reporter/html-reporter.overview.png)
 
-### Screenshot Comparison Features {#features}
+### Screenshot Comparison Features {/* #features */}
 
 For screenshot checks, Testplane provides the `assertView` command, which allows you to take a screenshot of a specific element or the entire viewport.
 When the assertView command is invoked, it searches for the required element on the page with automatic waiting. By default, animations will be disabled on the page before taking a screenshot to eliminate potential instability in the test due to the changing state of the element.
@@ -19,7 +19,7 @@ The following settings are taken into account during comparison:
 -   comparison accuracy settings (acceptable deviations) are considered;
 -   anti-aliasing (the most common diffs in screenshots) accuracy settings for fonts are considered.
 
-### Usage {#usage}
+### Usage {/* #usage */}
 
 ```typescript
 await browser.assertView(state, options);
@@ -49,7 +49,7 @@ it("check search view", async ({ browser }) => {
 
 Read more about the capabilities of the `assertView' command in the relevant sections.
 
-### Useful links {#useful_links}
+### Useful links {/* #useful_links */}
 
 -   [browser.assertView command][browser-command]
 -   [element.assertView command][element-command]

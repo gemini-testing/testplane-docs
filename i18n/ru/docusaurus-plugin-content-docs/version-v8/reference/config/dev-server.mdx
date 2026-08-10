@@ -12,7 +12,7 @@ import DevServerExample from "@site/docs/reference/config/_partials/examples/_de
 
 </Admonition>
 
-## Пример использования {#example}
+## Пример использования {/* #example */}
 
 <DevServerExample />
 
@@ -88,33 +88,33 @@ import DevServerExample from "@site/docs/reference/config/_partials/examples/_de
     </tbody>
 </table>
 
-### command {#command}
+### command {/* #command */}
 
 Команда для запуска dev сервера. Если не указана, dev сервер не будет запущен.
 
-### reuseExisting {#reuseexisting}
+### reuseExisting {/* #reuseexisting */}
 
 Переиспользовать уже запущенный dev сервер вместо создания нового. Когда эта опция включена, Testplane проверит, доступен ли сервер по указанному URL, прежде чем пытаться запустить новый.
 
 Эта опция требует указания свойства `url` в секции `readinessProbe`, которое будет использоваться для проверки того, что сервер готов и доступен.
 
-### env {#env}
+### env {/* #env */}
 
 Переменные окружения, которые должны быть переданы процессу с dev сервером, в дополнение к `process.env` основного процесса.
 
-### args {#args}
+### args {/* #args */}
 
 Аргументы, которые должны быть переданы процессу с dev сервером.
 
-### cwd {#cwd}
+### cwd {/* #cwd */}
 
 Рабочая директория dev сервера.
 
-### logs {#logs}
+### logs {/* #logs */}
 
 Включает стриминг логов dev сервера в консоль с префиксом `[dev server]`
 
-### readinessProbe {#readiness-probe}
+### readinessProbe {/* #readiness-probe */}
 
 Проверка, что сервер готов принимать запросы. Если не указана, проверка отключена.
 

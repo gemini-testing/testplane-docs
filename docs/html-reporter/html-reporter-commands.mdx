@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # CLI
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 HTML Reporter has the following commands:
 
@@ -29,7 +29,7 @@ GUI mode allows you to:
 -   reuse reports from CI;
 -   filter the results of the run by errors, keys from meta, etc.
 
-### Usage {#gui_usage}
+### Usage {/* #gui_usage */}
 
 ```bash
 npx html-reporter gui
@@ -50,7 +50,7 @@ It creates a new html-report in the destination folder with data from all passed
 -   When merging local reports—all data, including SQLite databases and screenshots, are copied to the destination directory.
 -   When merging reports by link (for example, if `databaseUrls.json` files with links to reports in S3 are passed as input)—a report with links to the original reports in `databaseUrls.json` will be created in the destination directory, without downloading and copying all nested resources. When working with the report, this will not be noticeable, but you need to keep in mind that the original reports must remain accessible, as the merged report gets data from them.
 
-### Usage {#merge_reports_usage}
+### Usage {/* #merge_reports_usage */}
 
 The `merge-reports` command supports the following required option:
 
@@ -101,7 +101,7 @@ First, the command looks for screenshots for which there are no tests on the fil
 
 Next, the command searches for screenshots that were not used in successful testing (the test result is taken from the SQLite database). To do this, the html-report must exist on the file system and contain the results of the tests run. This means that you must run the tests locally or download the report from CI before running the `remove-unused-screens` command.
 
-### Usage {#remove_unused_screens_usage}
+### Usage {/* #remove_unused_screens_usage */}
 
 The `remove-unused-screens` command supports several options:
 
@@ -117,7 +117,7 @@ The `remove-unused-screens` command supports several options:
 </tbody>
 </table>
 
-#### Usage examples {#usage_examples}
+#### Usage examples {/* #usage_examples */}
 
 Specifying the folder in which to search for unused screenshots:
 

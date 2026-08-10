@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # respond
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `respond`, чтобы всегда отвечать одной и той же перезаписью.
 
@@ -11,13 +11,13 @@ import Admonition from "@theme/Admonition";
     ответы][how-to-intercept-requests-and-responses]».
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 mock.respond(overwrites, { header, statusCode, fetchResponse });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -32,7 +32,7 @@ mock.respond(overwrites, { header, statusCode, fetchResponse });
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it('should demonstrate response overwrite with static data', async ({ browser }) => {
@@ -78,7 +78,7 @@ it('should demonstrate response overwrite with dynamic data', async ({ browser }
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [respondOnce](../respondOnce)
 

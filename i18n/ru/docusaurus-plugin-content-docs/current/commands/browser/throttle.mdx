@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # throttle
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `throttle`, чтобы эмулировать разные типы сетевого соединения у пользователя.
 
@@ -27,13 +27,13 @@ import Admonition from "@theme/Admonition";
 
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -48,7 +48,7 @@ await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput 
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should throttle the network", async ({ browser }) => {

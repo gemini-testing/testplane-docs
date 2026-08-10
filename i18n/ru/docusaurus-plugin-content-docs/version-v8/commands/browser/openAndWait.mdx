@@ -1,12 +1,12 @@
 # openAndWait
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `openAndWait` для открытия страницы и ожидания ее загрузки (по комбинации указанных факторов).
 
 Функции ожидания неактивности сети и падения по сетевым ошибкам доступны только при использовании браузеров с поддержкой _Chrome DevTools Protocol (CDP)_.
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.openAndWait("some/url", {
@@ -20,7 +20,7 @@ await browser.openAndWait("some/url", {
 });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -52,7 +52,7 @@ await browser.openAndWait("some/url", {
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("some test", async ({ browser }) => {

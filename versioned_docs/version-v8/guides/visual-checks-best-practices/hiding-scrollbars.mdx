@@ -8,7 +8,7 @@ Example of a diff due to scrollbar:
 
 ![diff due to scrollbar](/img/docs/guides/how-to-hide-scrollbars.diff-in-screenshot.png)
 
-## Solution 1: Using the `--hide-scrollbars` flag (recommended) {#solution_1}
+## Solution 1: Using the `--hide-scrollbars` flag (recommended) {/* #solution_1 */}
 
 Chrome, starting from around version 50 (and likely other Chromium-based browsers) supports the `--hide-scrollbars` flag. You can specify it in the browser settings like this:
 
@@ -28,7 +28,7 @@ module.exports = {
 };
 ```
 
-## Solution 2: screenshotDelay {#solution_2}
+## Solution 2: screenshotDelay {/* #solution_2 */}
 
 If the browser you are using doesn't support the `--hide-scrollbars` flag, you can use the `screenshotDelay` option to wait until the scrollbar disappears or becomes stable.
 
@@ -52,13 +52,13 @@ module.exports = {
 
 The `screenshotDelay` option sets a pause in milliseconds that Testplane should wait before taking a screenshot (before executing the `assertView` command).
 
-### How can it help? {#how_can_it_help}
+### How can it help? {/* #how_can_it_help */}
 
 Often screenshots generate diffs because the test needs to scroll the page to the required element just before taking the screenshot. After the scroll is performed, the scrollbar might still be visible on the screen for some time and thus, might appear in the screenshot if taken immediately. The `screenshotDelay` gives the scrollbar time to disappear.
 
 However, this method does not always work as it depends on the implementation and behavior of the browsers.
 
-## Solution 3: Disabling Scrollbars using CDP {#solution_3}
+## Solution 3: Disabling Scrollbars using CDP {/* #solution_3 */}
 
 This solution is useful for very old Chrome versions or browsers that do not support the `--hide-scrollbars` flag, but do support the `Emulation.setScrollbarsHidden` CDP method.
 
@@ -92,7 +92,7 @@ it("should hide scrollbar", async function ({ browser }) {
 });
 ```
 
-## Keywords {#keywords}
+## Keywords {/* #keywords */}
 
 -   screenshotDelay
 -   hermione-hide-scrollbars

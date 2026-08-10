@@ -1,6 +1,6 @@
 # @testplane/retry-progressive
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте плагин `@testplane/retry-progressive`, чтобы дополнительно прогонять тесты, если ошибки, с которыми они упали соответствуют заданному набору шаблонов.
 
@@ -32,13 +32,13 @@
 
 </details>
 
-## Установка {#install}
+## Установка {/* #install */}
 
 ```bash
 npm install -D @testplane/retry-progressive
 ```
 
-## Настройка {#setup}
+## Настройка {/* #setup */}
 
 Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
 
@@ -64,7 +64,7 @@ module.exports = {
 };
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Расшифровка параметров конфигурации {/* #setup_description */}
 
 <table>
 <thead>
@@ -78,7 +78,7 @@ module.exports = {
 </tbody>
 </table>
 
-### errorPatterns {#setup_error_patterns}
+### errorPatterns {/* #setup_error_patterns */}
 
 Каждый шаблон в массиве `errorPatterns` представляет собой либо объект вида:
 
@@ -100,7 +100,7 @@ module.exports = {
 
 Последний вариант удобен, если формат для консоли и шаблон ошибки полностью совпадают.
 
-### Передача параметров через CLI {#setup_by_cli}
+### Передача параметров через CLI {/* #setup_by_cli */}
 
 Все параметры плагина, которые можно определить в конфиге, можно также передать в виде опций командной строки или через переменные окружения во время запуска testplane. Используйте префикс `--retry-progressive-` для опций командной строки и `testplane_retry_progressive_` — для переменных окружения. Например:
 
@@ -112,7 +112,7 @@ npx testplane --retry-progressive-extra-retry 3 ...
 testplane_retry_progressive_extra_retry=3 npx testplane ...
 ```
 
-## Полезные ссылки {#useful_links}
+## Полезные ссылки {/* #useful_links */}
 
 -   [Исходники плагина @testplane/retry-progressive][testplane-retry-progressive]
 

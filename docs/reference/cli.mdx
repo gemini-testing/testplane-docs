@@ -1,7 +1,7 @@
 import Admonition from "@theme/Admonition";
 import Version from "../_partials/specs/version.mdx";
 
-# CLI {#cli}
+# CLI
 
 ## `testplane` command
 
@@ -42,9 +42,9 @@ For example,
 npx testplane --config ./config.js --reporter flat --browser firefox --grep name
 ```
 
-### Options {#testplane-options}
+### Options {/* #testplane-options */}
 
-#### Version {#testplane-version}
+#### Version {/* #testplane-version */}
 
 Print current `testplane` version.
 
@@ -52,7 +52,7 @@ Print current `testplane` version.
 testplane --version
 ```
 
-#### Config {#testplane-config}
+#### Config {/* #testplane-config */}
 
 Use custom configuration file.
 
@@ -60,7 +60,7 @@ Use custom configuration file.
 testplane --config ./local.testplane.config.ts
 ```
 
-#### Browser {#testplane-browser}
+#### Browser {/* #testplane-browser */}
 
 Run tests only in specified browser.
 
@@ -68,7 +68,7 @@ Run tests only in specified browser.
 testplane --browser chrome
 ```
 
-#### Set {#testplane-set}
+#### Set {/* #testplane-set */}
 
 Run tests only in the specified set.
 
@@ -76,7 +76,7 @@ Run tests only in the specified set.
 testplane --set desktop
 ```
 
-#### Require {#testplane-require}
+#### Require {/* #testplane-require */}
 
 Load external modules, locally existing in your machine, before running `testplane`. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
 
@@ -84,7 +84,7 @@ Load external modules, locally existing in your machine, before running `testpla
 testplane --require ./tsconfig-register-paths.js
 ```
 
-#### Reporter {#testplane-reporter}
+#### Reporter {/* #testplane-reporter */}
 
 Can be used to set one of the following reporters:
 
@@ -108,11 +108,11 @@ testplane --reporter '{"type": "jsonl", "path": "./some-path/result.jsonl"}' --r
 
 Aside these terminal reporters, you can use [html-reporter][html-reporter] plugin in order to generate html reports.
 
-#### Grep {#testplane-grep}
+#### Grep {/* #testplane-grep */}
 
 Run only tests, which full name matches the pattern.
 
-##### Example {#testplane-grep-example}
+##### Example {/* #testplane-grep-example */}
 
 If you have some tests:
 
@@ -137,13 +137,13 @@ testplane --grep "with nested path"
 testplane --grep "test with nested path"
 ```
 
-#### Tag {#testplane-tag}
+#### Tag {/* #testplane-tag */}
 
 <Version version="8.37.0" />
 
 Run only tests, which matches the tag pattern.
 
-##### Example {#testplane-tag-example}
+##### Example {/* #testplane-tag-example */}
 
 You can assign tags to a test using the second parameter of `describe` ot `it` (see example below).
 You can also add tags dynamically during test execution with the [addTag][add-tag] command,
@@ -181,7 +181,7 @@ testplane --tag "desktop|slow"
 testplane --tag "!slow"
 ```
 
-#### Update refs {#testplane-update-refs}
+#### Update refs {/* #testplane-update-refs */}
 
 Run tests, updating all screenshot references, created by [assertView][assert-view] command.
 
@@ -193,7 +193,7 @@ testplane --update-refs
     Recommended way to update screenshots is using [html-reporter][html-reporter] plugin.
 </Admonition>
 
-#### Inspect {#testplane-inspect}
+#### Inspect {/* #testplane-inspect */}
 
 Runs Testplane tests using [nodejs inspector](https://nodejs.org/en/docs/inspector).
 
@@ -206,7 +206,7 @@ testplane --inspect
     this mode with option `sessionsPerBrowser=1` in order to debug tests one at a time.
 </Admonition>
 
-#### Inspect break {#testplane-inspect-brk}
+#### Inspect break {/* #testplane-inspect-brk */}
 
 The same as [Inspect](#testplane-inspect), but with breakpoint at the start.
 
@@ -214,7 +214,7 @@ The same as [Inspect](#testplane-inspect), but with breakpoint at the start.
 testplane --inspect-brk
 ```
 
-#### REPL {#testplane-repl}
+#### REPL {/* #testplane-repl */}
 
 Enables a [REPL](https://en.wikipedia.org/wiki/Read–eval–print_loop). It also disables test duration timeout. Can be used by specifying following CLI options:
 
@@ -231,7 +231,7 @@ testplane --repl --grep 'my test name' --browser chrome
     command documentation.
 </Admonition>
 
-#### Keep browser {#testplane-keep-browser}
+#### Keep browser {/* #testplane-keep-browser */}
 
 -   `--keep-browser` - in this mode, the browser will not close after the tests complete; the console will output information on how to connect to the remaining browser instance.
 -   `--keep-browser-on-fail` - the same as the `--keep-browser` option, but the browser will only remain open if the tests fail.
@@ -253,7 +253,7 @@ Example of console output with connection information to the browser:
 
 ```
 
-#### Devtools {#testplane-devtools}
+#### Devtools {/* #testplane-devtools */}
 
 <Admonition type="danger" title="Removed in Testplane 9">
     The `--devtools` CLI option (and the corresponding `automationProtocol: "devtools"` value) was **removed** in Testplane 9. The `devtools` automation protocol — provided by WebdriverIO — caused a number of hard-to-reproduce issues that never occurred under WebDriver, and WebdriverIO has also dropped its `devtools` automation protocol. The only supported value of `automationProtocol` is now `"webdriver"` (the default).
@@ -264,7 +264,7 @@ Example of console output with connection information to the browser:
 
 </Admonition>
 
-#### Help {#testplane-help}
+#### Help {/* #testplane-help */}
 
 Prints out information about options and commands. Testplane Plugins can add their own commands and options.
 
@@ -305,9 +305,9 @@ For example,
 npx testplane list-tests --config ./config.js --browser firefox --grep name --formatter tree
 ```
 
-### Options {#list-tests-options}
+### Options {/* #list-tests-options */}
 
-#### Config {#list-tests-config}
+#### Config {/* #list-tests-config */}
 
 Use custom configuration file.
 
@@ -315,7 +315,7 @@ Use custom configuration file.
 testplane list-tests --config ./local.testplane.config.ts
 ```
 
-#### Browser {#list-tests-browser}
+#### Browser {/* #list-tests-browser */}
 
 List tests only in specified browser.
 
@@ -323,7 +323,7 @@ List tests only in specified browser.
 testplane list-tests --browser chrome
 ```
 
-#### Set {#list-tests-set}
+#### Set {/* #list-tests-set */}
 
 List tests only in the specified set.
 
@@ -331,7 +331,7 @@ List tests only in the specified set.
 testplane list-tests --set desktop
 ```
 
-#### Require {#list-tests-require}
+#### Require {/* #list-tests-require */}
 
 Load external modules, locally existing in your machine, before listing `testplane` tests. This is useful for loaders, such as ECMAScript modules via [esm](https://www.npmjs.com/package/esm).
 
@@ -339,11 +339,11 @@ Load external modules, locally existing in your machine, before listing `testpla
 testplane list-tests --require ./tsconfig-register-paths.js
 ```
 
-#### Grep {#list-tests-grep}
+#### Grep {/* #list-tests-grep */}
 
 List only tests, which full name matches the pattern.
 
-##### Example {#list-tests-grep-example}
+##### Example {/* #list-tests-grep-example */}
 
 If you have some tests:
 
@@ -368,7 +368,7 @@ testplane list-tests --grep "with nested path"
 testplane list-tests --grep "test with nested path"
 ```
 
-#### Silent {#list-tests-silent}
+#### Silent {/* #list-tests-silent */}
 
 List tests silently (without emitting events).
 
@@ -376,7 +376,7 @@ List tests silently (without emitting events).
 testplane list-tests --silent
 ```
 
-#### Output file {#list-tests-output-file}
+#### Output file {/* #list-tests-output-file */}
 
 Save listed tests to specified file.
 
@@ -384,11 +384,11 @@ Save listed tests to specified file.
 testplane list-tests --output-file "./tests.json"
 ```
 
-#### Formatter {#list-tests-formatter}
+#### Formatter {/* #list-tests-formatter */}
 
 List tests in specified format. Available formatters: `list` (default) and `tree`.
 
-##### List formatter {#list-tests-formatter-list}
+##### List formatter {/* #list-tests-formatter-list */}
 
 List tests in `list` format.
 
@@ -449,7 +449,7 @@ Here, we got plain list of unique tests, where:
 -   `pending` (`Boolean`) - flag that means if the test is disabled or not;
 -   `skipReason` (`String`) - the reason why the test was disabled.
 
-##### Tree formatter {#list-tests-formatter-tree}
+##### Tree formatter {/* #list-tests-formatter-tree */}
 
 List tests in `tree` format.
 
@@ -526,7 +526,7 @@ And `Test` has following options:
 -   `pending` (`Boolean`) - flag that means if the test is disabled or not;
 -   `skipReason` (`String`) - the reason why the test was disabled.
 
-#### Help {#list-tests-help}
+#### Help {/* #list-tests-help */}
 
 Prints out information about options and commands. Testplane Plugins can add their own commands and options.
 
@@ -560,9 +560,9 @@ For example,
 npx testplane list-browsers --type ids --format plain
 ```
 
-### Options {#list-browsers-options}
+### Options {/* #list-browsers-options */}
 
-#### Type {#list-browsers-type}
+#### Type {/* #list-browsers-type */}
 
 Specify type of output data: browserId from config or browserName with browserVersion.
 
@@ -570,7 +570,7 @@ Specify type of output data: browserId from config or browserName with browserVe
 testplane list-browsers --type tags
 ```
 
-#### Format {#list-browsers-format}
+#### Format {/* #list-browsers-format */}
 
 Specify format of output data: plain text or json.
 
@@ -578,7 +578,7 @@ Specify format of output data: plain text or json.
 testplane list-browsers --format json
 ```
 
-#### Example {#list-browsers-example}
+#### Example {/* #list-browsers-example */}
 
 If you have the following "browsers" section in your [Testplane config](/docs/reference/config/main):
 
@@ -597,7 +597,7 @@ The following commands will provide corresponding result:
 | `testplane list-browsers --type tags --format plain` | `chrome@130.0 safari` |
 | `testplane list-browsers --type tags --format json` | `[{"browserName":"chrome","browserVersion":"130.0"},{"browserName":"safari"}]` |
 
-#### Help {#list-browsers-help}
+#### Help {/* #list-browsers-help */}
 
 Prints out information about the command and its options.
 
@@ -629,9 +629,9 @@ For example:
 npx testplane config --space 4
 ```
 
-### Options {#config-options}
+### Options {/* #config-options */}
 
-#### Space {#config-space}
+#### Space {/* #config-space */}
 
 Specify the number of spaces used for formatting the human-readable output of the command.
 
@@ -639,7 +639,7 @@ Specify the number of spaces used for formatting the human-readable output of th
 testplane config --space 4
 ```
 
-#### Help {#config-help}
+#### Help {/* #config-help */}
 
 Outputs information about the command and its options.
 
@@ -647,7 +647,7 @@ Outputs information about the command and its options.
 testplane config --help
 ```
 
-## `install-deps` command {#install-deps}
+## `install-deps` command {/* #install-deps */}
 
 This command is a part of the guide [How to launch Testplane in the local browser](/docs/basic-guides/browsers-overview).
 
@@ -655,13 +655,13 @@ Use the `install-deps` command to download all browsers, specified in [Testplane
 
 If this command is launched on supported ubuntu version, all missing necessary ubuntu packages would be downloaded too.
 
-### Usage {#usage}
+### Usage {/* #usage */}
 
 ```bash
 npx testplane install-deps
 ```
 
-### Command arguments {#arguments}
+### Command arguments {/* #arguments */}
 
 You can also specify, which browsers are need to be downloaded.
 
@@ -677,7 +677,7 @@ Using browser names with versions in a format like `<browserName>@<browserVersio
 npx testplane install-deps chrome@130 firefox@104
 ```
 
-### Installation directory {#directory}
+### Installation directory {/* #directory */}
 
 By default, browsers and drivers are downloaded to ".testplane" directory at home directory.
 
@@ -688,7 +688,7 @@ TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
 TESTPLANE_BROWSERS_PATH=~/.testplane npx testplane install-deps
 ```
 
-## Overriding settings {#overriding-settings}
+## Overriding settings {/* #overriding-settings */}
 
 All options can be overridden via command-line flags or environment variables with the following priorities, by descending:
 
@@ -700,11 +700,11 @@ All options can be overridden via command-line flags or environment variables wi
 
 -   The default value.
 
-## `selectivity-merge-dumps` command {#selectivity-merge-dumps}
+## `selectivity-merge-dumps` command {/* #selectivity-merge-dumps */}
 
 This command is useful when its needed to merge selectivity dumps from multiple chunks into a single one.
 
-### Usage {#usage}
+### Usage {/* #usage */}
 
 ```bash
 npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4 -d ./selectivity-full
@@ -712,17 +712,17 @@ npx testplane selectivity-merge-dumps -d ./selectivity-full ./selectivity-chunk-
 npx testplane selectivity-merge-dumps ./selectivity-chunk-1 ./selectivity-chunk-2 ./selectivity-chunk-3 ./selectivity-chunk-4
 ```
 
-### Command options {#options}
+### Command options {/* #options */}
 
 You can specify destination directory with "-d" ("--destination") argument.
 
 It can be omitted. In this case "testDependenciesPath" from "selectivity" config section will be used.
 
-### Command arguments {#arguments}
+### Command arguments {/* #arguments */}
 
 List of paths to selectivity report chunks
 
-## Overriding with CLI option {#overriding-cli-settings}
+## Overriding with CLI option {/* #overriding-cli-settings */}
 
 To override a config setting with a CLI option, convert the full option path to `--kebab-case`.
 
@@ -738,7 +738,7 @@ It also works for nested properties. Example of overriding `browsers.firefox.ses
 testplane path/to/mytest.js --browsers-firefox-sessions-per-browser 7
 ```
 
-## Overriding with environment variable {#overriding-env-settings}
+## Overriding with environment variable {/* #overriding-env-settings */}
 
 To override a setting with an environment variable, convert its full path to `snake_case` and add the `testplane_` prefix.
 

@@ -5,17 +5,17 @@ import Admonition from "@theme/Admonition";
 
 # @testplane/url-decorator
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте плагин [@testplane/url-decorator][url-decorator], чтобы автоматически дополнять урлы в testplane-тестах нужными query-параметрами.
 
-## Установка {#install}
+## Установка {/* #install */}
 
 ```bash
 npm install -D @testplane/url-decorator
 ```
 
-## Настройка {#setup}
+## Настройка {/* #setup */}
 
 Необходимо подключить плагин в разделе `plugins` конфига `testplane`:
 
@@ -43,7 +43,7 @@ module.exports = {
 };
 ```
 
-### Расшифровка параметров конфигурации {#setup_description}
+### Расшифровка параметров конфигурации {/* #setup_description */}
 
 <table>
 <thead>
@@ -56,11 +56,11 @@ module.exports = {
 </tbody>
 </table>
 
-### enabled {#setup_enabled}
+### enabled {/* #setup_enabled */}
 
 Включить или отключить плагин. По умолчанию: `true`.
 
-### url {#setup_url}
+### url {/* #setup_url */}
 
 Параметр `url` представляет собой объект с полем `query`, значением которого может быть как массив, так и объект.
 
@@ -150,15 +150,15 @@ module.exports = {
 </tbody>
 </table>
 
-#### name {#setup_query_param_name}
+#### name {/* #setup_query_param_name */}
 
 Имя query-параметра. Если `query` задается как объект, то это поле не указывается, так как сам ключ является именем query-параметра.
 
-#### value {#setup_query_param_value}
+#### value {/* #setup_query_param_value */}
 
 Значение query-параметра. Может задаваться как строка, число или массив строк и/или чисел.
 
-#### mode {#setup_query_param_mode}
+#### mode {/* #setup_query_param_mode */}
 
 Режим объединения параметров. Возможны 2 значения: `concat` _(склеивать параметры)_ и `override` _(перетирать параметры)_. По умолчанию: `concat`.
 
@@ -219,7 +219,7 @@ url: {
 
 Тогда результирующим урлом в тесте будет: `http://localhost/test/?nick=torin`.
 
-#### browsers {#setup_query_param_browsers}
+#### browsers {/* #setup_query_param_browsers */}
 
 Браузер или список браузеров, или паттерн регулярного выражения для браузеров, к которым нужно применять заданные query-параметры. Если параметр `browsers` не указан, то query-параметры будут применяться для всех браузеров.
 
@@ -284,7 +284,7 @@ url: {
 
 </Tabs>
 
-### Передача параметров через CLI {#setup_by_cli}
+### Передача параметров через CLI {/* #setup_by_cli */}
 
 #### HERMIONE*URL_QUERY*\*
 
@@ -321,7 +321,7 @@ HERMIONE_URL_CUSTOM_QUERIES='foo-bar=baz;qux=1' testplane ...
     конфиге плагина.
 </Admonition>
 
-## Полезные ссылки {#useful_links}
+## Полезные ссылки {/* #useful_links */}
 
 -   [Исходники плагина @testplane/url-decorator][url-decorator]
 

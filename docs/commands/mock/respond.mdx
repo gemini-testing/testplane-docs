@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # respond
 
-## Overview {#overview}
+## Overview {/* #overview */}
 
 Use the `respond` command to always reply with the same overwrite.
 
@@ -11,13 +11,13 @@ Use the `respond` command to always reply with the same overwrite.
     Responses][how-to-intercept-requests-and-responses]".
 </Admonition>
 
-## Usage {#usage}
+## Usage {/* #usage */}
 
 ```javascript
 mock.respond(overwrites, { header, statusCode, fetchResponse });
 ```
 
-## Command Parameters {#parameters}
+## Command Parameters {/* #parameters */}
 
 <table>
 <thead>
@@ -32,7 +32,7 @@ mock.respond(overwrites, { header, statusCode, fetchResponse });
 </tbody>
 </table>
 
-## Usage Examples {#examples}
+## Usage Examples {/* #examples */}
 
 ```javascript
 it("should demonstrate response overwrite with static data", async ({ browser }) => {
@@ -89,7 +89,7 @@ it("should demonstrate response overwrite with dynamic data", async ({ browser }
 });
 ```
 
-## Related Commands {#related}
+## Related Commands {/* #related */}
 
 -   [respondOnce](../respondOnce)
 

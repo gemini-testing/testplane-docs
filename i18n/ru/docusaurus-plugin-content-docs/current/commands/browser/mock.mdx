@@ -2,7 +2,7 @@ import Admonition from "@theme/Admonition";
 
 # mock
 
-## Обзор {#overview}
+## Обзор {/* #overview */}
 
 Используйте команду `mock`, чтобы имитировать ответ на запрос.
 
@@ -23,13 +23,13 @@ import Admonition from "@theme/Admonition";
 
 </Admonition>
 
-## Использование {#usage}
+## Использование {/* #usage */}
 
 ```javascript
 await browser.mock(url, { method, headers, responseHeaders, postData, statusCode });
 ```
 
-## Параметры команды {#parameters}
+## Параметры команды {/* #parameters */}
 
 <table>
 <thead>
@@ -46,7 +46,7 @@ await browser.mock(url, { method, headers, responseHeaders, postData, statusCode
 </tbody>
 </table>
 
-## Примеры использования {#examples}
+## Примеры использования {/* #examples */}
 
 ```javascript
 it("should mock network resources", async ({ browser }) => {
@@ -126,7 +126,7 @@ it("should redirect web resources", async ({ browser }) => {
 });
 ```
 
-## Связанные команды {#related}
+## Связанные команды {/* #related */}
 
 -   [mockClearAll](../mockClearAll)
 -   [mockRestoreAll](../mockRestoreAll)

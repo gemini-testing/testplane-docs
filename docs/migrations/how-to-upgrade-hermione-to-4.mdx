@@ -9,7 +9,7 @@ import Admonition from "@theme/Admonition";
     This guide is relevant only for projects using hermione versions older than 4.x.
 </Admonition>
 
-## Why Should You Upgrade? {#why_to_upgrade}
+## Why Should You Upgrade? {/* #why_to_upgrade */}
 
 A long time ago, hermione switched to a "temporary" fork of the [webdriverio@4][webdriverio] package (abbr. wdio) that it used "under the hood" because issues in the _external_ _wdio_ were slowing down its development: constant bugs in _wdio_, disagreements over changes, etc. Initially, the fork was regularly updated by the hermione team to provide users with up-to-date functionality, but over time, the fork significantly lagged behind the current version of _wdio_ globally.
 
@@ -23,13 +23,13 @@ Additionally, users found it increasingly inconvenient to use outdated commands:
 
 Thus, there were plenty of reasons for a radical upgrade — jumping up by three major versions.
 
-## What Has Changed? {#what_is_new}
+## What Has Changed? {/* #what_is_new */}
 
 There are many changes, so only the most important/interesting ones will be listed below.
 
-### Command API {#api_changes}
+### Command API {/* #api_changes */}
 
-#### async/await Instead of Chaining {#feature_async_await}
+#### async/await Instead of Chaining {/* #feature_async_await */}
 
 In the new version, you can no longer write tests using _chaining_. Only _async/await_ syntax is available:
 
@@ -74,7 +74,7 @@ it("some test", async function ({ browser }) {
     this.browser.getText('.selector')_.
 </Admonition>
 
-#### Direct Result Instead of Object with value Key {#feature_direct_result}
+#### Direct Result Instead of Object with value Key {/* #feature_direct_result */}
 
 Now, instead of returning an object with a `value` key, the actual result is directly returned from command results (old behavior often led to errors in tests):
 
@@ -99,7 +99,7 @@ Now, instead of returning an object with a `value` key, the actual result is dir
 
 </Tabs>
 
-#### Direct Work with Elements {#feature_commands_of_elements}
+#### Direct Work with Elements {/* #feature_commands_of_elements */}
 
 Using the [`browser.$`][browser-dollar] command, you can get an instance of the found element and work with it in the test. This is convenient when you need to interact with an element more than once (the element won't be searched again on the page):
 
@@ -134,7 +134,7 @@ Also see the commands:
 * [`element.$`][element-dollar]
 * [`element.$$`][element-dollar-dollar]
 
-#### Passing Arguments Through an Object {#feature_passing_args_as_object}
+#### Passing Arguments Through an Object {/* #feature_passing_args_as_object */}
 
 For many commands, arguments are now passed using an object with understandable keys instead of sequentially passing arguments, which could be very confusing. For example, in the [waitForExist][element-wait-for-exist] command, which previously accepted even boolean values as arguments:
 
@@ -167,7 +167,7 @@ it('some test', async function() {
 
 </Tabs>
 
-#### Special Command for React {#feature_commands_for_react}
+#### Special Command for React {/* #feature_commands_for_react */}
 
 A bonus for those who are already using React — now you can use the [`browser.react$`][browser-react-dollar] and [`browser.react$$`][browser-react-dollar-dollar] commands to find specific react components on the page with certain states. Similar commands are available for elements as well — [`element.react$`][element-react-dollar] and [`element.react$$`][element-react-dollar-dollar].
 
@@ -202,17 +202,17 @@ it('some test', async function() {
 
 </Tabs>
 
-### Up-to-Date Documentation {#feature_actual_docs}
+### Up-to-Date Documentation {/* #feature_actual_docs */}
 
 While hermione used the old version of _webdriverio@4_, users constantly had to be reminded that the documentation for all commands was located at a separate address: [v4.webdriver.io/api.html][webdriverio-v4-api]. Now, descriptions of all _webdriverio_ commands used by hermione can be found at the standard address: [webdriver.io/docs/api][webdriverio-api].
 
 In addition, we [translated the descriptions of all commands into Russian][hermione-commands] and adapted all usage examples to hermione, since _webdriverio_ uses its own runner and the examples in its documentation cannot be directly applied in hermione.
 
-### Tests Run Faster {#feature_running_tests_faster}
+### Tests Run Faster {/* #feature_running_tests_faster */}
 
 You might not notice this speedup when running several tests locally, but it will be very noticeable with a large number of tests. The new commands work about 15% faster (assuming you have stopped using the old commands).
 
-### Easy Local Browser Testing {#feature_running_tests_in_local_browser}
+### Easy Local Browser Testing {/* #feature_running_tests_in_local_browser */}
 
 Previously, to run tests locally in your browser, you had to start `selenium-standalone` and specify a magical `gridUrl` to make things work in hermione. Now, it's much simpler: in the config, just specify the `automationProtocol` option with the value `devtools`:
 
@@ -240,7 +240,7 @@ We also plan to add a separate button in the hermione GUI for switching to CDP m
     which means page rendering will differ and tests in the pull request will fail with diffs.
 </Admonition>
 
-### API for Network Request Stubbing {#feature_api_to_mock_network}
+### API for Network Request Stubbing {/* #feature_api_to_mock_network */}
 
 The new version provides the ability to stub or override the responses of your service. This is done using the [mock.respond()][mock] command. You can also block URLs of external services.
 
@@ -251,7 +251,7 @@ Read more about all the features in the "How to Track and Intercept Network Requ
     works in _Chrome_ and _Firefox Nightly_.
 </Admonition>
 
-### Browser Configuration in the Config {#browsers_config}
+### Browser Configuration in the Config {/* #browsers_config */}
 
 For browsers that support the W3C protocol, instead of the `version` field, you need to specify `browserVersion`. And additional options need to be prefixed with the browser's name:
 
@@ -298,11 +298,11 @@ Read more about vendor prefixes at [this link](https://w3c.github.io/webdriver/#
 
 The list of all available settings can be found in the [specification](https://w3c.github.io/webdriver/#capabilities).
 
-## How to Migrate? {#how_to_move}
+## How to Migrate? {/* #how_to_move */}
 
 We upgraded _webdriverio_ by three major versions at once, so simply updating the hermione version in `package.json` won't suffice. The main issues during migration are the absent _chaining_ in tests and outdated test commands. To help you with these issues, we wrote the following guide.
 
-### 1. Update hermione to 4+, Install Migrator Plugin and Codemod {#update_hermione_and_install_plugin_and_codmode}
+### 1. Update hermione to 4+, Install Migrator Plugin and Codemod {/* #update_hermione_and_install_plugin_and_codmode */}
 
 Specifically:
 
@@ -318,7 +318,7 @@ npm install -D hermione@4 hermione-wdio-migrator hermione-codemod --save-exact
 
 The versions of all hermione plugins (e.g., [html-reporter][html-reporter]) also need to be updated to the latest versions, as some may not work correctly with the new hermione version.
 
-### 2. Run the Codemod for async/await {#change_to_async_await_by_codmode}
+### 2. Run the Codemod for async/await {/* #change_to_async_await_by_codmode */}
 
 The codemod will regenerate your tests from _chaining_ format to _async/await_ format:
 
@@ -365,7 +365,7 @@ Such tests will need to be fixed manually. We tried to account for most test cas
 
 After this, you can **already** merge your changes (this is optional) to perform the migration in parts. The _async/await_ syntax will still work in _wdio@4_. Many services have been writing tests this way for a long time.
 
-### 3. Run the Codemod to Remove value {#remove_value_by_codmode}
+### 3. Run the Codemod to Remove value {/* #remove_value_by_codmode */}
 
 Since command results now directly return the actual result instead of an object with a `value` key, you need to change result handling in all tests. This codemod is intended for such cases.
 
@@ -407,7 +407,7 @@ it('test', async function() {
 
 If your project has too many tests that cannot be automatically migrated, please reach out to [github issues][gh-issues] for help. We will analyze these errors and assist with the migration.
 
-### 4. Add hermione-wdio-migrator to the hermione Config {#add_migrator}
+### 4. Add hermione-wdio-migrator to the hermione Config {/* #add_migrator */}
 
 This plugin "under the hood" simply adds the implementation of old commands using the new API, so during migration, you don't have to update tests yourself. Eventually, you should replace these deprecated commands with new ones in your tests:
 
@@ -425,7 +425,7 @@ module.exports = {
 };
 ```
 
-### 5. Remove the Codemod {#remove_codemod}
+### 5. Remove the Codemod {/* #remove_codemod */}
 
 Uninstall the [hermione-codemod][hermione-codemod] package as you won't need it anymore.
 
@@ -433,15 +433,15 @@ Uninstall the [hermione-codemod][hermione-codemod] package as you won't need it 
 npm uninstall hermione-codemod
 ```
 
-### 6. Run Linters {#run_linters}
+### 6. Run Linters {/* #run_linters */}
 
 Run linters on the modified tests, as the codemod might have violated your project's coding standards.
 
-### 7. Run the Tests {#run_tests}
+### 7. Run the Tests {/* #run_tests */}
 
 Finally, ensure that all tests pass successfully by creating a pull request and verifying that all tests run successfully in CI.
 
-## Conclusion {#conclusion}
+## Conclusion {/* #conclusion */}
 
 Updating _webdriverio_ brings many useful features that can be used right away, while some will appear in a more convenient form later. Therefore, we highly recommend upgrading to the new version to make writing tests more convenient, faster, and enjoyable.
 
@@ -449,7 +449,7 @@ Updating _webdriverio_ brings many useful features that can be used right away, 
     The old hermione version is in limited support mode, and new features will not appear in it.
 </Admonition>
 
-## Support {#support}
+## Support {/* #support */}
 
 If you encounter issues during the upgrade or have any questions, come to [github issues][gh-issues] — we will definitely help you!
 
