@@ -1,0 +1,156 @@
+# profiler
+
+## Overview {/* #overview */}
+
+The built-in profiler explains where a Testplane run spent wall time and CPU, highlights likely bottlenecks, and suggests changes to try. Measurements and recommendations are kept separate: every recommendation includes evidence and a `high`, `medium`, or `low` confidence level.
+
+Profiling works for CLI runs and the programmatic `run` and `readTests` APIs.
+
+## Setup {/* #setup */}
+
+```javascript title="testplane.config.js"
+module.exports = {
+    profiler: {
+        level: 2,
+        output: "profiler-result.json",
+    },
+};
+```
+
+| Parameter           | Type               | Default | Description                                                                          |
+| ------------------- | ------------------ | ------- | ------------------------------------------------------------------------------------ |
+| [`level`](#level)   | `0 \| 1 \| 2 \| 3` | `0`     | Selects cumulative collection detail. `0` disables the profiler.                     |
+| [`output`](#output) | `string \| null`   | `null`  | Optional path to an atomic JSON report, resolved from the current working directory. |
+
+### level {/* #level */}
+
+The levels are cumulative:
+
+-   `0` collects nothing and produces no profiler console output, event, or file;
+-   `1` records the full run and major lifecycle phases, process CPU, event-loop metrics, memory, and host CPU samples;
+-   `2` adds event listeners, test-file loading and cache behavior, tests and grouped hooks, worker utilization, browser-pool queues, and session reuse;
+-   `3` adds individual hooks, browser commands, CommonJS/ESM load boundaries, scoped async active/waiting time, and partial browser-runtime telemetry.
+
+Use level 1 to locate a slow phase, level 2 for normal investigation, and level 3 only when the additional detail is needed. `level` must be an integer from 0 through 3.
+
+### output {/* #output */}
+
+When set, `output` must be a non-empty path ending in `.json`. Testplane writes the report through a temporary file and atomically renames it. Without `output`, the console summary and [`PROFILER_RESULT`](../../testplane-events#profiler_result) event remain available.
+
+TypeScript users can import the public result type from the package root:
+
+```typescript
+import type { ProfilerResultV1 } from "testplane";
+```
+
+## Reading the result {/* #reading_the_result */}
+
+The report has these top-level sections:
+
+-   `run`: operation, outcome, total duration, and partial-result reasons;
+-   `environment` and `capabilities`: runtime details and which measurements were available;
+-   `timeline`: retained operations with process and correlation context;
+-   `aggregates`: full streaming statistics, even when detailed operations were truncated;
+-   `findings`: evidence-backed observations and suggested experiments;
+-   `dataQuality`: collector coverage, clock uncertainty, and warnings;
+-   `profiler`: bounded collection errors, truncation information, and measured in-run profiler overhead.
+
+A console result is formatted as a readable report with the execution breakdown, detailed findings, and suggested actions:
+
+```text
+[profiler] Test run profile
+________________________________________________________________________________________
+
+Total time: 452ms
+
+Execution breakdown
+
+    Phase                            Time    Time %    Bar
+    ____________________________    _____    ______    __________
+    Initialize Testplane            351ms     77.8%    ██████████
+    Discover and load test files     85ms     18.7%    ██
+    Load configuration                7ms      1.5%
+    Unattributed                      7ms      1.5%
+    Load plugins                      2ms      0.4%
+    Set up transforms                 0ms     <0.1%
+
+Performance findings
+
+1. MEDIUM • Slow event listener • init:acceptanceSlowInit
+
+    init:acceptanceSlowInit used 351ms across 1 call(s). Slowest retained call at
+    /path/to/project/.profiler-acceptance/acceptance-plugin.cjs
+    (.profiler-acceptance/acceptance-plugin.cjs:5:19) took 351ms.
+
+    Slowest call breakdown
+    Activity      Time    Call %    Bar
+    _________    _____    ______    _____________
+    Active JS      0ms     <0.1%
+    Waiting      350ms     99.9%    █████████████
+
+    Suggested action:
+    init:acceptanceSlowInit (acceptance-plugin.cjs:5:19): waiting dominates the slowest
+    retained call; inspect awaited I/O or timers and remove avoidable serial waits.
+
+________________________________________________________________________________________
+[profiler] 1 finding: 1 medium
+```
+
+The JSON keeps measurements and advice separate:
+
+```json
+{
+    "schemaVersion": 1,
+    "run": {
+        "level": 2,
+        "profileStatus": "complete",
+        "runOutcome": "passed",
+        "durationMs": 133000
+    },
+    "timeline": [],
+    "aggregates": {},
+    "findings": [
+        {
+            "category": "event-listener",
+            "confidence": "high",
+            "evidence": [{ "metric": "wall", "value": 30000, "unit": "ms" }],
+            "action": "Inspect this listener's source and reduce synchronous work."
+        }
+    ]
+}
+```
+
+The example is abbreviated. Use the public `ProfilerResultV1` type and `schemaVersion` when consuming the complete payload.
+
+Each timeline operation distinguishes wall time from cumulative work, overlap, critical-path impact, and the available CPU estimate. Parallel operations can have cumulative work greater than the run wall time; this is expected and must not be read as elapsed run duration.
+
+`processCpuMs` is a process-window measurement and is not exclusive when operations overlap. Level 3 may additionally provide thread CPU and estimates of synchronous JS activity versus asynchronous waiting. Event-loop delay is process-wide. Browser CPU attribution is not available in v1; consult `capabilities` and `dataQuality.coverage` before relying on any optional field.
+
+Entity details are retained with deterministic top-K and serialized-size limits. `profiler.truncation` states what was seen and retained; aggregates still include all observations. Internal collector failures make the result `partial` but do not change the test outcome.
+
+Paths are project-relative when possible, URLs have credentials/query/hash removed, and known secret-like values are redacted. Raw browser session IDs and raw browser-command arguments are not included.
+
+## Lifecycle boundary {/* #lifecycle_boundary */}
+
+The profile starts at CLI/API entry, includes configuration, plugins, initialization, test discovery and loading, master/worker startup, sessions, test execution, reporters, and normal teardown. Stages that a command does not execute are absent rather than reported with zero duration. Uncovered time is represented as `unattributed`.
+
+The final snapshot is frozen after teardown and then delivered to the console, the event, and the optional JSON file. Snapshot creation, serialization, and event delivery are profiler overhead, but cannot recursively appear inside the already frozen payload. Output or event-handler failures are reported as warnings and do not change the test result.
+
+```text
+END → RUNNER_END → worker flush/shutdown → afterAll and cleanup
+    → freeze ProfilerResultV1 → console + PROFILER_RESULT + optional JSON
+```
+
+On graceful termination, Testplane requests a bounded worker flush and emits a partial profile with the abort reason. A second termination signal keeps the existing force-exit behavior, so delivery cannot be guaranteed in that case.
+
+## Consuming the event {/* #consuming_the_event */}
+
+```javascript
+module.exports = testplane => {
+    testplane.on(testplane.events.PROFILER_RESULT, async result => {
+        await sendToTelemetry(result);
+    });
+};
+```
+
+The async event receives the same immutable object used for the console and JSON outputs. Its own handlers are outside the frozen profile and cannot recursively add spans to it.
