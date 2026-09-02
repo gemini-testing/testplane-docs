@@ -1,0 +1,440 @@
+import Admonition from "@theme/Admonition";
+
+# Эмуляция среды пользователя
+
+<Admonition title="Что вы узнаете">
+
+-   Как воспроизвести мобильное устройство, цветовую схему, геолокацию и разрешения
+-   Как проверить медленную сеть, офлайн-режим и слабый CPU
+-   Какие команды требуют WebDriver BiDi или CDP
+-   Как изолировать тесты и восстанавливать изменённое состояние
+
+</Admonition>
+
+## Введение
+
+Пользовательская среда влияет на то, как приложение выглядит и работает. Один и тот же интерфейс может по-разному вести себя на мобильном экране, при другой локали, в тёмной теме, без доступа к геолокации или при медленном соединении.
+
+В Testplane эти условия настраиваются несколькими способами: через WebDriver BiDi, обычные WebDriver-команды, CDP и capabilities браузера. Выбор механизма зависит от того, какое свойство среды нужно изменить и в каком браузере выполняется тест.
+
+| Механизм                 | Команды                               |
+| ------------------------ | ------------------------------------- |
+| WebDriver BiDi           | `emulate()`, `setViewport()`          |
+| Chrome DevTools Protocol | `throttleNetwork()`, `throttleCPU()`  |
+| WebDriver                | `setPermissions()`, `setWindowSize()` |
+
+Все варианты `emulate()` и команда `setViewport()` требуют WebDriver BiDi. Чтобы его включить, добавьте `webSocketUrl: true` в `desiredCapabilities`:
+
+```typescript
+"chrome": {
+    desiredCapabilities: {
+        browserName: "chrome",
+        browserVersion: "128.0",
+        webSocketUrl: true,
+    },
+},
+```
+
+Минимальная версия Chrome с поддержкой BiDi — 128, Firefox — 119.
+
+<Admonition type="caution" title="Вызывайте emulate() до перехода на страницу">
+
+`emulate()` применяется при создании нового документа. Вызывайте команду до `browser.url()`.
+
+После `browser.restore()` перезагрузите страницу или выполните повторную навигацию, если в том же тесте нужно проверить восстановленное состояние.
+
+</Admonition>
+
+## Эмуляция мобильных устройств
+
+Мобильная эмуляция помогает проверить адаптивную вёрстку, мобильную навигацию и отображение интерфейса на экранах с высоким DPR. Основные возможности ориентированы на Chromium-based браузеры.
+
+### Профиль устройства
+
+Чтобы одновременно задать viewport, DPR и user agent, используйте `emulate("device")`:
+
+```typescript
+it("отображает мобильную вёрстку", async ({ browser }) => {
+    const restoreDevice = await browser.emulate("device", "iPhone 12 Pro Max");
+
+    try {
+        await browser.url("/");
+        // ...
+    } finally {
+        await restoreDevice();
+    }
+});
+```
+
+Команда не включает touch-события и мобильный режим браузера.
+
+<Admonition type="caution" title="Сохраняйте функцию отката">
+
+`browser.restore()` возвращает user agent, но не viewport, установленный через `emulate("device")`. Для полного отката вызывайте функцию, которую вернул `emulate("device")`.
+
+Viewport при этом вернётся к профилю `Desktop Chrome`, а не к исходному размеру.
+
+</Admonition>
+
+### Viewport и DPR
+
+Чтобы проверить конкретный брейкпойнт, используйте `setViewport()`:
+
+```typescript
+await browser.setViewport({
+    width: 390,
+    height: 844,
+    devicePixelRatio: 3,
+});
+```
+
+Команда применяется к текущему контексту и не возвращает функцию отката. Чтобы восстановить viewport, вызовите `setViewport()` повторно с нужными значениями.
+
+`setWindowSize()` меняет размер всего окна, а не области отрисовки:
+
+```typescript
+await browser.setWindowSize(500, 600);
+```
+
+Для мобильных брейкпойнтов используйте `setViewport()`.
+
+### User agent
+
+Если клиентский код выбирает мобильный интерфейс по `navigator.userAgent`, задайте значение отдельно:
+
+```typescript
+await browser.emulate(
+    "userAgent",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15",
+);
+```
+
+Команда не меняет HTTP-заголовок `User-Agent` и Client Hints. Она подходит только для кода, который читает `navigator.userAgent` в браузере.
+
+## Язык и временная зона
+
+Эти параметры нужны для проверки переводов, форматов дат, чисел и времени.
+
+### Локали
+
+В Chromium можно изменить локаль `Intl` и заголовок `Accept-Language` через Puppeteer и CDP:
+
+```typescript
+it("открывает страницу с немецкой локалью", async ({ browser }) => {
+    const puppeteer = await browser.getPuppeteer();
+    const [page] = await puppeteer.pages();
+    const client = await page.target().createCDPSession();
+
+    await client.send("Emulation.setLocaleOverride", {
+        locale: "de-DE",
+    });
+
+    await page.setExtraHTTPHeaders({
+        "Accept-Language": "de-DE,de;q=0.9",
+    });
+
+    await browser.url("/");
+    // ...
+});
+```
+
+`Emulation.setLocaleOverride` меняет локаль `Intl` и форматирование дат и чисел. `page.setExtraHTTPHeaders()` меняет заголовок `Accept-Language`, который получает сервер.
+
+Эти настройки не меняют `navigator.language` и `navigator.languages`. Способ подходит, если приложение получает локаль с сервера или использует `Intl` без явно заданной локали. Если клиентский код читает `navigator.language`, потребуется другой способ запуска браузера с нужной системной локалью.
+
+Способ с Puppeteer и CDP предназначен для Chromium-браузеров.
+
+### Часовой пояс
+
+В Chromium используйте `page.emulateTimezone()`:
+
+```typescript
+it("показывает время для Нью-Йорка", async ({ browser }) => {
+    const puppeteer = await browser.getPuppeteer();
+    const [page] = await puppeteer.pages();
+
+    try {
+        await page.emulateTimezone("America/New_York");
+        await browser.url("/");
+        // ...
+    } finally {
+        await page.emulateTimezone();
+    }
+});
+```
+
+Команда меняет часовой пояс для `Date` и `Intl`: `resolvedOptions().timeZone`, `getTimezoneOffset()`, `Date.prototype.toString()` и форматирование без явно заданного `timeZone`.
+
+Вызывайте `emulateTimezone()` до навигации, чтобы код страницы сразу использовал нужную зону. Технически изменение применяется и к уже открытому документу.
+
+Значение `"UTC"` не сбрасывает настройку, а устанавливает новую зону. Для снятия override вызовите `emulateTimezone()` без аргумента.
+
+### Системное время
+
+Для сценариев, зависящих от даты и таймеров, используйте `emulate("clock")`. Используйте эту команду до навигации, чтобы скрипты страницы сразу использовали подменённое время.
+
+```typescript
+it("показывает акцию на заданную дату", async ({ browser }) => {
+    const clock = await browser.emulate("clock", {
+        now: new Date(2025, 11, 31),
+    });
+
+    try {
+        await browser.url("/");
+        // ...
+    } finally {
+        await clock.restore();
+    }
+});
+```
+
+`emulate("clock")` не заменяет настройку часового пояса: команда управляет временем и таймерами, но не меняет `Intl.DateTimeFormat().resolvedOptions().timeZone`.
+
+### Таймеры
+
+Чтобы выполнить действие, запланированное через браузерный таймер, вызовите `tick()` и передайте количество миллисекунд:
+
+```typescript
+it("скрывает уведомление через пять секунд", async ({ browser }) => {
+    const clock = await browser.emulate("clock");
+
+    try {
+        await browser.url("/");
+        await browser.findByTestId("show-notification").click();
+
+        await clock.tick(5000);
+
+        await expect(browser.findByTestId("show-notification")).not.toBeDisplayed();
+    } finally {
+        await clock.restore();
+    }
+});
+```
+
+В этом примере пять секунд проходят для таймеров страницы, но тест не ждёт их в реальном времени.
+
+### Подмена необходимых таймеров
+
+По умолчанию clock подменяет поддерживаемые браузерные таймеры и `Date`. Через `toFake` можно ограничить список:
+
+```typescript
+const clock = await browser.emulate("clock", {
+    toFake: ["Date", "setTimeout", "clearTimeout"],
+});
+```
+
+Используйте этот вариант, когда тесту нужно управлять только отдельными API и не затрагивать остальные таймеры страницы.
+
+## Разрешения браузера
+
+`setPermissions()` изменяет состояние разрешения для текущего origin. Сначала откройте целевую страницу, затем вызовите команду:
+
+```typescript
+it("работает при выданном доступе к геолокации", async ({ browser }) => {
+    await browser.url("/");
+    await browser.setPermissions({ name: "geolocation" }, "granted");
+    // ...
+});
+```
+
+До первой навигации браузер находится на `about:blank`. Для непрозрачного origin этой страницы разрешение выдать нельзя.
+
+В примерах протокола используются состояния `"granted"`, `"denied"` и `"prompt"`. Поддержка разрешений и значений зависит от драйвера браузера.
+
+<Admonition type="caution">
+
+Команда поддерживается не всеми браузерами. В типах состояние объявлено как `string`, поэтому опечатка не будет обнаружена при проверке типов.
+
+</Admonition>
+
+Для `emulate("geolocation")` предварительно выдавать разрешение не нужно.
+
+## Цветовая схема
+
+Чтобы проверить код, который реагирует на `prefers-color-scheme`, используйте `emulate("colorScheme")`:
+
+```typescript
+it("проверяет реакцию JavaScript на тёмную тему", async ({ browser }) => {
+    await browser.emulate("colorScheme", "dark");
+    await browser.url("/");
+    // ...
+});
+```
+
+Команда меняет результат `window.matchMedia()` для запросов `prefers-color-scheme`, но не переключает CSS-правила `@media (prefers-color-scheme)`.
+
+Используйте её для логики, которая сама читает `matchMedia()`. Для визуальной проверки CSS-темы эта команда не подходит.
+
+## Сеть и офлайн-режим
+
+`throttleNetwork()` позволяет замедлить соединение, увеличить задержку или полностью отключить сеть. Команда поддерживается только в Chromium-браузерах с доступным CDP-подключением.
+
+### Скорость соединения
+
+Передайте готовый пресет:
+
+```typescript
+it("показывает индикатор загрузки", async ({ browser }) => {
+    await browser.throttleNetwork("Good2G");
+    // ...
+});
+```
+
+Доступные пресеты:
+
+-   `offline`
+-   `GPRS`
+-   `Regular2G`
+-   `Good2G`
+-   `Regular3G`
+-   `Good3G`
+-   `Regular4G`
+-   `DSL`
+-   `WiFi`
+-   `online`
+
+Параметры можно задать вручную:
+
+```typescript
+await browser.throttleNetwork({
+    offline: false,
+    downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (byte/sec)
+    uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (byte/sec)
+    latency: 10, // минимальная задержка от отправки запроса до получения заголовков ответа
+});
+```
+
+Скорость задаётся в байтах в секунду, задержка — в миллисекундах.
+
+### Отсутствие сети
+
+Чтобы отключить сетевые запросы, используйте пресет `offline`:
+
+```typescript
+await browser.throttleNetwork("offline");
+```
+
+`emulate("onLine", false)` меняет только `navigator.onLine`:
+
+```typescript
+await browser.emulate("onLine", false);
+await browser.url("/");
+```
+
+Страница загружается уже с подменённым значением, поэтому не используйте событие `offline` как подтверждение применения эмуляции.
+
+## Замедление CPU
+
+Чтобы проверить skeleton-компоненты, спиннеры и debounce-логику на слабом устройстве, используйте `throttleCPU()`:
+
+```typescript
+it("показывает skeleton на слабом устройстве", async ({ browser }) => {
+    await browser.throttleCPU(4);
+    // ...
+});
+```
+
+Значение `1` соответствует обычной скорости, `2` замедляет CPU вдвое, `4` — вчетверо.
+
+Команда поддерживается только в Chromium-браузерах с доступным CDP-подключением. В Firefox она завершается ошибкой до применения ограничений.
+
+## Геолокация
+
+Чтобы проверить региональный контент или ближайшие объекты, передайте координаты в `emulate("geolocation")`:
+
+```typescript
+it("показывает контент для Санкт-Петербурга", async ({ browser }) => {
+    await browser.emulate("geolocation", {
+        latitude: 59.95,
+        longitude: 30.31667,
+        accuracy: 10,
+    });
+
+    await browser.url("/");
+    // ...
+});
+```
+
+Предварительно выдавать разрешение не нужно.
+
+Чтобы проверить обработку ошибки, передайте объект `Error`:
+
+```typescript
+await browser.emulate("geolocation", new Error("User denied Geolocation"));
+```
+
+Команда подменяет только `navigator.geolocation.getCurrentPosition()`. Она не влияет на `watchPosition()` и не учитывает параметры `timeout`, `maximumAge` и `enableHighAccuracy`.
+
+## Отключение JavaScript
+
+Отключение JavaScript помогает проверить SSR-страницы, базовую доступность контента и fallback-состояния.
+
+Для Chromium добавьте отдельную конфигурацию браузера и передайте Chrome preference:
+
+```typescript
+"chrome-javascript-disabled": {
+    headless: true,
+    desiredCapabilities: {
+        browserName: "chrome",
+        "goog:chromeOptions": {
+            prefs: {
+                "profile.managed_default_content_settings.javascript": 2,
+            },
+        },
+    },
+},
+```
+
+Настройка применяется при создании сессии и действует с первой загрузки страницы. Inline- и внешние скрипты не выполняются, при этом статический HTML, содержимое `noscript`, ссылки и обычные формы остаются доступными.
+
+Тесты без JavaScript запускайте в отдельной конфигурации браузера. Переключить preference внутри теста нельзя, cleanup не требуется: настройка удаляется вместе с профилем и сессией. Обычные WebDriver-команды продолжают работать.
+
+<Admonition type="caution" title="Проверяйте noscript через isExisting()">
+
+При включённом JavaScript элемент внутри `noscript` отсутствует в DOM, а не просто скрыт. Проверяйте его существование через `isExisting()`.
+
+</Admonition>
+
+Способ предназначен для Chromium-браузеров, поскольку использует `goog:chromeOptions`.
+
+## Организация настроек в проекте
+
+Повторяющиеся сценарии удобно оформлять как отдельные браузерные профили или вспомогательные функции: например, `mobile`, `dark-theme` и `slow-network`.
+
+Настройки, специфичные для одного сценария, оставляйте явными в самом тесте. Состояние `emulate()` может перейти в следующий тест даже при `isolation: true`, поэтому восстанавливайте его в том же тесте:
+
+```typescript
+it("проверяет тёмную тему", async ({ browser }) => {
+    await browser.emulate("colorScheme", "dark");
+
+    try {
+        await browser.url("/");
+        // ...
+    } finally {
+        await browser.restore("colorScheme");
+    }
+});
+```
+
+Не откладывайте `restore()` до следующего теста: при переиспользовании сессии вызов может завершиться без ошибки, но не снять эмуляцию.
+
+Если после `restore()` нужно проверить исходное состояние страницы, выполните повторную навигацию.
+
+Для гарантированно чистой сессии в каждом тесте задайте для браузера:
+
+```typescript
+testsPerSession: 1,
+```
+
+Сбрасывайте другие ограничения явно:
+
+| Что изменено                     | Как вернуть                            |
+| -------------------------------- | -------------------------------------- |
+| `emulate("clock")`               | `clock.restore()`                      |
+| `emulate("device")`              | Сохранённая функция отката             |
+| `setViewport()`                  | Повторный вызов с исходными значениями |
+| `setWindowSize()`                | Повторный вызов с исходными значениями |
+| `throttleNetwork()`              | `browser.throttleNetwork("online")`    |
+| `throttleCPU()`                  | `browser.throttleCPU(1)`               |
+| `page.emulateTimezone()`         | `page.emulateTimezone()` без аргумента |
+| Chrome preference для JavaScript | Завершение сессии                      |
