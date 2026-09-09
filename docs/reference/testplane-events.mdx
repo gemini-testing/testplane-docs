@@ -107,7 +107,7 @@ Then everything will depend on the result of the test run. If the test passed su
 
 If the test does not need to be re-run, and the result is final, Testplane triggers the [TEST_END](#test_end) and [SUITE_END](#suite_end) events if it refers to the completion of a describe-block.
 
-After all tests have been executed and sessions completed, Testplane triggers the [END](#end) and [RUNNER_END](#runner_end) events.
+After all tests have been executed and sessions completed, Testplane triggers the [END](#end) and [RUNNER_END](#runner_end) events. When the built-in profiler is enabled, Testplane completes normal teardown and then triggers [PROFILER_RESULT](#profiler_result) with the final immutable profile.
 
 #### Updating reference screenshots
 
@@ -526,7 +526,9 @@ testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testParser }) => {
     testParser.setController("logger", {
         log: function (prefix) {
             console.log(
-                `${prefix}: just parsed ${this.fullTitle()} from file ${file} for browser ${this.browserId}`,
+                `${prefix}: just parsed ${this.fullTitle()} from file ${file} for browser ${
+                    this.browserId
+                }`,
             );
         },
     });
@@ -715,6 +717,28 @@ The event handler receives an object with the test run statistics in the followi
 
 See the example [above](#runner_start_usage) about opening and closing the tunnel when the runner starts and stops.
 
+## PROFILER_RESULT {/* #profiler_result */}
+
+**async | master**
+
+The `PROFILER_RESULT` event is triggered once after normal teardown when the built-in [profiler](../config/profiler) is enabled. It is also delivered for a partial result when Testplane can finalize an aborted or failed operation. Level 0 does not trigger the event.
+
+The final result is frozen before delivery. The event handler itself is outside the measured timeline, so it cannot recursively change the profile. A rejected handler is reported as a profiler delivery warning and does not change the test result.
+
+### Subscribing to the event {/* #profiler_result_subscription */}
+
+```javascript
+testplane.on(testplane.events.PROFILER_RESULT, async result => {
+    console.info(`Profile ${result.run.id}: ${result.run.durationMs} ms`);
+});
+```
+
+#### Handler parameters {/* #profiler_result_cb_params */}
+
+The handler receives a readonly `ProfilerResultV1` object. It contains the run metadata, environment and capabilities, retained timeline, full aggregates, evidence-backed findings, data-quality information, collection errors, and truncation metadata. The same object is used for the console summary and optional JSON output.
+
+See the [profiler configuration reference](../config/profiler#reading_the_result) for timing semantics, data-quality rules, result fields, and privacy boundaries.
+
 ## NEW_WORKER_PROCESS {/* #new_worker_process */}
 
 **sync | master**
@@ -846,7 +870,10 @@ module.exports = (testplane, opts) => {
         // pluginConfig.browserWSEndpoint defines a function that should return the URL
         // for working with the browser via CDP. To allow the function to compute the URL,
         // the function receives the session identifier and the grid URL
-        const browserWSEndpoint = pluginConfig.browserWSEndpoint({ sessionId, gridUrl });
+        const browserWSEndpoint = pluginConfig.browserWSEndpoint({
+            sessionId,
+            gridUrl,
+        });
 
         const devtools = await DevTools.create({ browserWSEndpoint });
 

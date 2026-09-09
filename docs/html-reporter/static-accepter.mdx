@@ -19,9 +19,9 @@ A typical flow may look as follows:
 
 1. A CI job finishes running tests, generates the html-reporter bundle, and uploads the static report somewhere reviewers can reach it.
 2. A reviewer opens that static report, stages the screenshots that should become the new baselines, and presses **Commit**.
-3. html-reporter packages the staged screenshots together with repository metadata and sends them to a service that you operate. That service runs persistently (for example on your infrastructure or as a cloud function) and is responsible for updating the pull request with the new baselines.
+3. html-reporter sends the staged screenshots through the configured accepter: either the legacy HTTP service that you operate, or a runtime ESM module such as Static Accepter v2.
 
-The static accepter is disabled in GUI mode. To expose it in the static bundle you must configure repository, pull request, and service URLs as shown below.
+The static accepter is disabled in GUI mode. To expose it in the static bundle you must configure repository and pull request URLs plus either the legacy service or a v2 module, as shown below.
 
 ## Configuration prerequisites
 
@@ -49,11 +49,43 @@ plugins: {
 }
 ```
 
--   The accepter is ignored unless the `enabled` flag is set and the report is opened in static mode. `repositoryUrl`, `pullRequestUrl`, and `serviceUrl` are mandatory; missing values disable the feature inside the bundle.
+-   The accepter is ignored unless the `enabled` flag is set and the report is opened in static mode. `repositoryUrl` and `pullRequestUrl` are always mandatory. Configure `serviceUrl` for the legacy HTTP flow or `moduleUrl` for Static Accepter v2; when `moduleUrl` is present, it takes precedence and `serviceUrl` is not required.
 -   Images collected for committing always reference the stored baseline path. The accepter throws if the underlying tool cannot provide a `refImg.relativePath`, because the service needs the final repository-relative destination for each file.
 -   `axiosRequestOptions` (optional) are forwarded to the HTTP client used by the report UI so you can tweak timeouts, headers, or authentication parameters required by your service.
 
-## High-level workflow
+## Static Accepter v2
+
+Static Accepter v2 delegates downloading, batching, authenticated commit creation, and final Submit/Suggest confirmation to a runtime ESM module. To enable the production client, set `moduleUrl` in the existing configuration block:
+
+```js
+plugins: {
+    'html-reporter/testplane': {
+        enabled: true,
+        staticImageAccepter: {
+            enabled: true,
+            repositoryUrl: 'https://github.com/org/project',
+            pullRequestUrl: 'https://github.com/org/project/pull/42',
+            moduleUrl: 'https://my-static-accepter-service.com/v2/script.js',
+        }
+    }
+}
+```
+
+The module is imported by the report page at runtime and is not included in the html-reporter bundle. Opening the commit dialog starts the import; the final **Commit** button remains disabled until it succeeds. The final click calls the module synchronously so the browser preserves user activation for the static accepter v2 popup.
+
+The popup owns confirmation and all static accepter API requests. html-reporter does not embed an iframe, open the popup itself, send protocol messages, split commits, or call static accepter `/_api/v2/*` endpoints. While the operation is pending, the report shows download/commit/confirmation/submit progress and keeps the staged set unchanged. `submitted` and `suggested` results mark the staged images as committed; cancellation or an error leaves them staged for retry.
+
+Before publishing a report with v2, verify the following browser integration requirements:
+
+-   The exact report origin is allowed by static accepter.
+-   The report CSP permits the `moduleUrl` origin in `script-src` and permits screenshot origins in `connect-src`.
+-   Screenshot origins return CORS headers that allow the report origin.
+-   The report does not use `Cross-Origin-Opener-Policy: same-origin`, because static accepter requires `window.opener` for its popup protocol.
+-   Reviewers are authenticated in static accepter, have access to the pull request, and allow popups for the report origin.
+
+If `moduleUrl` is omitted, html-reporter preserves the legacy HTTP behavior described below.
+
+## Legacy HTTP workflow
 
 1. Reviewers browse the static report, stage the screenshots they want to promote, and open the **Commit** dialog.
 2. html-reporter gathers the staged entries, fetches the binary data for each actual image, and builds a `multipart/form-data` payload that includes repository metadata, the chosen commit message, and every image file.

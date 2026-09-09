@@ -17,7 +17,7 @@ Testplane runs tests in real browsers and is not tied to specific versions or a 
 
 You describe the required browsers in the [`browsers`](../reference/config/browsers.mdx) section, and the [`gridUrl`](../reference/config/browsers.mdx#grid_url) parameter determines where to get them from: locally, from a Docker grid (e.g., Selenoid), or from a remote cloud (BrowserStack, Sauce Labs).
 
-**General workflow:**
+**General workflow**
 
 1. Testplane reads the `browsers` section
 2. For each browser, it takes the `gridUrl` (common or overridden at the browser level)
@@ -71,7 +71,7 @@ The browser version is set in `desiredCapabilities.browserVersion`. For local br
 
 The [`headless: true`](../reference/config/browsers.mdx#headless) parameter enables running the browser without a graphical interface.
 
-**Important points:**
+**Important points**
 
 -   Test behavior is identical: from the test's perspective, a browser with `headless: true` and `headless: false` works exactly the same. For example, when running with `headless: true`, you can still take screenshots, work with the DOM, and execute any commands.
 
@@ -140,8 +140,7 @@ TESTPLANE_BROWSERS_PATH=./node_modules/.testplane npx testplane install-deps
 
 #### Removing Browsers
 
--   Delete the .testplane directory in the home folder
--   Or delete the directory specified in `TESTPLANE_BROWSERS_PATH`
+Delete the .testplane directory in the home folder or the directory specified in `TESTPLANE_BROWSERS_PATH`.
 
 ### Browser Support {/* #browser-support */}
 
@@ -151,8 +150,8 @@ Below is a table of supported browsers:
 | ------- | ------------- | -------------------- | ---------------- |
 | Chrome  | +             | +                    | +                |
 | Firefox | +             | +                    | +                |
-| Edge    | -             | +                    | +                |
-| Safari  | -             | +                    | +                |
+| Edge    | −             | +                    | +                |
+| Safari  | −             | +                    | +                |
 
 Supported browser versions depending on OS:
 
@@ -161,7 +160,7 @@ Supported browser versions depending on OS:
 | Chrome  | 73+     | 73+   | 73+       | 73+       | 73+       |
 | Firefox | 60+     | 60+   | 60+       | 91+       | 126+      |
 |  Edge   | \*      | \*    | \*        | \*        | \*        |
-| Safari  | -       | \*    | -         | -         | -         |
+| Safari  | −       | \*    | −         | −         | −         |
 
 > `*` — browser auto-download is not supported, but if the browser is installed by the user, Testplane will use the installed version.
 
@@ -212,9 +211,9 @@ Local browsers are suitable for development, quick runs, and debugging, but not 
 
 ## Browsers in Docker Containers
 
-Docker containers provide an isolated and reproducible environment, convenient for CI/CD. Selenoid is often used — a lightweight implementation of Selenium Grid that runs browsers inside containers.
+Docker containers provide an isolated and reproducible environment, convenient for CI/CD. Selenoid is often used — a lightweight implementation of Selenium Grid. It runs browsers inside containers.
 
-**Selenoid:**
+**Selenoid**
 
 -   Manages browsers in Docker containers
 -   Automatically scales containers
@@ -318,7 +317,7 @@ Create a `browsers.json` file describing the required browsers:
 
 #### Starting Selenoid
 
-Start Selenoid, specifying the path to the configuration (in the example, the config is located at `/home/selenoid-config/browsers.json`):
+To start Selenoid, specify the path to the configuration (in the example, the config is located at `/home/selenoid-config/browsers.json`):
 
 ```bash
 docker run --rm -d \
@@ -432,13 +431,13 @@ Docker is well-suited for CI/CD and screenshot testing where stability and repro
 
 ## Remote Grids
 
-Cloud services (BrowserStack, Sauce Labs, etc.) provide a wide range of browsers, OSes, and real devices for cross-browser testing.
+Cloud services such as BrowserStack and Sauce Labs provide a wide range of browsers, OSes, and real devices for cross-browser testing.
 
 ### Connection and Authentication
 
 To connect, you need to specify the service's `gridUrl` and pass credentials via `user` and `key`. It is recommended to store them in environment variables.
 
-The basic browser configuration remains the same, only the `gridUrl` changes and cloud provider-specific options are added:
+The basic browser configuration remains the same, only the `gridUrl` changes, and cloud provider-specific options are added:
 
 ```ts title="testplane.config.ts"
 export default {
