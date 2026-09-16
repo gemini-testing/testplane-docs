@@ -4,17 +4,17 @@ import Admonition from "@theme/Admonition";
 
 <Admonition title="Что вы узнаете">
 
--   Как эмулировать устройство и viewport, цветовую схему, время, геолокацию, разрешения
--   Как задать язык интерфейса и отключенный JavaScript
--   Как проверить поведение приложения при медленной сети и слабом CPU
+-   Как эмулировать устройство и viewport, цветовую схему, время, геолокацию и разрешения
+-   Как задать язык интерфейса и отключить JavaScript
+-   Как проверить работу приложения при медленной сети и слабом CPU
 
 </Admonition>
 
 ## Введение
 
-Пользовательская среда влияет на то, как приложение выглядит и работает. Один и тот же интерфейс может по-разному вести себя на мобильном экране, при другой локали, в темной теме, без доступа к геолокации или при медленном соединении.
+Пользовательская среда влияет на внешний вид и работу приложения. Один и тот же интерфейс может по-разному вести себя на мобильном экране, при другой локали, в темной теме, без доступа к геолокации или при медленном соединении.
 
-В Testplane часть таких условий можно менять во время теста, а часть — задавать в настройках браузера.
+В Testplane одни параметры среды можно менять прямо во время теста, а другие нужно заранее задать в настройках браузера.
 
 Для команд [`browser.emulate()`][emulate] и [`setViewport()`][set-viewport] требуется [WebDriver BiDi][webdriver-bidi]. В конфигурации браузера включите `webSocketUrl`:
 
@@ -29,9 +29,13 @@ browsers: {
 },
 ```
 
-В одной Chrome-сессии с `webSocketUrl: true` можно вызывать и [`browser.emulate()`][emulate], и команды через [Chrome DevTools Protocol][how-to-use-cdp]: [`getPuppeteer()`][get-puppeteer], [`throttleNetwork()`][throttle-network], [`throttleCPU()`][throttle-cpu]. Отдельную конфигурацию без BiDi для этого заводить не нужно.
+В одной сессии Chrome с `webSocketUrl: true` можно использовать и [`browser.emulate()`][emulate], и команды, которые работают через [Chrome DevTools Protocol][how-to-use-cdp]: [`getPuppeteer()`][get-puppeteer], [`throttleNetwork()`][throttle-network] и [`throttleCPU()`][throttle-cpu]. Создавать для них отдельную конфигурацию без BiDi не нужно.
 
 Минимальная версия Chrome с поддержкой BiDi — 128, Firefox — 119.
+
+В большинстве случаев браузер применяет настройки `emulate()` при открытии страницы. Поэтому сначала вызовите команду, а затем переходите на нужную страницу. Исключения указаны в соответствующих разделах.
+
+Чтобы искать элементы через `getByTestId` и `findByTestId`, как в примерах из этой статьи, установите и подключите [@testplane/testing-library][testing-library-guide]. В тесте с отключенным JavaScript эти команды недоступны, поэтому в нем используется `$()`.
 
 <Admonition type="warning" title="Не все команды работают в Firefox">
 
@@ -39,17 +43,11 @@ browsers: {
 
 </Admonition>
 
-### Порядок вызовов
-
-Команда `emulate()` работает через preload-скрипты BiDi: браузер применяет их при создании документа. Поэтому вызывать ее нужно до навигации: на уже открытой странице она ничего не изменит. Команда `restore()` снимает эмуляцию только для следующих документов: текущая страница останется как была, пока ее не открыть заново.
-
-На команды через CDP это не распространяется: например, [`page.emulateTimezone()`][page-emulate-timezone] переключает зону и в уже открытом документе.
-
 ## Экран и устройство
 
 ### Viewport
 
-[`setViewport()`][set-viewport] задает размер области отрисовки. Команда подходит для проверки адаптивной верстки и поведения интерфейса на разных брейкпойнтах. Если нужно менять не область отрисовки, а размер окна браузера, используйте [`setWindowSize()`][set-window-size].
+[`setViewport()`][set-viewport] задает размер области отрисовки. С помощью команды можно проверять адаптивную верстку и поведение интерфейса на разных брейкпойнтах. Чтобы изменить размер всего окна браузера, а не viewport, используйте [`setWindowSize()`][set-window-size].
 
 ```typescript
 it("показывает мобильную навигацию на узком экране", async ({ browser }) => {
@@ -60,57 +58,36 @@ it("показывает мобильную навигацию на узком �
 
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='mobile-menu']")).toBeDisplayed();
+    const mobileMenu = await browser.getByTestId("mobile-menu");
+    await expect(mobileMenu).toBeDisplayed();
 });
 ```
 
-Размер, который задает `setViewport()`, действует до конца сессии, отдельной команды отката нет.
+Размер, заданный через `setViewport()`, сохраняется до конца сессии. Отдельной команды для отката нет.
 
 ### Профиль устройства
 
-[`emulate("device")`][emulate-device] применяет готовый профиль устройства: viewport, DPR и `navigator.userAgent`.
+[`emulate("device")`][emulate-device] применяет готовый профиль устройства: viewport, DPR и `navigator.userAgent`. Viewport меняется сразу, а user agent — только в документах, созданных после вызова команды. Поэтому сначала включите эмуляцию, а затем переходите на нужную страницу.
 
-Например, несколько тестов для iPhone можно объединить одним профилем:
+Профиль устройства подменяет user agent и размеры, но не превращает десктопный браузер в мобильный. Например, дескриптор `iPhone 15` содержит параметры `isMobile` и `hasTouch`, но команда их не применяет. Тач-события и `navigator.maxTouchPoints` не эмулируются, движок остается Chromium вместо WebKit/iOS, а системные шрифты, экранная клавиатура, адресная строка и производительность не меняются. Поэтому такая эмуляция не заменяет проверку на реальном устройстве.
 
 ```typescript
-describe("iPhone 15", () => {
-    let restoreDevice: (() => Promise<void>) | undefined;
-    let viewport: { width: number; height: number; devicePixelRatio: number };
+it("показывает инструкцию для iOS на профиле iPhone 15", async ({ browser }) => {
+    await browser.emulate("device", "iPhone 15");
+    await browser.url("/");
 
-    before(async ({ browser }) => {
-        await browser.url("/");
-
-        viewport = await browser.execute(() => ({
-            width: window.innerWidth,
-            height: window.innerHeight,
-            devicePixelRatio: window.devicePixelRatio,
-        }));
-    });
-
-    beforeEach(async ({ browser }) => {
-        restoreDevice = await browser.emulate("device", "iPhone 15");
-    });
-
-    afterEach(async ({ browser }) => {
-        await restoreDevice?.();
-        restoreDevice = undefined;
-
-        await browser.setViewport(viewport);
-    });
-
-    it("показывает инструкцию для iOS на профиле iPhone 15", async ({ browser }) => {
-        await browser.url("/");
-
-        await expect(browser.$("[data-testid='ios-install-guide']")).toBeDisplayed();
-    });
+    const installGuide = await browser.getByTestId("ios-install-guide");
+    await expect(installGuide).toBeDisplayed();
 });
 ```
 
-Функция, которую возвращает `emulate("device")`, снимает подмененный user agent, но исходный viewport не возвращает: вместо него ставится профиль Desktop Chrome — 1280 × 720, DPR 1. Поэтому в примере размер запоминается в `before` и после каждого теста возвращается через [`setViewport()`][set-viewport]. Замерять нужно на странице приложения: на `about:blank` значения будут другими. Сам `emulate("device")` по-прежнему вызывается до навигации.
+В этом примере эмуляция не снимается и остается до конца сессии. Если после него в той же сессии идут другие тесты, сохраните функцию, которую вернул `emulate("device")`, и вызовите ее в том же тесте или в `afterEach`.
+
+Функция отката убирает подмену user agent и устанавливает viewport профиля Desktop Chrome — 1280 × 720 с DPR 1. Исходный размер viewport она не восстанавливает. Если следующим тестам нужен другой размер, после отката вызовите [`setViewport()`][set-viewport] с константой.
 
 ### User agent
 
-Для user agent есть два разных сценария: клиентский код может читать `navigator.userAgent`, а сервер — HTTP-заголовок `User-Agent`.
+User agent можно проверять в двух разных местах: клиентский код читает `navigator.userAgent`, а сервер получает HTTP-заголовок `User-Agent`.
 
 #### navigator.userAgent
 
@@ -125,13 +102,16 @@ it("показывает инструкцию для iOS по navigator.userAgen
 
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='ios-install-guide']")).toBeDisplayed();
+    const installGuide = await browser.getByTestId("ios-install-guide");
+    await expect(installGuide).toBeDisplayed();
 });
 ```
 
+Эмуляция сохраняется до конца сессии, поэтому снимайте ее в том же тесте или в `afterEach`. После `restore()` новые страницы открываются уже без эмуляции. Страница, которая уже открыта, не меняется, пока ее не перезагрузить. Подробнее — в разделе [«Состояние и изоляция»](#state-and-isolation).
+
 #### HTTP User-Agent
 
-Если приложение определяет тип клиента на сервере по заголовку `User-Agent`, используйте [`browser.getPuppeteer()`][get-puppeteer] и Puppeteer [`page.setUserAgent()`][page-set-user-agent]. Подробнее о работе с Puppeteer и CDP — в разделе [«Как использовать Chrome DevTools Protocol в Testplane»][how-to-use-cdp].
+Если приложение определяет тип клиента на сервере по заголовку `User-Agent`, используйте [`browser.getPuppeteer()`][get-puppeteer] и Puppeteer [`page.setUserAgent()`][page-set-user-agent].
 
 ```typescript
 it("передает мобильный User-Agent на сервер", async ({ browser }) => {
@@ -151,13 +131,13 @@ it("передает мобильный User-Agent на сервер", async ({ 
 
 ## Локаль
 
-Язык, который приложение читает в `navigator.language` и в заголовке `Accept-Language`, и локаль, по которой `Intl` форматирует числа и даты, задаются по отдельности. Настройка `intl.accept_languages` меняет языковые предпочтения и не трогает `Intl`. [`Emulation.setLocaleOverride`][cdp-set-locale-override] меняет локаль `Intl`, но не языковые предпочтения браузера.
+Языковые предпочтения браузера и локаль `Intl` задаются отдельно. Приложение получает языковые предпочтения из `navigator.language` и заголовка `Accept-Language`, а локаль `Intl` определяет формат чисел и дат. Настройка `intl.accept_languages` меняет только языковые предпочтения. Команда [`Emulation.setLocaleOverride`][cdp-set-locale-override], наоборот, меняет локаль `Intl`, но не языковые предпочтения браузера.
 
-В Chrome на macOS аргумент запуска `--lang` принимается и молча игнорируется, браузер продолжает сообщать системный язык.
+В Chrome на macOS аргумент запуска `--lang` не дает нужного эффекта: браузер принимает его без ошибки, но продолжает сообщать системный язык.
 
 ### Язык интерфейса
 
-Если приложение выбирает язык по языковым предпочтениям браузера или заголовку `Accept-Language`, задайте `intl.accept_languages` в конфигурации браузера.
+Если приложение выбирает язык по настройкам браузера или заголовку `Accept-Language`, задайте `intl.accept_languages` в конфигурации браузера.
 
 Для Chrome:
 
@@ -193,19 +173,20 @@ browsers: {
 },
 ```
 
-После этого тест может проверять интерфейс с нужной локалью:
+После этого в тесте можно проверить интерфейс на нужном языке:
 
 ```typescript
 it("показывает интерфейс на немецком", async ({ browser }) => {
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='page-title']")).toHaveText("Bestellungen");
+    const pageTitle = await browser.getByTestId("page-title");
+    await expect(pageTitle).toHaveText("Bestellungen");
 });
 ```
 
 ### Форматирование через `Intl`
 
-Если приложение форматирует числа или даты через `Intl`, локаль `Intl` можно изменить через Puppeteer.
+Если приложение форматирует числа или даты через `Intl`, измените локаль `Intl` через Puppeteer.
 
 Например, так можно проверить форматирование числа для немецкой локали:
 
@@ -221,11 +202,12 @@ it("форматирует число для немецкой локали", asy
 
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='average-value']")).toHaveText("1.234,56");
+    const averageValue = await browser.getByTestId("average-value");
+    await expect(averageValue).toHaveText("1.234,56");
 });
 ```
 
-В этом сценарии приложение форматирует значение `1234.56` через `Intl.NumberFormat`, поэтому при локали `de-DE` оно отображается как `1.234,56`.
+В этом примере приложение форматирует значение `1234.56` через `Intl.NumberFormat`. Для локали `de-DE` результат выглядит как `1.234,56`.
 
 ## Часовой пояс
 
@@ -239,15 +221,22 @@ it("показывает время события в часовом поясе 
     await page.emulateTimezone("America/New_York");
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='event-time']")).toHaveText("07:00");
+    const eventTime = await browser.getByTestId("event-time");
+    await expect(eventTime).toHaveText("07:00");
 });
 ```
 
-В этом примере страница показывает время события `2024-09-04T11:00:00Z`, в зоне `America/New_York` это 07:00.
+В этом примере время события — `2024-09-04T11:00:00Z`. В часовом поясе `America/New_York` страница показывает его как 07:00.
+
+Команды через CDP применяются и к уже открытой странице, поэтому часовой пояс можно изменить в середине теста.
 
 ## Время и таймеры
 
 Когда поведение интерфейса зависит от текущего времени или таймеров, используйте [`browser.emulate("clock")`][emulate-clock].
+
+По умолчанию `emulate("clock")` подменяет не только дату, но и `setTimeout`, `setInterval`, `requestAnimationFrame`, `performance` и другие API, связанные со временем. Таймеры становятся виртуальными и сами по себе не срабатывают: время продвигается только после вызова [`tick()`][clock-tick]. Если в тесте нужно изменить лишь дату, ограничьте подмену с помощью `toFake`.
+
+В отличие от остальных настроек `emulate()`, время можно подменить и на уже открытой странице. Вызов `clock.restore()` также восстанавливает время на текущей странице.
 
 ### Фиксированное время
 
@@ -257,12 +246,14 @@ it("показывает время события в часовом поясе 
 it("показывает активную акцию в заданный период", async ({ browser }) => {
     const clock = await browser.emulate("clock", {
         now: new Date("2024-09-04T12:30:00Z"),
+        toFake: ["Date"],
     });
 
     try {
         await browser.url("/");
 
-        await expect(browser.$("[data-testid='promo-status']")).toHaveText("Акция началась");
+        const promoStatus = await browser.getByTestId("promo-status");
+        await expect(promoStatus).toHaveText("Акция началась");
     } finally {
         await clock.restore();
     }
@@ -271,7 +262,7 @@ it("показывает активную акцию в заданный пер�
 
 ### Таймеры
 
-[`tick(ms)`][clock-tick] продвигает виртуальное время на указанное количество миллисекунд и запускает таймеры, которые должны сработать.
+[`tick(ms)`][clock-tick] продвигает виртуальное время на указанное количество миллисекунд. При этом срабатывают таймеры, запланированные на этот промежуток.
 
 ```typescript
 it("скрывает уведомление через 5 секунд", async ({ browser }) => {
@@ -284,7 +275,8 @@ it("скрывает уведомление через 5 секунд", async ({
 
         await clock.tick(5000);
 
-        await expect(browser.$("[data-testid='notification']")).not.toBeDisplayed();
+        const notification = await browser.getByTestId("notification");
+        await expect(notification).not.toBeDisplayed();
     } finally {
         await clock.restore();
     }
@@ -302,14 +294,14 @@ it("показывает изображение для темной цветов
     await browser.emulate("colorScheme", "dark");
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='theme-image']")).toHaveAttribute(
-        "src",
-        "/images/night.svg",
-    );
+    const themeLogo = await browser.getByTestId("theme-logo");
+    await expect(themeLogo).toHaveAttribute("src", "/images/night.svg");
 });
 ```
 
-`browser.emulate("colorScheme")` меняет результат `matchMedia()` для `prefers-color-scheme`. Для проверки стилей, заданных через CSS `@media (prefers-color-scheme)`, используйте [`Emulation.setEmulatedMedia`][cdp-set-emulated-media].
+Эмуляция сохраняется до конца сессии, поэтому снимайте ее в том же тесте или в `afterEach`. После `restore()` новые страницы открываются уже без эмуляции. Страница, которая уже открыта, не меняется, пока ее не перезагрузить. Подробнее — в разделе [«Состояние и изоляция»](#state-and-isolation).
+
+`browser.emulate("colorScheme")` меняет результат `matchMedia()` для `prefers-color-scheme`, но не влияет на CSS. Чтобы проверить стили из `@media (prefers-color-scheme)`, используйте [`Emulation.setEmulatedMedia`][cdp-set-emulated-media].
 
 ```typescript
 it("применяет стили для темной цветовой схемы", async ({ browser }) => {
@@ -328,9 +320,8 @@ it("применяет стили для темной цветовой схем�
 
     await browser.url("/");
 
-    const background = await browser
-        .$("[data-testid='theme-box']")
-        .getCSSProperty("background-color");
+    const themeBox = await browser.getByTestId("theme-box");
+    const background = await themeBox.getCSSProperty("background-color");
 
     expect(background.value).toBe("rgba(0,0,0,1)");
 });
@@ -350,15 +341,17 @@ it("показывает сообщение при отсутствии сети
 
     await browser.throttleNetwork("offline");
 
-    await browser.$("[data-testid='load-orders']").click();
+    const loadOrders = await browser.getByTestId("load-orders");
+    await loadOrders.click();
 
-    await expect(browser.$("[data-testid='network-error']")).toHaveText("Нет подключения к сети");
+    const networkError = await browser.findByTestId("network-error");
+    await expect(networkError).toHaveText("Нет подключения к сети");
 
     await browser.throttleNetwork("online");
 });
 ```
 
-Сначала загрузите страницу, а затем отключите сеть перед действием, которое отправляет запрос. В отличие от `emulate()`, эту команду нужно вызывать после навигации. Для возврата к обычному сетевому режиму используйте профиль `"online"`.
+Сначала загрузите страницу, а затем отключите сеть перед действием, которое отправляет запрос. В отличие от `emulate()`, `throttleNetwork()` нужно вызывать после навигации. Чтобы вернуть обычный сетевой режим, используйте профиль `"online"`.
 
 ### Медленное соединение
 
@@ -375,17 +368,19 @@ it("показывает состояние загрузки при медлен
         uploadThroughput: (20 * 1024) / 8,
     });
 
-    await browser.$("[data-testid='load-orders']").click();
+    const loadOrders = await browser.getByTestId("load-orders");
+    await loadOrders.click();
 
-    await expect(browser.$("[data-testid='loading']")).toBeDisplayed();
+    const loading = await browser.findByTestId("loading");
+    await expect(loading).toBeDisplayed();
 
     await browser.throttleNetwork("online");
 });
 ```
 
-В объекте четыре поля: `offline`, `latency` в миллисекундах и `downloadThroughput` / `uploadThroughput` — скорость в байтах в секунду.
+Объект содержит четыре поля: `offline`, задержку `latency` в миллисекундах, а также скорости загрузки и отправки данных `downloadThroughput` и `uploadThroughput` в байтах в секунду.
 
-Для типовых условий объект не нужен: можно передать имя профиля, например `"Good3G"` или `"offline"`.
+Для типовых условий параметры можно не задавать вручную. Вместо объекта передайте имя готового профиля, например `"Good3G"` или `"offline"`.
 
 ### navigator.onLine
 
@@ -396,17 +391,20 @@ it("показывает офлайн-режим", async ({ browser }) => {
     await browser.emulate("onLine", false);
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='connection-status']")).toHaveText("Офлайн");
+    const connectionStatus = await browser.getByTestId("connection-status");
+    await expect(connectionStatus).toHaveText("Офлайн");
 });
 ```
 
-`browser.emulate("onLine", false)` меняет значение `navigator.onLine`, но не отключает сеть: HTTP-запросы продолжают выполняться.
+Эмуляция сохраняется до конца сессии, поэтому снимайте ее в том же тесте или в `afterEach`. После `restore()` новые страницы открываются уже без эмуляции. Страница, которая уже открыта, не меняется, пока ее не перезагрузить. Подробнее — в разделе [«Состояние и изоляция»](#state-and-isolation).
+
+`browser.emulate("onLine", false)` только меняет значение `navigator.onLine`, но не отключает сеть: HTTP-запросы продолжают выполняться.
 
 ## Производительность CPU
 
 Для проверки интерфейса при ограниченной производительности процессора используйте [`browser.throttleCPU()`][throttle-cpu].
 
-Например, так можно запустить сценарий с четырехкратным замедлением CPU:
+Например, так можно проверить сценарий при четырехкратном замедлении CPU:
 
 ```typescript
 it("работает при замедленном CPU", async ({ browser }) => {
@@ -420,7 +418,7 @@ it("работает при замедленном CPU", async ({ browser }) => 
 });
 ```
 
-Чем больше коэффициент, тем сильнее замедляется выполнение. Значение `1` отключает throttling.
+Чем больше коэффициент, тем медленнее выполняется код. Значение `1` отключает замедление.
 
 ## Геолокация
 
@@ -437,13 +435,14 @@ it("показывает ближайший пункт выдачи", async ({ b
 
     await browser.url("/");
 
-    await expect(browser.$("[data-testid='nearest-point']")).toHaveText(
-        "Пункт выдачи на Alexanderplatz",
-    );
+    const nearestPoint = await browser.findByTestId("nearest-point");
+    await expect(nearestPoint).toHaveText("Пункт выдачи на Alexanderplatz");
 });
 ```
 
-`browser.emulate("geolocation")` подменяет координаты, которые приложение получает через `navigator.geolocation.getCurrentPosition()`, для этого не требуется отдельно настраивать разрешение на геолокацию.
+Эмуляция сохраняется до конца сессии, поэтому снимайте ее в том же тесте или в `afterEach`. После `restore()` новые страницы открываются уже без эмуляции. Страница, которая уже открыта, не меняется, пока ее не перезагрузить. Подробнее — в разделе [«Состояние и изоляция»](#state-and-isolation).
+
+`browser.emulate("geolocation")` подменяет координаты, которые приложение получает через `navigator.geolocation.getCurrentPosition()`. Отдельно настраивать разрешение на геолокацию не нужно.
 
 ## Разрешения браузера
 
@@ -462,15 +461,15 @@ it("показывает статус уведомлений", async ({ browser 
         "granted",
     );
 
-    await browser.$("[data-testid='check-notifications']").click();
+    const checkNotifications = await browser.getByTestId("check-notifications");
+    await checkNotifications.click();
 
-    await expect(browser.$("[data-testid='notification-status']")).toHaveText(
-        "Уведомления включены",
-    );
+    const notificationStatus = await browser.findByTestId("notification-status");
+    await expect(notificationStatus).toHaveText("Уведомления включены");
 });
 ```
 
-Вызывайте `browser.setPermissions()` после перехода на страницу приложения: разрешение привязывается к адресу открытой страницы, а до навигации она будет пустой, и команда упадет с ошибкой.
+Вызывайте `browser.setPermissions()` после перехода на страницу приложения. Разрешение привязывается к адресу текущей страницы. До навигации открыта пустая страница, поэтому команда завершится с ошибкой.
 
 ## JavaScript
 
@@ -493,6 +492,8 @@ browsers: {
 },
 ```
 
+Значение `1` в `profile.managed_default_content_settings.javascript` разрешает JavaScript, а `2` блокирует его.
+
 Для Firefox:
 
 ```typescript
@@ -510,7 +511,9 @@ browsers: {
 },
 ```
 
-После этого тест запускается сразу в браузере с отключенным JavaScript:
+В Firefox `javascript.enabled` принимает логическое значение, а не число.
+
+После этого тест сразу запускается в браузере с отключенным JavaScript:
 
 ```typescript
 it("показывает содержимое без JavaScript", async ({ browser }) => {
@@ -520,11 +523,11 @@ it("показывает содержимое без JavaScript", async ({ brows
 });
 ```
 
-## Состояние и изоляция
+## Состояние и изоляция {/* #state-and-isolation */}
 
-Некоторые настройки среды сохраняются в рамках WebDriver-сессии и могут повлиять на следующие тесты.
+Некоторые настройки среды сохраняются до конца WebDriver-сессии и могут повлиять на следующие тесты.
 
-Снимайте эмуляцию в том же тесте, где ее включили, или в `afterEach`. Вызов [`restore()`][restore] из следующего теста уже не сработает: у нового теста другой объект `browser`.
+Снимайте эмуляцию в том же тесте, где ее включили, или в `afterEach`. Не откладывайте [`restore()`][restore] до следующего теста: он получит другой объект `browser`, и команда уже не сработает. Для профиля устройства используйте функцию, которую вернул `emulate("device")`, потому что [`restore("device")`][restore] не поддерживается.
 
 Если одна и та же эмуляция нужна в нескольких тестах, задавайте и снимайте ее в хуках:
 
@@ -546,7 +549,7 @@ describe("темная цветовая схема", () => {
 });
 ```
 
-Для настроек, которые должны действовать всю сессию, используйте отдельную конфигурацию браузера. Например, так удобнее задавать язык браузера, запускать тесты с отключенным JavaScript или фиксировать размер окна опцией [`windowSize`][window-size].
+Если настройка должна действовать всю сессию, создайте для нее отдельную конфигурацию браузера. Так удобнее задавать язык браузера, запускать тесты с отключенным JavaScript и фиксировать размер окна с помощью [`windowSize`][window-size].
 
 [emulate]: https://webdriver.io/docs/api/browser/emulate
 [webdriver-bidi]: https://w3c.github.io/webdriver-bidi/
@@ -570,3 +573,4 @@ describe("темная цветовая схема", () => {
 [emulate-geolocation]: https://webdriver.io/docs/emulation#geolocation
 [set-permissions]: https://webdriver.io/docs/api/webdriver#setpermissions
 [restore]: https://webdriver.io/docs/api/browser/restore
+[testing-library-guide]: ../guides/how-to-add-testing-library.mdx
