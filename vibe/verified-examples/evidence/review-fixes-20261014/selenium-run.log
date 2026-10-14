@@ -1,0 +1,6 @@
+
+> testplane-docs-examples-20261009@1.0.0 test:selenium
+> node run-examples.cjs --config testplane.selenium.config.js
+
+[16:57:17 +0300] ✓ downloadFile: copy a browser download from Selenium Grid [chrome:385104efa39aa4e3eef4c1ff08236fde, pid:57734] - 1207ms
+[16:57:17 +0300] Total: 1 Passed: 1 Failed: 0 Skipped: 0 Retries: 0

@@ -1,0 +1,54 @@
+# waitForStable
+
+## Overview {/* #overview */}
+
+Poll `isStable` until the element stops changing geometry, or starts changing when `reverse` is enabled.
+
+## Usage {/* #usage */}
+
+`element.waitForStable({ timeout, interval, reverse, timeoutMsg })`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**  | **Default**             | **Description**                        |
+| ------------- | --------- | ----------------------- | -------------------------------------- |
+| `timeout`     | `number`  | `waitTimeout` (3000 ms) | Maximum wait in milliseconds.          |
+| `interval`    | `number`  | `waitInterval` (500 ms) | Polling interval in milliseconds.      |
+| `reverse`     | `boolean` | `false`                 | Wait for `isStable()` to return false. |
+| `timeoutMsg`  | `string`  | —                       | Custom timeout error message.          |
+
+## Result {/* #result */}
+
+`Promise<void>`. Successful completion returns `undefined`, not `true`. A timeout or a stability-check error rejects the promise.
+
+## Limitations {/* #limitations */}
+
+The default timings come from the browser’s Testplane configuration. All `isStable` limitations apply, including active-tab and geometry-only checks. Wait for the element to exist first when it may be added later. This command does not wait for pending HTTP requests or non-geometric animations.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("waitForStable: wait for a size animation to stop", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<div id="box" style="width:40px;height:40px">Box</div>';
+    });
+    const box = await browser.$("#box");
+    await box.execute(node => {
+        node.animate([{ width: "40px" }, { width: "140px" }], { duration: 500, fill: "forwards" });
+    });
+    const result = await box.waitForStable({ timeout: 3000, interval: 50 });
+    assert.equal(result, undefined);
+    assert.equal(await box.execute(node => node.getBoundingClientRect().width), 140);
+});
+```
+
+## See also {/* #see-also */}
+
+-   [isStable](./isStable.mdx)
+-   [waitForExist](./waitForExist.mdx)
+-   [waitUntil](../browser/waitUntil.mdx)

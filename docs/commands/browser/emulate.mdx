@@ -1,0 +1,72 @@
+# emulate
+
+## Overview {/* #overview */}
+
+Override part of the browser environment, such as the user agent or clock. Use the returned cleanup function or clock object to restore the environment in the same test.
+
+## Usage {/* #usage */}
+
+`browser.emulate(scope, options)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**           | **Default**           | **Description**                                                    |
+| ------------- | ------------------ | --------------------- | ------------------------------------------------------------------ |
+| `scope`       | `string`           | Required              | One of clock, geolocation, userAgent, device, colorScheme, onLine. |
+| `options`     | `Depends on scope` | Required except clock | Options for the selected scope, described below.                   |
+
+Supported scopes:
+
+-   `clock` — Fake-timer options, including `now` and `toFake`; virtual timers advance through `tick`.
+-   `geolocation` — An object with coordinates for `navigator.geolocation.getCurrentPosition`.
+-   `userAgent` — A string overriding `navigator.userAgent`, not HTTP request headers.
+-   `device` — A supported device profile name; changes viewport, DPR and user agent, not engine or touch hardware.
+-   `colorScheme` — `"light"` or `"dark"`; affects `matchMedia`, not CSS media queries in this implementation.
+-   `onLine` — A boolean overriding `navigator.onLine`; does not block network requests.
+
+## Result {/* #result */}
+
+For `clock`, `Promise<ClockManager>`; otherwise, a promise resolving to an asynchronous restore function. Clock methods include `tick(milliseconds)`, `setSystemTime(dateOrTimestamp)`, `restore()` and `install(options)`.
+
+## Limitations {/* #limitations */}
+
+Requires WebDriver BiDi (`webSocketUrl: true`). Most scopes affect documents created after the call, so enable emulation before navigation. Clock emulation also affects the current document. Restore changes before the test ends: a later test receives a different browser object. An unsupported scope or invalid option throws an error.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("emulate: control time without waiting", async ({ browser }) => {
+    await browser.url("/");
+    const clock = await browser.emulate("clock", {
+        now: new Date("2025-01-01T00:00:00.000Z"),
+        toFake: ["Date", "setTimeout", "clearTimeout"],
+    });
+    try {
+        await browser.execute(() => {
+            window.timerFired = false;
+            setTimeout(() => {
+                window.timerFired = true;
+            }, 1000);
+        });
+        assert.equal(await browser.execute(() => window.timerFired), false);
+        await clock.tick(1000);
+        assert.equal(await browser.execute(() => window.timerFired), true);
+        assert.equal(
+            await browser.execute(() => new Date().toISOString()),
+            "2025-01-01T00:00:01.000Z",
+        );
+    } finally {
+        await clock.restore();
+    }
+});
+```
+
+## See also {/* #see-also */}
+
+-   [restore](./restore.mdx)
+-   [setViewport](./setViewport.mdx)
+-   [Environment emulation](../../basic-guides/user-environment-emulation.mdx)

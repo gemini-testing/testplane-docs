@@ -1,0 +1,57 @@
+# executeAsync
+
+## Обзор {/* #overview */}
+
+Выполняет браузерный скрипт с callback. DOM-элемент передается первым аргументом, а callback для передачи результата в тест — последним.
+
+## Использование {/* #usage */}
+
+`element.executeAsync(script, ...args)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**              | **По умолчанию** | **Описание**                                                                     |
+| ------------ | -------------------- | ---------------- | -------------------------------------------------------------------------------- |
+| `script`     | `Function \| string` | Обязательный     | Функция или тело функции. Для завершения вызовите последний аргумент — callback. |
+| `args`       | `unknown[]`          | []               | Аргументы между DOM-элементом и callback.                                        |
+
+## Результат {/* #result */}
+
+Промис со значением, переданным в callback. Возврат значения из скрипта не заменяет вызов callback.
+
+## Ограничения {/* #limitations */}
+
+В отличие от `element.execute`, эта реализация не вызывает `waitForExist` явно; дождитесь элемента самостоятельно. В Classic-сессиях тайм-аут протокольного скрипта задается через `browser.setTimeout({ script: milliseconds })`. Ветка BiDi использует `script.callFunction` без отдельного таймера callback: не полагайтесь на тайм-аут Classic, если callback не был вызван. Всегда вызывайте callback и задавайте конечный `testTimeout` в Testplane.
+
+:::warning
+
+В поставляемом API WebdriverIO метод устарел. Для новых BiDi-тестов используйте `element.execute` с асинхронной функцией.
+
+:::
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("element.executeAsync: return data through the final callback", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<p id="message">Ready</p>';
+    });
+    const element = await browser.$("#message");
+    await element.waitForExist();
+    await browser.setTimeout({ script: 5000 });
+    const result = await element.executeAsync((node, prefix, done) => {
+        setTimeout(() => done(prefix + node.textContent), 20);
+    }, "Status: ");
+    assert.equal(result, "Status: Ready");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [execute](./execute.mdx)
+-   [setTimeout](../browser/setTimeout.mdx)

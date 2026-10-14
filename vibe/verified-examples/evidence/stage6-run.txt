@@ -1,0 +1,15 @@
+[16:22:23 +0300] ✓ mock.abort: block matching BiDi requests [chrome:7948bd7a773303090ffcd6718cfd985c, pid:83069] - 131ms
+[16:22:24 +0300] ✓ mock.abortOnce: block one BiDi request [chrome:21c3a17f1f1f7565d65e54e04a0a932e, pid:83069] - 81ms
+[16:22:25 +0300] ✓ mock.clear: clear history but retain response rules [chrome:833138e3a49c3f5afad4a8b8df457ce0, pid:83069] - 133ms
+[16:22:26 +0300] ✓ browser.executeAsync: return a result through the injected callback [chrome:93cb9ad23be2c660e1243a15c1f9f6f8, pid:83069] - 101ms
+[16:22:27 +0300] ✓ getState: read a saved file without restoring the session [chrome:f94ec0f3d592c28f6fc0951a931dfc75, pid:83069] - 82ms
+[16:22:28 +0300] ✓ browser.mock: observe and replace a BiDi response [chrome:a9d11d625dd4f768678fad0446d8bf65, pid:83069] - 104ms
+[16:22:29 +0300] ✓ commands: use the browser fixture [chrome:e22bae4ca0ac6c94a6f8eaa5caa9419f, pid:83069] - 84ms
+[16:22:30 +0300] ✓ commands: use this.browser with a regular function [chrome:8f923f37d3879645e8d1e4fc30ca43f3, pid:83069] - 87ms
+[16:22:31 +0300] ✓ mock.respond: replace response data and metadata in BiDi [chrome:0b862749c5f6f48c3036d830aa172aba, pid:83069] - 128ms
+[16:22:33 +0300] ✓ mock.respondOnce: consume BiDi responses in order [chrome:34d1377eaa4d93cd6e04549795596f7a, pid:83069] - 159ms
+[16:22:34 +0300] ✓ mock.restore: remove interception before the next request [chrome:b5a2f14b1f9387ca0eed7a78c1ed9067, pid:83069] - 113ms
+[16:22:35 +0300] ✓ slow network: fetch data under custom throughput limits [chrome:71a209c400f6ca0ffd3dba27715f91c9, pid:83069] - 824ms
+[16:22:36 +0300] ✓ throttle: use the deprecated alias in an isolated session [chrome:1b5fdb363bc754fa37826a09bc3b6168, pid:83069] - 118ms
+[16:22:38 +0300] ✓ url: navigate with BiDi options and read the current URL [chrome:cf6a2a69b79f9168d623d924b4dcac5f, pid:83069] - 201ms
+[16:22:38 +0300] Total: 14 Passed: 14 Failed: 0 Skipped: 0 Retries: 0

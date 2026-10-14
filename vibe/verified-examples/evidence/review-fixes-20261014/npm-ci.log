@@ -1,0 +1,39 @@
+npm error code EUSAGE
+npm error
+npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
+npm error
+npm error Invalid: lock file's proxy-agent@6.5.0 does not satisfy proxy-agent@8.0.2
+npm error Missing: agent-base@9.0.0 from lock file
+npm error Missing: http-proxy-agent@9.1.0 from lock file
+npm error Missing: https-proxy-agent@9.1.0 from lock file
+npm error Missing: pac-proxy-agent@9.1.0 from lock file
+npm error Missing: proxy-from-env@2.1.0 from lock file
+npm error Missing: socks-proxy-agent@10.1.0 from lock file
+npm error Missing: proxy-agent@6.5.0 from lock file
+npm error Missing: lru-cache@7.18.3 from lock file
+npm error Missing: proxy-agent-negotiate@1.1.0 from lock file
+npm error Missing: get-uri@8.0.1 from lock file
+npm error Missing: pac-resolver@9.0.1 from lock file
+npm error Missing: quickjs-wasi@2.2.0 from lock file
+npm error Missing: data-uri-to-buffer@8.0.0 from lock file
+npm error Missing: degenerator@7.0.1 from lock file
+npm error Missing: ast-types@0.13.4 from lock file
+npm error
+npm error Clean install a project
+npm error
+npm error Usage:
+npm error npm ci
+npm error
+npm error Options:
+npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+npm error [--no-bin-links] [--no-fund] [--dry-run]
+npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+npm error
+npm error aliases: clean-install, ic, install-clean, isntall-clean
+npm error
+npm error Run "npm help ci" for more info
+npm error A complete log of this run can be found in: /Users/sipayrt/.npm/_logs/2026-10-14T13_44_44_908Z-debug-0.log

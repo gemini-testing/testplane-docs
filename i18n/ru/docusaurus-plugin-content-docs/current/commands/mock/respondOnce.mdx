@@ -1,108 +1,58 @@
-import Admonition from "@theme/Admonition";
-
 # respondOnce
 
 ## Обзор {/* #overview */}
 
-Используйте команду `respondOnce`, чтобы ответить один раз заданной перезаписью.
-
-Вы можете вызвать `respondOnce` несколько раз подряд, тогда при запросах ответы будут использоваться в том же порядке, как были вызваны команды `respondOnce`.
-
-Если вы используете только `respondOnce` и обратитесь к ресурсу большее количество раз, чем вызывали `respondOnce`, то после исчерпания поддельных данных, запрос начнет возвращать оригинальный ответ от ресурса.
-
-<Admonition type="info">
-    Читайте также рецепт «[Как отслеживать и перехватывать сетевые запросы и
-    ответы][how-to-intercept-requests-and-responses]».
-</Admonition>
+Подменяет один ответ. Несколько вызовов `respondOnce` добавляют ответы в порядке вызова. Когда очередь однократных ответов исчерпана, следующие запросы получают исходные ответы сервера.
 
 ## Использование {/* #usage */}
 
-```javascript
-mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
-```
+`mock.respondOnce(overwrites, params)`
 
 ## Параметры команды {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ для перезаписи ответа.</td></tr>
-<tr><td>header</td><td>Object</td><td>Перезаписать определенные заголовки.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Перезаписать код состояния ответа.</td></tr>
-<tr><td>fetchResponse</td><td>Boolean</td><td>Получить реальный ответ, прежде чем отвечать с помощью поддельных данных.</td></tr>
+Параметры и их различия между BiDi и Classic/CDP совпадают с [respond](./respond.mdx#parameters), включая имя `headers`, а не `header`. В BiDi тело — строка или JSON; callback тела и `fetchResponse: false` не поддерживаются. Запрос доходит до сервера.
 
-</tbody>
-</table>
+В BiDi однократное правило удаляет постоянное правило и добавляется к другим однократным. В Classic/CDP ранее добавленное постоянное правило может перекрыть очередь. Не полагайтесь на одинаковое смешивание `respond` и `respondOnce` между протоколами.
 
-## Примеры использования {/* #examples */}
+BiDi синхронно возвращает тот же мок; Classic/CDP не возвращает полезного значения.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
 ```javascript
-async function getToDos(browser) {
-    await browser.$("#todo-list li").waitForExist();
+const assert = require("node:assert/strict");
 
-    const todoElements = await browser.$$("#todo-list li");
-
-    return Promise.all(todoElements.map(el => el.getText()));
-}
-
-it("should demonstrate the respondOnce command", async ({ browser }) => {
-    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/", {
-        method: "get",
+it("mock.respondOnce: consume BiDi responses in order", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
     });
-
-    mock.respondOnce([
-        {
-            title: "3",
-        },
-        {
-            title: "2",
-        },
-        {
-            title: "1",
-        },
-    ]);
-
-    mock.respondOnce([
-        {
-            title: "2",
-        },
-        {
-            title: "1",
-        },
-    ]);
-
-    mock.respondOnce([
-        {
-            title: "1",
-        },
-    ]);
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // выведет: [ '3', '2', '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // выведет: [ '2', '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // выведет: [ '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // выведет: настоящий ответ ресурса
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.respondOnce({ source: "first" });
+        mock.respondOnce({ source: "second" });
+        const sources = [];
+        for (let i = 0; i < 3; i++) {
+            const body = await browser.execute(async () =>
+                (await fetch("/api/items", { cache: "no-store" })).json(),
+            );
+            sources.push(body.source);
+        }
+        assert.deepEqual(sources, ["first", "second", "original"]);
+    } finally {
+        await mock.restore();
+    }
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [respond](../respond)
+-   [respond](./respond.mdx)
+-   [reset](./reset.mdx)
+-   [restore](./restore.mdx)
+-   [Network interception](../../guides/how-to-intercept-requests-and-responses.mdx)
 
-[how-to-intercept-requests-and-responses]: ../../../guides/how-to-intercept-requests-and-responses
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/mock/respondOnce).

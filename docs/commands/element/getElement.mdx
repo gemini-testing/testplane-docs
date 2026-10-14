@@ -1,0 +1,45 @@
+# getElement
+
+## Overview {/* #overview */}
+
+Resolve a chainable element reference into its element object to read properties such as `selector` and `elementId`.
+
+## Usage {/* #usage */}
+
+`element.getElement()`
+
+## Parameters {/* #parameters */}
+
+This command has no parameters.
+
+## Result {/* #result */}
+
+`Promise<WebdriverIO.Element>`: the current element object, including its methods and metadata.
+
+## Limitations {/* #limitations */}
+
+This is not a new protocol search, a DOM snapshot or a wait for visibility. The wrapper returns the current element object; do not assume that an `elementId` remains valid after navigation or DOM replacement.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("getElement: inspect a resolved element object", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<button id="save">Save</button>';
+    });
+    const element = await browser.$("#save").getElement();
+    assert.equal(element.selector, "#save");
+    assert.equal(typeof element.elementId, "string");
+    assert.equal(await element.getText(), "Save");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [$](../browser/$.mdx)
+-   [isExisting](./isExisting.mdx)

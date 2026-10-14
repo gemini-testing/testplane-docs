@@ -315,6 +315,10 @@ Use this approach if:
 -   you need access to elements inside the shadow root
 -   you are working with a design system based on Web Components
 
+## Custom locator strategies {/* #custom-locator-strategies */}
+
+If standard selectors are insufficient, register a strategy with [browser.addLocatorStrategy](../commands/browser/addLocatorStrategy.mdx). Use [browser.custom$](../commands/browser/customDollar.mdx) for one element and [browser.custom$$](../commands/browser/customDollarDollar.mdx) for multiple elements. To search within an element, use [element.custom$](../commands/element/customDollar.mdx) or [element.custom$$](../commands/element/customDollarDollar.mdx). The strategy runs in the browser, so pass data as arguments rather than through Node.js closures. The command pages contain verified examples.
+
 ## Testing Library
 
 Testing Library allows you to find elements the way users do — by text, element type, or other attributes that don't depend on your layout details.

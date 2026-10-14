@@ -1,0 +1,61 @@
+# redirectOnce
+
+## Обзор {/* #overview */}
+
+Меняет URL только у следующего подходящего запроса. Эквивалент `mock.redirect(redirectUrl, true)`.
+
+## Использование {/* #usage */}
+
+`mock.redirectOnce(redirectUrl)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**  | **Тип**  | **По умолчанию** | **Описание**               |
+| ------------- | -------- | ---------------- | -------------------------- |
+| `redirectUrl` | `string` | Обязательный     | Абсолютный URL назначения. |
+
+## Результат {/* #result */}
+
+Тот же объект мока синхронно.
+
+## Ограничения {/* #limitations */}
+
+Нужна WebDriver BiDi-сессия (`webSocketUrl: true`): в Classic/CDP-реализации мока этого метода нет. Примеры явно подписываются на сетевые события в каждой сессии; см. [ограничение подписки](./waitForResponse.mdx#limitations). Когда мок больше не нужен, вызовите `mock.restore()` в `finally`.
+
+Адрес назначения должен быть доступен. Перенаправления используют общую очередь с `request` и `abort`: постоянное перенаправление заменяет очередь, а однократное удаляет предыдущее постоянное правило. После однократного перенаправления запросы отправляются без изменения, если в очереди нет других однократных правил.
+
+## Пример {/* #examples */}
+
+Укажите в `baseUrl` локальный HTTP-сайт. `/` возвращает HTML. `/api/items` возвращает JSON: `source: "original"`, метод запроса в `method` и заголовок запроса `x-example` в `header` (`null`, если заголовка нет). `/api/other` возвращает те же поля с `source: "redirected"`. Примеры выполняют настоящие запросы к этим обработчикам.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("mock.redirectOnce: redirect only the next request", async ({ browser }) => {
+    await browser.url("/");
+    const target = new URL("/api/other", await browser.getUrl()).href;
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.redirectOnce(target);
+        const first = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        const second = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        assert.equal(first.source, "redirected");
+        assert.equal(second.source, "original");
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [redirect](./redirect.mdx)
+-   [request](./request.mdx)
+-   [reset](./reset.mdx)

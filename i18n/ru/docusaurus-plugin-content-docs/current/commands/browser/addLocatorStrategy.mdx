@@ -1,0 +1,48 @@
+# addLocatorStrategy
+
+## Обзор {/* #overview */}
+
+Зарегистрируйте переиспользуемый способ поиска элементов. Затем вызывайте стратегию через `custom$` или `custom$$` у браузера или элемента.
+
+## Использование {/* #usage */}
+
+`browser.addLocatorStrategy(name, strategy)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**    | **По умолчанию** | **Описание**                                                                                                                   |
+| ------------ | ---------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `name`       | `string`   | Обязателен       | Уникальное имя стратегии в объекте браузера.                                                                                   |
+| `strategy`   | `Function` | Обязателен       | Браузерная функция, возвращающая DOM-элемент или массив DOM-элементов. Перед возвратом преобразуйте NodeList через Array.from. |
+
+## Результат {/* #result */}
+
+`void`. Регистрация синхронная и сама по себе не выполняет поиск.
+
+## Ограничения {/* #limitations */}
+
+Зарегистрируйте стратегию до первого использования. Повторная регистрация имени вызывает ошибку. Callback выполняется в браузере и не может читать замыкания Node.js. Для общего использования зарегистрируйте стратегию в `prepareBrowser`.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("addLocatorStrategy: find by data attribute", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<button data-test="save">Save</button>';
+    });
+    browser.addLocatorStrategy("byTest", value => document.querySelector(`[data-test="${value}"]`));
+    const button = await browser.custom$("byTest", "save");
+    assert.equal(await button.getText(), "Save");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [custom$](./customDollar.mdx)
+-   [custom$$](./customDollarDollar.mdx)
+-   [prepareBrowser](../../reference/config/prepare-browser.mdx)

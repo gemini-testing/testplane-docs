@@ -2,48 +2,44 @@
 sidebar_class_name: hidden
 ---
 
-import Admonition from "@theme/Admonition";
-
 # Testplane Commands
 
-## Overview
+## Overview {/* #overview */}
 
-<Admonition type="warning">
-    Only commands for the latest version Testplane v8 and WebDriverIO v9 are described. Commands for
-    older versions should be referenced in the WebDriverIO documentation (example for [WebDriverIO
-    v8][webdriverio@8-api]).
-</Admonition>
+This reference covers Testplane v9 and commands from its WebdriverIO v9 dependency. Availability depends on the browser, session protocol and dependency version; each page lists its requirements. For older versions, use the documentation archive and [WebdriverIO v8](https://v8.webdriver.io/docs/api).
 
-Since Testplane is based on [WebDriverIO v9][webdriverio-api], all commands provided by WebDriverIO are available in it.
+Testplane does not provide the WDIO runner's implicit global `browser`, `$` and `$$`. Get `browser` from the test argument, or use `this.browser` in a regular function. An arrow function does not receive the test's `this` context. Find elements with `browser.$` and `browser.$$`.
 
-However, the command descriptions on the [WebDriverIO][webdriverio-api] website for version 8 are not quite suitable _as is_ for Testplane users due to a number of reasons:
+## Example {/* #examples */}
 
--   In WebDriverIO, the `browser` object exists in the global scope, whereas in Testplane you need to either write `this.browser`:
+Both tests open `/` relative to `baseUrl`. The test page must contain an `h1` with the text `Command examples`.
 
 ```javascript
-it("should test something", async function () {
-    await this.browser.url("https://testplane.io");
-    // test code...
+const assert = require("node:assert/strict");
+
+it("commands: use the browser fixture", async ({ browser }) => {
+    await browser.url("/");
+    assert.equal(await browser.$("h1").getText(), "Command examples");
+});
+
+it("commands: use this.browser with a regular function", async function () {
+    await this.browser.url("/");
+    assert.equal(await this.browser.$("h1").getText(), "Command examples");
 });
 ```
 
-or get the `browser` object from the function argument (note that the `browser` object is passed inside an object!):
+## Choose a command {/* #command-groups */}
 
-```javascript
-it("should test something", async ({ browser }) => {
-    await browser.url("https://testplane.io");
-    // test code...
-});
-```
+| Task                     | Commands                                                                                                                                                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Page setup and emulation | [addInitScript](./browser/addInitScript.mdx), [emulate](./browser/emulate.mdx), [restore](./browser/restore.mdx), [setViewport](./browser/setViewport.mdx)                                                                                                         |
+| Custom selectors         | [addLocatorStrategy](./browser/addLocatorStrategy.mdx), [browser.custom$](./browser/customDollar.mdx), [browser.custom$$](./browser/customDollarDollar.mdx), [element.custom$](./element/customDollar.mdx), [element.custom$$](./element/customDollarDollar.mdx)   |
+| Frames and downloads     | [switchFrame](./browser/switchFrame.mdx), [downloadFile](./browser/downloadFile.mdx)                                                                                                                                                                               |
+| Resource throttling      | [throttleCPU](./browser/throttleCPU.mdx), [throttleNetwork](./browser/throttleNetwork.mdx)                                                                                                                                                                         |
+| Element operations       | [execute](./element/execute.mdx), [executeAsync](./element/executeAsync.mdx), [getElement](./element/getElement.mdx), [isStable](./element/isStable.mdx), [waitForStable](./element/waitForStable.mdx)                                                             |
+| Network interception     | [mock](./browser/mock.mdx), [waitForResponse](./mock/waitForResponse.mdx), [request](./mock/request.mdx), [requestOnce](./mock/requestOnce.mdx), [redirect](./mock/redirect.mdx), [redirectOnce](./mock/redirectOnce.mdx), [reset](./mock/reset.mdx)               |
+| Testplane extensions     | [extendOptions](./browser/extendOptions.mdx), [browser.unstable_captureDomSnapshot](./browser/unstable_captureDomSnapshot.mdx), [element.unstable_captureDomSnapshot](./element/unstable_captureDomSnapshot.mdx), [unstable_getCdp](./browser/unstable_getCdp.mdx) |
 
--   Similarly, the `browser.$` and `browser.$$` functions in WebDriverIO are available in tests under the names `$` and `$$`, while in Testplane you need to refer to them by their full path: `browser.$` and `browser.$$`;
+## Reference scope {/* #scope */}
 
--   There are no links established between similar commands: no clustering of commands;
-
-Nevertheless, our description does not yet include protocol-specific commands. You can find the relevant commands on the WebDriverIO website under the "[Protocols][webdriverio-protocols]" section.
-
-Also, in the descriptions of some commands, links to individual recipes are still not localized and lead to the WebDriverIO website.
-
-[webdriverio@8-api]: https://v8.webdriver.io/docs/api
-[webdriverio-api]: https://webdriver.io/docs/api
-[webdriverio-protocols]: https://webdriver.io/docs/api/webdriver
+Low-level WebDriver, BiDi and Appium commands are not duplicated here: see [WebdriverIO protocols](https://webdriver.io/docs/api/webdriver). Methods of `InitScript` and clock objects are documented with [addInitScript](./browser/addInitScript.mdx) and [emulate](./browser/emulate.mdx), not as separate browser commands. When using external recipes, account for version differences and how Testplane provides `browser`.

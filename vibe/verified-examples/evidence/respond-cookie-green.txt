@@ -1,0 +1,2 @@
+[16:37:57 +0300] ✓ mock.respond: replace response data and metadata in BiDi [chrome:58c940d2a38b894fe365dc937156a664, pid:19312] - 151ms
+[16:37:57 +0300] Total: 1 Passed: 1 Failed: 0 Skipped: 0 Retries: 0

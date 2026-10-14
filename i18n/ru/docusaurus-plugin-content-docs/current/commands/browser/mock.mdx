@@ -1,135 +1,97 @@
-import Admonition from "@theme/Admonition";
-
 # mock
 
 ## Обзор {/* #overview */}
 
-Используйте команду `mock`, чтобы имитировать ответ на запрос.
+Создает перехватчик сетевых запросов. Возвращаемый объект позволяет наблюдать запросы, заменять ответы или прерывать загрузку. Возможности зависят от протокола сессии.
 
-Вы можете включать имитацию в зависимости от урла, заголовков или статус-кода. Вызов метода `mock` возвращает объект-заглушку _(stub)_, который вы можете использовать, чтобы модифицировать ответ от веб-ресурса. С помощью объекта-заглушки вы можете возвращать ответ-имитацию или ронять запрос.
+-   **WebDriver BiDi**: перехват через сетевые события BiDi. Дополнительно доступны изменение запроса, перенаправление и сброс правил.
+-   **Classic с CDP/Puppeteer**: прежняя реализация для совместимого браузера. Это не универсальная возможность Classic WebDriver.
+-   **WebDriver-перехват Sauce Labs**: отдельное расширение провайдера с другим API и без событий; не переносите на него BiDi-пример без проверки.
 
-Существует 3 способа модифицировать ответ:
-
--   вернуть кастомный JSON-объект (например, чтобы имитировать ответ на API-запрос);
--   заменить ответ локальным файлом (подсунуть модифицированный JavaScript-файл);
--   перенаправить на другой URL и подсунуть полученный оттуда ответ.
-
-<Admonition type="warning">
-Команда _mock_ работает только при использовании _Chrome DevTools Protocol (CDP)_.
-
-Читайте подробности в разделе «[Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp]».
-
-А также читайте рецепт «[Как отслеживать и перехватывать сетевые запросы и ответы][how-to-intercept-requests-and-responses]».
-
-</Admonition>
+См. [подключение CDP](../../guides/how-to-use-cdp.mdx) и [перехват запросов](../../guides/how-to-intercept-requests-and-responses.mdx). Различия ниже относятся к Testplane 9.3.2 / WDIO 9.6.2.
 
 ## Использование {/* #usage */}
 
-```javascript
-await browser.mock(url, { method, headers, responseHeaders, postData, statusCode });
-```
+`await browser.mock(url, filters)`
 
 ## Параметры команды {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>url</td><td>String</td><td>URL, запрос которого нужно имитировать.</td></tr>
-<tr><td>method</td><td>String или Function</td><td>http-метод, по которому нужно фильтровать ресурс.</td></tr>
-<tr><td>headers</td><td>Object или Function</td><td>Заголовки запроса, по которым нужно фильтровать ресурс.</td></tr>
-<tr><td>responseHeaders</td><td>Object или Function</td><td>Заголовки ответа, по которым нужно фильтровать ресурс.</td></tr>
-<tr><td>postData</td><td>String или Function</td><td>postData запроса, по которому нужно фильтровать ресурс.</td></tr>
-<tr><td>statusCode</td><td>Number или Function</td><td>Код статуса, по которому нужно фильтровать ресурс.</td></tr>
+| Параметр          | BiDi                                                                                | Classic/CDP                               |
+| ----------------- | ----------------------------------------------------------------------------------- | ----------------------------------------- |
+| `url`             | Строка `URLPattern`: абсолютный HTTP(S)-шаблон или pathname, например `/api/items`. | Glob-строка или `RegExp`.                 |
+| `method`          | Строка или функция-фильтр HTTP-метода.                                              | То же.                                    |
+| `requestHeaders`  | Объект или функция-фильтр заголовков запроса.                                       | То же.                                    |
+| `responseHeaders` | Объект или функция-фильтр заголовков ответа.                                        | Не применяется.                           |
+| `headers`         | Не используйте; для ответа есть `responseHeaders`.                                  | Фильтр **заголовков ответа**, не запроса. |
+| `postData`        | Не применяется.                                                                     | Строка или функция-фильтр тела запроса.   |
+| `statusCode`      | Число или функция-фильтр статуса ответа.                                            | То же.                                    |
 
-</tbody>
-</table>
+Опции фильтрации необязательны. Фильтры ответа проверяются только на стадии ответа: событие `request` в BiDi может произойти раньше. Glob-строки CDP и `URLPattern` BiDi не взаимозаменяемы.
 
-## Примеры использования {/* #examples */}
+## Результат {/* #result */}
+
+Команда возвращает Promise с объектом мока. Общие операции: [respond](../mock/respond.mdx), [respondOnce](../mock/respondOnce.mdx), [abort](../mock/abort.mdx), [abortOnce](../mock/abortOnce.mdx), [waitForResponse](../mock/waitForResponse.mdx), [clear](../mock/clear.mdx) и [restore](../mock/restore.mdx). Сигнатуры могут различаться между реализациями.
+
+Только в BiDi: [request](../mock/request.mdx), [requestOnce](../mock/requestOnce.mdx), [redirect](../mock/redirect.mdx), [redirectOnce](../mock/redirectOnce.mdx) и [reset](../mock/reset.mdx).
+
+`mock.calls` хранит историю ответов:
+
+-   BiDi: объекты `network.responseStarted`, например `call.request.url` и `call.response.status`. Это не гарантия полной загрузки тела.
+-   Classic/CDP: записи с `url`, `body`, `headers`, `responseHeaders`, `statusCode`.
+
+Не используйте поля одной реализации как общий контракт. `clear()` очищает историю, но сохраняет правила. `restore()` удаляет перехватчик; ожидайте его завершения в `finally`.
+
+## События {/* #events */}
+
+Подписывайтесь через `mock.on(name, listener)`. Обработчик выполняется в Node.js, а не в браузере.
+
+| Событие     | BiDi                                                            | Classic/CDP                           |
+| ----------- | --------------------------------------------------------------- | ------------------------------------- |
+| `request`   | Событие `network.beforeRequestSent`: URL в `event.request.url`. | Событие CDP `Fetch.requestPaused`.    |
+| `match`     | В этой версии не испускается, хотя объявлено в типах.           | Запись совпавшего ответа.             |
+| `overwrite` | Событие запроса или ответа, к которому применена подмена.       | Параметры подмененного ответа.        |
+| `fail`      | Идентификатор прерванного запроса.                              | Объект с `requestId` и `errorReason`. |
+| `continue`  | Идентификатор продолженного запроса.                            | Идентификатор продолженного запроса.  |
+
+Не используйте наличие события как доказательство завершения всего сетевого обмена.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
 ```javascript
-it("should mock network resources", async ({ browser }) => {
-    // используем статическую строку
-    const userListMock = await browser.mock("**" + "/users/list");
+const assert = require("node:assert/strict");
 
-    // также мы можем имитировать ответы в зависимости
-    // от заголовков запроса или ответа, статус-кода, или postData
-    const strictMock = await browser.mock("**", {
-        // мокаем все json-ответы
-        statusCode: 200,
-        headers: { "Content-Type": "application/json" },
-        responseHeaders: { "Cache-Control": "no-cache" },
-        postData: "foobar",
+it("browser.mock: observe and replace a BiDi response", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
     });
-
-    // функция-компаратор
-    const apiV1Mock = await browser.mock("**" + "/api/v1", {
-        statusCode: statusCode => statusCode >= 200 && statusCode <= 203,
-        headers: headers =>
-            headers["Authorization"] && headers["Authorization"].startsWith("Bearer "),
-        responseHeaders: headers => headers["Impersonation"],
-        postData: data => typeof data === "string" && data.includes("foo"),
-    });
-});
-
-it("should modify API responses", async ({ browser }) => {
-    // фильтруем по методу
-    const todoMock = await browser.mock("**" + "/todos", {
-        method: "get",
-    });
-
-    // имитируем ответ эндпойнта заготовленной фикстурой
-    mock.respond([
-        {
-            title: "Injected Todo",
-            order: null,
-            completed: false,
-            url: "http://todo-backend-express-knex.herokuapp.com/916",
-        },
-    ]);
-
-    // отвечаем другим статус-кодом или заголовком
-    mock.respond(
-        [
-            {
-                title: "Injected Todo",
-                order: null,
-                completed: false,
-                url: "http://todo-backend-express-knex.herokuapp.com/916",
-            },
-        ],
-        {
-            statusCode: 404,
-            headers: {
-                "x-custom-header": "foobar",
-            },
-        },
-    );
-});
-
-it("should modify text assets", async ({ browser }) => {
-    const scriptMock = await browser.mock("**" + "/script.min.js");
-    scriptMock.respond("./tests/fixtures/script.js");
-});
-
-it("should redirect web resources", async ({ browser }) => {
-    const headerMock = await browser.mock("**" + "/header.png");
-    headerMock.respond("https://media.giphy.com/media/F9hQLAVhWnL56/giphy.gif");
-
-    const pageMock = await browser.mock("https://google.com/");
-    pageMock.respond("https://webdriver.io");
-    await browser.url("https://google.com");
-
-    console.log(await browser.getTitle());
-    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+    const mock = await browser.mock("/api/items", { method: "GET", statusCode: 200 });
+    const seenUrls = [];
+    mock.on("request", event => seenUrls.push(event.request.url));
+    try {
+        mock.respond({ source: "mocked" });
+        const body = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        await mock.waitForResponse({ timeout: 3000 });
+        assert.equal(body.source, "mocked");
+        assert.equal(mock.calls.length, 1);
+        assert.ok(mock.calls[0].request.url.endsWith("/api/items"));
+        assert.ok(seenUrls.some(url => url.endsWith("/api/items")));
+    } finally {
+        await mock.restore();
+    }
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [mockClearAll](../mockClearAll)
--   [mockRestoreAll](../mockRestoreAll)
+-   [mockClearAll](./mockClearAll.mdx)
+-   [mockRestoreAll](./mockRestoreAll.mdx)
+-   [respond](../mock/respond.mdx)
 
-[how-to-use-cdp]: ../../../guides/how-to-use-cdp
-[how-to-intercept-requests-and-responses]: ../../../guides/how-to-intercept-requests-and-responses
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/browser/mock).

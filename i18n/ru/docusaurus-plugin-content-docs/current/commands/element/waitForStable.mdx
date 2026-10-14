@@ -1,0 +1,54 @@
+# waitForStable
+
+## Обзор {/* #overview */}
+
+Повторяет `isStable`, пока геометрия элемента не станет стабильной. С `reverse` ожидает обратного условия — изменения геометрии.
+
+## Использование {/* #usage */}
+
+`element.waitForStable({ timeout, interval, reverse, timeoutMsg })`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**   | **По умолчанию**        | **Описание**                                |
+| ------------ | --------- | ----------------------- | ------------------------------------------- |
+| `timeout`    | `number`  | `waitTimeout` (3000 ms) | Предельное время ожидания в миллисекундах.  |
+| `interval`   | `number`  | `waitInterval` (500 ms) | Интервал проверок в миллисекундах.          |
+| `reverse`    | `boolean` | `false`                 | Ожидать результата `false` от `isStable()`. |
+| `timeoutMsg` | `string`  | —                       | Сообщение ошибки по тайм-ауту.              |
+
+## Результат {/* #result */}
+
+`Promise<void>`. Успешное завершение возвращает `undefined`, а не `true`. Тайм-аут или ошибка проверки стабильности отклоняют промис.
+
+## Ограничения {/* #limitations */}
+
+Значения тайм-аутов берутся из конфигурации браузера Testplane. Действуют ограничения `isStable`: активная вкладка и проверка только геометрии. Если элемент появится позже, сначала дождитесь его существования. Команда не ожидает окончания HTTP-запросов или анимаций, не затрагивающих геометрию.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("waitForStable: wait for a size animation to stop", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<div id="box" style="width:40px;height:40px">Box</div>';
+    });
+    const box = await browser.$("#box");
+    await box.execute(node => {
+        node.animate([{ width: "40px" }, { width: "140px" }], { duration: 500, fill: "forwards" });
+    });
+    const result = await box.waitForStable({ timeout: 3000, interval: 50 });
+    assert.equal(result, undefined);
+    assert.equal(await box.execute(node => node.getBoundingClientRect().width), 140);
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [isStable](./isStable.mdx)
+-   [waitForExist](./waitForExist.mdx)
+-   [waitUntil](../browser/waitUntil.mdx)

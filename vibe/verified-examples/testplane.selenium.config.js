@@ -1,0 +1,21 @@
+const config = require("./testplane.config");
+module.exports = {
+    ...config,
+    gridUrl: process.env.SELENIUM_GRID_URL || "http://127.0.0.1:4446",
+    sets: { selenium: { files: "examples/selenium/**/*.testplane.js", browsers: ["chrome"] } },
+    browsers: {
+        chrome: {
+            desiredCapabilities: {
+                browserName: "chrome",
+                "se:downloadsEnabled": true,
+                webSocketUrl: true,
+                "goog:chromeOptions": {
+                    ...(process.env.EXAMPLE_CHROME_BINARY
+                        ? { binary: process.env.EXAMPLE_CHROME_BINARY }
+                        : {}),
+                    args: ["--headless=new"],
+                },
+            },
+        },
+    },
+};

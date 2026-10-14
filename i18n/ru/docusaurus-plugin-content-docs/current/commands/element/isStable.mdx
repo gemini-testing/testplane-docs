@@ -1,0 +1,57 @@
+# isStable
+
+## Обзор {/* #overview */}
+
+Проверяет, остается ли геометрия элемента неизменной между двумя кадрами анимации. Метод обнаруживает изменение положения и размера, а не любую активность страницы.
+
+## Использование {/* #usage */}
+
+`element.isStable()`
+
+## Параметры {/* #parameters */}
+
+У команды нет параметров.
+
+## Результат {/* #result */}
+
+`Promise<boolean>`: `true`, если сравниваемые свойства прямоугольника совпадают, иначе `false`.
+
+## Ограничения {/* #limitations */}
+
+Проверяйте существующий элемент на активной вкладке. Скрытый документ вызывает ошибку: кадры анимации в нем не выполняются обычным образом. Прозрачность, цвет и сетевые запросы могут меняться без изменения геометрии. Результат `true` — измерение в данный момент, а не гарантия окончания всех анимаций.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("isStable: check whether element geometry changes", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<div id="box" style="width:40px;height:40px">Box</div>';
+    });
+    const box = await browser.$("#box");
+    await box.waitForExist();
+    assert.equal(await box.isStable(), true);
+    await box.execute(node => {
+        node.animate([{ transform: "translateX(0)" }, { transform: "translateX(200px)" }], {
+            duration: 500,
+            iterations: Infinity,
+            direction: "alternate",
+        });
+    });
+    try {
+        assert.equal(await box.isStable(), false);
+    } finally {
+        await box.execute(node => node.getAnimations().forEach(animation => animation.cancel()));
+    }
+    assert.equal(await box.isStable(), true);
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [waitForStable](./waitForStable.mdx)
+-   [waitForExist](./waitForExist.mdx)

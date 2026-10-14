@@ -2,27 +2,56 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `restore`, чтобы выполнить все то же, что делает [mock.clear()](../clear), а также удалить любые поддельные возвращаемые значения или реализации.
+Удаляет сетевой перехватчик, очищает историю и отключает подмены. Следующие запросы идут без этого мока. Это не [browser.restore](../browser/restore.mdx): восстановление эмуляции — другая команда.
+
+Дождитесь `restore()` перед следующим запросом или завершением теста. В BiDi восстановленный мок нельзя переиспользовать: создайте новый через [browser.mock](../browser/mock.mdx). Для сохранения перехватчика используйте [reset](./reset.mdx).
 
 ## Использование {/* #usage */}
 
+`await mock.restore()`
+
+## Параметры и результат {/* #parameters */}
+
+Аргументов нет. Возвращает Promise: в BiDi он разрешается тем же объектом мока, в Classic/CDP — без полезного значения. Используйте команду для очистки в `finally`, в том числе когда проверка теста завершилась ошибкой.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
+
 ```javascript
-mock.restore();
-```
+const assert = require("node:assert/strict");
 
-## Примеры использования {/* #examples */}
-
-```javascript
-it("should demonstrate the addValue command", async ({ browser }) => {
-    const mock = await browser.mock("**/googlelogo_color_272x92dp.png");
-    mock.respond("https://webdriver.io/img/webdriverio.png");
-
-    await browser.url("https://google.com"); // покажет логотип WebdriverIO вместо логотипа Google
-    mock.restore();
-    await browser.url("https://google.com"); // покажет родной логотип Google
+it("mock.restore: remove interception before the next request", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.respond({ source: "mocked" });
+        const body = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        assert.equal(body.source, "mocked");
+    } finally {
+        await mock.restore();
+    }
+    const body = await browser.execute(async () =>
+        (await fetch("/api/items", { cache: "no-store" })).json(),
+    );
+    assert.equal(body.source, "original");
+    assert.equal(mock.calls.length, 0);
+    assert.throws(() => mock.respond({ source: "unused" }), /restored mock/);
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [clear](../clear)
+-   [clear](./clear.mdx)
+-   [reset](./reset.mdx)
+-   [restore](./restore.mdx)
+-   [browser.mock](../browser/mock.mdx)
+
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/mock/restore).

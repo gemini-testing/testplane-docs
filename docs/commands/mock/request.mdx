@@ -1,0 +1,65 @@
+# request
+
+## Overview {/* #overview */}
+
+Override matching outgoing requests before they reach the server. Use this to change headers, the method, body, cookies or target URL.
+
+## Usage {/* #usage */}
+
+`mock.request(overwrite, once = false)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**       | **Type**                             | **Default** | **Description**                                                                                         |
+| ------------------- | ------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
+| `overwrite`         | `object`                             | Required    | Request fields to override.                                                                             |
+| `overwrite.body`    | `unknown \| Function`                | —           | Request body; strings are sent as text, objects as JSON. Falsy body values are ignored in this version. |
+| `overwrite.cookies` | `Cookie[] \| Function`               | —           | Cookie list in WebDriver cookie format.                                                                 |
+| `overwrite.headers` | `Record<string, string> \| Function` | —           | Replacement header map, not a merge with the original headers.                                          |
+| `overwrite.method`  | `string \| Function`                 | —           | HTTP method, for example `POST`.                                                                        |
+| `overwrite.url`     | `string \| Function`                 | —           | Absolute replacement URL.                                                                               |
+| `once`              | `boolean`                            | `false`     | Apply the rule only to the next matching request.                                                       |
+
+## Result {/* #result */}
+
+The same mock object, synchronously, for chaining.
+
+## Limitations {/* #limitations */}
+
+Requires a WebDriver BiDi session (`webSocketUrl: true`); this method is not provided by the Classic/CDP mock implementation. The examples explicitly subscribe to network events in every session; see [the subscription limitation](./waitForResponse.mdx#limitations). Always call `mock.restore()` in `finally` when the mock is no longer needed.
+
+The override affects outgoing requests; it does not fabricate responses. Each field may be a value or a synchronous function receiving the BiDi request event (the URL is in `event.request.url`). Request overrides, redirects and aborts share one rule queue. A persistent rule replaces that queue; a one-shot rule keeps existing one-shot rules but removes a persistent rule. Do not expect a persistent rule to resume after a one-shot rule.
+
+## Example {/* #examples */}
+
+Use a local HTTP test site as `baseUrl`. `/` serves HTML. `/api/items` returns JSON with `source: "original"`, the request method in `method`, and the `x-example` request header in `header` (`null` when absent). `/api/other` returns the same fields with `source: "redirected"`. The examples use real requests to these endpoints.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("mock.request: change outgoing requests", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.request({ method: "POST", headers: { "x-example": "persistent" } });
+        for (let i = 0; i < 2; i++) {
+            const data = await browser.execute(async () =>
+                (await fetch("/api/items", { cache: "no-store" })).json(),
+            );
+            assert.equal(data.method, "POST");
+            assert.equal(data.header, "persistent");
+        }
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## See also {/* #see-also */}
+
+-   [requestOnce](./requestOnce.mdx)
+-   [respond](./respond.mdx)
+-   [reset](./reset.mdx)

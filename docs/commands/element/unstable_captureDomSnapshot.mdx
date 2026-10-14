@@ -1,0 +1,55 @@
+# unstable_captureDomSnapshot
+
+## Overview {/* #overview */}
+
+Capture a compact DOM snapshot rooted at the selected element. Content outside that element is not included.
+
+## Usage {/* #usage */}
+
+`element.unstable_captureDomSnapshot(options?)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**                 | **Default** | **Description**                                                   |
+| ------------- | ------------------------ | ----------- | ----------------------------------------------------------------- |
+| `options`     | `CaptureSnapshotOptions` | `{}`        | The same filtering and truncation options as the browser command. |
+
+## Result {/* #result */}
+
+`Promise<CaptureSnapshotResult>` with `snapshot`, `omittedTags`, `omittedAttributes` and `textWasTruncated`. See the [shared result contract](../browser/unstable_captureDomSnapshot.mdx#result).
+
+## Limitations {/* #limitations */}
+
+Uses `element.execute`, including its wait for the element to exist. Filtering, truncation and privacy limitations are the same as for the [browser command](../browser/unstable_captureDomSnapshot.mdx#limitations). In particular, `truncateText: false` does not disable attribute truncation, and input values are not sanitized. This method takes options, not another CSS selector.
+
+:::warning
+
+This is an unstable Testplane API. Its signature, behavior and result format may change between versions.
+
+:::
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("element.unstable_captureDomSnapshot: capture only this element", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML =
+            '<section id="panel"><button data-test="save">Save</button></section><p>Outside</p>';
+    });
+    const result = await browser.$("#panel").unstable_captureDomSnapshot({ truncateText: false });
+    assert.match(result.snapshot, /section#panel/);
+    assert.match(result.snapshot, /button\[data-test=save\] "Save"/);
+    assert.doesNotMatch(result.snapshot, /Outside/);
+    assert.equal(result.textWasTruncated, false);
+});
+```
+
+## See also {/* #see-also */}
+
+-   [browser.unstable_captureDomSnapshot](../browser/unstable_captureDomSnapshot.mdx)
+-   [execute](./execute.mdx)

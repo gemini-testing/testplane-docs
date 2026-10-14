@@ -1,0 +1,7 @@
+CURRENT HANDLE 9CEB71E4EE83D8372A278AA28D05018D
+PAGE URLS [ 'http://127.0.0.1:64105/' ]
+BEFORE 200
+AFTER OFFLINE { error: 'Failed to fetch' }
+AFTER ONLINE { error: 'Failed to fetch' }
+[14:18:57 +0300] ✓ diagnostic: inspect network target selection [chrome:327321650b13e5360357b3a3a3ad992b, pid:92932] - 186ms
+[14:18:57 +0300] Total: 1 Passed: 1 Failed: 0 Skipped: 0 Retries: 0

@@ -1,0 +1,223 @@
+[
+    {
+        "page": "docs/commands/browser/addInitScript.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/addInitScript.mdx",
+        "test": "examples/browser/addInitScript.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/addLocatorStrategy.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/addLocatorStrategy.mdx",
+        "test": "examples/browser/addLocatorStrategy.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/customDollar.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/customDollar.mdx",
+        "test": "examples/browser/customDollar.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/customDollarDollar.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/customDollarDollar.mdx",
+        "test": "examples/browser/customDollarDollar.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/downloadFile.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/downloadFile.mdx",
+        "test": "examples/selenium/downloadFile.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/emulate.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/emulate.mdx",
+        "test": "examples/browser/emulate.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/extendOptions.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/extendOptions.mdx",
+        "test": "examples/testplane-browser/extendOptions.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/restore.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/restore.mdx",
+        "test": "examples/browser/restore.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/setViewport.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/setViewport.mdx",
+        "test": "examples/browser/setViewport.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/switchFrame.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/switchFrame.mdx",
+        "test": "examples/browser/switchFrame.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/throttleCPU.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/throttleCPU.mdx",
+        "test": "examples/browser/throttleCPU.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/throttleNetwork.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/throttleNetwork.mdx",
+        "test": "examples/browser/throttleNetwork.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/unstable_captureDomSnapshot.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/unstable_captureDomSnapshot.mdx",
+        "test": "examples/testplane-browser/unstable_captureDomSnapshot.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/unstable_getCdp.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/unstable_getCdp.mdx",
+        "test": "examples/testplane-browser/unstable_getCdp.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/customDollar.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/customDollar.mdx",
+        "test": "examples/element/customDollar.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/customDollarDollar.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/customDollarDollar.mdx",
+        "test": "examples/element/customDollarDollar.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/execute.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/execute.mdx",
+        "test": "examples/element/execute.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/executeAsync.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/executeAsync.mdx",
+        "test": "examples/element/executeAsync.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/getElement.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/getElement.mdx",
+        "test": "examples/element/getElement.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/isStable.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/isStable.mdx",
+        "test": "examples/element/isStable.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/unstable_captureDomSnapshot.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/unstable_captureDomSnapshot.mdx",
+        "test": "examples/testplane-element/unstable_captureDomSnapshot.testplane.js"
+    },
+    {
+        "page": "docs/commands/element/waitForStable.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/waitForStable.mdx",
+        "test": "examples/element/waitForStable.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/redirect.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/redirect.mdx",
+        "test": "examples/mock/redirect.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/redirectOnce.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/redirectOnce.mdx",
+        "test": "examples/mock/redirectOnce.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/request.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/request.mdx",
+        "test": "examples/mock/request.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/requestOnce.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/requestOnce.mdx",
+        "test": "examples/mock/requestOnce.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/reset.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/reset.mdx",
+        "test": "examples/mock/reset.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/waitForResponse.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/waitForResponse.mdx",
+        "test": "examples/mock/waitForResponse.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/getState.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/getState.mdx",
+        "test": "examples/related/getState.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/url.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/url.mdx",
+        "test": "examples/related/url.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/executeAsync.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/executeAsync.mdx",
+        "test": "examples/related/executeAsync.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/throttle.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/throttle.mdx",
+        "test": "examples/related/throttle.testplane.js"
+    },
+    {
+        "page": "docs/commands/browser/mock.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/mock.mdx",
+        "test": "examples/related/mock.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/abort.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/abort.mdx",
+        "test": "examples/related/abort.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/abortOnce.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/abortOnce.mdx",
+        "test": "examples/related/abortOnce.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/respond.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/respond.mdx",
+        "test": "examples/related/respond.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/respondOnce.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/respondOnce.mdx",
+        "test": "examples/related/respondOnce.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/clear.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/clear.mdx",
+        "test": "examples/related/clear.testplane.js"
+    },
+    {
+        "page": "docs/commands/mock/restore.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/restore.mdx",
+        "test": "examples/related/restore.testplane.js"
+    },
+    {
+        "page": "docs/commands/overview.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/overview.mdx",
+        "test": "examples/related/overview.testplane.js"
+    },
+    {
+        "page": "docs/basic-guides/user-environment-emulation.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/basic-guides/user-environment-emulation.mdx",
+        "test": "examples/browser/throttleNetwork.testplane.js",
+        "blockIndex": 0,
+        "blockCount": 3
+    },
+    {
+        "page": "docs/basic-guides/user-environment-emulation.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/basic-guides/user-environment-emulation.mdx",
+        "test": "examples/related/slowNetwork.testplane.js",
+        "blockIndex": 1,
+        "blockCount": 3
+    },
+    {
+        "page": "docs/basic-guides/user-environment-emulation.mdx",
+        "translation": "i18n/ru/docusaurus-plugin-content-docs/current/basic-guides/user-environment-emulation.mdx",
+        "test": "examples/browser/throttleCPU.testplane.js",
+        "blockIndex": 2,
+        "blockCount": 3
+    }
+]
