@@ -6,7 +6,7 @@
     "scripts": {
         "test": "node run-examples.cjs",
         "test:selenium": "node run-examples.cjs --config testplane.selenium.config.js",
-        "check:snippets": "node verify-snippets.cjs"
+        "check:snippets": "node verify-snippets.cjs --base HEAD"
     },
     "keywords": [],
     "author": "",

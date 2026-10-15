@@ -43,12 +43,22 @@ server.listen(0, "127.0.0.1", () => {
             stdio: "inherit",
         },
     );
+    const terminate = () => {
+        child.kill("SIGTERM");
+        const timeout = setTimeout(() => child.kill("SIGKILL"), 5000);
+        timeout.unref();
+    };
+    process.once("SIGTERM", terminate);
+    process.once("SIGINT", terminate);
     child.on("error", error => {
         console.error(error.message);
         server.close();
         process.exitCode = 1;
     });
     child.on("exit", code => {
+        process.removeListener("SIGTERM", terminate);
+        process.removeListener("SIGINT", terminate);
+        server.closeAllConnections();
         server.close();
         process.exitCode = code ?? 1;
     });

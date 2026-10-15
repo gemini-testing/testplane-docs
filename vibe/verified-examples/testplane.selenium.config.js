@@ -2,7 +2,12 @@ const config = require("./testplane.config");
 module.exports = {
     ...config,
     gridUrl: process.env.SELENIUM_GRID_URL || "http://127.0.0.1:4446",
-    sets: { selenium: { files: "examples/selenium/**/*.testplane.js", browsers: ["chrome"] } },
+    sets: {
+        selenium: {
+            files: require("./suite-files.cjs").suiteFiles("selenium"),
+            browsers: ["chrome"],
+        },
+    },
     browsers: {
         chrome: {
             desiredCapabilities: {

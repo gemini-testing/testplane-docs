@@ -27,14 +27,7 @@ module.exports = {
     },
     sets: {
         examples: {
-            files: [
-                "examples/browser/**/*.testplane.js",
-                "examples/related/**/*.testplane.js",
-                "examples/element/**/*.testplane.js",
-                "examples/mock/**/*.testplane.js",
-                "examples/testplane-browser/**/*.testplane.js",
-                "examples/testplane-element/**/*.testplane.js",
-            ],
+            files: require("./suite-files.cjs").suiteFiles("chrome"),
             browsers: ["chrome"],
         },
     },

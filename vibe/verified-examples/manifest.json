@@ -57,7 +57,8 @@
     {
         "page": "docs/commands/browser/throttleNetwork.mdx",
         "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/throttleNetwork.mdx",
-        "test": "examples/browser/throttleNetwork.testplane.js"
+        "test": "examples/browser/throttleNetwork.testplane.js",
+        "testCount": 2
     },
     {
         "page": "docs/commands/browser/unstable_captureDomSnapshot.mdx",
@@ -197,14 +198,16 @@
     {
         "page": "docs/commands/overview.mdx",
         "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/overview.mdx",
-        "test": "examples/related/overview.testplane.js"
+        "test": "examples/related/overview.testplane.js",
+        "testCount": 2
     },
     {
         "page": "docs/basic-guides/user-environment-emulation.mdx",
         "translation": "i18n/ru/docusaurus-plugin-content-docs/current/basic-guides/user-environment-emulation.mdx",
         "test": "examples/browser/throttleNetwork.testplane.js",
         "blockIndex": 0,
-        "blockCount": 3
+        "blockCount": 3,
+        "testCount": 2
     },
     {
         "page": "docs/basic-guides/user-environment-emulation.mdx",

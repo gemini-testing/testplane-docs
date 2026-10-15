@@ -3,3 +3,6 @@ validation-environment.json
 *.log
 !evidence/**/*.log
 testplane-debug/
+
+artifacts/
+.testplane/
