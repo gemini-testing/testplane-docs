@@ -1,0 +1,32 @@
+
+> testplane-docs@0.0.0 build
+> docusaurus build
+
+[INFO] Website will be built for all these locales:
+- en
+- ru
+[INFO] [en] Creating an optimized production build...
+[WARNING] Docusaurus site warnings:
+- Your site is using the SWC js loader. You can safely remove the Babel config file at `babel.config.js`.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+[WARNING] Docusaurus static site generation process emitted warnings for 2 paths
+This is non-critical and can be disabled with DOCUSAURUS_IGNORE_SSG_WARNINGS=true
+Troubleshooting guide: https://github.com/facebook/docusaurus/discussions/10580
+
+- "/docs/v8/plugins/testplane-retry-progressive/":
+  - [HTML minifier diagnostic - error] No "p" element in scope but a "p" end tag seen - {"primary_spans":[{"end":25950,"start":25946}],"span_labels":[]}
+
+- "/docs/plugins/testplane-retry-progressive/":
+  - [HTML minifier diagnostic - error] No "p" element in scope but a "p" end tag seen - {"primary_spans":[{"end":25423,"start":25419}],"span_labels":[]}
+
+[SUCCESS] Generated static files in "build".
+[INFO] [ru] Creating an optimized production build...
+[WARNING] Docusaurus site warnings:
+- Your site is using the SWC js loader. You can safely remove the Babel config file at `babel.config.js`.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+[SUCCESS] Generated static files in "build/ru".
+[INFO] Use `npm run serve` command to test your build locally.

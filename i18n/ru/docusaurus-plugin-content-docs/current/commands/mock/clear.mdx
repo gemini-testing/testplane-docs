@@ -2,27 +2,57 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `clear`, чтобы сбросить всю информацию, хранящуюся в массиве `mock.calls`.
+Очищает историю `mock.calls`, но сохраняет перехватчик, правила подмены и обработчики событий. Следующий подходящий ответ снова добавится в историю. Для удаления правил без удаления BiDi-мока используйте [reset](./reset.mdx); для полного удаления — [restore](./restore.mdx).
 
 ## Использование {/* #usage */}
 
+`await mock.clear()`
+
+## Параметры и результат {/* #parameters */}
+
+Аргументов нет. BiDi синхронно возвращает тот же мок, Classic/CDP не возвращает полезного значения. В примере используется `await`, что также подходит для асинхронных реализаций. Очистите историю перед [waitForResponse](./waitForResponse.mdx), если нужно дождаться нового ответа, а не ранее сохраненного.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
+
 ```javascript
-mock.clear();
-```
+const assert = require("node:assert/strict");
 
-## Примеры использования {/* #examples */}
-
-```javascript
-it("should clear mock", async ({ browser }) => {
-    const mock = await browser.mock("https://google.com/");
-    await browser.url("https://google.com");
-
-    console.log(mock.calls.length); // выведет: 1
-    mock.clear();
-    console.log(mock.calls.length); // выведет: 0
+it("mock.clear: clear history but retain response rules", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.respond({ source: "mocked" });
+        await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        await mock.waitForResponse({ timeout: 3000 });
+        assert.equal(mock.calls.length, 1);
+        await mock.clear();
+        assert.equal(mock.calls.length, 0);
+        const body = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        assert.equal(body.source, "mocked");
+        await mock.waitForResponse({ timeout: 3000 });
+        assert.equal(mock.calls.length, 1);
+    } finally {
+        await mock.restore();
+    }
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [restore](../restore)
+-   [clear](./clear.mdx)
+-   [reset](./reset.mdx)
+-   [restore](./restore.mdx)
+-   [browser.mock](../browser/mock.mdx)
+
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/mock/clear).

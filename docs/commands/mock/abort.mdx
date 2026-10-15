@@ -2,51 +2,60 @@
 
 ## Overview {/* #overview */}
 
-Use the `abort` command to abort a request with a specified error.
-
-A request can be aborted with one of the following errors:
-
--   Failed
--   Aborted
--   TimedOut
--   AccessDenied
--   ConnectionClosed | ConnectionReset | ConnectionRefused | ConnectionAborted | ConnectionFailed
--   NameNotResolved
--   InternetDisconnected
--   AddressUnreachable
--   BlockedByClient | BlockedByResponse
+Aborts matching requests while the rule is active. BiDi and Classic/CDP signatures differ. Do not pass an error-code string in BiDi: it does not select a network error and may change whether the rule is one-shot.
 
 ## Usage {/* #usage */}
 
-```javascript
-mock.abort(errorCode);
-```
+**BiDi:** `mock.abort(once = false)`
 
-## Command Parameters {/* #parameters */}
+**Classic/CDP:** `mock.abort(errorReason, sticky = true)`
 
-<table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>errorCode</td><td>ErrorCode</td><td>The response error code. Possible values are listed [above](#overview).</td></tr>
+## Parameters and result {/* #parameters */}
 
-</tbody>
-</table>
+BiDi: `once` is a boolean, default `false`; use [abortOnce](./abortOnce.mdx) for one request. Classic/CDP: `errorReason` selects the error; `sticky` defaults to `true` to retain the rule.
 
-## Usage Examples {/* #examples */}
+Classic/CDP error codes: `Failed`, `Aborted`, `TimedOut`, `AccessDenied`, `ConnectionClosed`, `ConnectionReset`, `ConnectionRefused`, `ConnectionAborted`, `ConnectionFailed`, `NameNotResolved`, `InternetDisconnected`, `AddressUnreachable`, `BlockedByClient`, `BlockedByResponse`.
+
+BiDi synchronously returns the same mock; Classic/CDP has no useful return value. BiDi rules share a queue with [request](./request.mdx) and [redirect](./redirect.mdx). A persistent rule replaces the queue; a one-shot rule retains other one-shot rules and removes the persistent rule. CDP appends rules: an earlier persistent rule can prevent a later rule from being used.
+
+## Example {/* #examples */}
+
+The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
 
 ```javascript
-it("should block Google Analytics from page", async ({ browser }) => {
-    const mock = await browser.mock("https://www.google-analytics.com/**");
-    mock.abort("Failed");
+const assert = require("node:assert/strict");
+
+it("mock.abort: block matching BiDi requests", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.abort();
+        for (let i = 0; i < 2; i++) {
+            const failed = await browser.execute(async () => {
+                try {
+                    await fetch("/api/items", { cache: "no-store" });
+                    return false;
+                } catch {
+                    return true;
+                }
+            });
+            assert.equal(failed, true);
+        }
+    } finally {
+        await mock.restore();
+    }
 });
 ```
 
-## Related Commands {/* #related */}
+## Related commands {/* #related */}
 
--   [abortOnce](../abortOnce)
+-   [abortOnce](./abortOnce.mdx)
+-   [restore](./restore.mdx)
+-   [browser.mock](../browser/mock.mdx)
 
-## References
+## References {/* #references */}
 
-We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/abort), from which we drew some information while writing our version.
+This page draws on the [original WebdriverIO article](https://webdriver.io/docs/api/mock/abort).

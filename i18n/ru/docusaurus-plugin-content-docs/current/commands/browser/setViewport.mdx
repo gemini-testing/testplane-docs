@@ -1,0 +1,53 @@
+# setViewport
+
+## Обзор {/* #overview */}
+
+Задайте размер области отображения страницы и плотность пикселей. В отличие от `setWindowSize`, команда изменяет viewport страницы, а не внешние размеры окна браузера.
+
+## Использование {/* #usage */}
+
+`browser.setViewport({ width, height, devicePixelRatio })`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**       | **Тип**  | **По умолчанию** | **Описание**                                                               |
+| ------------------ | -------- | ---------------- | -------------------------------------------------------------------------- |
+| `width`            | `number` | Обязателен       | Ширина viewport в CSS-пикселях.                                            |
+| `height`           | `number` | Обязателен       | Высота viewport в CSS-пикселях.                                            |
+| `devicePixelRatio` | `number` | 1                | Плотность пикселей (DPR). Если параметр не передан, устанавливается DPR 1. |
+
+## Результат {/* #result */}
+
+`Promise<void>`.
+
+## Ограничения {/* #limitations */}
+
+Требуются WebDriver BiDi (`webSocketUrl: true`) и поддержка изменения viewport на стороне драйвера. В WDIO 9.6.2 клиент проверяет ширину и высоту по границам 0 и `Number.MAX_SAFE_INTEGER`. Драйвер может накладывать более строгие ограничения: прохождение клиентской проверки не гарантирует поддержку такого размера viewport. Сохраните прежние размеры, если их нужно восстановить. Изменение размеров не эмулирует мобильное устройство, сенсорный ввод или его браузерный движок.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("setViewport: change page dimensions", async ({ browser }) => {
+    await browser.url("/");
+    const original = await browser.execute(() => ({
+        width: innerWidth,
+        height: innerHeight,
+        devicePixelRatio,
+    }));
+    try {
+        await browser.setViewport({ width: 800, height: 600, devicePixelRatio: 1 });
+        assert.deepEqual(await browser.execute(() => [innerWidth, innerHeight]), [800, 600]);
+    } finally {
+        await browser.setViewport(original);
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [setWindowSize](./setWindowSize.mdx)
+-   [emulate](./emulate.mdx)

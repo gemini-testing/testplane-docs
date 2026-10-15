@@ -6,53 +6,55 @@ import Version from "../../_partials/specs/version.mdx";
 
 ## Обзор {/* #overview */}
 
-Эта команда возвращает состояние страницы из файла, ранее сохраненного с помощью команды [saveState][saveState].
+Читает JSON-файл состояния, созданный [saveState](./saveState.mdx), и возвращает его содержимое. Команда **не восстанавливает состояние браузера**: не меняет cookies, хранилища и текущую страницу. Для восстановления используйте [restoreState](./restoreState.mdx).
 
 ## Использование {/* #usage */}
 
-```typescript
-import type { SaveStateData } from "testplane";
-
-const stateDump: SaveStateData = await browser.getState({
-    path: "./stateDump.json",
-});
-```
+`await browser.getState(options)`
 
 ## Параметры команды {/* #parameters */}
 
-<table>
-    <thead>
-        <tr>
-            <td>**Имя**</td>
-            <td>**Тип**</td>
-            <td>**Значение по умолчанию**</td>
-            <td>**Описание**</td>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>path</td>
-            <td>`string`</td>
-            <td>`-`</td>
-            <td>Путь к файлу с состоянием.</td>
-        </tr>
-    </tbody>
-</table>
+| Параметр       | Тип      | Описание                                                                                   |
+| -------------- | -------- | ------------------------------------------------------------------------------------------ |
+| `options.path` | `string` | Путь к JSON-файлу. Относительный путь разрешается от рабочего каталога процесса Testplane. |
 
-## Usage Examples {/* #examples */}
+Если аргумент `options` пропущен, используются `browser.config.stateOpts`. Явно переданный объект не объединяется с настройками: `getState({})` не подставит путь из конфигурации.
 
-Save state in file.
+## Результат и ошибки {/* #result */}
 
-```typescript
-it("test", async ({ browser }) => {
-    const stateData = await browser.getState({
-        path: "./stateDump.json",
-    });
+Возвращает Promise с прочитанными данными. Для файла `saveState` это `SaveStateData`: необязательный массив `cookies` и `framesData`, где состояния `localStorage` и `sessionStorage` сгруппированы по origin. Схема прочитанного JSON не проверяется.
+
+Если путь не задан, команда пишет сообщение об ошибке в лог и возвращает `null`. Ошибки чтения и разбора JSON отклоняют Promise.
+
+## Пример {/* #examples */}
+
+Укажите в `baseUrl` адрес тестовой HTML-страницы. Пример сохраняет localStorage во временный файл, меняет значение в браузере и проверяет, что чтение файла не восстанавливает сессию.
+
+```javascript
+const assert = require("node:assert/strict");
+const fs = require("node:fs/promises");
+const os = require("node:os");
+const path = require("node:path");
+
+it("getState: read a saved file without restoring the session", async ({ browser }) => {
+    const directory = await fs.mkdtemp(path.join(os.tmpdir(), "testplane-state-"));
+    const statePath = path.join(directory, "state.json");
+    try {
+        await browser.url("/");
+        const origin = new URL(await browser.getUrl()).origin;
+        await browser.execute(() => localStorage.setItem("example", "saved"));
+        await browser.saveState({ path: statePath, cookies: false, localStorage: true });
+        await browser.execute(() => localStorage.setItem("example", "current"));
+        const state = await browser.getState({ path: statePath });
+        assert.equal(state.framesData[origin].localStorage.example, "saved");
+        assert.equal(await browser.execute(() => localStorage.getItem("example")), "current");
+    } finally {
+        await fs.rm(directory, { recursive: true, force: true });
+    }
 });
 ```
 
-## Related Commands {/* #related */}
+## Связанные команды {/* #related */}
 
--   [saveState][saveState]
-
-[saveState]: ../saveState
+-   [saveState](./saveState.mdx)
+-   [restoreState](./restoreState.mdx)

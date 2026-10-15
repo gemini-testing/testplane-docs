@@ -1,0 +1,53 @@
+# setViewport
+
+## Overview {/* #overview */}
+
+Set the size of the page viewport and its device pixel ratio. Unlike `setWindowSize`, this changes the area used to render the page, not the outer browser window.
+
+## Usage {/* #usage */}
+
+`browser.setViewport({ width, height, devicePixelRatio })`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**      | **Type** | **Default** | **Description**                                          |
+| ------------------ | -------- | ----------- | -------------------------------------------------------- |
+| `width`            | `number` | Required    | Viewport width in CSS pixels.                            |
+| `height`           | `number` | Required    | Viewport height in CSS pixels.                           |
+| `devicePixelRatio` | `number` | 1           | The device pixel ratio (DPR). Omitting it sets DPR to 1. |
+
+## Result {/* #result */}
+
+`Promise<void>`.
+
+## Limitations {/* #limitations */}
+
+Requires WebDriver BiDi (`webSocketUrl: true`) and backend support for viewport resizing. In WDIO 9.6.2, the client checks width and height against 0 and `Number.MAX_SAFE_INTEGER`. The backend can impose stricter limits: passing the client check does not guarantee support for that viewport size. Save the previous dimensions if they must be restored. Changing dimensions does not emulate a mobile device, touch input or its browser engine.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("setViewport: change page dimensions", async ({ browser }) => {
+    await browser.url("/");
+    const original = await browser.execute(() => ({
+        width: innerWidth,
+        height: innerHeight,
+        devicePixelRatio,
+    }));
+    try {
+        await browser.setViewport({ width: 800, height: 600, devicePixelRatio: 1 });
+        assert.deepEqual(await browser.execute(() => [innerWidth, innerHeight]), [800, 600]);
+    } finally {
+        await browser.setViewport(original);
+    }
+});
+```
+
+## See also {/* #see-also */}
+
+-   [setWindowSize](./setWindowSize.mdx)
+-   [emulate](./emulate.mdx)

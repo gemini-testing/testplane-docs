@@ -2,58 +2,48 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `executeAsync`, чтобы выполнить _асинхронно_ указанный JavaScript-код на странице текущего выбранного фрейма.
+Выполняет JavaScript в текущем фрейме и возвращает значение, переданное в callback. Команда устарела: для нового кода используйте [execute](./execute.mdx) с асинхронной функцией.
 
-Последним аргументом команды должен быть колбэк, который будет вызван, как только скрипт завершит свою работу. В качестве входного параметра команда передает в колбэк результат выполнения скрипта.
-
-Аргумент `script` определяет сценарий для выполнения в виде тела функции. Функция будет вызвана с предоставленным массивом `args`, и доступ к значениям может быть получен через объект `arguments` в указанном порядке. Последним аргументом всегда должна быть колбэк-функция, которая будет вызвана после того, как скрипт будет выполнен.
-
-Аргументами могут быть любые JSON-примитивы, массивы или объекты JSON. Объекты JSON, которые определяют ссылку на _WebElement,_ будут преобразованы в соответствующий элемент DOM. Аналогично, любые _WebElements_ в результате скрипта будут возвращены клиенту в виде объектов _WebElement JSON_.
+Callback добавляет сама команда как последний аргумент **браузерной функции**. Его не нужно передавать отдельным аргументом `browser.executeAsync`. Вызовите callback, чтобы завершить команду.
 
 ## Использование {/* #usage */}
 
-```javascript
-await browser.executeAsync(script, arguments);
-```
+`await browser.executeAsync(script, ...args)`
 
 ## Параметры команды {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>script</td><td>String или Function</td><td>Скрипт, который необходимо выполнить.</td></tr>
-<tr><td>arguments</td><td>Any</td><td>Аргументы для скрипта. Последним аргументом должна быть колбэк-функция, которая будет вызвана после того, как скрипт будет выполнен.</td></tr>
+-   `script` — функция или строка с телом функции. Код выполняется в браузере, без Node.js API и локальных замыканий.
+-   `args` — сериализуемые аргументы, передаваемые перед callback; ссылки WebElement преобразуются в DOM-элементы.
 
-</tbody>
-</table>
+Результат — Promise со значением, переданным в callback. В Classic настройте тайм-аут `script` через [setTimeout](./setTimeout.mdx). В BiDi-реализации нет отдельного таймера ожидания callback; всегда вызывайте его и ограничивайте тест через `testTimeout`.
 
-## Примеры использования {/* #examples */}
+## Пример {/* #examples */}
+
+Укажите в `baseUrl` адрес тестовой HTML-страницы.
 
 ```javascript
-it("should execute async JavaScript on the page", async ({ browser }) => {
+const assert = require("node:assert/strict");
+
+it("browser.executeAsync: return a result through the injected callback", async ({ browser }) => {
+    await browser.url("/");
     await browser.setTimeout({ script: 5000 });
-
     const result = await browser.executeAsync(
-        function (a, b, c, d, done) {
-            // здесь мы в browser-контексте: доступа к консоли и к клиенту у нас нет
-            setTimeout(() => {
-                done(a + b + c + d);
-            }, 3000);
+        (a, b, done) => {
+            setTimeout(() => done(a + b), 20);
         },
-        1,
-        2,
-        3,
         4,
+        6,
     );
-
-    // здесь мы в node.js-контексте: доступ к консоли и к клиенту у нас есть
-    console.log(result); // выведет: 10
+    assert.equal(result, 10);
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [execute](../execute)
--   [setTimeout](../setTimeout)
+-   [execute](./execute.mdx)
+-   [element.executeAsync](../element/executeAsync.mdx)
+-   [setTimeout](./setTimeout.mdx)
+
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/browser/executeAsync).

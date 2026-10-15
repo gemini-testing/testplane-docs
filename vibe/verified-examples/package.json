@@ -1,0 +1,21 @@
+{
+    "name": "testplane-docs-examples-20261009",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "node run-examples.cjs",
+        "test:selenium": "node run-examples.cjs --config testplane.selenium.config.js",
+        "check:snippets": "node verify-snippets.cjs --base HEAD"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@swc/core": "^1.16.13",
+        "@testplane/globals": "^1.0.1",
+        "@testplane/testing-library": "^1.0.5",
+        "html-reporter": "^11.17.2",
+        "testplane": "^9.3.2"
+    }
+}

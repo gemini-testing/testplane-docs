@@ -2,56 +2,62 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `abortOnce`, чтобы прервать запрос один раз с заданной ошибкой.
-
-Запрос можно прервать с одной из следующих ошибок:
-
--   Failed
--   Aborted
--   TimedOut
--   AccessDenied
--   ConnectionClosed | ConnectionReset | ConnectionRefused | ConnectionAborted | ConnectionFailed
--   NameNotResolved
--   InternetDisconnected
--   AddressUnreachable
--   BlockedByClient | BlockedByResponse
+Прерывает один подходящий запрос. Сигнатуры BiDi и Classic/CDP различаются. В BiDi не передавайте строку с кодом ошибки: она не задает сетевую ошибку и может изменить однократность правила.
 
 ## Использование {/* #usage */}
 
-```javascript
-mock.abortOnce(errorCode);
-```
+**BiDi:** `mock.abortOnce()`
 
-## Параметры команды {/* #parameters */}
+**Classic/CDP:** `mock.abortOnce(errorReason)`
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>errorCode</td><td>ErrorCode</td><td>Код ошибки ответа. Возможные значения см. [выше](#overview).</td></tr>
+## Параметры и результат {/* #parameters */}
 
-</tbody>
-</table>
+BiDi не принимает аргументов. В Classic/CDP нужен `errorReason`.
 
-## Примеры использования {/* #examples */}
+Коды ошибки Classic/CDP: `Failed`, `Aborted`, `TimedOut`, `AccessDenied`, `ConnectionClosed`, `ConnectionReset`, `ConnectionRefused`, `ConnectionAborted`, `ConnectionFailed`, `NameNotResolved`, `InternetDisconnected`, `AddressUnreachable`, `BlockedByClient`, `BlockedByResponse`.
+
+BiDi возвращает тот же объект мока синхронно; Classic/CDP не возвращает полезного значения. Правила BiDi делят очередь с [request](./request.mdx) и [redirect](./redirect.mdx). Постоянное правило заменяет очередь, однократное сохраняет другие однократные правила и убирает постоянное. В CDP правила добавляются в очередь: ранее добавленное постоянное правило может не дать примениться следующему.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
 ```javascript
-it("should block mock only once", async ({ browser }) => {
-    const mock = await browser.mock("https://webdriver.io");
-    mock.abortOnce("Failed");
+const assert = require("node:assert/strict");
 
-    await browser
-        .url("https://webdriver.io")
-        // ловим исключение, так как запрос к странице упадет
-        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
-
-    await browser.url("https://webdriver.io");
-    console.log(await browser.getTitle());
-    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+it("mock.abortOnce: block one BiDi request", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.abortOnce();
+        const failed = await browser.execute(async () => {
+            try {
+                await fetch("/api/items", { cache: "no-store" });
+                return false;
+            } catch {
+                return true;
+            }
+        });
+        assert.equal(failed, true);
+        const status = await browser.execute(
+            async () => (await fetch("/api/items", { cache: "no-store" })).status,
+        );
+        assert.equal(status, 200);
+    } finally {
+        await mock.restore();
+    }
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [abort](../abort)
+-   [abort](./abort.mdx)
+-   [restore](./restore.mdx)
+-   [browser.mock](../browser/mock.mdx)
+
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/mock/abortOnce).

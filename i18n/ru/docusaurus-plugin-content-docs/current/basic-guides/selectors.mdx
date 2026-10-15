@@ -313,6 +313,10 @@ const slotElements = await customElement.shadow$$(".slot-item");
 -   нужен доступ к элементам внутри shadow root
 -   работаете с дизайн-системой на базе Web Components
 
+## Собственные стратегии поиска {/* #custom-locator-strategies */}
+
+Если стандартного селектора недостаточно, зарегистрируйте стратегию через [browser.addLocatorStrategy](../commands/browser/addLocatorStrategy.mdx). Используйте [browser.custom$](../commands/browser/customDollar.mdx) для одного элемента и [browser.custom$$](../commands/browser/customDollarDollar.mdx) для нескольких. Для поиска внутри конкретного элемента доступны [element.custom$](../commands/element/customDollar.mdx) и [element.custom$$](../commands/element/customDollarDollar.mdx). Функция стратегии выполняется в браузере, поэтому передавайте ей данные аргументами, а не через замыкания Node.js. Проверенные примеры приведены на страницах команд.
+
 ## Testing Library
 
 Testing Library позволяет искать элементы так, как их ищут на странице пользователи — по тексту, типу элемента или другим атрибутам, которые не зависят от деталей вашей верстки.

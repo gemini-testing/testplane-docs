@@ -1,0 +1,65 @@
+# request
+
+## Обзор {/* #overview */}
+
+Изменяет подходящие исходящие запросы до отправки на сервер: заголовки, метод, тело, cookie или URL.
+
+## Использование {/* #usage */}
+
+`mock.request(overwrite, once = false)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**        | **Тип**                              | **По умолчанию** | **Описание**                                                                                                    |
+| ------------------- | ------------------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| `overwrite`         | `object`                             | Обязательный     | Поля запроса для переопределения.                                                                               |
+| `overwrite.body`    | `unknown \| Function`                | —                | Тело запроса: строки передаются как текст, объекты — как JSON. Ложные значения тела в этой версии игнорируются. |
+| `overwrite.cookies` | `Cookie[] \| Function`               | —                | Массив cookie в формате WebDriver.                                                                              |
+| `overwrite.headers` | `Record<string, string> \| Function` | —                | Новый набор заголовков, а не дополнение исходного.                                                              |
+| `overwrite.method`  | `string \| Function`                 | —                | HTTP-метод, например `POST`.                                                                                    |
+| `overwrite.url`     | `string \| Function`                 | —                | Абсолютный URL назначения.                                                                                      |
+| `once`              | `boolean`                            | `false`          | Применить правило только к следующему подходящему запросу.                                                      |
+
+## Результат {/* #result */}
+
+Тот же объект мока синхронно, для цепочки вызовов.
+
+## Ограничения {/* #limitations */}
+
+Нужна WebDriver BiDi-сессия (`webSocketUrl: true`): в Classic/CDP-реализации мока этого метода нет. Примеры явно подписываются на сетевые события в каждой сессии; см. [ограничение подписки](./waitForResponse.mdx#limitations). Когда мок больше не нужен, вызовите `mock.restore()` в `finally`.
+
+Переопределение меняет исходящий запрос, а не создает поддельный ответ. Поле может быть значением или синхронной функцией от события BiDi (URL находится в `event.request.url`). Переопределения запросов, перенаправления и прерывания используют общую очередь правил. Постоянное правило заменяет очередь; однократное сохраняет другие однократные правила, но удаляет постоянное. Не рассчитывайте на возврат к постоянному правилу после однократного.
+
+## Пример {/* #examples */}
+
+Укажите в `baseUrl` локальный HTTP-сайт. `/` возвращает HTML. `/api/items` возвращает JSON: `source: "original"`, метод запроса в `method` и заголовок запроса `x-example` в `header` (`null`, если заголовка нет). `/api/other` возвращает те же поля с `source: "redirected"`. Примеры выполняют настоящие запросы к этим обработчикам.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("mock.request: change outgoing requests", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.request({ method: "POST", headers: { "x-example": "persistent" } });
+        for (let i = 0; i < 2; i++) {
+            const data = await browser.execute(async () =>
+                (await fetch("/api/items", { cache: "no-store" })).json(),
+            );
+            assert.equal(data.method, "POST");
+            assert.equal(data.header, "persistent");
+        }
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [requestOnce](./requestOnce.mdx)
+-   [respond](./respond.mdx)
+-   [reset](./reset.mdx)
