@@ -18,7 +18,7 @@ module.exports = {
                     ...(process.env.EXAMPLE_CHROME_BINARY
                         ? { binary: process.env.EXAMPLE_CHROME_BINARY }
                         : {}),
-                    args: ["--headless=new"],
+                    args: ["--headless=new", ...require("./ci-chrome-args.cjs")],
                 },
             },
         },

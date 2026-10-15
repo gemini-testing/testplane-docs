@@ -37,6 +37,7 @@ module.exports = {
                 browserName: "chrome",
                 browserVersion: "150.0.7871.124",
                 webSocketUrl: true,
+                "goog:chromeOptions": { args: require("./ci-chrome-args.cjs") },
             },
         },
     },
