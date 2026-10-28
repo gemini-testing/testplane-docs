@@ -346,6 +346,8 @@ For example, when executing the `browser.$('.element').click()` command, the `$(
 
 Timeout for any requests to the Selenium server, in milliseconds. Default: `30000` ms.
 
+Since Testplane 9.1.0, responses with HTTP status `429` trigger [progressive request retries](../../basic-guides/configuration.mdx#progressive-retries). The delays between attempts are additional to request execution time and are not configured by `httpTimeout`.
+
 ### urlHttpTimeout {/* #url_http_timeout */}
 
 Timeout for the `/url` request to the Selenium server, in milliseconds. Sometimes, when opening a link on the server side, a lot of logic is executed in middleware, causing the link to take a long time to open. To avoid increasing the timeout for all commands due to this, Testplane allows you to set a separate timeout for the `/url` request.
@@ -357,6 +359,8 @@ Timeout for the full page load, in milliseconds. Default: `20000` ms.
 ### sessionRequestTimeout {/* #session_request_timeout */}
 
 Timeout for the browser session request, in milliseconds. By default, it takes the value of the `httpTimeout` setting.
+
+Session creation requests also use [progressive retries for HTTP `429`](../../basic-guides/configuration.mdx#progressive-retries). This setting does not change the delays between attempts.
 
 ### sessionQuitTimeout {/* #session_quit_timeout */}
 
@@ -462,6 +466,8 @@ Default: `Infinity`. This means the session will be reused an infinite number of
 ### retry {/* #retry */}
 
 How many times to retry a test if it fails. Default: `0`.
+
+This setting controls retries of the entire test. [Progressive retries of browser requests](../../basic-guides/configuration.mdx#progressive-retries) work independently, including when `retry` is `0`.
 
 ### shouldRetry {/* #should_retry */}
 
