@@ -154,6 +154,26 @@ export default {
 } satisfies ConfigInput;
 ```
 
+#### Progressive retries for browser requests {/* #progressive-retries */}
+
+Since [Testplane 9.1.0](https://github.com/gemini-testing/testplane/releases/tag/v9.1.0), requests to the browser that receive an HTTP `429 Too Many Requests` response are automatically retried with an increasing delay (exponential backoff). This applies to WebDriver requests, including session creation, and helps reduce the load on a busy grid.
+
+The mechanism is built into the WebdriverIO version used by Testplane and requires no configuration or plugins. Testplane allows up to three retries of a request, for a total of four attempts. If consecutive attempts return `429`, the delays are:
+
+| Retry  | Delay before retrying |
+| ------ | --------------------- |
+| First  | 5–6 seconds           |
+| Second | 10–11 seconds         |
+| Third  | 20–21 seconds         |
+
+Each delay includes a random addition of up to one second, so parallel workers do not all retry at the same time. WebdriverIO calculates the delay as `min(5000 × 2^(n − 1) + jitter, 30000)` milliseconds, where `n` is the retry number starting at 1 and `jitter` is a random value from 0 to 1000 milliseconds.
+
+For example, if a session request receives `429` twice and succeeds on the third attempt, Testplane continues with the obtained session after approximately 15–17 seconds of waiting, plus the time spent on the requests themselves.
+
+These retries repeat the individual browser request within the current test attempt. The [`retry`](../reference/config/browsers.mdx#retry) option controls restarting the entire failed test and does not change the number or delays of request retries. Progressive request retries also work with `retry: 0`. If the request exhausts its retries, the error propagates to the calling code; if it causes the test to fail, the usual test retry rules apply.
+
+Allow for these delays when choosing [`testTimeout`](../reference/config/browsers.mdx#test_timeout): three consecutive `429` responses can add approximately 35–38 seconds of waiting before the final request attempt. [`httpTimeout`](../reference/config/browsers.mdx#http_timeout) and [`sessionRequestTimeout`](../reference/config/browsers.mdx#session_request_timeout) configure request timeouts, not backoff delays. Other response codes do not trigger this `429` backoff.
+
 ### Test file locations {/* #test-files */}
 
 Test file sets and browsers for running them are specified in the `sets` section:
