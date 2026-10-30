@@ -86,8 +86,8 @@ jobs:
                   message: |
                       ### :white_check_mark: Successfully deployed static
 
-                      - [Docs website](https://storage.yandexcloud.net/testplane-gh-ci/testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/)
-                      - [Storybook](https://storage.yandexcloud.net/testplane-gh-ci/testplane-docs/storybook-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/)
+                      - [Docs website](https://testplane-gh-ci.website.yandexcloud.net/testplane-docs/website-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/)
+                      - [Storybook](https://testplane-gh-ci.website.yandexcloud.net/testplane-docs/storybook-static/${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}/)
                   comment_tag: deployment_status
 
             - name: Comment PR that static wasn't deployed on failure
