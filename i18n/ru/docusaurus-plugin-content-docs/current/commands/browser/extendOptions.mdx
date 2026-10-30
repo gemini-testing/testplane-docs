@@ -1,0 +1,62 @@
+# extendOptions
+
+## Обзор {/* #overview */}
+
+Поверхностно обновляет настройки текущего объекта браузера WebdriverIO. Используйте метод для клиентских параметров, например интервалов ожидания, а не для изменения конфигурации раннера Testplane или capabilities сессии.
+
+## Использование {/* #usage */}
+
+`browser.extendOptions(options)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**                   | **По умолчанию** | **Описание**                                         |
+| ------------ | ------------------------- | ---------------- | ---------------------------------------------------- |
+| `options`    | `Record<string, unknown>` | Обязательный     | Поля верхнего уровня для записи в `browser.options`. |
+
+## Результат {/* #result */}
+
+`Promise<void>`: команда завершается без возвращаемого значения.
+
+## Ограничения {/* #limitations */}
+
+Вложенные объекты заменяются, а не объединяются рекурсивно. Поля, которых нет в аргументе, сохраняются. Метод не проверяет имена параметров и не пересоздает сессию: изменение действует только там, где команда читает этот runtime-параметр. Конфигурация, возвращаемая `getConfig()`, не меняется. Сохраните изменяемые значения и восстановите их в `finally`.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("extendOptions: change WebdriverIO wait settings for this browser", async ({ browser }) => {
+    const original = {
+        waitforTimeout: browser.options.waitforTimeout,
+        waitforInterval: browser.options.waitforInterval,
+    };
+    const configuredTimeout = (await browser.getConfig()).waitTimeout;
+    assert.equal(typeof configuredTimeout, "number");
+    try {
+        const result = await browser.extendOptions({ waitforTimeout: 1000, waitforInterval: 50 });
+        assert.equal(result, undefined);
+        assert.equal(browser.options.waitforTimeout, 1000);
+        assert.equal(browser.options.waitforInterval, 50);
+        assert.equal((await browser.getConfig()).waitTimeout, configuredTimeout);
+        await browser.url("/");
+        await browser.execute(() => {
+            setTimeout(() => {
+                document.body.innerHTML = '<p id="ready">Ready</p>';
+            }, 100);
+        });
+        await browser.$("#ready").waitForExist();
+        assert.equal(await browser.$("#ready").getText(), "Ready");
+    } finally {
+        await browser.extendOptions(original);
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [getConfig](./getConfig.mdx)
+-   [waitUntil](./waitUntil.mdx)

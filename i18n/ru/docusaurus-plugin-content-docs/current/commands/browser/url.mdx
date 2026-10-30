@@ -2,58 +2,74 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `url`, чтобы перейти по заданному URL-адресу в браузере.
+Открывает URL. В Testplane вызов без аргумента или с пустой строкой возвращает текущий URL и не выполняет переход. Повторный переход на тот же адрес перезагружает страницу.
 
-Если в конфигурации указан [baseUrl][base-url], то он будет добавлен к параметру `url` с помощью метода Node.JS [url.resolve()][url-resolve].
-
-Вызов `browser.url()` с тем же URL-адресом, что и в прошлый раз, вызовет перезагрузку страницы.
+Если задан [baseUrl](../../reference/config/browsers.mdx#base_url), адрес разрешается через `url.resolve(baseUrl, url)`. Например, при `baseUrl` равном `http://example.com/site/` адрес `relative` откроет `/site/relative`, а `/rootRelative` — `/rootRelative`. Полный URL не зависит от `baseUrl`. Завершающий `/` в базовом адресе влияет на разрешение относительного пути.
 
 ## Использование {/* #usage */}
 
-```javascript
-await browser.url(url);
-```
+`await browser.url(url, options)`; `await browser.url()`
 
 ## Параметры команды {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>url</td><td>String</td><td>URL, который надо открыть.</td></tr>
+| Параметр               | Описание                                                                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`                  | Строка с полным или относительным адресом. Без аргумента — чтение текущего адреса.                                                                                                          |
+| `options.wait`         | BiDi: `none`, `interactive`, `complete` или `networkIdle`. Без значения используется стратегия загрузки сессии; для обычной стратегии — `complete`. Ограничение `networkIdle` описано ниже. |
+| `options.timeout`      | BiDi: тайм-аут только ожидания `networkIdle`, по умолчанию `5000` мс. Не заменяет тайм-ауты Testplane и загрузки страницы.                                                                  |
+| `options.headers`      | BiDi: объект заголовков для запроса навигации. Не задает постоянные заголовки для всех ресурсов страницы.                                                                                   |
+| `options.auth`         | BiDi: объект `{ user, pass }` для HTTP Basic Auth. Заменяет `Authorization` из `headers`. Используйте HTTPS и не сохраняйте секреты в тестах.                                               |
+| `options.onBeforeLoad` | BiDi: функция, выполняемая до скриптов нового документа. Функция сериализуется и не имеет доступа к замыканию Node.js.                                                                      |
 
-</tbody>
-</table>
+## Ограничения {/* #limitations */}
 
-## Примеры использования {/* #examples */}
+Опции применяются только к HTTP(S)-переходам в BiDi. В Classic обертка Testplane игнорирует второй аргумент. После успешного перехода временный init-скрипт удаляется; его изменения в загруженной странице остаются до следующей навигации.
 
-**url.js**
+В проверенной связке Testplane 9.3.2 / WDIO 9.6.2 / Chrome 150 режим `networkIdle` падает с `Couldn't find request for navigation with id ...`: реализация ищет запрос навигации по идентификатору контекста. Используйте `complete` и затем явно ожидайте нужное состояние приложения. `complete` само по себе не означает завершения фоновых запросов приложения.
+
+## Результат {/* #result */}
+
+Вызов без адреса возвращает строку текущего URL. Переход в Classic возвращает `undefined`; в BiDi может вернуть данные запроса навигации или `undefined`. Для чтения адреса используйте `getUrl()` или `url()` без аргумента.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome/BiDi и тестовый HTTP-сервер в `baseUrl`. На `/navigation` скрипт страницы записывает `window.initialSeed = window.navigationSeed ?? null`, а сервер встраивает значение заголовка `x-example` в `window.receivedHeader`. Корневой путь отдает обычную HTML-страницу.
 
 ```javascript
-// переходим на URL
-await browser.url("https://webdriver.io");
+const assert = require("node:assert/strict");
 
-// получаем url
-console.log(await browser.getUrl()); // выведет: "https://webdriver.io"
+it("url: navigate with BiDi options and read the current URL", async ({ browser }) => {
+    await browser.url("/");
+    const target = new URL("/navigation", await browser.getUrl()).href;
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    await browser.url(target, {
+        wait: "complete",
+        headers: { "x-example": "navigation" },
+        onBeforeLoad: () => {
+            window.navigationSeed = 42;
+        },
+    });
+    assert.equal(await browser.url(), target);
+    assert.deepEqual(await browser.execute(() => [window.initialSeed, window.receivedHeader]), [
+        42,
+        "navigation",
+    ]);
+    await browser.execute(() => {
+        window.unsavedValue = "temporary";
+    });
+    await browser.url(target);
+    assert.equal(await browser.execute(() => typeof window.unsavedValue), "undefined");
+    assert.equal(await browser.execute(() => window.initialSeed), null);
+});
 ```
 
-**baseUrlResolutions.js**
+## Связанные команды {/* #related */}
 
-```javascript
-// Пусть baseUrl = http://example.com/site/ важно указывать слэш в конце
+-   [addInitScript](./addInitScript.mdx)
+-   [waitUntil](./waitUntil.mdx)
 
-// При указании полного URL-адреса итоговый URL будет https://webdriver.io
-await browser.url("https://webdriver.io");
+## Источники {/* #references */}
 
-// При указании URL-адреса без начального слэша
-// итоговый URL формируется относительно всего baseUrl: http://example.com/site/relative
-await browser.url("relative");
-
-// При указании URL-адреса с начальным слэшом
-// итоговый URL формируется относительно корня baseUrl: http://example.com/rootRelative
-await browser.url("/rootRelative");
-```
-
-[base-url]: ../../../reference/config/browsers#base_url
-[url-resolve]: https://nodejs.org/api/url.html#urlresolvefrom-to
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/browser/url).

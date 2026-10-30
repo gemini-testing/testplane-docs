@@ -1,0 +1,55 @@
+# unstable_captureDomSnapshot
+
+## Обзор {/* #overview */}
+
+Создает компактный снимок DOM с выбранным элементом в корне. Содержимое за пределами элемента в снимок не входит.
+
+## Использование {/* #usage */}
+
+`element.unstable_captureDomSnapshot(options?)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**                  | **По умолчанию** | **Описание**                                                       |
+| ------------ | ------------------------ | ---------------- | ------------------------------------------------------------------ |
+| `options`    | `CaptureSnapshotOptions` | `{}`             | Те же параметры фильтрации и сокращения, что у браузерной команды. |
+
+## Результат {/* #result */}
+
+`Promise<CaptureSnapshotResult>` с полями `snapshot`, `omittedTags`, `omittedAttributes` и `textWasTruncated`. См. [общий формат результата](../browser/unstable_captureDomSnapshot.mdx#result).
+
+## Ограничения {/* #limitations */}
+
+Использует `element.execute` с ожиданием существования элемента. Фильтрация, сокращение и ограничения обработки чувствительных данных совпадают с [браузерной командой](../browser/unstable_captureDomSnapshot.mdx#limitations). В частности, `truncateText: false` не отключает сокращение атрибутов, а значения input не очищаются от секретов. Метод принимает настройки, а не дополнительный CSS-селектор.
+
+:::warning
+
+Это нестабильный API Testplane. Сигнатура, поведение и формат результата могут изменяться между версиями.
+
+:::
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("element.unstable_captureDomSnapshot: capture only this element", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML =
+            '<section id="panel"><button data-test="save">Save</button></section><p>Outside</p>';
+    });
+    const result = await browser.$("#panel").unstable_captureDomSnapshot({ truncateText: false });
+    assert.match(result.snapshot, /section#panel/);
+    assert.match(result.snapshot, /button\[data-test=save\] "Save"/);
+    assert.doesNotMatch(result.snapshot, /Outside/);
+    assert.equal(result.textWasTruncated, false);
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [browser.unstable_captureDomSnapshot](../browser/unstable_captureDomSnapshot.mdx)
+-   [execute](./execute.mdx)

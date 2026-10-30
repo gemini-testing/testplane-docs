@@ -1,0 +1,48 @@
+# custom$
+
+## Overview {/* #overview */}
+
+Find one element using a strategy registered with `addLocatorStrategy`. The strategy controls how the element is selected.
+
+## Usage {/* #usage */}
+
+`browser.custom$(strategyName, ...strategyArguments)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**       | **Type**    | **Default** | **Description**                                |
+| ------------------- | ----------- | ----------- | ---------------------------------------------- |
+| `strategyName`      | `string`    | Required    | The name of a registered strategy.             |
+| `strategyArguments` | `unknown[]` | []          | Arguments passed to the browser-side strategy. |
+
+## Result {/* #result */}
+
+An awaitable element reference resolving to `WebdriverIO.Element`. If the strategy returns several elements, the first is used.
+
+## Limitations {/* #limitations */}
+
+An unknown strategy name throws an error. Finding an element does not imply that it is visible or clickable: use the corresponding waits or assertions. If the strategy finds nothing, subsequent element commands can fail.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("custom$: find one element with a custom strategy", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<button data-test="save">Save</button>';
+    });
+    browser.addLocatorStrategy("byTest", value => document.querySelector(`[data-test="${value}"]`));
+    const button = await browser.custom$("byTest", "save");
+    assert.equal(await button.getText(), "Save");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [addLocatorStrategy](./addLocatorStrategy.mdx)
+-   [custom$$](./customDollarDollar.mdx)
+-   [$](./$.mdx)

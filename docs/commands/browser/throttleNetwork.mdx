@@ -1,0 +1,71 @@
+# throttleNetwork
+
+## Overview {/* #overview */}
+
+Limit network throughput and latency or put a page offline through CDP. This affects actual requests, unlike `emulate("onLine", false)`, which only changes a JavaScript property.
+
+## Usage {/* #usage */}
+
+`browser.throttleNetwork(profileOrOptions)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**        | **Type**           | **Default**        | **Description**                                                                              |
+| -------------------- | ------------------ | ------------------ | -------------------------------------------------------------------------------------------- |
+| `profileOrOptions`   | `string \| object` | Required           | A named profile or an object with offline, latency, downloadThroughput and uploadThroughput. |
+| `offline`            | `boolean`          | Required in object | Whether network access is disabled.                                                          |
+| `latency`            | `number`           | Required in object | Minimum latency in milliseconds.                                                             |
+| `downloadThroughput` | `number`           | Required in object | Download bytes per second; -1 removes this limit.                                            |
+| `uploadThroughput`   | `number`           | Required in object | Upload bytes per second; -1 removes this limit.                                              |
+
+## Result {/* #result */}
+
+`Promise<null>`.
+
+## Limitations {/* #limitations */}
+
+The local CDP path requires Chromium and a Puppeteer connection. It targets the first Puppeteer page. Use one tab, `isolation: false` and `testsPerSession: 1` for the example below. Load the page before disabling the network. Profiles: `offline`, `GPRS`, `Regular2G`, `Good2G`, `Regular3G`, `Good3G`, `Regular4G`, `DSL`, `WiFi`, `online`. Unsupported profile names throw an error. Sauce Labs sessions use a separate backend command.
+
+:::warning
+
+With Testplane 9.3.2, WDIO 9.6.2 and Chrome for Testing 150.0.7871.124, a subsequent `"online"` call did not restore networking after `"offline"`. Each call creates a separate CDP session. Do not rely on this reset when reusing a browser: the example ends the offline session after the test and checks networking in a new one. To switch modes within one test, use a single CDP session.
+
+:::
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+// Configure testsPerSession: 1 so this offline session is not reused.
+it("throttleNetwork: check a failed request while offline", async ({ browser }) => {
+    await browser.url("/");
+    await browser.throttleNetwork("offline");
+    const failed = await browser.execute(async () => {
+        try {
+            await fetch("/?offline-check", { cache: "no-store" });
+            return false;
+        } catch {
+            return true;
+        }
+    });
+    assert.equal(failed, true);
+});
+
+it("throttleNetwork: the next session starts online", async ({ browser }) => {
+    await browser.url("/");
+    const status = await browser.execute(async () => {
+        const response = await fetch("/?online-check", { cache: "no-store" });
+        return response.status;
+    });
+    assert.equal(status, 200);
+});
+```
+
+## See also {/* #see-also */}
+
+-   [throttleCPU](./throttleCPU.mdx)
+-   [emulate](./emulate.mdx)
+-   [getPuppeteer](./getPuppeteer.mdx)

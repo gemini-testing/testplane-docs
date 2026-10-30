@@ -2,62 +2,74 @@
 
 ## Overview {/* #overview */}
 
-Use the `url` command to navigate to the specified URL in the browser.
+Opens a URL. In Testplane, omitting the argument or passing an empty string returns the current URL without navigation. Navigating to the same URL again reloads the page.
 
-If [baseUrl][base-url] is specified in the configuration, it will be added to the `url` parameter using the Node.js method [url.resolve()][url-resolve].
-
-Calling `browser.url()` with the same URL as before will reload the page.
+With [baseUrl](../../reference/config/browsers.mdx#base_url), the address is resolved using `url.resolve(baseUrl, url)`. For `baseUrl` equal to `http://example.com/site/`, `relative` opens `/site/relative`, while `/rootRelative` opens `/rootRelative`. An absolute URL does not depend on `baseUrl`. The trailing `/` in the base address affects relative path resolution.
 
 ## Usage {/* #usage */}
 
-```javascript
-await browser.url(url);
-```
+`await browser.url(url, options)`; `await browser.url()`
 
-## Command Parameters {/* #parameters */}
+## Command parameters {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>url</td><td>String</td><td>The URL to open.</td></tr>
+| Parameter              | Description                                                                                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `url`                  | Absolute or relative address string. Omit it to read the current address.                                                                                          |
+| `options.wait`         | BiDi: `none`, `interactive`, `complete` or `networkIdle`. Defaults to the session page-load strategy; normally `complete`. See the `networkIdle` limitation below. |
+| `options.timeout`      | BiDi: timeout for `networkIdle` only, default `5000` ms. Does not replace Testplane or page-load timeouts.                                                         |
+| `options.headers`      | BiDi: headers for the navigation request, not persistent headers for every page resource.                                                                          |
+| `options.auth`         | BiDi: `{ user, pass }` for HTTP Basic Auth. Replaces `Authorization` from `headers`. Use HTTPS and keep secrets out of test files.                                 |
+| `options.onBeforeLoad` | BiDi: function run before the new document scripts. It is serialized and cannot access Node.js closures.                                                           |
 
-</tbody>
-</table>
+## Limitations {/* #limitations */}
 
-## Usage Examples {/* #examples */}
+Options apply only to HTTP(S) navigation in BiDi. The Testplane wrapper ignores the second argument in Classic. After successful navigation, the temporary init script is removed; its changes in the loaded document remain until the next navigation.
 
-**url.js**
+In the verified Testplane 9.3.2 / WDIO 9.6.2 / Chrome 150 combination, `networkIdle` fails with `Couldn't find request for navigation with id ...`: the implementation looks up a navigation request using a context ID. Use `complete`, then explicitly wait for the required application state. `complete` alone does not mean that background application requests have finished.
 
-```javascript
-// navigate to URL
-await browser.url("https://webdriver.io");
+## Result {/* #result */}
 
-// get the URL
-console.log(await browser.getUrl()); // outputs: "https://webdriver.io"
-```
+Without an address, returns the current URL string. Navigation returns `undefined` in Classic; in BiDi it may return navigation request data or `undefined`. To read the address, use `getUrl()` or `url()` without an argument.
 
-**baseUrlResolutions.js**
+## Example {/* #examples */}
+
+The example uses Chrome/BiDi and a test HTTP server in `baseUrl`. At `/navigation`, a page script records `window.initialSeed = window.navigationSeed ?? null`, and the server embeds the received `x-example` header in `window.receivedHeader`. The root path serves a regular HTML page.
 
 ```javascript
-// Let baseUrl = http://example.com/site/ important to add a slash in the end
+const assert = require("node:assert/strict");
 
-// Specifying a full URL results in https://webdriver.io
-await browser.url("https://webdriver.io");
-
-// Specifying a URL without a leading slash
-// results in the URL relative to the baseUrl: http://example.com/site/relative
-await browser.url("relative");
-
-// Specifying a URL with a leading slash
-// results in the URL relative to the root of baseUrl: http://example.com/rootRelative
-await browser.url("/rootRelative");
+it("url: navigate with BiDi options and read the current URL", async ({ browser }) => {
+    await browser.url("/");
+    const target = new URL("/navigation", await browser.getUrl()).href;
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    await browser.url(target, {
+        wait: "complete",
+        headers: { "x-example": "navigation" },
+        onBeforeLoad: () => {
+            window.navigationSeed = 42;
+        },
+    });
+    assert.equal(await browser.url(), target);
+    assert.deepEqual(await browser.execute(() => [window.initialSeed, window.receivedHeader]), [
+        42,
+        "navigation",
+    ]);
+    await browser.execute(() => {
+        window.unsavedValue = "temporary";
+    });
+    await browser.url(target);
+    assert.equal(await browser.execute(() => typeof window.unsavedValue), "undefined");
+    assert.equal(await browser.execute(() => window.initialSeed), null);
+});
 ```
 
-## References
+## Related commands {/* #related */}
 
-We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/url), from which we drew some information while writing our version.
+-   [addInitScript](./addInitScript.mdx)
+-   [waitUntil](./waitUntil.mdx)
 
-[base-url]: ../../../reference/config/browsers#base_url
-[url-resolve]: https://nodejs.org/api/url.html#urlresolvefrom-to
+## References {/* #references */}
+
+This page draws on the [original WebdriverIO article](https://webdriver.io/docs/api/browser/url).

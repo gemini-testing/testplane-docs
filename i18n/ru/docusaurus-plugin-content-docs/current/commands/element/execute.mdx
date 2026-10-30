@@ -1,0 +1,52 @@
+# execute
+
+## Обзор {/* #overview */}
+
+Выполняет JavaScript в браузере и передает выбранный DOM-элемент первым аргументом. Используйте метод для чтения или изменения свойств DOM, для которых нет отдельной команды.
+
+## Использование {/* #usage */}
+
+`element.execute(script, ...args)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**              | **По умолчанию** | **Описание**                                        |
+| ------------ | -------------------- | ---------------- | --------------------------------------------------- |
+| `script`     | `Function \| string` | Обязательный     | Функция или тело функции для выполнения в браузере. |
+| `args`       | `unknown[]`          | []               | Дополнительные аргументы после DOM-элемента.        |
+
+## Результат {/* #result */}
+
+Промис с сериализованным результатом функции. В режиме BiDi выполнение также ожидает промис, возвращенный функцией.
+
+## Ограничения {/* #limitations */}
+
+Перед выполнением команда вызывает `waitForExist`. Код браузера не имеет доступа к переменным и импортам Node.js через замыкание; передавайте данные аргументами. Ожидание существования не гарантирует видимость или кликабельность. Асинхронный пример ниже использует WebDriver BiDi.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("element.execute: pass the DOM element to a browser function", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<div id="counter" data-count="4"></div>';
+    });
+    const result = await browser.$("#counter").execute(async (element, increment) => {
+        const count = Number(element.dataset.count) + increment;
+        element.dataset.count = String(count);
+        return { count, id: element.id };
+    }, 3);
+    assert.deepEqual(result, { count: 7, id: "counter" });
+    assert.equal(await browser.$("#counter").getAttribute("data-count"), "7");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [browser.execute](../browser/execute.mdx)
+-   [executeAsync](./executeAsync.mdx)
+-   [waitForExist](./waitForExist.mdx)

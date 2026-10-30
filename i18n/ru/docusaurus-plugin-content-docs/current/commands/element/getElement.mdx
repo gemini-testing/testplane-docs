@@ -1,0 +1,45 @@
+# getElement
+
+## Обзор {/* #overview */}
+
+Получает объект элемента из цепочки команд для чтения свойств `selector`, `elementId` и других данных.
+
+## Использование {/* #usage */}
+
+`element.getElement()`
+
+## Параметры {/* #parameters */}
+
+У команды нет параметров.
+
+## Результат {/* #result */}
+
+`Promise<WebdriverIO.Element>`: текущий объект элемента с методами и метаданными.
+
+## Ограничения {/* #limitations */}
+
+Это не новый протокольный поиск, не снимок DOM и не ожидание видимости. Метод возвращает текущий объект элемента. Не считайте, что его `elementId` остается действительным после навигации или замены DOM.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("getElement: inspect a resolved element object", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<button id="save">Save</button>';
+    });
+    const element = await browser.$("#save").getElement();
+    assert.equal(element.selector, "#save");
+    assert.equal(typeof element.elementId, "string");
+    assert.equal(await element.getText(), "Save");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [$](../browser/$.mdx)
+-   [isExisting](./isExisting.mdx)

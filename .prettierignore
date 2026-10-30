@@ -7,3 +7,9 @@ package-lock.json
 storybook-static
 build
 tmp
+
+# Generated example-validation output
+vibe/verified-examples/artifacts/
+vibe/verified-examples/validation-environment.json
+vibe/verified-examples/testplane-debug/
+vibe/verified-examples/.testplane/

@@ -1,0 +1,19 @@
+{
+    "checked_files": [
+        "docs/commands/browser/addInitScript.mdx",
+        "docs/commands/browser/setViewport.mdx",
+        "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/addInitScript.mdx",
+        "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/setViewport.mdx"
+    ],
+    "prose_contract": "passed",
+    "code_fences_links_anchors": "unchanged",
+    "examples_configs_lock": "unchanged",
+    "other_mdx_in_snapshot": "unchanged",
+    "snapshot_files": 1037,
+    "source_version": "@testplane/webdriverio 9.6.2",
+    "source_sha256": "1923e38ec895d9ce3842a5d125adcde6f13273342fa54b3c960e3ffe6e017e84",
+    "source_assertions": [
+        "maxWindowSize = Number.MAX_SAFE_INTEGER",
+        "addInitScript: getWindowHandle and contexts: [context]"
+    ]
+}

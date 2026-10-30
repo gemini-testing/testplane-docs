@@ -1,0 +1,33 @@
+[16:18:01 +0300] ✓ mock.abort: block matching BiDi requests [chrome:443192c751a04737d6f6acbb8e6ac04a, pid:78894] - 142ms
+[16:18:02 +0300] ✓ mock.abortOnce: block one BiDi request [chrome:92b1633eb90df116678d8830218d9195, pid:78894] - 101ms
+[16:18:03 +0300] ✓ mock.clear: clear history but retain response rules [chrome:bcdf09618e368c656a49d4a663b348aa, pid:78894] - 140ms
+[16:18:04 +0300] ✓ browser.executeAsync: return a result through the injected callback [chrome:279d22df203232c58ee7bf10584753e6, pid:78894] - 99ms
+[16:18:05 +0300] ✓ getState: read a saved file without restoring the session [chrome:59231ec4b5e84ea1dbedcb58226b6df3, pid:78894] - 93ms
+[16:18:06 +0300] ✓ browser.mock: observe and replace a BiDi response [chrome:36fa0a87147ae66df474b13129e05664, pid:78894] - 86ms
+[16:18:07 +0300] ✓ commands: use the browser fixture [chrome:b55fcbdb167d1ca44cc847d084408722, pid:78894] - 85ms
+[16:18:08 +0300] ✓ commands: use this.browser with a regular function [chrome:30c780b300f93b1be733e8aab39c0f62, pid:78894] - 66ms
+[16:18:09 +0300] ✓ mock.respond: replace response data and metadata in BiDi [chrome:7e5126796905a3c9388109cb4183266a, pid:78894] - 129ms
+[16:18:10 +0300] ✓ mock.respondOnce: consume BiDi responses in order [chrome:647c2c13bd33c83a5213b1e05dd3127a, pid:78894] - 130ms
+[16:18:11 +0300] ✓ mock.restore: remove interception before the next request [chrome:3f90a1e28c3675601fac74f1892b4330, pid:78894] - 100ms
+[16:18:12 +0300] ✓ slow network: fetch data under custom throughput limits [chrome:853c2c19b5ac5df095921f322abfdfb7, pid:78894] - 799ms
+[16:18:14 +0300] ✓ throttle: use the deprecated alias in an isolated session [chrome:eb6669518d4ae4f26c0c80681432adaa, pid:78894] - 140ms
+[16:18:15 +0300] ✘ url: navigate with BiDi options and read the current URL [chrome:e77b6002ce5e92b2d66a92b2f9b85707, pid:78894] - 688ms
+[16:18:15 +0300] Total: 14 Passed: 13 Failed: 1 Skipped: 0 Retries: 0
+
+1) url: navigate with BiDi options and read the current URL
+   in file examples/related/url.testplane.js
+
+   chrome
+
+   . | // examples/related/url.testplane.js
+   . |
+   5 |     const target = new URL("/navigation", await browser.getUrl()).href;
+   6 |     await browser.sessionSubscribe({ events: ["network.beforeRequestSent", "network.responseStarted"] });
+>  7 |     await browser.url(target, {
+     |                  ^ Error: Couldn't find request for navigation with id 067A4B807D7E7D826D760774AD22CE50
+   8 |         wait: "networkIdle",
+   9 |         timeout: 5000,
+  10 |         headers: { "x-example": "navigation" },
+
+    ✘ Error: Couldn't find request for navigation with id 067A4B807D7E7D826D760774AD22CE50
+        at Object.<anonymous> (/private/tmp/testplane-docs-examples-20261009/examples/related/url.testplane.js:12:19)

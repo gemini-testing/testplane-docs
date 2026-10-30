@@ -6,53 +6,55 @@ import Version from "../../_partials/specs/version.mdx";
 
 ## Overview {/* #overview */}
 
-A browser command that restores the session state from a file which previously saved using the [saveState][saveState] command.
+Reads a JSON state file created by [saveState](./saveState.mdx) and returns its contents. It **does not restore browser state**: cookies, storage and the current page stay unchanged. To restore the session, use [restoreState](./restoreState.mdx).
 
 ## Usage {/* #usage */}
 
-```typescript
-import type { SaveStateData } from "testplane";
+`await browser.getState(options)`
 
-const stateDump: SaveStateData = await browser.getState({
-    path: "./stateDump.json",
+## Command parameters {/* #parameters */}
+
+| Parameter      | Type     | Description                                                                                 |
+| -------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `options.path` | `string` | Path to the JSON file. Relative paths resolve from the Testplane process working directory. |
+
+When `options` is omitted, the command uses `browser.config.stateOpts`. An explicit object is not merged with configuration: `getState({})` does not inherit the configured path.
+
+## Result and errors {/* #result */}
+
+Returns a Promise with the parsed data. A `saveState` file contains `SaveStateData`: an optional `cookies` array and `framesData`, with `localStorage` and `sessionStorage` grouped by origin. The command does not validate the JSON schema.
+
+If no path is set, it logs an error and returns `null`. File read and JSON parsing errors reject the Promise.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a test HTML page. The example saves localStorage to a temporary file, changes the browser value and verifies that reading the file does not restore the session.
+
+```javascript
+const assert = require("node:assert/strict");
+const fs = require("node:fs/promises");
+const os = require("node:os");
+const path = require("node:path");
+
+it("getState: read a saved file without restoring the session", async ({ browser }) => {
+    const directory = await fs.mkdtemp(path.join(os.tmpdir(), "testplane-state-"));
+    const statePath = path.join(directory, "state.json");
+    try {
+        await browser.url("/");
+        const origin = new URL(await browser.getUrl()).origin;
+        await browser.execute(() => localStorage.setItem("example", "saved"));
+        await browser.saveState({ path: statePath, cookies: false, localStorage: true });
+        await browser.execute(() => localStorage.setItem("example", "current"));
+        const state = await browser.getState({ path: statePath });
+        assert.equal(state.framesData[origin].localStorage.example, "saved");
+        assert.equal(await browser.execute(() => localStorage.getItem("example")), "current");
+    } finally {
+        await fs.rm(directory, { recursive: true, force: true });
+    }
 });
 ```
 
-## Command Parameters {/* #parameters */}
+## Related commands {/* #related */}
 
-<table>
-    <thead>
-        <tr>
-            <td>**Name**</td>
-            <td>**Type**</td>
-            <td>**Default**</td>
-            <td>**Description**</td>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>path</td>
-            <td>`string`</td>
-            <td>`-`</td>
-            <td>Path to file with state.</td>
-        </tr>
-    </tbody>
-</table>
-
-## Usage Examples {/* #examples */}
-
-Save state in file.
-
-```typescript
-it("test", async ({ browser }) => {
-    const stateData = await browser.getState({
-        path: "./stateDump.json",
-    });
-});
-```
-
-## Related Commands {/* #related */}
-
--   [saveState][saveState]
-
-[saveState]: ../saveState
+-   [saveState](./saveState.mdx)
+-   [restoreState](./restoreState.mdx)

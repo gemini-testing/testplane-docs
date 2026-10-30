@@ -1,0 +1,13 @@
+
+> testplane-docs@0.0.0 test
+> npm run lint && npm run typecheck
+
+
+> testplane-docs@0.0.0 lint
+> eslint --cache src plugins && prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> testplane-docs@0.0.0 typecheck
+> tsc
