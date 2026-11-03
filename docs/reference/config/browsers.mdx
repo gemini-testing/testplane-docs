@@ -55,7 +55,13 @@ In this example, the value `10` will be used for the `sessionsPerBrowser` option
                 <br />
                 `:4444/wd/hub"`
             </td>
-            <td>Selenium grid URL.</td>
+            <td>Selenium grid URL, `"local"`, or `"docker"`.</td>
+        </tr>
+        <tr>
+            <td>[`docker`](#docker)</td>
+            <td>`object | null`</td>
+            <td>`null`</td>
+            <td>Settings for browsers in local Docker.</td>
         </tr>
         <tr>
             <td>[`baseUrl`](#base_url)</td>
@@ -139,10 +145,48 @@ Grid URL (the address where ChromeDriver/Selenium Standalone/Sauce Labs/etc. lis
 
 Default: `http://localhost:4444/wd/hub`.
 
-<Admonition type="info">
-    You can also use value `"local"` in order to use local browsers, managed by Testplane. Read more
-    in guide [How to launch Testplane in the local browser](/docs/basic-guides/browsers-overview).
-</Admonition>
+Special values:
+
+-   `"local"` — Testplane downloads and starts a browser and driver locally.
+-   `"docker"` — Testplane starts browsers in local Docker using the [`docker`](#docker) settings. Both `docker.image` and `docker.selenoidImage` are required.
+
+Set `gridUrl` at the top level for all browsers or override it per browser to combine Docker, local, and remote browsers. The `--local` CLI flag overrides `gridUrl`, including `"docker"`.
+
+See the [browser guide](../../basic-guides/browsers-overview.mdx#local-docker) for an example.
+
+### docker {/* #docker */}
+
+Settings for browsers launched with `gridUrl: "docker"`. Type: `object | null`. Default: `null`. Setting `docker` alone does not enable Docker mode.
+
+Testplane starts a shared Selenoid container for the run, creates browser containers as needed, and removes the containers and network when the run ends. Downloaded and prepared images remain available for subsequent runs.
+
+| Option             | Type                     | Default                                            | Description                                                                                                                                     |
+| ------------------ | ------------------------ | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `image`            | `string`                 | Required                                           | Browser image compatible with Selenoid. The image tag determines the browser version.                                                           |
+| `selenoidImage`    | `string`                 | Required                                           | Selenoid controller image compatible with your Docker Engine API.                                                                               |
+| `platform`         | `string`                 | `"linux/amd64"`                                    | Browser image platform, for example `"linux/arm64"`.                                                                                            |
+| `selenoidPlatform` | `string`                 | `"linux/amd64"`                                    | Selenoid image platform, independent of the browser image platform.                                                                             |
+| `socketPath`       | `string`                 | `"/var/run/docker.sock"`                           | Absolute socket path on the Docker daemon's Linux host, mounted into Selenoid.                                                                  |
+| `port`             | `string`                 | `"4444"`                                           | WebDriver port inside the browser container.                                                                                                    |
+| `path`             | `string`                 | `"/"`                                              | WebDriver URL path inside the browser container. Some images require `"/wd/hub"`.                                                               |
+| `shmSize`          | `number`                 | `2147483648` (2 GiB)                               | Size of `/dev/shm`, in bytes.                                                                                                                   |
+| `tmpfs`            | `Record<string, string>` | Not set                                            | Temporary filesystem mounts, for example `{ "/tmp": "size=512m" }`.                                                                             |
+| `volumes`          | `string[]`               | Not set                                            | Volume mounts in Selenoid format. Host paths refer to the daemon's host.                                                                        |
+| `hosts`            | `string[]`               | `["host.docker.internal:host-gateway"]` for Docker | Additional host entries. An explicit array replaces the default. For Podman, the default is an empty array; the engine provides the host alias. |
+
+Other fields are passed through to the browser entry in Selenoid's [`browsers.json`](https://aerokube.com/selenoid/latest/#_browsers_configuration_file).
+
+You can set `docker` at the top level or for each browser. Inheritance works as follows:
+
+-   If the browser omits `docker`, it inherits the entire top-level object.
+-   If the browser supplies its own object, only missing `selenoidImage`, `platform`, `selenoidPlatform`, and `socketPath` are inherited. Other fields, such as `image`, `hosts`, and `shmSize`, must be specified in that object if needed.
+-   `docker: null` disables inheritance. It does not change `gridUrl`: a selected Docker browser still requires `image` and `selenoidImage`.
+
+All Docker browsers selected for one run must use the same `selenoidImage`, `selenoidPlatform`, and `socketPath`, because they share a controller. Browser images and their platforms can differ.
+
+Testplane uses the current Docker CLI connection. `socketPath` specifies the socket visible to the daemon, not a different CLI endpoint. With Docker Desktop or Colima, this is a path inside the Linux VM, not the macOS client socket.
+
+See [Running browsers in local Docker](../../basic-guides/browsers-overview.mdx#local-docker) for setup and examples.
 
 ### baseUrl {/* #base_url */}
 

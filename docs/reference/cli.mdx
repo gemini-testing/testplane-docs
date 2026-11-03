@@ -274,6 +274,27 @@ For example, [html-reporter][html-reporter] adds `gui` command.
 testplane --help
 ```
 
+## `prepare-docker` command {/* #prepare-docker */}
+
+Pull missing Docker images from the config and prepare browser images for CDP where needed, without starting Selenoid or browser sessions. Images already available locally are reused. The same preparation runs automatically when starting Docker browsers.
+
+```bash
+npx testplane prepare-docker
+npx testplane prepare-docker --config ./testplane.config.ts --browser chrome
+npx testplane prepare-docker --set desktop
+```
+
+| Option                    | Description                                               |
+| ------------------------- | --------------------------------------------------------- |
+| `-c, --config <path>`     | Path to the Testplane config.                             |
+| `-b, --browser <browser>` | Prepare only the specified browser. Can be repeated.      |
+| `-s, --set <set>`         | Prepare browsers from the specified set. Can be repeated. |
+| `-r, --require <module>`  | Load a module before reading the config. Can be repeated. |
+
+The command respects configured sets and `TESTPLANE_SETS`. Only selected browsers with `gridUrl: "docker"` are prepared; if none are selected, it prints a message and exits successfully. Each selected Docker browser needs both `docker.image` and `docker.selenoidImage` after inheritance.
+
+See [Running browsers in local Docker](../basic-guides/browsers-overview.mdx#local-docker) for configuration and prerequisites.
+
 ## `list-tests` command
 
 Command to get list of tests in one of available formats (`list` or `tree`).
