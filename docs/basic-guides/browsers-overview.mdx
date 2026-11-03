@@ -232,9 +232,75 @@ Ready-made images may not include the latest browser versions. To build up-to-da
 
 You can track the availability of ready-made fresh images in [this issue](https://github.com/gemini-testing/testplane/issues/1212).
 
+### Running Browsers in Local Docker {/* #local-docker */}
+
+Set `gridUrl: "docker"` to let Testplane manage Selenoid and browser containers. You do not need to start a grid or create `browsers.json` yourself.
+
+1. Install Docker and start its Linux container engine. Check that `docker info` succeeds from the terminal where you run Testplane.
+2. Choose browser images compatible with Selenoid and a Selenoid controller image compatible with your Docker Engine API. For a private registry, authenticate with `docker login` first.
+3. Set the `SELENOID_IMAGE` environment variable to your controller image reference. The example below reads it into the required `docker.selenoidImage` option; you can also specify the image directly in the config. Testplane does not provide a default Selenoid image. Older Selenoid builds may fail with newer Docker engines with a “client version is too old” error; use a compatible controller build.
+4. Configure the browsers:
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    gridUrl: "docker",
+    baseUrl: "http://host.docker.internal:3000",
+    sessionsPerBrowser: 1,
+    docker: {
+        selenoidImage: process.env.SELENOID_IMAGE,
+    },
+    browsers: {
+        chrome: {
+            desiredCapabilities: { browserName: "chrome" },
+            docker: { image: "selenoid/chrome:125.0" },
+        },
+        firefox: {
+            desiredCapabilities: { browserName: "firefox" },
+            docker: { image: "selenoid/firefox:125.0" },
+        },
+    },
+} satisfies ConfigInput;
+```
+
+Each browser inherits `selenoidImage` from the top-level `docker` object and specifies its own `image`. The image tag selects the actual browser version; setting `desiredCapabilities.browserVersion` does not select or download a different Docker image. See the [`docker` reference](../reference/config/browsers.mdx#docker) for all options and inheritance rules.
+
+Start your application on port 3000, then run:
+
+```bash
+npx testplane --browser chrome
+```
+
+Testplane pulls missing images, starts Selenoid and the selected browser containers, and removes the containers and network at the end of the run. Images are kept locally. To prepare images ahead of time, for example before a CI test run, use:
+
+```bash
+npx testplane prepare-docker
+```
+
+This [command](../reference/cli.mdx#prepare-docker) prepares images without starting Selenoid or browser sessions. On Apple Silicon, preparation may also build a cached image for Chrome or Yandex Browser's CDP adapter. The same preparation happens automatically during a regular run.
+
+#### Accessing an Application on the Host
+
+Inside a browser container, `localhost` refers to that container. Use `host.docker.internal` in `baseUrl` to reach an application running on the host. The application must listen on an interface reachable from containers, for example `0.0.0.0`. Absolute URLs and redirects in the application must also be reachable from the container.
+
+Testplane adds `host.docker.internal:host-gateway` for Docker by default. If you specify `docker.hosts`, include that entry when you still need host access: your array replaces the default.
+
+#### Platforms and Parallelism
+
+Both `docker.platform` and `docker.selenoidPlatform` default to `"linux/amd64"`. On an ARM machine, configure emulation in your Docker engine or select compatible `"linux/arm64"` images and set the corresponding platform options. A locally cached image with a different architecture causes an error; pull or build the image for the configured platform.
+
+The allowed parallelism is `floor(CPUs × 5 / 4)`, using the CPU count reported by the Docker daemon. Testplane checks the sum of `sessionsPerBrowser` for selected Docker browsers, capped by `system.parallelLimit`. If it exceeds the limit, the run fails: lower either setting or allocate more CPUs to Docker.
+
+You can also set `gridUrl: "docker"` on individual browsers and use local browsers or a remote grid for the others. The `--local` flag switches the run to local browsers even when the config specifies Docker.
+
+### Using an Existing Docker Grid
+
+If you manage containers yourself, set `gridUrl` to the grid's HTTP URL. The following examples show manual setup.
+
 ### Running a Single Browser in Docker
 
-The easiest way to run a browser in Docker is to use a ready-made image directly:
+To start a browser container manually, use a ready-made image directly:
 
 ```bash
 docker run -it --rm --privileged -p 4444:4444 -p 5900:5900 -e ENABLE_VNC='true' selenoid/chrome:125.0
