@@ -1,4 +1,6 @@
 import Admonition from "@theme/Admonition";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
 
 # Браузеры
 
@@ -211,50 +213,115 @@ export default {
 
 ## Браузеры в Docker-контейнерах
 
-Docker-контейнеры дают изолированное и воспроизводимое окружение, удобное для CI/CD. Часто используют Selenoid — легковесную реализацию Selenium Grid. Она запускает браузеры внутри контейнеров.
+Docker-контейнеры дают изолированное и воспроизводимое окружение для локальной разработки и CI/CD. При `gridUrl: "docker"` Testplane скачивает образы, управляет Selenoid и контейнерами браузеров, а после прогона удаляет контейнеры и сеть. Образы сохраняются локально для следующих запусков.
 
-**Selenoid**
+### Установка Docker
 
--   Управляет браузерами в Docker-контейнерах
--   Автоматически масштабирует контейнеры
--   Умеет записывать видео и дает VNC-доступ
--   Настраивается через простой JSON-файл с браузерами
+<Tabs groupId="docker-os">
+<TabItem value="linux" label="Linux" default>
 
-### Образы браузеров
+1. Установите Docker Engine по [инструкции для вашего дистрибутива](https://docs.docker.com/engine/install/). Для Ubuntu используйте [инструкцию по установке на Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
+2. Выполните [шаги после установки](https://docs.docker.com/engine/install/linux-postinstall/), чтобы Docker работал без `sudo`. При стандартной установке добавьте своего пользователя в группу `docker`:
 
-Готовые образы доступны на Docker Hub:
+    ```bash
+    sudo usermod -aG docker "$USER"
+    ```
 
--   [`selenoid/chrome`](https://hub.docker.com/r/selenoid/chrome/tags) — образы Chrome
--   [`selenoid/firefox`](https://hub.docker.com/r/selenoid/firefox/tags) — образы Firefox
--   [`selenoid/opera`](https://hub.docker.com/r/selenoid/opera/tags) — образы Opera
+    Выйдите из пользовательской сессии и войдите снова, чтобы применилось изменение группы.
 
-Готовые образы могут не включать самые свежие версии браузеров. Чтобы собрать актуальные образы, воспользуйтесь инструкциями из репозитория [`gemini-testing/images`](https://github.com/gemini-testing/images/).
+3. Проверьте доступ из терминала, в котором будете запускать Testplane:
 
-Следить за появлением готовых свежих образов можно в [этом issue](https://github.com/gemini-testing/testplane/issues/1212).
+    ```bash
+    docker run hello-world
+    ```
+
+</TabItem>
+<TabItem value="macos" label="macOS">
+
+Рекомендуем [Colima](https://github.com/abiosoft/colima): она запускает Docker в Linux VM. Установите Colima и Docker CLI через [Homebrew](https://brew.sh/):
+
+```bash
+brew install colima docker
+```
+
+На Apple Silicon с macOS 13 и новее используйте нативную VM `aarch64` с `vmType: vz` и `rosetta: true`. Благодаря Rosetta образы браузеров `amd64` тоже работают с хорошей производительностью, если ARM-образ недоступен.
+
+Создайте отдельный профиль Colima для тестов и откройте его конфигурацию:
+
+```bash
+colima start testplane --edit
+```
+
+Примените настройки ниже, сохраните файл и закройте редактор, чтобы запустить VM. На Intel Mac укажите `arch: x86_64` и `rosetta: false`.
+
+<details>
+<summary>Рекомендуемая конфигурация Colima для Apple Silicon</summary>
+
+```yaml
+cpu: 4
+memory: 8
+disk: 60
+arch: aarch64
+runtime: docker
+vmType: vz
+rosetta: true
+mountType: virtiofs
+autoActivate: true
+network:
+    address: true
+    dns: []
+docker:
+    ipv6: true
+    fixed-cidr-v6: fd7b:91d5:4c2a::/64
+    ip6tables: true
+    default-address-pools:
+        - base: 172.30.0.0/16
+          size: 24
+        - base: fd7b:91d5:4c2a:100::/56
+          size: 64
+    dns:
+        - 192.168.64.1
+```
+
+</details>
+
+Настройки Docker включают IPv6 для стандартного моста и задают пулы IPv4/IPv6-адресов для сетей, которые создает Testplane. `docker.dns` задает DNS-сервер, доступный из контейнеров; `192.168.64.1` — пример для сети VZ. Проверьте DNS в своей VM командой `colima ssh testplane -- cat /etc/resolv.conf` и при необходимости замените адрес с учетом вашей сети или VPN. Оставьте `network.dns: []`, чтобы Colima использовала свой DNS-резолвер.
+
+Если вы изменили конфигурацию работающего профиля, перезапустите его командами `colima stop testplane` и `colima start testplane`. Выберите его Docker-контекст и проверьте доступ:
+
+```bash
+docker context use colima-testplane
+docker run hello-world
+```
+
+</TabItem>
+</Tabs>
+
+### Выбор образов браузеров
+
+Используйте образы, собранные для Selenoid: при запуске контейнера они поднимают WebDriver-сервер браузера. Обычного Linux-образа или образа только с бинарным файлом браузера недостаточно. Порт и путь WebDriver должны соответствовать образу; значения по умолчанию — `4444` и `/`.
+
+Готовые образы доступны в следующих источниках:
+
+-   [Пакеты Gemini Testing](https://github.com/orgs/gemini-testing/packages), в том числе [`browsers/chromium`](https://github.com/gemini-testing/images/pkgs/container/browsers%2Fchromium).
+-   Образы Aerokube на Docker Hub: [`selenoid/chrome`](https://hub.docker.com/r/selenoid/chrome/tags) и [`selenoid/firefox`](https://hub.docker.com/r/selenoid/firefox/tags). Их настройки описаны в [документации образов](https://aerokube.com/images/latest/).
+
+Выберите тег версии на странице пакета. Для самостоятельной сборки используйте [`gemini-testing/images`](https://github.com/gemini-testing/images/). Для приватного реестра предварительно выполните `docker login`. Образ контроллера Selenoid уже задан в Testplane по умолчанию: выбрать нужно только образы браузеров.
 
 ### Запуск браузеров в локальном Docker {/* #local-docker */}
 
-Укажите `gridUrl: "docker"`, чтобы Testplane управлял Selenoid и контейнерами браузеров. Самостоятельно запускать грид и создавать `browsers.json` не нужно.
-
-1. Установите Docker и запустите движок Linux-контейнеров. Проверьте, что `docker info` работает из терминала, в котором вы запускаете Testplane.
-2. Выберите образы браузеров, совместимые с Selenoid, и образ контроллера Selenoid, совместимый с API вашего Docker Engine. Для приватного реестра предварительно выполните `docker login`.
-3. Задайте переменную окружения `SELENOID_IMAGE` со ссылкой на образ контроллера. Пример ниже читает ее в обязательную опцию `docker.selenoidImage`; образ можно указать и прямо в конфиге. Образа Selenoid по умолчанию нет. Старые сборки Selenoid могут не работать с новыми версиями Docker и выдавать ошибку «client version is too old» — используйте совместимую сборку контроллера.
-4. Настройте браузеры:
+Укажите `gridUrl: "docker"` и образ для каждого браузера:
 
 ```ts title="testplane.config.ts"
 import type { ConfigInput } from "testplane";
 
 export default {
     gridUrl: "docker",
-    baseUrl: "http://host.docker.internal:3000",
     sessionsPerBrowser: 1,
-    docker: {
-        selenoidImage: process.env.SELENOID_IMAGE,
-    },
     browsers: {
         chrome: {
             desiredCapabilities: { browserName: "chrome" },
-            docker: { image: "selenoid/chrome:125.0" },
+            docker: { image: "ghcr.io/gemini-testing/browsers/chromium:126.0" },
         },
         firefox: {
             desiredCapabilities: { browserName: "firefox" },
@@ -264,236 +331,66 @@ export default {
 } satisfies ConfigInput;
 ```
 
-Каждый браузер наследует `selenoidImage` из корневого объекта `docker` и задает собственный `image`. Фактическую версию браузера выбирает тег образа: `desiredCapabilities.browserVersion` не выбирает и не скачивает другой Docker-образ. Все опции и правила наследования описаны в [справочнике `docker`](../reference/config/browsers.mdx#docker).
+Тег образа определяет версию браузера. `desiredCapabilities.browserVersion` не выбирает и не скачивает другой образ. Дополнительные настройки описаны в [справочнике `docker`](../reference/config/browsers.mdx#docker).
 
-Запустите приложение на порту 3000, затем выполните:
+Запустите тесты:
 
 ```bash
 npx testplane --browser chrome
 ```
 
-Testplane скачает недостающие образы, запустит Selenoid и контейнеры выбранных браузеров, а после прогона удалит контейнеры и сеть. Образы сохранятся локально. Чтобы подготовить их заранее, например перед прогоном в CI, выполните:
+Testplane автоматически подготовит образы и запустит нужные контейнеры. Самостоятельно запускать Selenoid или создавать `browsers.json` не нужно.
+
+#### Доступ к приложению на хосте
+
+Если приложение работает на хосте, запустите его, например на порту 3000, и задайте соответствующий `baseUrl`:
+
+```ts
+export default {
+    baseUrl: "http://host.docker.internal:3000",
+    // ... остальные настройки
+};
+```
+
+Внутри контейнера браузера `localhost` указывает на сам контейнер. Для доступа к хосту используется `host.docker.internal`. Приложение должно слушать интерфейс, доступный из контейнеров, например `0.0.0.0`. Абсолютные URL и редиректы тоже должны быть доступны из контейнера.
+
+Testplane по умолчанию добавляет `host.docker.internal:host-gateway` для Docker. Если вы задаете `docker.hosts` и вам нужен доступ к хосту, включите эту запись в массив: он заменяет значение по умолчанию.
+
+#### Подготовка образов для CI
+
+Чтобы скачать и подготовить образы до этапа запуска тестов, выполните:
 
 ```bash
 npx testplane prepare-docker
 ```
 
-Эта [команда](../reference/cli.mdx#prepare-docker) подготавливает образы без запуска Selenoid и браузерных сессий. На Apple Silicon подготовка также может собрать кешируемый образ для CDP-адаптера Chrome или Яндекс Браузера. Та же подготовка автоматически выполняется при обычном запуске.
-
-#### Доступ к приложению на хосте
-
-Внутри контейнера браузера `localhost` указывает на сам контейнер. Чтобы открыть приложение, запущенное на хосте, используйте `host.docker.internal` в `baseUrl`. Приложение должно слушать интерфейс, доступный из контейнеров, например `0.0.0.0`. Абсолютные URL и редиректы приложения тоже должны быть доступны из контейнера.
-
-Для Docker Testplane по умолчанию добавляет `host.docker.internal:host-gateway`. Если вы задаете `docker.hosts` и вам нужен доступ к хосту, включите эту запись в массив: он заменяет значение по умолчанию.
+Эта [команда](../reference/cli.mdx#prepare-docker) подготавливает образы без запуска Selenoid и браузерных сессий. На Apple Silicon она также может собрать кешируемый образ с совместимым CDP-адаптером для `amd64`-образа Chrome или Яндекс Браузера. Выполняйте подготовку и тесты на одном Docker-демоне, чтобы использовать эти образы повторно. При обычном запуске такая же подготовка выполняется автоматически, поэтому отдельный шаг необязателен.
 
 #### Платформы и параллелизм
 
-По умолчанию `docker.platform` и `docker.selenoidPlatform` равны `"linux/amd64"`. На ARM-машине настройте эмуляцию в Docker или выберите совместимые образы `"linux/arm64"` и задайте соответствующие опции платформы. Если локально сохранен образ другой архитектуры, запуск завершится ошибкой: скачайте или соберите образ для указанной платформы.
+При скачивании образа Testplane предпочитает нативную платформу Docker-демона. Если образ ее не поддерживает, Testplane использует `linux/amd64`, когда такая платформа доступна. На ARM-машинах для запуска такого образа нужна эмуляция, например Rosetta в Colima. Уже сохраненные локально образы для нативной платформы или `linux/amd64` используются повторно.
 
-Допустимый параллелизм — `floor(CPUs × 5 / 4)`, где число CPU берется у Docker-демона. Testplane проверяет сумму `sessionsPerBrowser` выбранных Docker-браузеров, ограниченную сверху `system.parallelLimit`. При превышении лимита запуск завершается ошибкой: уменьшите любую из этих настроек или выделите Docker больше CPU.
+Чтобы зафиксировать платформу, задайте `docker.platform` для браузера и при необходимости `docker.selenoidPlatform` для Selenoid. При явно заданной платформе Testplane не переключается на другую архитектуру. Если локальный образ не соответствует настройке, скачайте или соберите его для нужной платформы.
+
+Если все браузеры в конфиге используют Docker и `system.parallelLimit` не задан, Testplane автоматически ограничивает параллелизм значением `max(1, floor(CPUs × 5 / 4))`. Используется меньшее из чисел CPU, доступных Testplane и Docker-демону; если число CPU демона получить не удалось, используется локальное. Задайте [`system.parallelLimit`](../reference/config/system.mdx#parallel_limit), чтобы переопределить лимит, и `sessionsPerBrowser`, чтобы ограничить отдельные браузеры.
 
 Можно задать `gridUrl: "docker"` отдельным браузерам, а для остальных использовать локальный запуск или удаленный грид. Флаг `--local` переключает прогон на локальные браузеры, даже если в конфиге задан Docker.
 
-### Подключение к существующему Docker-гриду
-
-Если вы управляете контейнерами самостоятельно, задайте HTTP-адрес грида в `gridUrl`. Следующие примеры показывают ручную настройку.
-
-### Запуск одного браузера в Docker
-
-Чтобы запустить контейнер браузера вручную, используйте готовый образ напрямую:
-
-```bash
-docker run -it --rm --privileged -p 4444:4444 -p 5900:5900 -e ENABLE_VNC='true' selenoid/chrome:125.0
-```
-
-Эта команда:
-
--   Запускает контейнер с Chrome 125.0
--   Пробрасывает порт 4444 для WebDriver
--   Пробрасывает порт 5900 для VNC-доступа
--   Включает VNC для возможности просмотра браузера
-
-В конфигурации Testplane укажите:
-
-```ts title="testplane.config.ts"
-import type { ConfigInput } from "testplane";
-
-export default {
-    browsers: {
-        chrome: {
-            gridUrl: "http://localhost:4444",
-            desiredCapabilities: {
-                browserName: "chrome",
-                browserVersion: "125.0",
-            },
-            windowSize: "1920x1080",
-            headless: true,
-        },
-    },
-} satisfies ConfigInput;
-```
-
-Этот подход удобен для быстрого тестирования или отладки в конкретной версии браузера.
-
-### Запуск Selenoid с несколькими браузерами
-
-Для работы с несколькими браузерами используйте Selenoid: он управляет запуском контейнеров на основе конфигурационного файла.
-
-#### Создание конфигурации
-
-Создайте файл `browsers.json` с описанием нужных браузеров:
-
-<details>
-<summary>browsers.json</summary>
-
-```json
-{
-    "chrome": {
-        "versions": {
-            "125.0": {
-                "image": "selenoid/chrome:125.0",
-                "path": "/",
-                "port": "4444",
-                "shmSize": 2147483648,
-                "tmpfs": {
-                    "/tmp": "size=512m"
-                },
-                "volumes": ["/tmp/.X11-unix:/tmp/.X11-unix"]
-            }
-        }
-    },
-    "chrome-mobile": {
-        "versions": {
-            "125.0": {
-                "image": "selenoid/chrome-mobile:125.0",
-                "path": "/wd/hub",
-                "port": "4444",
-                "shmSize": 2147483648,
-                "tmpfs": {
-                    "/tmp": "size=512m"
-                },
-                "volumes": ["/tmp/.X11-unix:/tmp/.X11-unix"]
-            }
-        }
-    }
-}
-```
-
-</details>
-
-#### Запуск Selenoid
-
-Для запуска Selenoid укажите путь к конфигурации (в примере конфиг лежит в `/home/selenoid-config/browsers.json`):
-
-```bash
-docker run --rm -d \
-  --name selenoid \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /home/selenoid-config:/etc/selenoid/:ro \
-  --network=host \
-  aerokube/selenoid:latest
-```
-
-Selenoid будет автоматически запускать нужные контейнеры браузеров при получении запросов от Testplane.
-
-#### Конфигурация Testplane
-
-Базовая конфигурация идентична локальным браузерам, меняется только `gridUrl`:
-
-```ts title="testplane.config.ts"
-import type { ConfigInput } from "testplane";
-
-export default {
-    browsers: {
-        chrome: {
-            gridUrl: "http://localhost:4444/wd/hub",
-            desiredCapabilities: {
-                browserName: "chrome",
-                browserVersion: "125.0",
-            },
-            windowSize: "1920x1080",
-            headless: true,
-        },
-
-        "chrome-mobile": {
-            gridUrl: "http://localhost:4444/wd/hub",
-            desiredCapabilities: {
-                browserName: "chrome",
-                browserVersion: "125.0",
-                "goog:chromeOptions": {
-                    mobileEmulation: {
-                        deviceName: "iPhone 12 Pro",
-                    },
-                },
-            },
-            headless: true,
-        },
-    },
-} satisfies ConfigInput;
-```
-
-Подробнее о настройке Selenoid читайте в [официальной документации](https://aerokube.com/selenoid/latest/).
-
-### Специфичные опции Selenoid
-
-Selenoid поддерживает дополнительные опции через `selenoid:options`:
-
-```ts title="testplane.config.ts"
-import type { ConfigInput } from "testplane";
-
-export default {
-    browsers: {
-        chrome: {
-            gridUrl: "http://localhost:4444/wd/hub",
-            desiredCapabilities: {
-                browserName: "chrome",
-                browserVersion: "125.0",
-                "selenoid:options": {
-                    enableVNC: true,
-                    enableVideo: true,
-                    enableLog: true,
-                },
-            },
-            windowSize: "1920x1080",
-            headless: true,
-        },
-
-        "chrome-mobile": {
-            gridUrl: "http://localhost:4444/wd/hub",
-            desiredCapabilities: {
-                browserName: "chrome",
-                browserVersion: "125.0",
-                "goog:chromeOptions": {
-                    mobileEmulation: {
-                        deviceName: "iPhone 12 Pro",
-                    },
-                },
-                "selenoid:options": {
-                    enableVNC: true,
-                    enableVideo: true,
-                    enableLog: true,
-                },
-            },
-            headless: true,
-        },
-    },
-} satisfies ConfigInput;
-```
+Если вам нужно управлять образами и контейнерами самостоятельно, перейдите к [ручной настройке Docker-грида](../guides/docker-grid.mdx).
 
 ### Плюсы и минусы
 
 #### Преимущества
 
--   Браузеры ведут себя одинаково на любой машине — хоть на Mac разработчика, хоть в Linux CI
--   Стабильность скриншотов: одинаковое окружение гарантирует отсутствие различий в рендеринге между разными ОС
--   В Selenoid можно записывать видео прогона тестов и подключаться к браузеру через VNC
+-   Единое окружение браузера для локального запуска и CI
+-   Testplane управляет жизненным циклом контейнеров
+-   Версии браузеров зафиксированы тегами образов
 
 #### Ограничения
 
--   Нужно устанавливать Docker и скачивать образы браузеров (плюс Selenoid, если используете его)
+-   Нужны Docker и место на диске для образов
 -   Потребляет больше ресурсов, чем локальные браузеры
-
-Docker хорошо подходит для CI/CD и скриншотного тестирования, где важна стабильность и воспроизводимость.
+-   Архитектура CPU может влиять на рендеринг: для сравнения скриншотов используйте одинаковые образ и платформу
 
 ## Удаленные гриды
 
@@ -606,7 +503,7 @@ export default {
 
 ### Docker для стабильных скриншотов
 
-Когда важна стабильность скриншотов между разными машинами и операционными системами, а вы готовы работать с Docker-образами, используйте Docker. Одинаковое окружение гарантирует идентичные скриншоты на любой машине.
+Когда важна стабильность скриншотов между разными машинами и операционными системами, а вы готовы работать с Docker-образами, используйте Docker. Используйте одинаковые образ браузера и платформу локально и в CI, чтобы свести различия рендеринга к минимуму.
 
 ### Облачные гриды для масштабирования
 

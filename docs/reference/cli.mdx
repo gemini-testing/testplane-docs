@@ -291,7 +291,7 @@ npx testplane prepare-docker --set desktop
 | `-s, --set <set>`         | Prepare browsers from the specified set. Can be repeated. |
 | `-r, --require <module>`  | Load a module before reading the config. Can be repeated. |
 
-The command respects configured sets and `TESTPLANE_SETS`. Only selected browsers with `gridUrl: "docker"` are prepared; if none are selected, it prints a message and exits successfully. Each selected Docker browser needs both `docker.image` and `docker.selenoidImage` after inheritance.
+The command respects configured sets and `TESTPLANE_SETS`. Only selected browsers with `gridUrl: "docker"` are prepared; if none are selected, it prints a message and exits successfully. Specify `docker.image` for each selected Docker browser. The Selenoid image is provided by default; override it with `docker.selenoidImage` if needed.
 
 See [Running browsers in local Docker](../basic-guides/browsers-overview.mdx#local-docker) for configuration and prerequisites.
 

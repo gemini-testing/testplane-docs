@@ -1,0 +1,187 @@
+# Ручная настройка Docker-грида
+
+Это руководство для тех, кто хочет самостоятельно управлять контейнерами браузеров и Selenoid. Автоматическая настройка через `gridUrl: "docker"` описана в [руководстве по браузерам](../basic-guides/browsers-overview.mdx#local-docker).
+
+Здесь Testplane подключается к гриду по HTTP-адресу, а скачивание образов, настройка грида и остановка контейнеров остаются на вашей стороне. Выбирайте образы в [пакетах Gemini Testing](https://github.com/orgs/gemini-testing/packages) или у [Aerokube](https://aerokube.com/images/latest/). Используйте сборку контроллера Selenoid, совместимую с вашим Docker Engine: например, `ghcr.io/gemini-testing/selenoid:1.11.3-docker-29` поддерживает Docker 29.
+
+## Запуск одного браузера в Docker
+
+Чтобы запустить контейнер браузера вручную, используйте готовый образ напрямую:
+
+```bash
+docker run -it --rm --privileged -p 4444:4444 -p 5900:5900 -e ENABLE_VNC='true' selenoid/chrome:125.0
+```
+
+Эта команда:
+
+-   Запускает контейнер с Chrome 125.0
+-   Пробрасывает порт 4444 для WebDriver
+-   Пробрасывает порт 5900 для VNC-доступа
+-   Включает VNC для возможности просмотра браузера
+
+В конфигурации Testplane укажите:
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "http://localhost:4444",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+Этот подход удобен для быстрого тестирования или отладки в конкретной версии браузера.
+
+## Запуск Selenoid с несколькими браузерами
+
+Для работы с несколькими браузерами используйте Selenoid: он управляет запуском контейнеров на основе конфигурационного файла.
+
+### Создание конфигурации
+
+Создайте файл `browsers.json` с описанием нужных браузеров:
+
+<details>
+<summary>browsers.json</summary>
+
+```json
+{
+    "chrome": {
+        "versions": {
+            "125.0": {
+                "image": "selenoid/chrome:125.0",
+                "path": "/",
+                "port": "4444",
+                "shmSize": 2147483648,
+                "tmpfs": {
+                    "/tmp": "size=512m"
+                },
+                "volumes": ["/tmp/.X11-unix:/tmp/.X11-unix"]
+            }
+        }
+    },
+    "chrome-mobile": {
+        "versions": {
+            "125.0": {
+                "image": "selenoid/chrome-mobile:125.0",
+                "path": "/wd/hub",
+                "port": "4444",
+                "shmSize": 2147483648,
+                "tmpfs": {
+                    "/tmp": "size=512m"
+                },
+                "volumes": ["/tmp/.X11-unix:/tmp/.X11-unix"]
+            }
+        }
+    }
+}
+```
+
+</details>
+
+### Запуск Selenoid
+
+Для запуска Selenoid укажите путь к конфигурации (в примере конфиг лежит в `/home/selenoid-config/browsers.json`):
+
+```bash
+docker run --rm -d \
+  --name selenoid \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /home/selenoid-config:/etc/selenoid/:ro \
+  --network=host \
+  ghcr.io/gemini-testing/selenoid:1.11.3-docker-29
+```
+
+Selenoid будет автоматически запускать нужные контейнеры браузеров при получении запросов от Testplane.
+
+### Конфигурация Testplane
+
+Базовая конфигурация идентична локальным браузерам, меняется только `gridUrl`:
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+
+        "chrome-mobile": {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    mobileEmulation: {
+                        deviceName: "iPhone 12 Pro",
+                    },
+                },
+            },
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
+
+Подробнее о настройке Selenoid читайте в [официальной документации](https://aerokube.com/selenoid/latest/).
+
+## Специфичные опции Selenoid
+
+Selenoid поддерживает дополнительные опции через `selenoid:options`:
+
+```ts title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    browsers: {
+        chrome: {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "selenoid:options": {
+                    enableVNC: true,
+                    enableVideo: true,
+                    enableLog: true,
+                },
+            },
+            windowSize: "1920x1080",
+            headless: true,
+        },
+
+        "chrome-mobile": {
+            gridUrl: "http://localhost:4444/wd/hub",
+            desiredCapabilities: {
+                browserName: "chrome",
+                browserVersion: "125.0",
+                "goog:chromeOptions": {
+                    mobileEmulation: {
+                        deviceName: "iPhone 12 Pro",
+                    },
+                },
+                "selenoid:options": {
+                    enableVNC: true,
+                    enableVideo: true,
+                    enableLog: true,
+                },
+            },
+            headless: true,
+        },
+    },
+} satisfies ConfigInput;
+```
