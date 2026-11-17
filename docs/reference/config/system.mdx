@@ -1,3 +1,4 @@
+import Version from "../../_partials/specs/version.mdx";
 import Admonition from "@theme/Admonition";
 import SystemExample from "@site/docs/reference/config/_partials/examples/_system-example.mdx";
 import TestRunEnvExample from "@site/docs/reference/config/_partials/examples/_system-test-run-env.mdx";
@@ -14,6 +15,7 @@ Use it to:
 -   change mocha timeouts for tests;
 -   add some data to the global context that all tests will see;
 -   specify error types that should close the current browser session permanently instead of trying to reuse it;
+-   stop the entire run when a configured failure limit is reached;
 -   set the number of subprocesses in which tests will run to speed up their execution;
 -   define the maximum number of browsers available at one time (this can be relevant if you get browsers from a cloud service with such limitations);
 -   set file extensions among which Testplane will search for tests;
@@ -64,6 +66,12 @@ Example configuration of the `system` section:
             <td>`RegExp[]`</td>
             <td>`[ ]`</td>
             <td>List of error patterns. The session will be closed if a test fails with an error matching one of the specified patterns. A new session will then be created to avoid infrastructure issues.</td>
+        </tr>
+        <tr>
+            <td>[`maxFailures`](#max_failures)</td>
+            <td>`number | { limit: number; patterns: (string | RegExp)[] }`</td>
+            <td>`Infinity`</td>
+            <td>Maximum number of failed attempts before cancelling the entire run; optionally counts only errors matching specified patterns.</td>
         </tr>
         <tr>
             <td>[`workers`](#workers)</td>
@@ -183,6 +191,54 @@ export default {
     },
 } satisfies ConfigInput;
 ```
+
+### maxFailures {/* #max_failures */}
+
+<Version version="9.5.0" />
+
+Sets a failure limit for the entire test run. Once the limit is reached, Testplane emits a critical error, cancels the remaining tests, and exits the CLI with a non-zero code.
+
+Default: `Infinity` (no limit). The limit must be a positive integer or `Infinity`; `0` is not allowed.
+
+There are two configuration forms:
+
+-   A number counts all failed test attempts.
+-   An object `{ limit, patterns }` counts only attempts whose error `message` matches at least one pattern. Both fields are required. Patterns can be strings or regular expressions; strings are interpreted as regular expression sources. An empty `patterns` array matches nothing.
+
+For example, start cancelling the run after three errors containing `Service unavailable`, ignoring case:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    system: {
+        maxFailures: {
+            limit: 3,
+            patterns: [/Service unavailable/i],
+        },
+    },
+} satisfies ConfigInput;
+```
+
+The first two matching failures do not trigger cancellation. Errors that do not match the pattern do not increase this counter.
+
+To count all errors, use a numeric limit:
+
+```typescript title="testplane.config.ts"
+import type { ConfigInput } from "testplane";
+
+export default {
+    // ...
+    system: {
+        maxFailures: 20,
+    },
+} satisfies ConfigInput;
+```
+
+The counter is shared across all tests, browsers, and patterns within a run. Each failed attempt counts once, even if several patterns match. Failed attempts followed by test retries also count; a later successful retry does not reset the counter. Internal WebDriver HTTP retries are not counted separately: Testplane counts the failed test attempt when it receives the resulting error.
+
+Cancellation starts at the configured limit, but already started attempts and session requests may still finish. Cancelled tests can also appear as failures in the report. The limit therefore does not guarantee exactly that many failed tests in the final report or HTTP requests to the grid.
 
 ### workers {/* #workers */}
 
