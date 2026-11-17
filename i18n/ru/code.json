@@ -543,5 +543,248 @@
     },
     "landing.core-features.browsers.versions": {
         "message": "Нет привязки к версиям браузеров"
+    },
+    "landing.meta.title": {
+        "message": "Сквозное тестирование в реальных браузерах"
+    },
+    "landing.hero.intro": {
+        "message": "Testplane — фреймворк с открытым исходным кодом для сквозного, компонентного и визуального тестирования в реальных браузерах."
+    },
+    "landing.install.title": {
+        "message": "Запустите первый тест"
+    },
+    "landing.install.guide": {
+        "message": "Перейти к инструкции"
+    },
+    "landing.studio.head": {
+        "message": "От кода"
+    },
+    "landing.studio.headEnd": {
+        "message": "к уверенности."
+    },
+    "landing.studio.intro": {
+        "message": "Создавайте и выпускайте веб-приложения со сквозными тестами в реальных браузерах. Сравнивайте скриншоты и возвращайтесь к шагу, на котором упал тест."
+    },
+    "landing.studio.docs": {
+        "message": "Документация"
+    },
+    "landing.studio.recordings": {
+        "message": "Записи работы HTML Reporter"
+    },
+    "landing.studio.suites": {
+        "message": "Запуски"
+    },
+    "landing.studio.visual": {
+        "message": "Скриншоты"
+    },
+    "landing.studio.replay": {
+        "message": "Time Travel"
+    },
+    "landing.studio.replayCaption": {
+        "message": "Выберите шаг, чтобы увидеть DOM в момент выполнения теста."
+    },
+    "landing.studio.pause": {
+        "message": "Приостановить запись"
+    },
+    "landing.studio.play": {
+        "message": "Воспроизвести запись"
+    },
+    "landing.lab.title": {
+        "message": "Как устроен запуск"
+    },
+    "landing.lab.parallel": {
+        "message": "Запускайте тесты параллельно"
+    },
+    "landing.lab.parallelBody": {
+        "message": "Каждый воркер может вести несколько браузерных сессий одновременно. Настройте лимит сессий для каждого браузера и распределите большой набор тестов между задачами CI."
+    },
+    "landing.lab.one": {
+        "message": "1 воркер"
+    },
+    "landing.lab.three": {
+        "message": "3 воркера"
+    },
+    "landing.lab.workersLabel": {
+        "message": "Количество воркеров"
+    },
+    "landing.lab.compare": {
+        "message": "Сравнить эталонный и текущий скриншоты"
+    },
+    "landing.lab.diff": {
+        "message": "Замечайте визуальные изменения"
+    },
+    "landing.lab.time": {
+        "message": "Вернитесь к нужной команде"
+    },
+    "landing.lab.timeBody": {
+        "message": "Выберите момент на шкале времени. Time Travel сохраняет снимки DOM, чтобы вы могли изучить состояние страницы на каждом шаге."
+    },
+    "landing.lab.play": {
+        "message": "Воспроизвести три снимка"
+    },
+    "landing.atlas.suitesCaption": {
+        "message": "Отфильтруйте дерево тестов, чтобы увидеть три успешные проверки."
+    },
+    "landing.atlas.visualCaption": {
+        "message": "Посмотрите, какие пиксели изменились в периоде обращения Сатурна."
+    },
+    "landing.atlas.diffBody": {
+        "message": "Сравнивайте скриншот элемента или всей видимой области с эталоном с помощью {command}. Исключайте динамические области, изучайте изменённые пиксели и принимайте новые эталоны в Testplane UI."
+    },
+    "landing.network.local": {
+        "message": "Локально"
+    },
+    "landing.network.grid": {
+        "message": "Удалённый грид"
+    },
+    "landing.network.device": {
+        "message": "Устройства"
+    },
+    "landing.network.control": {
+        "message": "Среда запуска"
+    },
+    "landing.network.title": {
+        "message": "Один набор тестов для разных браузеров"
+    },
+    "landing.network.copy": {
+        "message": "Запускайте Chrome, Firefox, Edge и Safari на нужных платформах. Используйте одни и те же тесты на ноутбуке, в гриде CI и на реальном телефоне."
+    },
+    "landing.network.guide": {
+        "message": "Выбрать среду запуска"
+    },
+    "landing.spec.open": {
+        "message": "Открыть каталог"
+    },
+    "landing.spec.select": {
+        "message": "Выбрать Сатурн"
+    },
+    "landing.spec.check": {
+        "message": "Проверить вид"
+    },
+    "landing.spec.control": {
+        "message": "Шаг теста"
+    },
+    "landing.spec.title": {
+        "message": "Браузерный тест по шагам"
+    },
+    "landing.spec.intro": {
+        "message": "Пройдите по шагам теста каталога из отчёта. Каждая команда работает со страницей, которую видит пользователь."
+    },
+    "landing.spec.guide": {
+        "message": "Написать тест"
+    },
+    "landing.spec.jupiter": {
+        "message": "Карточка Юпитера в Orbital Atlas"
+    },
+    "landing.spec.saturn": {
+        "message": "Карточка Сатурна в Orbital Atlas"
+    },
+    "landing.agent.browse": {
+        "message": "Работа с приложением"
+    },
+    "landing.agent.triage": {
+        "message": "Разбор запуска"
+    },
+    "landing.agent.title": {
+        "message": "CLI для ИИ-агентов"
+    },
+    "landing.agent.control": {
+        "message": "Сценарий CLI"
+    },
+    "landing.agent.copy": {
+        "message": "Дайте агенту браузер и компактный снимок DOM. Агент может проверить селектор, получить эквивалентный код Testplane и изучить причину падения теста прямо в HTML-отчёте."
+    },
+    "landing.agent.guide": {
+        "message": "Изучить Testplane CLI"
+    },
+    "landing.diff.mode": {
+        "message": "Режим сравнения"
+    },
+    "landing.diff.swipe": {
+        "message": "Разделитель"
+    },
+    "landing.diff.pixels": {
+        "message": "Пиксельная разница"
+    },
+    "landing.diff.alt": {
+        "message": "Изменившиеся пиксели в поле орбитального периода"
+    },
+    "landing.diff.actual": {
+        "message": "Текущая карточка Сатурна"
+    },
+    "landing.guide.parallel": {
+        "message": "Как работает параллелизм"
+    },
+    "landing.guide.visual": {
+        "message": "Изучить визуальное тестирование"
+    },
+    "landing.guide.replay": {
+        "message": "Изучить Time Travel"
+    },
+    "landing.selectivity.title": {
+        "message": "Перезапускайте только затронутые тесты"
+    },
+    "landing.selectivity.copy": {
+        "message": "Селективность учитывает модули Node.js, которые загрузил тест, и исходные файлы, код которых он выполнил в браузере. Отметьте изменённые файлы и посмотрите, какие тесты запустятся снова."
+    },
+    "landing.selectivity.guide": {
+        "message": "Как работает селективность"
+    },
+    "landing.selectivity.home": {
+        "message": "Открыть главную"
+    },
+    "landing.selectivity.about": {
+        "message": "Перейти с главной на страницу About"
+    },
+    "landing.selectivity.contact": {
+        "message": "Открыть контакты"
+    },
+    "landing.selectivity.count": {
+        "message": "Выбрано тестов: {count} из {total}"
+    },
+    "landing.selectivity.files": {
+        "message": "Изменённые файлы"
+    },
+    "landing.selectivity.next": {
+        "message": "Следующий запуск"
+    },
+    "landing.selectivity.run": {
+        "message": "Запуск"
+    },
+    "landing.selectivity.skip": {
+        "message": "Пропуск"
+    },
+    "landing.workers.single": {
+        "message": "Один воркер одновременно управляет всеми шестью сессиями браузеров"
+    },
+    "landing.workers.multiple": {
+        "message": "Три воркера, каждый из которых одновременно управляет двумя сессиями браузеров"
+    },
+    "landing.workers.suite": {
+        "message": "Тесты"
+    },
+    "landing.workers.processes": {
+        "message": "Воркеры"
+    },
+    "landing.workers.sessions": {
+        "message": "Сессии браузеров"
+    },
+    "landing.workers.worker": {
+        "message": "Воркер {n}"
+    },
+    "landing.network.localAlt": {
+        "message": "Четыре браузера на локальной машине"
+    },
+    "landing.network.gridAlt": {
+        "message": "Пример удалённого грида с 12 сессиями каждого браузера: Chrome, Firefox, Edge и Safari"
+    },
+    "landing.network.devicesAlt": {
+        "message": "Chrome на Android и Safari на iOS"
+    },
+    "landing.diff.hint": {
+        "message": "Нажмите на изображение, чтобы обвести изменение"
+    },
+    "landing.diff.locate": {
+        "message": "Обвести изменённые пиксели"
     }
 }

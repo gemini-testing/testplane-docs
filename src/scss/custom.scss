@@ -15,7 +15,7 @@
 @source inline("outline-2");
 @source inline("outline-indigo-300");
 
-@custom-variant dark (&:where([data-theme=dark]:not([data-theme-override=light]), [data-theme=dark]:not([data-theme-override=light]) *));
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 body {
     h1,
@@ -114,14 +114,6 @@ html[data-theme="dark"] {
     --ifm-color-primary-lightest: #4fddbf;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
     --docsearch-subtle-color: transparent !important;
-}
-
-html[data-theme-override="light"] {
-    background-color: #ffffff !important;
-    color: theme("colors.neutral.900") !important;
-    --ifm-navbar-link-color: theme("colors.neutral.900");
-    --ifm-navbar-link-hover-color: theme("colors.neutral.900");
-    --ifm-navbar-background-color: #fff;
 }
 
 .docs-wrapper .main-wrapper,
