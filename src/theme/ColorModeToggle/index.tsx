@@ -1,9 +1,7 @@
 import React from "react";
 import type { ComponentType, SVGProps } from "react";
 import clsx from "clsx";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useIsBrowser from "@docusaurus/useIsBrowser";
-import { useLocation } from "@docusaurus/router";
 import { translate } from "@docusaurus/Translate";
 import type { Props } from "@theme/ColorModeToggle";
 import { Moon, Sun } from "@gravity-ui/icons";
@@ -48,39 +46,11 @@ const getNextMode = (mode: ModeSetting): ModeSetting => {
 
 function ColorModeToggle({ className, buttonClassName, onChange }: Props): JSX.Element | null {
     const isBrowser = useIsBrowser();
-    const location = useLocation();
-    const { siteConfig, i18n } = useDocusaurusContext();
     const [modeSetting, setModeSetting] = React.useState<ModeSetting>("system");
     const [hasHydrated, setHasHydrated] = React.useState(false);
 
-    const landingPaths = React.useMemo(() => {
-        const baseUrl = siteConfig.baseUrl ?? "/";
-        const defaultLocale = i18n.defaultLocale;
-
-        return i18n.locales.map(locale =>
-            locale === defaultLocale ? baseUrl : `${baseUrl}${locale}/`,
-        );
-    }, [siteConfig.baseUrl, i18n.defaultLocale, i18n.locales]);
-
-    const normalizedPathname = React.useMemo(
-        () => (location.pathname.endsWith("/") ? location.pathname : `${location.pathname}/`),
-        [location.pathname],
-    );
-
-    const isLandingPage = React.useMemo(
-        () =>
-            landingPaths.some(landingPath => {
-                const normalizedLandingPath = landingPath.endsWith("/")
-                    ? landingPath
-                    : `${landingPath}/`;
-
-                return normalizedLandingPath === normalizedPathname;
-            }),
-        [landingPaths, normalizedPathname],
-    );
-
     React.useEffect(() => {
-        if (isLandingPage || !isBrowser) {
+        if (!isBrowser) {
             return;
         }
 
@@ -97,10 +67,10 @@ function ColorModeToggle({ className, buttonClassName, onChange }: Props): JSX.E
         }
 
         setHasHydrated(true);
-    }, [isLandingPage, isBrowser]);
+    }, [isBrowser]);
 
     React.useEffect(() => {
-        if (isLandingPage || !isBrowser || !hasHydrated) {
+        if (!isBrowser || !hasHydrated) {
             return;
         }
 
@@ -111,10 +81,10 @@ function ColorModeToggle({ className, buttonClassName, onChange }: Props): JSX.E
         } catch (_error) {
             // noop: storage can be unavailable (e.g. in private mode)
         }
-    }, [modeSetting, isBrowser, hasHydrated, isLandingPage]);
+    }, [modeSetting, isBrowser, hasHydrated]);
 
     React.useEffect(() => {
-        if (isLandingPage || !isBrowser || !hasHydrated) {
+        if (!isBrowser || !hasHydrated) {
             return undefined;
         }
 
@@ -137,11 +107,7 @@ function ColorModeToggle({ className, buttonClassName, onChange }: Props): JSX.E
 
         onChange(modeSetting);
         return undefined;
-    }, [modeSetting, onChange, isBrowser, hasHydrated, isLandingPage]);
-
-    if (isLandingPage) {
-        return null;
-    }
+    }, [modeSetting, onChange, isBrowser, hasHydrated]);
 
     const title = translate(
         {
