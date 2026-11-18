@@ -1,0 +1,50 @@
+# custom$
+
+## Обзор {/* #overview */}
+
+Находит элемент пользовательской стратегией поиска. Родительский элемент передается последним аргументом стратегии. Чтобы ограничить область поиска, используйте его внутри стратегии.
+
+## Использование {/* #usage */}
+
+`element.custom$(strategyName, ...strategyArguments)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**        | **Тип**     | **По умолчанию** | **Описание**                                                |
+| ------------------- | ----------- | ---------------- | ----------------------------------------------------------- |
+| `strategyName`      | `string`    | Обязательный     | Имя, зарегистрированное через `browser.addLocatorStrategy`. |
+| `strategyArguments` | `unknown[]` | []               | Аргументы, передаваемые перед родительским DOM-элементом.   |
+
+## Результат {/* #result */}
+
+Объект элемента, получаемый через `await`. Если стратегия вернула массив, используется первый элемент. У результата без совпадения нет `elementId`.
+
+## Ограничения {/* #limitations */}
+
+Зарегистрируйте стратегию у того же объекта браузера. Родитель должен существовать; неизвестная стратегия или отсутствие родителя вызывают ошибку. Функция выполняется в браузере и возвращает DOM-элемент или массив DOM-элементов. Преобразуйте `NodeList` через `Array.from`. Область поиска определяет сама функция: `document.querySelector` продолжает искать по всему документу. Команда не ожидает заданного количества дочерних элементов или их видимости.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("element.custom$: search inside an element", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML =
+            '<button data-test="save">Outside</button><section id="panel"><button data-test="save">Inside</button></section>';
+    });
+    browser.addLocatorStrategy("byTestWithin", (value, root) =>
+        root.querySelector(`[data-test="${value}"]`),
+    );
+    const button = await browser.$("#panel").custom$("byTestWithin", "save");
+    assert.equal(await button.getText(), "Inside");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [addLocatorStrategy](../browser/addLocatorStrategy.mdx)
+-   [browser.custom$](../browser/customDollar.mdx)

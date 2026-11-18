@@ -1,0 +1,71 @@
+# throttleNetwork
+
+## Обзор {/* #overview */}
+
+Ограничьте пропускную способность и задержку сети или переведите страницу в офлайн через CDP. Это влияет на реальные запросы, в отличие от `emulate("onLine", false)`, который меняет только JavaScript-свойство.
+
+## Использование {/* #usage */}
+
+`browser.throttleNetwork(profileOrOptions)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**         | **Тип**            | **По умолчанию**     | **Описание**                                                                                     |
+| -------------------- | ------------------ | -------------------- | ------------------------------------------------------------------------------------------------ |
+| `profileOrOptions`   | `string \| object` | Обязателен           | Именованный профиль или объект с полями offline, latency, downloadThroughput и uploadThroughput. |
+| `offline`            | `boolean`          | Обязателен в объекте | Отключен ли сетевой доступ.                                                                      |
+| `latency`            | `number`           | Обязателен в объекте | Минимальная задержка в миллисекундах.                                                            |
+| `downloadThroughput` | `number`           | Обязателен в объекте | Скорость скачивания в байтах в секунду; -1 снимает это ограничение.                              |
+| `uploadThroughput`   | `number`           | Обязателен в объекте | Скорость отправки в байтах в секунду; -1 снимает это ограничение.                                |
+
+## Результат {/* #result */}
+
+`Promise<null>`.
+
+## Ограничения {/* #limitations */}
+
+Локальная CDP-реализация требует Chromium и соединение Puppeteer. Она выбирает первую страницу Puppeteer. Для примера ниже используйте одну вкладку, `isolation: false` и `testsPerSession: 1`. Загрузите страницу до отключения сети. Профили: `offline`, `GPRS`, `Regular2G`, `Good2G`, `Regular3G`, `Good3G`, `Regular4G`, `DSL`, `WiFi`, `online`. Неизвестное имя профиля вызывает ошибку. В сессиях Sauce Labs используется отдельная команда сервиса.
+
+:::warning
+
+В проверенной связке Testplane 9.3.2, WDIO 9.6.2 и Chrome for Testing 150.0.7871.124 повторный вызов с `"online"` не восстановил сеть после `"offline"`. Каждый вызов создает отдельную CDP-сессию. Не полагайтесь на такой сброс для повторного использования браузера: пример завершает офлайн-сессию после теста и проверяет сеть в новой. Для переключения в пределах одного теста управляйте режимами через одну CDP-сессию.
+
+:::
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+// Configure testsPerSession: 1 so this offline session is not reused.
+it("throttleNetwork: check a failed request while offline", async ({ browser }) => {
+    await browser.url("/");
+    await browser.throttleNetwork("offline");
+    const failed = await browser.execute(async () => {
+        try {
+            await fetch("/?offline-check", { cache: "no-store" });
+            return false;
+        } catch {
+            return true;
+        }
+    });
+    assert.equal(failed, true);
+});
+
+it("throttleNetwork: the next session starts online", async ({ browser }) => {
+    await browser.url("/");
+    const status = await browser.execute(async () => {
+        const response = await fetch("/?online-check", { cache: "no-store" });
+        return response.status;
+    });
+    assert.equal(status, 200);
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [throttleCPU](./throttleCPU.mdx)
+-   [emulate](./emulate.mdx)
+-   [getPuppeteer](./getPuppeteer.mdx)

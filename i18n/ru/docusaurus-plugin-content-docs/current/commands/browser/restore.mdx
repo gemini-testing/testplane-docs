@@ -1,0 +1,51 @@
+# restore
+
+## Обзор {/* #overview */}
+
+Отмените эмуляцию, включенную через `emulate` у того же объекта браузера. Команда не восстанавливает cookies, хранилища, ограничение сети или CPU и не отменяет моки.
+
+## Использование {/* #usage */}
+
+`browser.restore(scopes)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**              | **По умолчанию**              | **Описание**                                                                    |
+| ------------ | -------------------- | ----------------------------- | ------------------------------------------------------------------------------- |
+| `scopes`     | `string \| string[]` | Все зарегистрированные режимы | Один или несколько режимов: clock, geolocation, userAgent, colorScheme, onLine. |
+
+## Результат {/* #result */}
+
+`Promise<void>`. Если для объекта браузера не записана эмуляция, команда ничего не делает.
+
+## Ограничения {/* #limitations */}
+
+Выполняйте очистку в том же тесте, где включена эмуляция, предпочтительно в `finally`. Для подмен через предварительные скрипты перезагрузите страницу после восстановления. `device` не регистрируется как режим восстановления: вызовите функцию, возвращенную `emulate("device", name)`. Она устанавливает viewport Desktop Chrome (1280 × 720, DPR 1), а не исходный размер.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("restore: remove a user-agent override", async ({ browser }) => {
+    await browser.url("/");
+    const original = await browser.execute(() => navigator.userAgent);
+    await browser.emulate("userAgent", "ExampleBrowser/1.0");
+    try {
+        await browser.url("/");
+        assert.equal(await browser.execute(() => navigator.userAgent), "ExampleBrowser/1.0");
+    } finally {
+        await browser.restore("userAgent");
+    }
+    await browser.url("/");
+    assert.equal(await browser.execute(() => navigator.userAgent), original);
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [emulate](./emulate.mdx)
+-   [restoreState](./restoreState.mdx)
+-   [mock.restore](../mock/restore.mdx)

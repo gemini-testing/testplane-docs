@@ -1,0 +1,67 @@
+# downloadFile
+
+## Overview {/* #overview */}
+
+Copy a file downloaded by the browser on a Selenium Grid node to the Testplane process filesystem. This command does not download an arbitrary URL.
+
+## Requirements {/* #requirements */}
+
+Requires Selenium Grid with managed downloads enabled (`--enable-managed-downloads true`) and the capability `se:downloadsEnabled: true`. Chrome, Edge and Firefox are supported. Using `gridUrl: "local"` alone does not provide the Selenium downloads API. See the [Selenium documentation](https://www.selenium.dev/documentation/webdriver/remote_webdriver/#enable-downloads-in-the-grid).
+
+## Usage {/* #usage */}
+
+`browser.downloadFile(fileName, targetDirectory)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**     | **Type** | **Description**                                             |
+| ----------------- | -------- | ----------------------------------------------------------- |
+| `fileName`        | `string` | A file name from `getDownloadableFiles().names`, not a URL. |
+| `targetDirectory` | `string` | Local destination directory; created automatically.         |
+
+## Result {/* #result */}
+
+`Promise<{ files: string[] }>`: absolute paths of extracted files. The command also leaves a `<fileName>.zip` archive in the destination directory. In this version extraction errors are logged and can leave `files` empty; verify the result exists and has the expected contents.
+
+## Example {/* #examples */}
+
+Set `gridUrl` to your Grid address and enable `se:downloadsEnabled: true` in `desiredCapabilities`. Set `baseUrl` to a test HTTP site: `/` serves HTML, and `/report.csv` serves `name,value\nexample,42\n` with the header `Content-Disposition: attachment; filename="report.csv"`.
+
+Wait for the file to appear on the Grid node first: listing files does not wait for a download to finish. Then copy the file and clean up the remote and local directories used by the test.
+
+```javascript
+const assert = require("node:assert/strict");
+const fs = require("node:fs/promises");
+const os = require("node:os");
+const path = require("node:path");
+
+it("downloadFile: copy a browser download from Selenium Grid", async ({ browser }) => {
+    const targetDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "testplane-download-"));
+    try {
+        await browser.url("/");
+        await browser.execute(() => {
+            document.body.innerHTML = '<a href="/report.csv" download>Download report</a>';
+        });
+        await browser.$("a").click();
+        await browser.waitUntil(
+            async () => {
+                const { names } = await browser.getDownloadableFiles();
+                return names.includes("report.csv");
+            },
+            { timeout: 10000, timeoutMsg: "The CSV was not downloaded on the Grid node" },
+        );
+        const { files } = await browser.downloadFile("report.csv", targetDirectory);
+        const localFile = path.join(targetDirectory, "report.csv");
+        assert.ok(files.includes(localFile));
+        assert.equal(await fs.readFile(localFile, "utf8"), "name,value\nexample,42\n");
+    } finally {
+        await browser.deleteDownloadableFiles();
+        await fs.rm(targetDirectory, { recursive: true, force: true });
+    }
+});
+```
+
+## See also {/* #see-also */}
+
+-   [url](./url.mdx)
+-   [waitUntil](./waitUntil.mdx)

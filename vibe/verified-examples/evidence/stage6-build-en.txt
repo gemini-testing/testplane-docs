@@ -1,0 +1,25 @@
+
+> testplane-docs@0.0.0 build
+> docusaurus build --locale en
+
+
+ ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                                         `npm i @docusaurus/core@latest                                            @docusaurus/plugin-client-redirects@latest                             @docusaurus/preset-classic@latest @docusaurus/faster@latest                  @docusaurus/module-type-aliases@latest @docusaurus/tsconfig@latest                                  @docusaurus/types@latest`                                                                                                             ------------------------------------------------------------------------------
+
+[INFO] [en] Creating an optimized production build...
+[WARNING] Docusaurus site warnings:
+- Your site is using the SWC js loader. You can safely remove the Babel config file at `babel.config.js`.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+[WARNING] Docusaurus static site generation process emitted warnings for 2 paths
+This is non-critical and can be disabled with DOCUSAURUS_IGNORE_SSG_WARNINGS=true
+Troubleshooting guide: https://github.com/facebook/docusaurus/discussions/10580
+
+- "/docs/v8/plugins/testplane-retry-progressive/":
+  - [HTML minifier diagnostic - error] No "p" element in scope but a "p" end tag seen - {"primary_spans":[{"end":25944,"start":25940}],"span_labels":[]}
+
+- "/docs/plugins/testplane-retry-progressive/":
+  - [HTML minifier diagnostic - error] No "p" element in scope but a "p" end tag seen - {"primary_spans":[{"end":25417,"start":25413}],"span_labels":[]}
+
+[SUCCESS] Generated static files in "build".
+[INFO] Use `npm run serve` command to test your build locally.

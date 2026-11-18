@@ -1,0 +1,56 @@
+# addInitScript
+
+## Overview {/* #overview */}
+
+Run a function in new documents of the current tab or window before page scripts execute. Use this to prepare browser-side values before the application reads them. The function also runs in newly attached or navigated child frames within that top-level browsing context.
+
+The script is registered for the tab or window that is current when `addInitScript` is called. It does not automatically apply to other tabs or windows, including those opened later. To use it there, switch to the target tab or window and register it separately before navigation.
+
+## Usage {/* #usage */}
+
+`browser.addInitScript(script, ...args)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**    | **Default** | **Description**                                                          |
+| ------------- | ----------- | ----------- | ------------------------------------------------------------------------ |
+| `script`      | `Function`  | Required    | A function executed in the browser, without access to Node.js variables. |
+| `args`        | `unknown[]` | []          | Arguments serialized as JSON and passed to the function.                 |
+
+## Result {/* #result */}
+
+`Promise<InitScript>`: an object with asynchronous `remove()` and `on("data", listener)`. To send data to Node.js, call the `emit` callback appended to the script arguments.
+
+## Limitations {/* #limitations */}
+
+Requires a WebDriver BiDi session (`webSocketUrl: true`). Call the command before navigation. `remove()` prevents future injection; it does not undo changes already made in the current document. Remove the script in the same test, even if an assertion fails. In this version the implementation accepts a function, not a string.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("addInitScript: set a value before page scripts", async ({ browser }) => {
+    const script = await browser.addInitScript(value => {
+        window.exampleSeed = value;
+    }, 42);
+
+    try {
+        await browser.url("/");
+        assert.equal(await browser.execute(() => window.exampleSeed), 42);
+    } finally {
+        await script.remove();
+    }
+
+    await browser.url("/");
+    assert.equal(await browser.execute(() => typeof window.exampleSeed), "undefined");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [execute](./execute.mdx)
+-   [url](./url.mdx)
+-   [emulate](./emulate.mdx)

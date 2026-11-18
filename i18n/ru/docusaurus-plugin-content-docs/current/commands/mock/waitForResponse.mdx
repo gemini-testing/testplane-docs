@@ -1,0 +1,68 @@
+# waitForResponse
+
+## Обзор {/* #overview */}
+
+Ожидает хотя бы один зарегистрированный ответ в `calls`. Позволяет дождаться запроса, запущенного кодом страницы, без фиксированной задержки.
+
+## Использование {/* #usage */}
+
+`mock.waitForResponse({ timeout, interval, timeoutMsg })`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**  | **По умолчанию**        | **Описание**                               |
+| ------------ | -------- | ----------------------- | ------------------------------------------ |
+| `timeout`    | `number` | `waitTimeout` (3000 ms) | Предельное время ожидания в миллисекундах. |
+| `interval`   | `number` | `waitInterval` (500 ms) | Интервал проверок в миллисекундах.         |
+| `timeoutMsg` | `string` | —                       | Сообщение ошибки по тайм-ауту.             |
+
+## Результат {/* #result */}
+
+`Promise<boolean>` со значением `true`, когда `calls` непуст. При тайм-ауте или ошибке проверки промис отклоняется. Сам ответ не возвращается: читайте `mock.calls` отдельно.
+
+## Ограничения {/* #limitations */}
+
+Доступен в BiDi- и Classic/CDP-реализациях мока. Старые вызовы сразу удовлетворяют условию: вызовите `mock.clear()` перед действием, которое нужно проверить. В BiDi история заполняется на событии `network.responseStarted`: это еще не гарантирует чтение тела ответа или обновление интерфейса.
+
+В поставляемом WDIO 9.6.2 автоматическая подписка на сетевые события защищена флагом уровня модуля. При создании следующей браузерной сессии тем же воркером подписки на ответы может не быть. Пример явно вызывает `sessionSubscribe` в каждой сессии; это проверено с `testsPerSession: 1` в Testplane. Это настоящая протокольная подписка, а не замена мока.
+
+## Пример {/* #examples */}
+
+Укажите в `baseUrl` локальный HTTP-сайт. `/` возвращает HTML. `/api/items` возвращает JSON: `source: "original"`, метод запроса в `method` и заголовок запроса `x-example` в `header` (`null`, если заголовка нет). `/api/other` возвращает те же поля с `source: "redirected"`. Примеры выполняют настоящие запросы к этим обработчикам.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("mock.waitForResponse: wait for a new recorded response", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        await browser.execute(async () => (await fetch("/api/items")).text());
+        await mock.waitForResponse({ timeout: 3000 });
+        mock.clear();
+        assert.equal(mock.calls.length, 0);
+        await browser.execute(() => {
+            window.requestFinished = false;
+            fetch("/api/items", { cache: "no-store" })
+                .then(response => response.text())
+                .then(() => {
+                    window.requestFinished = true;
+                });
+        });
+        assert.equal(await mock.waitForResponse({ timeout: 3000, interval: 50 }), true);
+        assert.equal(mock.calls.length, 1);
+        await browser.waitUntil(() => browser.execute(() => window.requestFinished));
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [browser.mock](../browser/mock.mdx)
+-   [clear](./clear.mdx)
+-   [restore](./restore.mdx)

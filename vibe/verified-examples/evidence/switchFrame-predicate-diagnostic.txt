@@ -1,0 +1,3 @@
+Confirmed: switchFrame predicate raises browser is not defined
+[14:42:36 +0300] ✓ inspect switchFrame predicate failure [chrome:283868807aadc11b308fcf61e635c943, pid:42593] - 172ms
+[14:42:36 +0300] Total: 1 Passed: 1 Failed: 0 Skipped: 0 Retries: 0

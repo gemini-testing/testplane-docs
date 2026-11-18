@@ -1,69 +1,49 @@
-import Admonition from "@theme/Admonition";
-
 # throttle
 
 ## Обзор {/* #overview */}
 
-Используйте команду `throttle`, чтобы эмулировать разные типы сетевого соединения у пользователя.
-
-Эта команда позволяет промоделировать поведение сайта или веб-приложения при различной пропускной способности канала связи у пользователя.
-
-Существует также множество пресетов с готовыми настройками конфигурации сети. Например:
-
--   offline | online
--   GPRS
--   Regular2G | Good2G
--   Regular3G | Good3G
--   Regular4G
--   DSL
--   WiFi
-
-<Admonition type="warning">
-Команда _throttle_ работает только при использовании _Chrome DevTools Protocol (CDP)_.
-
-Читайте подробности в разделе «[Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp]».
-
-А также читайте рецепт «[Как управлять пропускной способностью сети][how-to-manage-network-bandwidth]».
-
-</Admonition>
+Устаревшее имя [throttleNetwork](./throttleNetwork.mdx). Ограничивает пропускную способность сети через CDP/Puppeteer; не эквивалентно [emulate("onLine")](./emulate.mdx). Для нового кода используйте `throttleNetwork`.
 
 ## Использование {/* #usage */}
 
-```javascript
-await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput });
-```
+`await browser.throttle(profile)`
 
 ## Параметры команды {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>offline</td><td>Boolean</td><td>Включить эмуляцию потери соединения.</td></tr>
-<tr><td>latency</td><td>Number</td><td>Минимальная задержка от отправленного запроса до полученных заголовков ответа, в миллисекундах.</td></tr>
-<tr><td>downloadThroughput</td><td>Number</td><td>Максимальная совокупная пропускная способность загрузки (байт/сек). _-1_ отключает регулирование загрузки.</td></tr>
-<tr><td>uploadThroughput</td><td>Number</td><td>Максимальная совокупная пропускная способность аплоада (байт/сек). _-1_ отключает регулирование аплоада.</td></tr>
+Параметры совпадают с [throttleNetwork](./throttleNetwork.mdx#parameters). Можно передать имя профиля: `offline`, `online`, `GPRS`, `Regular2G`, `Good2G`, `Regular3G`, `Good3G`, `Regular4G`, `DSL`, `WiFi`. Пробелов в именах нет.
 
-</tbody>
-</table>
+Или объект с полями `offline` (boolean), `latency` (миллисекунды), `downloadThroughput` и `uploadThroughput` (байты в секунду, `-1` отключает ограничение скорости). Результат — `Promise<void>`.
 
-## Примеры использования {/* #examples */}
+## Ограничения {/* #limitations */}
+
+Нужен браузер с доступным CDP/Puppeteer. Реализация выбирает первую страницу Puppeteer: для примера используйте одну вкладку и `isolation: false`, сначала откройте страницу.
+
+В Testplane 9.3.2 / WDIO 9.6.2 / Chrome 150 профиль `online` не восстановил сеть после `offline`. Настройте `testsPerSession: 1`, чтобы ограничение не перешло в следующий тест. Подробнее — [throttleNetwork](./throttleNetwork.mdx#limitations).
+
+## Пример {/* #examples */}
+
+Укажите в `baseUrl` адрес тестового HTTP-сервера, который отвечает `200` на корневой путь. Пример использует новую сессию на каждый тест.
 
 ```javascript
-it("should throttle the network", async ({ browser }) => {
-    // используем готовый пресет
-    await browser.throttle("Regular 3G");
+const assert = require("node:assert/strict");
 
-    // а здесь настраиваем конфигурацию сети сами
-    await browser.throttle({
-        offline: false,
-        downloadThroughput: (200 * 1024) / 8,
-        uploadThroughput: (200 * 1024) / 8,
-        latency: 20,
-    });
+it("throttle: use the deprecated alias in an isolated session", async ({ browser }) => {
+    await browser.url("/");
+    await browser.throttle("Good3G");
+    const status = await browser.execute(
+        async () => (await fetch("/?throttled", { cache: "no-store" })).status,
+    );
+    assert.equal(status, 200);
 });
 ```
 
-[how-to-use-cdp]: ../../../guides/how-to-use-cdp
-[how-to-manage-network-bandwidth]: ../../../basic-guides/emulation
+## Связанные команды {/* #related */}
+
+-   [throttleNetwork](./throttleNetwork.mdx)
+-   [throttleCPU](./throttleCPU.mdx)
+-   [CDP](../../guides/how-to-use-cdp.mdx)
+-   [Emulation](../../basic-guides/user-environment-emulation.mdx)
+
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/browser/throttle).

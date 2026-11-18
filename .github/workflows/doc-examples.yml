@@ -1,0 +1,111 @@
+name: Documentation examples
+
+on:
+    pull_request:
+        branches: [master]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: doc-examples-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    coverage:
+        name: Examples coverage
+        runs-on: ubuntu-24.04
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.21.1
+                  cache: npm
+            - run: npm ci
+            - run: npm run test:examples:unit
+            - name: Check new and changed examples against the PR base
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+              run: npm run check:examples -- --base "$BASE_SHA"
+            - name: Publish coverage summary
+              if: ${{ always() }}
+              run: |
+                  if [ -f tmp/doc-examples/summary.md ]; then
+                    cat tmp/doc-examples/summary.md >> "$GITHUB_STEP_SUMMARY"
+                  fi
+            - name: Upload full inventory including legacy debt
+              if: ${{ always() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: doc-examples-coverage
+                  path: tmp/doc-examples/
+                  if-no-files-found: warn
+                  retention-days: 14
+
+    runtime:
+        name: Examples runtime (${{ matrix.suite }})
+        runs-on: ubuntu-24.04
+        timeout-minutes: 25
+        strategy:
+            fail-fast: false
+            matrix:
+                suite: [chrome, selenium]
+        defaults:
+            run:
+                working-directory: vibe/verified-examples
+                shell: bash
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.21.1
+                  cache: npm
+                  cache-dependency-path: vibe/verified-examples/package-lock.json
+            - uses: actions/setup-java@v4
+              if: ${{ matrix.suite == 'selenium' }}
+              with:
+                  distribution: temurin
+                  java-version: "21"
+            - name: Cache Testplane browsers and drivers
+              uses: actions/cache@v4
+              with:
+                  path: ~/.testplane
+                  key: doc-examples-${{ runner.os }}-${{ runner.arch }}-chrome150-${{ hashFiles('vibe/verified-examples/package-lock.json', 'vibe/verified-examples/testplane.config.js', 'vibe/verified-examples/run-ci.cjs') }}
+            - run: npm ci --legacy-peer-deps
+            - name: Download pinned Selenium Grid
+              if: ${{ matrix.suite == 'selenium' }}
+              run: |
+                  mkdir -p artifacts
+                  curl --fail --location --retry 3 \
+                    https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.50.0/selenium-server-4.50.0.jar \
+                    --output "$RUNNER_TEMP/selenium-server.jar"
+                  echo "SELENIUM_JAR=$RUNNER_TEMP/selenium-server.jar" >> "$GITHUB_ENV"
+            - name: Run every declared example and verify runtime results
+              env:
+                  SUITE: ${{ matrix.suite }}
+              run: |
+                  mkdir -p artifacts
+                  node run-ci.cjs "$SUITE" 2>&1 | tee artifacts/testplane.log
+            - name: Publish runtime summary
+              if: ${{ always() }}
+              run: |
+                  if [ -f artifacts/runtime-summary.md ]; then
+                    cat artifacts/runtime-summary.md >> "$GITHUB_STEP_SUMMARY"
+                  fi
+            - name: Upload results even on failure
+              if: ${{ always() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: doc-examples-${{ matrix.suite }}
+                  path: |
+                      vibe/verified-examples/artifacts/
+                      vibe/verified-examples/validation-environment.json
+                      vibe/verified-examples/testplane-debug/
+                  if-no-files-found: warn
+                  retention-days: 14

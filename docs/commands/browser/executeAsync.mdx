@@ -2,62 +2,48 @@
 
 ## Overview {/* #overview */}
 
-Use the `executeAsync` command to _asynchronously_ execute the specified JavaScript code in the context of the currently selected frame.
+Runs JavaScript in the current frame and returns the value passed to a callback. This command is deprecated: prefer [execute](./execute.mdx) with an async function for new code.
 
-The last argument of the command must be a callback that will be called as soon as the script completes its execution. The command passes the script result to the callback as an input parameter.
-
-The `script` argument defines the script to be executed as the body of a function. The function will be invoked with the provided array of `args`, and access to the values can be obtained through the `arguments` object in the specified order. The last argument must always be a callback function, which will be called once the script has been executed.
-
-Arguments can be any JSON primitives, arrays, or JSON objects. JSON objects that define a reference to a _WebElement_ will be converted to the corresponding DOM element. Similarly, any _WebElements_ in the script result will be returned to the client as _WebElement JSON_ objects.
+The command injects the callback as the last argument of the **browser function**. Do not pass it as a separate argument to `browser.executeAsync`. Call the callback to complete the command.
 
 ## Usage {/* #usage */}
 
-```javascript
-await browser.executeAsync(script, arguments);
-```
+`await browser.executeAsync(script, ...args)`
 
-## Command Parameters {/* #parameters */}
+## Command parameters {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>script</td><td>String or Function</td><td>The script to be executed.</td></tr>
-<tr><td>arguments</td><td>Any</td><td>Arguments for the script. The last argument must be a callback function, which will be called once the script has been executed.</td></tr>
+-   `script`: a function or a string containing a function body. Runs in the browser without Node.js APIs or local closures.
+-   `args`: serializable arguments passed before the callback; WebElement references become DOM elements.
 
-</tbody>
-</table>
+Returns a Promise with the value passed to the callback. In Classic, configure the `script` timeout using [setTimeout](./setTimeout.mdx). The BiDi implementation has no separate callback timer; always call it and bound the test with `testTimeout`.
 
-## Usage Examples {/* #examples */}
+## Example {/* #examples */}
+
+Set `baseUrl` to a test HTML page.
 
 ```javascript
-it("should execute async JavaScript on the page", async ({ browser }) => {
+const assert = require("node:assert/strict");
+
+it("browser.executeAsync: return a result through the injected callback", async ({ browser }) => {
+    await browser.url("/");
     await browser.setTimeout({ script: 5000 });
-
     const result = await browser.executeAsync(
-        function (a, b, c, d, done) {
-            // here we are in the browser context: no access to console or client
-            setTimeout(() => {
-                done(a + b + c + d);
-            }, 3000);
+        (a, b, done) => {
+            setTimeout(() => done(a + b), 20);
         },
-        1,
-        2,
-        3,
         4,
+        6,
     );
-
-    // here we are in the node.js context: access to console and client is available
-    console.log(result); // outputs: 10
+    assert.equal(result, 10);
 });
 ```
 
-## Related Commands {/* #related */}
+## Related commands {/* #related */}
 
--   [execute](../execute)
--   [setTimeout](../setTimeout)
+-   [execute](./execute.mdx)
+-   [element.executeAsync](../element/executeAsync.mdx)
+-   [setTimeout](./setTimeout.mdx)
 
-## References
+## References {/* #references */}
 
-We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/browser/executeAsync), from which we drew some information while writing our version.
+This page draws on the [original WebdriverIO article](https://webdriver.io/docs/api/browser/executeAsync).

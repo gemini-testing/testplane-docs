@@ -1,0 +1,22 @@
+[13:27:08 +0300] ✓ diagnostic: reset networking using the same CDP session [chrome:e53a1ba2756882e1b69954d372d2a0b3, pid:78172] - 140ms
+[13:27:10 +0300] ✘ throttleNetwork: go offline and reconnect [chrome:9eddf3fde881d0787678b476b88988bc, pid:78172] - 816ms
+[13:27:10 +0300] Total: 2 Passed: 1 Failed: 1 Skipped: 0 Retries: 0
+
+1) throttleNetwork: go offline and reconnect
+   in file diagnostics/throttleNetwork-original.testplane.js
+
+   chrome
+
+  .. | // diagnostics/throttleNetwork-original.testplane.js
+  .. |
+  17 |         await browser.throttleNetwork("online");
+  18 |     }
+> 19 |     const status = await browser.execute(async () => {
+     |                                 ^ WebdriverBidiExeception: TypeError: Failed to fetch
+  20 |         const response = await fetch("/?online-check", { cache: "no-store" });
+  21 |         return response.status;
+  22 |     });
+
+    ✘ WebdriverBidiExeception: TypeError: Failed to fetch
+        at Object.<anonymous> (/private/tmp/testplane-docs-examples-20261009/diagnostics/throttleNetwork-original.testplane.js:21:34)
+        at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

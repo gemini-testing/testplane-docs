@@ -1,0 +1,68 @@
+# waitForResponse
+
+## Overview {/* #overview */}
+
+Wait until the mock has at least one recorded response in `calls`. This is useful for observing a request started by page code without adding a fixed delay.
+
+## Usage {/* #usage */}
+
+`mock.waitForResponse({ timeout, interval, timeoutMsg })`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type** | **Default**             | **Description**                     |
+| ------------- | -------- | ----------------------- | ----------------------------------- |
+| `timeout`     | `number` | `waitTimeout` (3000 ms) | Maximum wait in milliseconds.       |
+| `interval`    | `number` | `waitInterval` (500 ms) | Polling interval in milliseconds.   |
+| `timeoutMsg`  | `string` | —                       | Custom error message for a timeout. |
+
+## Result {/* #result */}
+
+`Promise<boolean>` resolving to `true` once `calls` is nonempty. Rejects on timeout or a polling error. It does not return the response: inspect `mock.calls` separately.
+
+## Limitations {/* #limitations */}
+
+Available in both BiDi and Classic/CDP mock implementations. Old calls satisfy the condition immediately: call `mock.clear()` before triggering the operation you want to observe. In BiDi, the history is populated at `network.responseStarted`; this does not prove that the response body is consumed or the UI is updated.
+
+In bundled WDIO 9.6.2, automatic network subscription is guarded by a module-level flag. When a worker creates another browser session, response events may no longer be subscribed to. The example calls `sessionSubscribe` explicitly per session, which was verified with Testplane `testsPerSession: 1`. This is a real protocol subscription, not a replacement for the mock.
+
+## Example {/* #examples */}
+
+Use a local HTTP test site as `baseUrl`. `/` serves HTML. `/api/items` returns JSON with `source: "original"`, the request method in `method`, and the `x-example` request header in `header` (`null` when absent). `/api/other` returns the same fields with `source: "redirected"`. The examples use real requests to these endpoints.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("mock.waitForResponse: wait for a new recorded response", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        await browser.execute(async () => (await fetch("/api/items")).text());
+        await mock.waitForResponse({ timeout: 3000 });
+        mock.clear();
+        assert.equal(mock.calls.length, 0);
+        await browser.execute(() => {
+            window.requestFinished = false;
+            fetch("/api/items", { cache: "no-store" })
+                .then(response => response.text())
+                .then(() => {
+                    window.requestFinished = true;
+                });
+        });
+        assert.equal(await mock.waitForResponse({ timeout: 3000, interval: 50 }), true);
+        assert.equal(mock.calls.length, 1);
+        await browser.waitUntil(() => browser.execute(() => window.requestFinished));
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## See also {/* #see-also */}
+
+-   [browser.mock](../browser/mock.mdx)
+-   [clear](./clear.mdx)
+-   [restore](./restore.mdx)

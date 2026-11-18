@@ -1,0 +1,51 @@
+# custom$$
+
+## Overview {/* #overview */}
+
+Find elements with a custom locator strategy, passing the parent element as the final strategy argument. Make the strategy search inside that element to limit its scope.
+
+## Usage {/* #usage */}
+
+`element.custom$$(strategyName, ...strategyArguments)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**       | **Type**    | **Default** | **Description**                                    |
+| ------------------- | ----------- | ----------- | -------------------------------------------------- |
+| `strategyName`      | `string`    | Required    | Name registered with `browser.addLocatorStrategy`. |
+| `strategyArguments` | `unknown[]` | []          | Arguments passed before the parent DOM element.    |
+
+## Result {/* #result */}
+
+An awaitable array of element objects. If the strategy finds nothing, the array is empty.
+
+## Limitations {/* #limitations */}
+
+Register the strategy on the same browser instance. The parent must exist; an unknown strategy or missing parent causes an error. The callback runs in the browser and must return a DOM element or an array of DOM elements. Convert a `NodeList` with `Array.from`. Scoping is the callback’s responsibility: using `document.querySelector` still searches the whole document. This command does not wait for a particular number of children or for visibility.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("element.custom$$: find children with a custom strategy", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML =
+            '<p data-test="item">Outside</p><section id="panel"><p data-test="item">First</p><p data-test="item">Second</p></section>';
+    });
+    browser.addLocatorStrategy("byTestWithin", (value, root) =>
+        Array.from(root.querySelectorAll(`[data-test="${value}"]`)),
+    );
+    const items = await browser.$("#panel").custom$$("byTestWithin", "item");
+    assert.equal(items.length, 2);
+    assert.equal(await items[1].getText(), "Second");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [addLocatorStrategy](../browser/addLocatorStrategy.mdx)
+-   [browser.custom$$](../browser/customDollarDollar.mdx)

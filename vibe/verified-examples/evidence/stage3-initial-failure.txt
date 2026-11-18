@@ -1,0 +1,45 @@
+[14:33:57 +0300] ✓ mock.redirect: send matching requests to another endpoint [chrome:0edbf996c186007b89c76e90434b3f12, pid:20233] - 165ms
+[14:33:58 +0300] ✓ mock.redirectOnce: redirect only the next request [chrome:a8bf90e63cfbf98fc51dac0723b6ea3e, pid:20233] - 99ms
+[14:33:59 +0300] ✓ mock.request: change outgoing requests [chrome:a81c75c0fc361eb184eb063b550f5523, pid:20233] - 97ms
+[14:34:00 +0300] ✓ mock.requestOnce: change only the next request [chrome:201e2cc83f32ebd11801ff57093870e6, pid:20233] - 120ms
+[14:34:05 +0300] ✘ mock.reset: remove overrides but keep the mock usable [chrome:e955b4cfa9a7c17ff61c9935996e918a, pid:20233] - 3805ms
+[14:34:10 +0300] ✘ mock.waitForResponse: wait for a new recorded response [chrome:5cd5358202a40f0917fcfb2b48d5d0f6, pid:20233] - 3798ms
+[14:34:10 +0300] Total: 6 Passed: 4 Failed: 2 Skipped: 0 Retries: 0
+
+1) mock.reset: remove overrides but keep the mock usable
+   in file examples/mock/reset.testplane.js
+
+   chrome
+
+   . | // examples/mock/reset.testplane.js
+   . |
+   8 |         const first = await browser.execute(async () => (await fetch("/api/items", { cache: "no-store" })).json());
+   9 |         assert.equal(first.header, "overridden");
+> 10 |         await mock.waitForResponse({ timeout: 3000 });
+     |                   ^ Error: waitForResponse timed out after 3000ms
+  11 |         assert.equal(mock.reset(), mock);
+  12 |         assert.equal(mock.calls.length, 0);
+  13 |         const second = await browser.execute(async () => (await fetch("/api/items", { cache: "no-store" })).json());
+
+    ✘ Error: waitForResponse timed out after 3000ms
+        at _BidiInterception.waitForResponse (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriverio/build/node.js:4772:26)
+        at Object.<anonymous> (/private/tmp/testplane-docs-examples-20261009/examples/mock/reset.testplane.js:16:20)
+
+2) mock.waitForResponse: wait for a new recorded response
+   in file examples/mock/waitForResponse.testplane.js
+
+   chrome
+
+   . | // examples/mock/waitForResponse.testplane.js
+   . |
+   6 |     try {
+   7 |         await browser.execute(async () => (await fetch("/api/items")).text());
+>  8 |         await mock.waitForResponse({ timeout: 3000 });
+     |                   ^ Error: waitForResponse timed out after 3000ms
+   9 |         mock.clear();
+  10 |         assert.equal(mock.calls.length, 0);
+  11 |         await browser.execute(() => {
+
+    ✘ Error: waitForResponse timed out after 3000ms
+        at _BidiInterception.waitForResponse (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriverio/build/node.js:4772:26)
+        at Object.<anonymous> (/private/tmp/testplane-docs-examples-20261009/examples/mock/waitForResponse.testplane.js:8:20)

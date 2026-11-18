@@ -1,0 +1,81 @@
+# unstable_captureDomSnapshot
+
+## Overview {/* #overview */}
+
+Capture a compact textual representation of the current document or a selected subtree for diagnostics. To capture the document with options, pass the options object as the only argument.
+
+## Usage {/* #usage */}
+
+`browser.unstable_captureDomSnapshot(selector?, options?)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**           | **Type**   | **Default**                | **Description**                                                                           |
+| ----------------------- | ---------- | -------------------------- | ----------------------------------------------------------------------------------------- |
+| `selector`              | `string`   | `body` / `documentElement` | Optional CSS selector selecting the snapshot root. Omit it to start at the document body. |
+| `options.includeTags`   | `string[]` | `[]`                       | Remove names from the default excluded-tag set; not an allowlist.                         |
+| `options.excludeTags`   | `string[]` | `[]`                       | Exclude these elements with their subtrees; takes precedence over includeTags.            |
+| `options.includeAttrs`  | `string[]` | `[]`                       | Add names to the set of retained attributes.                                              |
+| `options.excludeAttrs`  | `string[]` | `[]`                       | Remove names from the retained-attribute set; takes precedence over includeAttrs.         |
+| `options.truncateText`  | `boolean`  | `true`                     | Truncate direct text nodes. This flag does not disable attribute-value truncation.        |
+| `options.maxTextLength` | `number`   | `100`                      | Maximum text or attribute length before adding `...`.                                     |
+
+## Result {/* #result */}
+
+`Promise<CaptureSnapshotResult>` with four fields:
+
+-   `snapshot`: compact, indented text, not HTML.
+-   `omittedTags`: sorted names of excluded tags encountered during traversal.
+-   `omittedAttributes`: sorted names of attributes omitted on retained elements.
+-   `textWasTruncated`: whether text or an attribute was shortened.
+
+A missing CSS match returns `snapshot: "# Element not found: <selector>"`; invalid CSS returns `"# Invalid selector: <selector>"`. These cases do not throw a selector error. These lists are diagnostics of this traversal, not a complete report of every omitted descendant.
+
+`maxTextLength` does not limit `id`, `class` or state-marker values such as `@value`. Excluded `id` and `class` are not listed in `omittedAttributes`.
+
+## Limitations {/* #limitations */}
+
+By default, `head`, `link`, `meta`, `noscript`, `script`, `slot`, `style`, `template` and `title` are excluded. Tag names are case-insensitive. Retained attributes include IDs, classes, form attributes, selected ARIA attributes and test attributes. Other attributes can be added with `includeAttrs`. Hidden retained elements are marked `@hidden`; empty uninformative elements and SVG children may be omitted. This is neither the full DOM nor an accessibility tree.
+
+The snapshot can contain input values, page text and sensitive attributes. `excludeAttrs` is not a general redaction mechanism: current input values are also recorded as `@value`. Use non-sensitive fixture data and inspect output before attaching it to logs or reports.
+
+:::warning
+
+This is an unstable Testplane API. Its signature, behavior and result format may change between versions.
+
+:::
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("browser.unstable_captureDomSnapshot: capture a filtered subtree", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML =
+            '<section id="panel" data-internal="example"><button data-test="save">Save changes</button><p>abcdefghijk</p><script type="application/json">{}</script></section><p id="outside">Outside</p>';
+    });
+    const result = await browser.unstable_captureDomSnapshot("#panel", {
+        excludeAttrs: ["data-internal"],
+        maxTextLength: 6,
+    });
+    assert.match(result.snapshot, /section#panel/);
+    assert.match(result.snapshot, /abcdef\.\.\./);
+    assert.doesNotMatch(result.snapshot, /Outside|data-internal/);
+    assert.ok(result.omittedTags.includes("script"));
+    assert.ok(result.omittedAttributes.includes("data-internal"));
+    assert.equal(result.textWasTruncated, true);
+    const missing = await browser.unstable_captureDomSnapshot("#missing");
+    assert.equal(missing.snapshot, "# Element not found: #missing");
+    const invalid = await browser.unstable_captureDomSnapshot("[");
+    assert.equal(invalid.snapshot, "# Invalid selector: [");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [element.unstable_captureDomSnapshot](../element/unstable_captureDomSnapshot.mdx)
+-   [execute](./execute.mdx)

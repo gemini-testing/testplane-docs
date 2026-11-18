@@ -2,47 +2,60 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `abort`, чтобы прервать запрос с заданной ошибкой.
-
-Запрос можно прервать с одной из следующих ошибок:
-
--   Failed
--   Aborted
--   TimedOut
--   AccessDenied
--   ConnectionClosed | ConnectionReset | ConnectionRefused | ConnectionAborted | ConnectionFailed
--   NameNotResolved
--   InternetDisconnected
--   AddressUnreachable
--   BlockedByClient | BlockedByResponse
+Прерывает подходящие запросы, пока правило активно. Сигнатуры BiDi и Classic/CDP различаются. В BiDi не передавайте строку с кодом ошибки: она не задает сетевую ошибку и может изменить однократность правила.
 
 ## Использование {/* #usage */}
 
-```javascript
-mock.abort(errorCode);
-```
+**BiDi:** `mock.abort(once = false)`
 
-## Параметры команды {/* #parameters */}
+**Classic/CDP:** `mock.abort(errorReason, sticky = true)`
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>errorCode</td><td>ErrorCode</td><td>Код ошибки ответа. Возможные значения см. [выше](#overview).</td></tr>
+## Параметры и результат {/* #parameters */}
 
-</tbody>
-</table>
+BiDi: `once` — boolean, по умолчанию `false`; для одного запроса удобнее [abortOnce](./abortOnce.mdx). Classic/CDP: `errorReason` задает ошибку, `sticky` по умолчанию `true` сохраняет правило.
 
-## Примеры использования {/* #examples */}
+Коды ошибки Classic/CDP: `Failed`, `Aborted`, `TimedOut`, `AccessDenied`, `ConnectionClosed`, `ConnectionReset`, `ConnectionRefused`, `ConnectionAborted`, `ConnectionFailed`, `NameNotResolved`, `InternetDisconnected`, `AddressUnreachable`, `BlockedByClient`, `BlockedByResponse`.
+
+BiDi возвращает тот же объект мока синхронно; Classic/CDP не возвращает полезного значения. Правила BiDi делят очередь с [request](./request.mdx) и [redirect](./redirect.mdx). Постоянное правило заменяет очередь, однократное сохраняет другие однократные правила и убирает постоянное. В CDP правила добавляются в очередь: ранее добавленное постоянное правило может не дать примениться следующему.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
 ```javascript
-it("should block Google Analytics from page", async ({ browser }) => {
-    const mock = await browser.mock("https://www.google-analytics.com/**");
-    mock.abort("Failed");
+const assert = require("node:assert/strict");
+
+it("mock.abort: block matching BiDi requests", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.abort();
+        for (let i = 0; i < 2; i++) {
+            const failed = await browser.execute(async () => {
+                try {
+                    await fetch("/api/items", { cache: "no-store" });
+                    return false;
+                } catch {
+                    return true;
+                }
+            });
+            assert.equal(failed, true);
+        }
+    } finally {
+        await mock.restore();
+    }
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [abortOnce](../abortOnce)
+-   [abortOnce](./abortOnce.mdx)
+-   [restore](./restore.mdx)
+-   [browser.mock](../browser/mock.mdx)
+
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/mock/abort).

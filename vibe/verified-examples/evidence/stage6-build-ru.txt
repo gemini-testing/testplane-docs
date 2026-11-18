@@ -1,0 +1,15 @@
+
+> testplane-docs@0.0.0 build
+> docusaurus build --locale ru
+
+
+ ------------------------------------------------------------------------------                                                                                                         Update available 3.10.1 → 3.10.2                                                                                                                To upgrade Docusaurus packages with the latest version, run the                                       following command:                                                         `npm i @docusaurus/core@latest                                            @docusaurus/plugin-client-redirects@latest                             @docusaurus/preset-classic@latest @docusaurus/faster@latest                  @docusaurus/module-type-aliases@latest @docusaurus/tsconfig@latest                                  @docusaurus/types@latest`                                                                                                             ------------------------------------------------------------------------------
+
+[INFO] [ru] Creating an optimized production build...
+[WARNING] Docusaurus site warnings:
+- Your site is using the SWC js loader. You can safely remove the Babel config file at `babel.config.js`.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+No admonition component found for admonition type "undefined". Using Info as fallback.
+[SUCCESS] Generated static files in "build".
+[INFO] Use `npm run serve` command to test your build locally.

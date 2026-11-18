@@ -1,0 +1,66 @@
+[16:37:14 +0300] Error: Unhandled Rejection in testplane:worker:18549:
+[16:37:14 +0300] testplane:worker:18549 terminated unexpectedly with signal: SIGTERM
+[16:37:14 +0300] ✘ mock.respond: replace response data and metadata in BiDi [chrome:aedfaa74aa7beade48277319ece7464e] - 146ms
+[16:37:14 +0300] Total: 1 Passed: 0 Failed: 1 Skipped: 0 Retries: 0
+
+1) mock.respond: replace response data and metadata in BiDi
+   in file examples/related/respond.testplane.js
+
+   chrome
+    ✘ This run has been terminated due to an unhandled promise rejection.
+
+    What happened:
+    - A promise rejected without being handled
+    What you can do:
+    - Analyze error below and check your tests for missing "await" statements
+    - Turn on the @typescript-eslint/no-floating-promises rule to catch
+      missing "await" statements automatically (works even for js files!)
+
+    The error most likely originated from one of the tests below.
+    These tests were running or recently ran:
+      - "mock.respond: replace response data and metadata in BiDi" [chrome] (started at 16:37:14, took 125ms, RUNNING, worker PID: 18549, session: aedfaa74aa7beade48277319ece7464e, retry: 0)
+        File: /private/tmp/testplane-docs-examples-20261009/examples/related/respond.testplane.js
+
+    Error details: Unhandled Rejection in testplane:worker:18549:
+    Reason: Error: WebDriver Bidi command "network.provideResponse" failed with error: invalid argument - Invalid input in "cookies"/0/"value".
+        at BidiHandler.send (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:485:23)
+        at BidiHandler.networkProvideResponse (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:899:31)
+        at Browser.value (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:1373:26)
+        at Browser.wrapCommandFn (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/wdio-utils/build/index.js:925:32)
+        at Browser.<anonymous> (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/wdio-utils/build/index.js:1027:20)
+        at #handleResponseStarted (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriverio/build/node.js:4575:28)
+        at EventEmitter.emit (node:events:519:28)
+        at EventEmitter.emit (node:domain:489:12)
+        at WebDriver.prototype.<computed> [as emit] (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/wdio-utils/build/index.js:490:29)
+        at Browser.parseBidiMessage (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:1386:10)
+
+
+
+[16:37:14 +0300] Terminating on critical error: This run has been terminated due to an unhandled promise rejection.
+
+What happened:
+- A promise rejected without being handled
+What you can do:
+- Analyze error below and check your tests for missing "await" statements
+- Turn on the @typescript-eslint/no-floating-promises rule to catch
+  missing "await" statements automatically (works even for js files!)
+
+The error most likely originated from one of the tests below.
+These tests were running or recently ran:
+  - "mock.respond: replace response data and metadata in BiDi" [chrome] (started at 16:37:14, took 125ms, RUNNING, worker PID: 18549, session: aedfaa74aa7beade48277319ece7464e, retry: 0)
+    File: /private/tmp/testplane-docs-examples-20261009/examples/related/respond.testplane.js
+
+Error details: Unhandled Rejection in testplane:worker:18549:
+Reason: Error: WebDriver Bidi command "network.provideResponse" failed with error: invalid argument - Invalid input in "cookies"/0/"value".
+    at BidiHandler.send (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:485:23)
+    at BidiHandler.networkProvideResponse (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:899:31)
+    at Browser.value (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:1373:26)
+    at Browser.wrapCommandFn (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/wdio-utils/build/index.js:925:32)
+    at Browser.<anonymous> (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/wdio-utils/build/index.js:1027:20)
+    at #handleResponseStarted (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriverio/build/node.js:4575:28)
+    at EventEmitter.emit (node:events:519:28)
+    at EventEmitter.emit (node:domain:489:12)
+    at WebDriver.prototype.<computed> [as emit] (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/wdio-utils/build/index.js:490:29)
+    at Browser.parseBidiMessage (file:///private/tmp/testplane-docs-examples-20261009/node_modules/@testplane/webdriver/build/node.js:1386:10) {
+  name: 'UnhandledRejectionTerminatedError'
+}

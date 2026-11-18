@@ -1,0 +1,57 @@
+# switchFrame
+
+## Overview {/* #overview */}
+
+Switch subsequent browser commands into an iframe, or return to the top-level document. This changes the browsing context, not the selected window.
+
+## Usage {/* #usage */}
+
+`browser.switchFrame(context)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**                                | **Default** | **Description**                                                                                                                                     |
+| ------------- | --------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `context`     | `Element \| string \| Function \| null` | Required    | An iframe element; for BiDi, also a context ID, URL, URL substring, or predicate executed in candidate frames. null selects the top-level document. |
+
+## Result {/* #result */}
+
+`Promise<string | void>`. In BiDi mode, returns the selected context ID. In Classic mode, the underlying protocol switch may return no value.
+
+## Limitations {/* #limitations */}
+
+Classic supports an iframe element and `null`, but rejects string and function selectors. Use `null` in `finally` when the following test steps must run in the main document. A frame that cannot be found causes an error. Do not confuse this command with `switchWindow`.
+
+:::warning
+
+In WDIO 9.6.2, the predicate-function branch references a global `browser`. In a standard Testplane test using the `{ browser }` argument, a matching frame is found but the command fails with `browser is not defined`. This was reproduced in a BiDi session. Use an iframe element as shown below; do not introduce a global `browser` to work around the failure.
+
+:::
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("switchFrame: enter an iframe and return", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML =
+            '<h1>Main page</h1><iframe id="frame" srcdoc="<p>Frame content</p>"></iframe>';
+    });
+    try {
+        await browser.switchFrame(browser.$("#frame"));
+        assert.equal(await browser.$("p").getText(), "Frame content");
+    } finally {
+        await browser.switchFrame(null);
+    }
+    assert.equal(await browser.$("h1").getText(), "Main page");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [switchWindow](./switchWindow.mdx)
+-   [execute](./execute.mdx)

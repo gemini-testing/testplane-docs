@@ -2,31 +2,56 @@
 
 ## Overview {/* #overview */}
 
-Use the `restore` command to perform all actions that [mock.clear()](../clear) does, as well as remove any fake return values or implementations.
+Removes the network interceptor, clears history and disables overrides. Subsequent requests proceed without this mock. This is not [browser.restore](../browser/restore.mdx), which restores emulation.
+
+Await `restore()` before sending the next request or ending the test. In BiDi, a restored mock cannot be reused: create another with [browser.mock](../browser/mock.mdx). To retain the interceptor, use [reset](./reset.mdx).
 
 ## Usage {/* #usage */}
 
+`await mock.restore()`
+
+## Parameters and result {/* #parameters */}
+
+Takes no arguments. Returns a Promise resolving to the same mock in BiDi and no useful value in Classic/CDP. Use it for cleanup in `finally`, including when an assertion fails.
+
+## Example {/* #examples */}
+
+The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
+
 ```javascript
-mock.restore();
-```
+const assert = require("node:assert/strict");
 
-## Usage Examples {/* #examples */}
-
-```javascript
-it("should demonstrate the addValue command", async ({ browser }) => {
-    const mock = await browser.mock("**/googlelogo_color_272x92dp.png");
-    mock.respond("https://webdriver.io/img/webdriverio.png");
-
-    await browser.url("https://google.com"); // will show WebdriverIO logo instead of Google logo
-    mock.restore();
-    await browser.url("https://google.com"); // will show the native Google logo
+it("mock.restore: remove interception before the next request", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.respond({ source: "mocked" });
+        const body = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        assert.equal(body.source, "mocked");
+    } finally {
+        await mock.restore();
+    }
+    const body = await browser.execute(async () =>
+        (await fetch("/api/items", { cache: "no-store" })).json(),
+    );
+    assert.equal(body.source, "original");
+    assert.equal(mock.calls.length, 0);
+    assert.throws(() => mock.respond({ source: "unused" }), /restored mock/);
 });
 ```
 
-## Related Commands {/* #related */}
+## Related commands {/* #related */}
 
--   [clear](../clear)
+-   [clear](./clear.mdx)
+-   [reset](./reset.mdx)
+-   [restore](./restore.mdx)
+-   [browser.mock](../browser/mock.mdx)
 
-## References
+## References {/* #references */}
 
-We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/restore), from which we drew some information while writing our version.
+This page draws on the [original WebdriverIO article](https://webdriver.io/docs/api/mock/restore).

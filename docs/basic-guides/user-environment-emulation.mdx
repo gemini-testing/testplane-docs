@@ -327,60 +327,65 @@ it("applies styles for the dark color scheme", async ({ browser }) => {
 });
 ```
 
-## Network
+## Network {/* #network */}
 
-### Offline mode
+### Offline mode {/* #offline-mode */}
 
-To test how the application works without a network connection, use [`browser.throttleNetwork("offline")`][throttle-network].
+Use [throttleNetwork][throttle-network] to block actual requests. The example requires Chromium with CDP/Puppeteer access, one tab, `isolation: false` and `testsPerSession: 1`: the implementation selects the first Puppeteer page. Navigate before disabling the network.
 
-For example, you can test the error message displayed when a network request fails:
+In the verified Testplane 9.3.2 / WDIO 9.6.2 / Chrome 150 combination, the `online` profile did not restore connectivity after `offline`. The example therefore ends the offline session and checks connectivity in a new one rather than promising recovery through that call. Point `baseUrl` to a test HTTP server that returns `200` at the root path.
 
-```typescript
-it("shows a message when there is no network connection", async ({ browser }) => {
+```javascript
+const assert = require("node:assert/strict");
+
+// Configure testsPerSession: 1 so this offline session is not reused.
+it("throttleNetwork: check a failed request while offline", async ({ browser }) => {
     await browser.url("/");
-
     await browser.throttleNetwork("offline");
+    const failed = await browser.execute(async () => {
+        try {
+            await fetch("/?offline-check", { cache: "no-store" });
+            return false;
+        } catch {
+            return true;
+        }
+    });
+    assert.equal(failed, true);
+});
 
-    const loadOrders = await browser.getByTestId("load-orders");
-    await loadOrders.click();
-
-    const networkError = await browser.findByTestId("network-error");
-    await expect(networkError).toHaveText("No network connection");
-
-    await browser.throttleNetwork("online");
+it("throttleNetwork: the next session starts online", async ({ browser }) => {
+    await browser.url("/");
+    const status = await browser.execute(async () => {
+        const response = await fetch("/?online-check", { cache: "no-store" });
+        return response.status;
+    });
+    assert.equal(status, 200);
 });
 ```
 
-Load the page first, then disable the network before the action that sends a request. Unlike `emulate()`, `throttleNetwork()` must be called after navigation. To restore the normal network mode, use the `"online"` profile.
+### Slow connection {/* #slow-connection */}
 
-### Slow connection
+Pass an object to [throttleNetwork][throttle-network] to limit throughput. The example uses the same isolation requirements. The server at `baseUrl` must serve HTML at `/` and JSON with `source: "original"` at `/api/items`.
 
-To test the interface over a slow connection, pass network parameters to [`browser.throttleNetwork()`][throttle-network]:
+```javascript
+const assert = require("node:assert/strict");
 
-```typescript
-it("shows the loading state on a slow network", async ({ browser }) => {
-    await browser.url("/orders");
-
+it("slow network: fetch data under custom throughput limits", async ({ browser }) => {
+    await browser.url("/");
     await browser.throttleNetwork({
         offline: false,
         latency: 500,
         downloadThroughput: (50 * 1024) / 8,
         uploadThroughput: (20 * 1024) / 8,
     });
-
-    const loadOrders = await browser.getByTestId("load-orders");
-    await loadOrders.click();
-
-    const loading = await browser.findByTestId("loading");
-    await expect(loading).toBeDisplayed();
-
-    await browser.throttleNetwork("online");
+    const data = await browser.execute(async () =>
+        (await fetch("/api/items", { cache: "no-store" })).json(),
+    );
+    assert.equal(data.source, "original");
 });
 ```
 
-The object contains four fields: `offline`, the `latency` in milliseconds, and the `downloadThroughput` and `uploadThroughput` rates in bytes per second.
-
-For common network conditions, you do not have to specify the parameters manually. Pass the name of a predefined profile instead of an object, such as `"Good3G"` or `"offline"`.
+`offline` enables offline mode, `latency` is in milliseconds, and `downloadThroughput` and `uploadThroughput` are in bytes per second. You can pass a preset such as `Good3G` instead of an object. The throttled session is not reused by the next test.
 
 ### navigator.onLine
 
@@ -400,25 +405,30 @@ The emulation persists until the end of the session, so restore it in the same t
 
 `browser.emulate("onLine", false)` only changes the value of `navigator.onLine`; it does not disable the network, and HTTP requests continue to work.
 
-## CPU performance
+## CPU performance {/* #cpu-performance */}
 
-To test the interface with limited CPU performance, use [`browser.throttleCPU()`][throttle-cpu].
+[throttleCPU][throttle-cpu] slows down code execution in Chromium through CDP/Puppeteer. As with network throttling, use one tab and `isolation: false`: the command targets the first Puppeteer page. Navigate before calling it. Set `baseUrl` to a test HTML page.
 
-For example, you can test a scenario with 4× CPU slowdown as follows:
+The example applies a 2× slowdown and removes it in `finally`.
 
-```typescript
-it("works with a throttled CPU", async ({ browser }) => {
-    await browser.throttleCPU(4);
+```javascript
+const assert = require("node:assert/strict");
 
+it("throttleCPU: run a page with a slower CPU", async ({ browser }) => {
     await browser.url("/");
-
-    // ...
-
-    await browser.throttleCPU(1);
+    try {
+        await browser.throttleCPU(2);
+        await browser.execute(() => {
+            document.body.innerHTML = "<button>Ready</button>";
+        });
+        assert.equal(await browser.$("button").getText(), "Ready");
+    } finally {
+        await browser.throttleCPU(1);
+    }
 });
 ```
 
-The higher the slowdown factor, the slower the code runs. A value of `1` disables throttling.
+A larger factor slows code execution further. A value of `1` disables throttling.
 
 ## Geolocation
 
@@ -551,26 +561,26 @@ describe("dark color scheme", () => {
 
 If a setting must remain active for the entire session, create a separate browser configuration for it. This approach is more convenient for setting the browser language, running tests with JavaScript disabled, and setting a fixed window size with [`windowSize`][window-size].
 
-[emulate]: https://webdriver.io/docs/api/browser/emulate
+[emulate]: ../commands/browser/emulate.mdx
 [webdriver-bidi]: https://w3c.github.io/webdriver-bidi/
-[set-viewport]: https://webdriver.io/docs/api/browser/setViewport
+[set-viewport]: ../commands/browser/setViewport.mdx
 [set-window-size]: ../commands/browser/setWindowSize.mdx
 [window-size]: ../reference/config/browsers.mdx#window_size
 [how-to-use-cdp]: ../guides/how-to-use-cdp.mdx
-[emulate-device]: https://webdriver.io/docs/emulation#device
-[emulate-user-agent]: https://webdriver.io/docs/emulation#user-agent
+[emulate-device]: ../commands/browser/emulate.mdx#parameters
+[emulate-user-agent]: ../commands/browser/emulate.mdx#parameters
 [get-puppeteer]: ../commands/browser/getPuppeteer.mdx
 [page-set-user-agent]: https://pptr.dev/api/puppeteer.page.setuseragent
 [cdp-set-locale-override]: https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setLocaleOverride
 [page-emulate-timezone]: https://pptr.dev/api/puppeteer.page.emulatetimezone
-[emulate-clock]: https://webdriver.io/docs/emulation#clock
-[clock-tick]: https://webdriver.io/docs/api/clock/tick
-[emulate-color-scheme]: https://webdriver.io/docs/emulation#color-scheme
+[emulate-clock]: ../commands/browser/emulate.mdx#parameters
+[clock-tick]: ../commands/browser/emulate.mdx#result
+[emulate-color-scheme]: ../commands/browser/emulate.mdx#parameters
 [cdp-set-emulated-media]: https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setEmulatedMedia
-[throttle-network]: https://webdriver.io/docs/api/browser/throttleNetwork
-[emulate-online]: https://webdriver.io/docs/emulation#online-property
-[throttle-cpu]: https://webdriver.io/docs/api/browser/throttleCPU
-[emulate-geolocation]: https://webdriver.io/docs/emulation#geolocation
+[throttle-network]: ../commands/browser/throttleNetwork.mdx
+[emulate-online]: ../commands/browser/emulate.mdx#parameters
+[throttle-cpu]: ../commands/browser/throttleCPU.mdx
+[emulate-geolocation]: ../commands/browser/emulate.mdx#parameters
 [set-permissions]: https://webdriver.io/docs/api/webdriver#setpermissions
-[restore]: https://webdriver.io/docs/api/browser/restore
+[restore]: ../commands/browser/restore.mdx
 [testing-library-guide]: ../guides/how-to-add-testing-library.mdx

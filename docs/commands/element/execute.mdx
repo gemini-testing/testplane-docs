@@ -1,0 +1,52 @@
+# execute
+
+## Overview {/* #overview */}
+
+Execute JavaScript in the browser with the selected DOM element as the first argument. Use it to inspect or change DOM properties that have no dedicated command.
+
+## Usage {/* #usage */}
+
+`element.execute(script, ...args)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**             | **Default** | **Description**                                      |
+| ------------- | -------------------- | ----------- | ---------------------------------------------------- |
+| `script`      | `Function \| string` | Required    | Function, or function body, executed in the browser. |
+| `args`        | `unknown[]`          | []          | Additional arguments after the DOM element.          |
+
+## Result {/* #result */}
+
+A promise with the serialized function result. The BiDi execution path also awaits a promise returned by the function.
+
+## Limitations {/* #limitations */}
+
+The command calls `waitForExist` before execution. Browser code cannot access Node.js variables or imports through closures; pass data as arguments. This does not imply visibility or clickability. The asynchronous example below uses WebDriver BiDi.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("element.execute: pass the DOM element to a browser function", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<div id="counter" data-count="4"></div>';
+    });
+    const result = await browser.$("#counter").execute(async (element, increment) => {
+        const count = Number(element.dataset.count) + increment;
+        element.dataset.count = String(count);
+        return { count, id: element.id };
+    }, 3);
+    assert.deepEqual(result, { count: 7, id: "counter" });
+    assert.equal(await browser.$("#counter").getAttribute("data-count"), "7");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [browser.execute](../browser/execute.mdx)
+-   [executeAsync](./executeAsync.mdx)
+-   [waitForExist](./waitForExist.mdx)

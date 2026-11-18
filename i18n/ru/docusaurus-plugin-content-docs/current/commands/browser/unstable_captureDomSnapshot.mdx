@@ -1,0 +1,81 @@
+# unstable_captureDomSnapshot
+
+## Обзор {/* #overview */}
+
+Создает компактное текстовое представление текущего документа или выбранного поддерева для диагностики. Чтобы снять документ с настройками, передайте объект настроек единственным аргументом.
+
+## Использование {/* #usage */}
+
+`browser.unstable_captureDomSnapshot(selector?, options?)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**            | **Тип**    | **По умолчанию**           | **Описание**                                                                                |
+| ----------------------- | ---------- | -------------------------- | ------------------------------------------------------------------------------------------- |
+| `selector`              | `string`   | `body` / `documentElement` | Необязательный CSS-селектор корня снимка. Без него обход начинается с body документа.       |
+| `options.includeTags`   | `string[]` | `[]`                       | Убрать имена из стандартного набора исключенных тегов; это не список разрешенных тегов.     |
+| `options.excludeTags`   | `string[]` | `[]`                       | Исключить элементы вместе с поддеревьями; приоритет выше includeTags.                       |
+| `options.includeAttrs`  | `string[]` | `[]`                       | Добавить имена в набор сохраняемых атрибутов.                                               |
+| `options.excludeAttrs`  | `string[]` | `[]`                       | Убрать имена из набора сохраняемых атрибутов; приоритет выше includeAttrs.                  |
+| `options.truncateText`  | `boolean`  | `true`                     | Сокращать непосредственный текст элемента. Флаг не отключает сокращение значений атрибутов. |
+| `options.maxTextLength` | `number`   | `100`                      | Максимальная длина текста или значения атрибута до добавления `...`.                        |
+
+## Результат {/* #result */}
+
+`Promise<CaptureSnapshotResult>` с четырьмя полями:
+
+-   `snapshot`: компактный текст с отступами, а не HTML.
+-   `omittedTags`: отсортированные имена исключенных тегов, встретившихся при обходе.
+-   `omittedAttributes`: отсортированные имена пропущенных атрибутов сохраненных элементов.
+-   `textWasTruncated`: был ли сокращен текст или значение атрибута.
+
+Для отсутствующего CSS-совпадения возвращается `snapshot: "# Element not found: <selector>"`; для некорректного CSS — `"# Invalid selector: <selector>"`. В этих случаях ошибка селектора не выбрасывается. Списки описывают конкретный обход, а не всех пропущенных потомков.
+
+`maxTextLength` не ограничивает `id`, `class` и значения маркеров состояния, например `@value`. Исключенные `id` и `class` не перечисляются в `omittedAttributes`.
+
+## Ограничения {/* #limitations */}
+
+По умолчанию исключены `head`, `link`, `meta`, `noscript`, `script`, `slot`, `style`, `template` и `title`. Регистр имен тегов не учитывается. Сохраняются в том числе идентификаторы, классы, атрибуты форм, часть ARIA-атрибутов и тестовые атрибуты. Остальные добавляются через `includeAttrs`. Скрытые сохраненные элементы помечаются `@hidden`; пустые неинформативные элементы и дочерние узлы SVG могут быть пропущены. Это не полный DOM и не дерево доступности.
+
+Снимок может содержать значения полей ввода, текст страницы и чувствительные атрибуты. `excludeAttrs` — не универсальное средство удаления секретов: текущее значение input записывается также как `@value`. Используйте нечувствительные тестовые данные и проверяйте снимок перед добавлением в логи или отчеты.
+
+:::warning
+
+Это нестабильный API Testplane. Сигнатура, поведение и формат результата могут изменяться между версиями.
+
+:::
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("browser.unstable_captureDomSnapshot: capture a filtered subtree", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML =
+            '<section id="panel" data-internal="example"><button data-test="save">Save changes</button><p>abcdefghijk</p><script type="application/json">{}</script></section><p id="outside">Outside</p>';
+    });
+    const result = await browser.unstable_captureDomSnapshot("#panel", {
+        excludeAttrs: ["data-internal"],
+        maxTextLength: 6,
+    });
+    assert.match(result.snapshot, /section#panel/);
+    assert.match(result.snapshot, /abcdef\.\.\./);
+    assert.doesNotMatch(result.snapshot, /Outside|data-internal/);
+    assert.ok(result.omittedTags.includes("script"));
+    assert.ok(result.omittedAttributes.includes("data-internal"));
+    assert.equal(result.textWasTruncated, true);
+    const missing = await browser.unstable_captureDomSnapshot("#missing");
+    assert.equal(missing.snapshot, "# Element not found: #missing");
+    const invalid = await browser.unstable_captureDomSnapshot("[");
+    assert.equal(invalid.snapshot, "# Invalid selector: [");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [element.unstable_captureDomSnapshot](../element/unstable_captureDomSnapshot.mdx)
+-   [execute](./execute.mdx)

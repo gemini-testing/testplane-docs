@@ -1,0 +1,48 @@
+# custom$
+
+## Обзор {/* #overview */}
+
+Найдите один элемент с помощью стратегии, зарегистрированной через `addLocatorStrategy`. Способ выбора элемента определяет сама стратегия.
+
+## Использование {/* #usage */}
+
+`browser.custom$(strategyName, ...strategyArguments)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**        | **Тип**     | **По умолчанию** | **Описание**                            |
+| ------------------- | ----------- | ---------------- | --------------------------------------- |
+| `strategyName`      | `string`    | Обязателен       | Имя зарегистрированной стратегии.       |
+| `strategyArguments` | `unknown[]` | []               | Аргументы браузерной функции стратегии. |
+
+## Результат {/* #result */}
+
+Ожидаемая ссылка на элемент, разрешающаяся в `WebdriverIO.Element`. Если стратегия вернула несколько элементов, используется первый.
+
+## Ограничения {/* #limitations */}
+
+Неизвестное имя стратегии вызывает ошибку. Найденный элемент не обязательно видим или доступен для нажатия: используйте соответствующие ожидания или проверки. Если стратегия ничего не нашла, последующие команды элемента могут завершиться ошибкой.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("custom$: find one element with a custom strategy", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<button data-test="save">Save</button>';
+    });
+    browser.addLocatorStrategy("byTest", value => document.querySelector(`[data-test="${value}"]`));
+    const button = await browser.custom$("byTest", "save");
+    assert.equal(await button.getText(), "Save");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [addLocatorStrategy](./addLocatorStrategy.mdx)
+-   [custom$$](./customDollarDollar.mdx)
+-   [$](./$.mdx)

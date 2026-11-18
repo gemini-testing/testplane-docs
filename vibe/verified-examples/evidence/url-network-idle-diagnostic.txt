@@ -1,0 +1,20 @@
+[16:19:07 +0300] ✘ url: navigate with BiDi options and read the current URL [chrome:e066883aa87a54fa7edae53c4e843c01, pid:80491] - 855ms
+[16:19:07 +0300] Total: 1 Passed: 0 Failed: 1 Skipped: 0 Retries: 0
+
+1) url: navigate with BiDi options and read the current URL
+   in file examples/related/url.testplane.js
+
+   chrome
+
+   . | // examples/related/url.testplane.js
+   . |
+   5 |     const target = new URL("/navigation", await browser.getUrl()).href;
+   6 |     await browser.sessionSubscribe({ events: ["network.beforeRequestSent", "network.responseStarted"] });
+>  7 |     await browser.url(target, {
+     |                  ^ Error: Couldn't find request for navigation with id 236A5651DA461FE7C4D97735C6C60216
+   8 |         wait: "networkIdle",
+   9 |         timeout: 5000,
+  10 |         headers: { "x-example": "navigation" },
+
+    ✘ Error: Couldn't find request for navigation with id 236A5651DA461FE7C4D97735C6C60216
+        at Object.<anonymous> (/private/tmp/testplane-docs-examples-20261009/examples/related/url.testplane.js:12:19)

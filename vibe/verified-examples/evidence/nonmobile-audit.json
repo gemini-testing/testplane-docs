@@ -1,0 +1,74 @@
+{
+    "scope": "nonmobile; mobile stage5 deferred by user",
+    "localized_new_pages": 56,
+    "localized_modified_pages": 28,
+    "new_commands": 28,
+    "mapped_localized_blocks": 86,
+    "new_or_modified_blocks_checked": 86,
+    "test_files": 41,
+    "relative_file_links_checked": 416,
+    "export_inventory": {
+        "browser": {
+            "export_count": 44,
+            "missing": []
+        },
+        "element": {
+            "export_count": 53,
+            "missing": []
+        },
+        "mock": {
+            "methods": [
+                "abort",
+                "abortOnce",
+                "clear",
+                "redirect",
+                "redirectOnce",
+                "request",
+                "requestOnce",
+                "reset",
+                "respond",
+                "respondOnce",
+                "restore",
+                "waitForResponse"
+            ],
+            "missing": []
+        },
+        "core_browser": {
+            "methods": ["addCommand", "overwriteCommand", "addLocatorStrategy"],
+            "missing": []
+        },
+        "testplane_augmentations": {
+            "browser": [
+                "addTag",
+                "assertView",
+                "clearSession",
+                "extendOptions",
+                "getConfig",
+                "getMeta",
+                "getState",
+                "openAndWait",
+                "overwriteCommand",
+                "restoreState",
+                "runStep",
+                "saveState",
+                "setMeta",
+                "switchToRepl",
+                "unstable_captureDomSnapshot",
+                "unstable_getCdp",
+                "waitForStaticToLoad"
+            ],
+            "element": ["assertView", "moveCursorTo", "unstable_captureDomSnapshot"]
+        }
+    },
+    "explicit_anchors": "matched across locale pairs; unique and present in built HTML",
+    "navigation": "28 new command pages present in EN/RU generated navigation",
+    "legacy_examples": "unchanged examples in existing guides are out of runtime scope",
+    "runtime_scope": "42 Chrome/BiDi tests + 1 Selenium test; mobile not executed",
+    "repository_status": {
+        "/Users/sipayrt/.codex/worktrees/missing-command-docs/testplane": "clean",
+        "/Users/sipayrt/.codex/worktrees/missing-command-docs/html-reporter": "clean",
+        "/Users/sipayrt/work/gemini-testing/testplane-docs": "clean",
+        "/Users/sipayrt/work/gemini-testing/testplane": "?? docs/dependency-security.md",
+        "/Users/sipayrt/work/gemini-testing/html-reporter": "clean"
+    }
+}

@@ -1,0 +1,65 @@
+# requestOnce
+
+## Обзор {/* #overview */}
+
+Изменяет только следующий подходящий исходящий запрос. Эквивалент `mock.request(overwrite, true)`.
+
+## Использование {/* #usage */}
+
+`mock.requestOnce(overwrite)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**        | **Тип**                              | **По умолчанию** | **Описание**                                                                                                    |
+| ------------------- | ------------------------------------ | ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| `overwrite`         | `object`                             | Обязательный     | Поля запроса для переопределения.                                                                               |
+| `overwrite.body`    | `unknown \| Function`                | —                | Тело запроса: строки передаются как текст, объекты — как JSON. Ложные значения тела в этой версии игнорируются. |
+| `overwrite.cookies` | `Cookie[] \| Function`               | —                | Массив cookie в формате WebDriver.                                                                              |
+| `overwrite.headers` | `Record<string, string> \| Function` | —                | Новый набор заголовков, а не дополнение исходного.                                                              |
+| `overwrite.method`  | `string \| Function`                 | —                | HTTP-метод, например `POST`.                                                                                    |
+| `overwrite.url`     | `string \| Function`                 | —                | Абсолютный URL назначения.                                                                                      |
+
+## Результат {/* #result */}
+
+Тот же объект мока синхронно, для цепочки вызовов.
+
+## Ограничения {/* #limitations */}
+
+Нужна WebDriver BiDi-сессия (`webSocketUrl: true`): в Classic/CDP-реализации мока этого метода нет. Примеры явно подписываются на сетевые события в каждой сессии; см. [ограничение подписки](./waitForResponse.mdx#limitations). Когда мок больше не нужен, вызовите `mock.restore()` в `finally`.
+
+Переопределение меняет исходящий запрос, а не создает поддельный ответ. Поле может быть значением или синхронной функцией от события BiDi (URL находится в `event.request.url`). Переопределения запросов, перенаправления и прерывания используют общую очередь правил. Постоянное правило заменяет очередь; однократное сохраняет другие однократные правила, но удаляет постоянное. Не рассчитывайте на возврат к постоянному правилу после однократного.
+
+## Пример {/* #examples */}
+
+Укажите в `baseUrl` локальный HTTP-сайт. `/` возвращает HTML. `/api/items` возвращает JSON: `source: "original"`, метод запроса в `method` и заголовок запроса `x-example` в `header` (`null`, если заголовка нет). `/api/other` возвращает те же поля с `source: "redirected"`. Примеры выполняют настоящие запросы к этим обработчикам.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("mock.requestOnce: change only the next request", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.requestOnce({ headers: { "x-example": "once" } });
+        const first = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        const second = await browser.execute(async () =>
+            (await fetch("/api/items", { cache: "no-store" })).json(),
+        );
+        assert.equal(first.header, "once");
+        assert.equal(second.header, null);
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [request](./request.mdx)
+-   [respond](./respond.mdx)
+-   [reset](./reset.mdx)

@@ -1,0 +1,51 @@
+# restore
+
+## Overview {/* #overview */}
+
+Remove emulation installed by `emulate` on the same browser instance. This command does not restore cookies, storage, network throttling, CPU throttling or mocks.
+
+## Usage {/* #usage */}
+
+`browser.restore(scopes)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**             | **Default**           | **Description**                                                           |
+| ------------- | -------------------- | --------------------- | ------------------------------------------------------------------------- |
+| `scopes`      | `string \| string[]` | All registered scopes | One scope or several: clock, geolocation, userAgent, colorScheme, onLine. |
+
+## Result {/* #result */}
+
+`Promise<void>`. With no recorded emulation for the browser instance, the command does nothing.
+
+## Limitations {/* #limitations */}
+
+Call cleanup in the same test that enabled emulation, preferably in `finally`. For preload-based overrides, reload the page after restoration to observe the original behavior. `device` is not registered as a restore scope: call the function returned by `emulate("device", name)`. That function restores the Desktop Chrome viewport (1280 × 720, DPR 1), not the original viewport.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("restore: remove a user-agent override", async ({ browser }) => {
+    await browser.url("/");
+    const original = await browser.execute(() => navigator.userAgent);
+    await browser.emulate("userAgent", "ExampleBrowser/1.0");
+    try {
+        await browser.url("/");
+        assert.equal(await browser.execute(() => navigator.userAgent), "ExampleBrowser/1.0");
+    } finally {
+        await browser.restore("userAgent");
+    }
+    await browser.url("/");
+    assert.equal(await browser.execute(() => navigator.userAgent), original);
+});
+```
+
+## See also {/* #see-also */}
+
+-   [emulate](./emulate.mdx)
+-   [restoreState](./restoreState.mdx)
+-   [mock.restore](../mock/restore.mdx)

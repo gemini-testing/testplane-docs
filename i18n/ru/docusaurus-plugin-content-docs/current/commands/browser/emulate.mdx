@@ -1,0 +1,72 @@
+# emulate
+
+## Обзор {/* #overview */}
+
+Подмените часть браузерного окружения, например user agent или часы. Для восстановления окружения в том же тесте используйте возвращенную функцию очистки или объект часов.
+
+## Использование {/* #usage */}
+
+`browser.emulate(scope, options)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**           | **По умолчанию**        | **Описание**                                                                 |
+| ------------ | ----------------- | ----------------------- | ---------------------------------------------------------------------------- |
+| `scope`      | `string`          | Обязателен              | Один из режимов: clock, geolocation, userAgent, device, colorScheme, onLine. |
+| `options`    | Зависит от режима | Обязателен, кроме clock | Настройки выбранного режима, описанные ниже.                                 |
+
+Поддерживаемые режимы:
+
+-   `clock` — Настройки виртуальных часов, включая `now` и `toFake`; виртуальные таймеры продвигаются через `tick`.
+-   `geolocation` — Объект с координатами для `navigator.geolocation.getCurrentPosition`.
+-   `userAgent` — Строка для `navigator.userAgent`, а не HTTP-заголовков запросов.
+-   `device` — Имя поддерживаемого профиля устройства; меняет viewport, DPR и user agent, но не движок и сенсорный ввод.
+-   `colorScheme` — `"light"` или `"dark"`; в этой реализации влияет на `matchMedia`, но не на CSS-медиазапросы.
+-   `onLine` — Булево значение для `navigator.onLine`; не блокирует сетевые запросы.
+
+## Результат {/* #result */}
+
+Для `clock` — `Promise<ClockManager>`, для остальных режимов — промис с асинхронной функцией восстановления. Объект часов предоставляет методы `tick(milliseconds)`, `setSystemTime(dateOrTimestamp)`, `restore()` и `install(options)`.
+
+## Ограничения {/* #limitations */}
+
+Требуется WebDriver BiDi (`webSocketUrl: true`). Большинство режимов влияет на документы, созданные после вызова: включайте эмуляцию до перехода на страницу. Эмуляция часов также действует в текущем документе. Восстанавливайте окружение до завершения теста: следующий тест получает другой объект браузера. Неподдерживаемый режим или неверная настройка вызывают ошибку.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("emulate: control time without waiting", async ({ browser }) => {
+    await browser.url("/");
+    const clock = await browser.emulate("clock", {
+        now: new Date("2025-01-01T00:00:00.000Z"),
+        toFake: ["Date", "setTimeout", "clearTimeout"],
+    });
+    try {
+        await browser.execute(() => {
+            window.timerFired = false;
+            setTimeout(() => {
+                window.timerFired = true;
+            }, 1000);
+        });
+        assert.equal(await browser.execute(() => window.timerFired), false);
+        await clock.tick(1000);
+        assert.equal(await browser.execute(() => window.timerFired), true);
+        assert.equal(
+            await browser.execute(() => new Date().toISOString()),
+            "2025-01-01T00:00:01.000Z",
+        );
+    } finally {
+        await clock.restore();
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [restore](./restore.mdx)
+-   [setViewport](./setViewport.mdx)
+-   [Эмуляция окружения](../../basic-guides/user-environment-emulation.mdx)

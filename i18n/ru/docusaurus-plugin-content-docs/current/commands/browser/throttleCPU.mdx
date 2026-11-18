@@ -1,0 +1,49 @@
+# throttleCPU
+
+## Обзор {/* #overview */}
+
+Замедлите CPU через Chrome DevTools Protocol. Это позволяет проверить страницу при ограниченной производительности, но не воспроизводит конкретное физическое устройство.
+
+## Использование {/* #usage */}
+
+`browser.throttleCPU(factor)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**  | **По умолчанию** | **Описание**                                                                     |
+| ------------ | -------- | ---------------- | -------------------------------------------------------------------------------- |
+| `factor`     | `number` | Обязателен       | Коэффициент замедления: 1 отключает ограничение, 2 задает двукратное замедление. |
+
+## Результат {/* #result */}
+
+`Promise<void>`.
+
+## Ограничения {/* #limitations */}
+
+Требуются Chromium и доступное соединение Puppeteer/CDP. Текущая реализация выбирает первую страницу Puppeteer, которая не обязательно совпадает с активной страницей Testplane. Для примера используйте одну вкладку, `isolation: false` и `testsPerSession: 1`: новая сессия сохраняет независимость тестов. Нечисловой аргумент или недоступное CDP-соединение вызывают ошибку. Коэффициент 1 запрашивает обычный режим CPU.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("throttleCPU: run a page with a slower CPU", async ({ browser }) => {
+    await browser.url("/");
+    try {
+        await browser.throttleCPU(2);
+        await browser.execute(() => {
+            document.body.innerHTML = "<button>Ready</button>";
+        });
+        assert.equal(await browser.$("button").getText(), "Ready");
+    } finally {
+        await browser.throttleCPU(1);
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [throttleNetwork](./throttleNetwork.mdx)
+-   [getPuppeteer](./getPuppeteer.mdx)

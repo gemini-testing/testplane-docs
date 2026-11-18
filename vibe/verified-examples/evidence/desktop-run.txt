@@ -1,0 +1,47 @@
+
+> testplane-docs-examples-20261009@1.0.0 test
+> node run-examples.cjs
+
+[16:39:18 +0300] ✓ addInitScript: set a value before page scripts [chrome:a53f56edf37ce9c33678bfe627b1877d, pid:21569] - 132ms
+[16:39:19 +0300] ✓ addLocatorStrategy: find by data attribute [chrome:ded8200f58a1590d71236f09228d0ec2, pid:21569] - 93ms
+[16:39:20 +0300] ✓ custom$: find one element with a custom strategy [chrome:ad8f6b9dca630acb2a25add2dea1b424, pid:21569] - 73ms
+[16:39:21 +0300] ✓ custom$$: find several elements [chrome:9cfe7b4ca922363359b59c027a0d6111, pid:21569] - 90ms
+[16:39:22 +0300] ✓ emulate: control time without waiting [chrome:2764576d2b3a1ff015a804337d1d007e, pid:21569] - 198ms
+[16:39:23 +0300] ✓ restore: remove a user-agent override [chrome:2bbac96df2abad9e5bf861bb2521af02, pid:21569] - 165ms
+[16:39:24 +0300] ✓ setViewport: change page dimensions [chrome:ae46b5608b4cf3231fb941832bbde2f2, pid:21569] - 74ms
+[16:39:25 +0300] ✓ switchFrame: enter an iframe and return [chrome:6d54769b28de688f565778911a276e34, pid:21569] - 131ms
+[16:39:26 +0300] ✓ throttleCPU: run a page with a slower CPU [chrome:a24e2564a110c4e24209a2bcc47762b2, pid:21569] - 96ms
+[16:39:27 +0300] ✓ throttleNetwork: check a failed request while offline [chrome:254740b5797acefd0a408dea8e5e3f44, pid:21569] - 88ms
+[16:39:28 +0300] ✓ throttleNetwork: the next session starts online [chrome:4ccc4f1a875a813d946daead289a6d84, pid:21569] - 76ms
+[16:39:29 +0300] ✓ mock.abort: block matching BiDi requests [chrome:3811560bff35759bd5322554a6518165, pid:21569] - 103ms
+[16:39:31 +0300] ✓ mock.abortOnce: block one BiDi request [chrome:d6e14b4833a4ae77c443e224c2f2fce0, pid:21569] - 102ms
+[16:39:32 +0300] ✓ mock.clear: clear history but retain response rules [chrome:01ce5a3570ca1686a6b715ca53a20b2c, pid:21569] - 114ms
+[16:39:33 +0300] ✓ browser.executeAsync: return a result through the injected callback [chrome:5afe4cb4554eec6c1f9e940d8b31443a, pid:21569] - 101ms
+[16:39:34 +0300] ✓ getState: read a saved file without restoring the session [chrome:d1ee99e053149ad70388b948d8ffc0b2, pid:21569] - 99ms
+[16:39:35 +0300] ✓ browser.mock: observe and replace a BiDi response [chrome:28dd91fe5bb19ede6476f88f9e793606, pid:21569] - 92ms
+[16:39:36 +0300] ✓ commands: use the browser fixture [chrome:be025f152e633fbb5a03f1033b483c0d, pid:21569] - 79ms
+[16:39:37 +0300] ✓ commands: use this.browser with a regular function [chrome:607c3eba733df265583e965ca0ba85b7, pid:21569] - 85ms
+[16:39:38 +0300] ✓ mock.respond: replace response data and metadata in BiDi [chrome:42b0e201b40b2ee0cb7abb07aec18ce9, pid:21569] - 136ms
+[16:39:39 +0300] ✓ mock.respondOnce: consume BiDi responses in order [chrome:62addb6bb51374b2e4fea7874a4d3221, pid:21569] - 121ms
+[16:39:40 +0300] ✓ mock.restore: remove interception before the next request [chrome:e5f13b5c4a48ed8b2d41a5954405bdfb, pid:21569] - 112ms
+[16:39:41 +0300] ✓ slow network: fetch data under custom throughput limits [chrome:b084a4fd77d97d46d94dd4536282e570, pid:21569] - 779ms
+[16:39:42 +0300] ✓ throttle: use the deprecated alias in an isolated session [chrome:b31ed2b79694909b0d9bc36abff78517, pid:21569] - 124ms
+[16:39:43 +0300] ✓ url: navigate with BiDi options and read the current URL [chrome:0a78f3f9f0469ebfcb7262afdac15d48, pid:21569] - 209ms
+[16:39:44 +0300] ✓ element.custom$: search inside an element [chrome:c5f146bddf3299c0ed7c9078d3892164, pid:21569] - 82ms
+[16:39:45 +0300] ✓ element.custom$$: find children with a custom strategy [chrome:66a1bfe2e83cada8c3778dc982bcf6f1, pid:21569] - 94ms
+[16:39:46 +0300] ✓ element.execute: pass the DOM element to a browser function [chrome:16ae5e4acd309d161a8ffd0e20abb164, pid:21569] - 82ms
+[16:39:47 +0300] ✓ element.executeAsync: return data through the final callback [chrome:7ba0038cd156dba6ede6b3297f2c5dc3, pid:21569] - 109ms
+[16:39:48 +0300] ✓ getElement: inspect a resolved element object [chrome:1913cac9e2bae67586b21bb0bc2c678e, pid:21569] - 86ms
+[16:39:50 +0300] ✓ isStable: check whether element geometry changes [chrome:eb8a20cb9f6f6839503a01497a6063d8, pid:21569] - 144ms
+[16:39:51 +0300] ✓ waitForStable: wait for a size animation to stop [chrome:2471fd38ef2189ede3490206b26ecb98, pid:21569] - 631ms
+[16:39:52 +0300] ✓ mock.redirect: send matching requests to another endpoint [chrome:6575b111a2da04ce4ff1407b7e76e6c9, pid:21569] - 134ms
+[16:39:53 +0300] ✓ mock.redirectOnce: redirect only the next request [chrome:18af8605085944ae44b1b7990a33c2c4, pid:21569] - 124ms
+[16:39:54 +0300] ✓ mock.request: change outgoing requests [chrome:3e96523d89e2c99681f0307ab19c9769, pid:21569] - 114ms
+[16:39:55 +0300] ✓ mock.requestOnce: change only the next request [chrome:24edd109c776a402242d18917aac9724, pid:21569] - 110ms
+[16:39:56 +0300] ✓ mock.reset: remove overrides but keep the mock usable [chrome:47625225039efb30ea8efa55ae77b9e4, pid:21569] - 179ms
+[16:39:57 +0300] ✓ mock.waitForResponse: wait for a new recorded response [chrome:fb3a36d95d37f952911a28be67cf8b54, pid:21569] - 132ms
+[16:39:58 +0300] ✓ extendOptions: change WebdriverIO wait settings for this browser [chrome:a64f549a13a5dc0e480311d395f9e000, pid:21569] - 198ms
+[16:39:59 +0300] ✓ browser.unstable_captureDomSnapshot: capture a filtered subtree [chrome:536b577b67d621c6257c85aa723f99ae, pid:21569] - 100ms
+[16:40:00 +0300] ✓ unstable_getCdp: query the connected Chromium browser [chrome:c296762c472e7686b5bad2d6adde0e97, pid:21569] - 30ms
+[16:40:01 +0300] ✓ element.unstable_captureDomSnapshot: capture only this element [chrome:1d7b7e70a68784e048a7b63f125e7839, pid:21569] - 88ms
+[16:40:02 +0300] Total: 42 Passed: 42 Failed: 0 Skipped: 0 Retries: 0

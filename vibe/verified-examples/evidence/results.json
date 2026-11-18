@@ -1,0 +1,404 @@
+{
+    "verified_at_utc": "2026-10-14T14:38:54.496491+00:00",
+    "scope": "Nonmobile scope complete; both remaining review wording clarifications fixed in EN/RU on 2026-10-14. Mobile stage 5 and mobile links deferred by user. Publication is not part of this task.",
+    "versions": {
+        "node": "22.21.1",
+        "testplane": "9.3.2",
+        "webdriverio": "9.6.2",
+        "chrome_for_testing": "150.0.7871.124",
+        "selenium": "4.50.0"
+    },
+    "runtime": {
+        "desktop": {
+            "total": 42,
+            "passed": 42,
+            "failed": 0,
+            "retries": 0,
+            "log": "commit-check-20261014/desktop-run.log"
+        },
+        "selenium": {
+            "total": 1,
+            "passed": 1,
+            "failed": 0,
+            "retries": 0,
+            "log": "commit-check-20261014/selenium-run.log"
+        }
+    },
+    "docs": {
+        "localized_pages": 84,
+        "commands": 28,
+        "npm_test": "passed",
+        "build_en": "passed",
+        "build_ru": "passed",
+        "localized_new_pages": 56,
+        "localized_modified_pages": 28,
+        "localized_pages_with_verified_blocks": 82,
+        "verified_blocks": 86,
+        "combined_build": "passed",
+        "relative_file_links_checked": 416
+    },
+    "worktrees": {
+        "testplane-docs": {
+            "path": "/Users/sipayrt/.codex/worktrees/missing-command-docs/testplane-docs",
+            "base_sha": "7e662b60be11ac6813eca9c5d84c5142c043d01f"
+        },
+        "testplane": {
+            "path": "/Users/sipayrt/.codex/worktrees/missing-command-docs/testplane",
+            "base_sha": "e19510b247523f40c23bf1dcbb719830220d6357"
+        },
+        "html-reporter": {
+            "path": "/Users/sipayrt/.codex/worktrees/missing-command-docs/html-reporter",
+            "base_sha": "d24b6b72418a28f66ff5567f7b14a142b4b8d5e9"
+        }
+    },
+    "examples": [
+        {
+            "page": "docs/commands/browser/addInitScript.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/addInitScript.mdx",
+            "test": "examples/browser/addInitScript.testplane.js",
+            "sha256": "bb1ea8a61cb14b83ade111b0bdc397a1de77ffa6077abe5e20a3a462eea41fa1"
+        },
+        {
+            "page": "docs/commands/browser/addLocatorStrategy.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/addLocatorStrategy.mdx",
+            "test": "examples/browser/addLocatorStrategy.testplane.js",
+            "sha256": "e2db1e4acbe31ce56504fd1a05fe59f6af573d3fc0e114c01aa0a47f26641a66"
+        },
+        {
+            "page": "docs/commands/browser/customDollar.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/customDollar.mdx",
+            "test": "examples/browser/customDollar.testplane.js",
+            "sha256": "dbe9d45b25ee31681c746d3efd6f0381e71d4b31101348376fd0c49d9c029d63"
+        },
+        {
+            "page": "docs/commands/browser/customDollarDollar.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/customDollarDollar.mdx",
+            "test": "examples/browser/customDollarDollar.testplane.js",
+            "sha256": "219b07ca4c8090feaad23176483749234a78f312dcbf79733badff189bb3a82c"
+        },
+        {
+            "page": "docs/commands/browser/downloadFile.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/downloadFile.mdx",
+            "test": "examples/selenium/downloadFile.testplane.js",
+            "sha256": "f13c26d07d991df150afee9411045f2a149a6343dc30790e1a7d489c669b35c6"
+        },
+        {
+            "page": "docs/commands/browser/emulate.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/emulate.mdx",
+            "test": "examples/browser/emulate.testplane.js",
+            "sha256": "d525d1ece01bc94c22705f1deff77be9965bdb110b8e3f08de9238d702f4b38a"
+        },
+        {
+            "page": "docs/commands/browser/extendOptions.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/extendOptions.mdx",
+            "test": "examples/testplane-browser/extendOptions.testplane.js",
+            "sha256": "2c1f59fa75d8cd9f3a5f238f1e8a0652d0b3196b49dd84b8ae54103a1ffa5910"
+        },
+        {
+            "page": "docs/commands/browser/restore.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/restore.mdx",
+            "test": "examples/browser/restore.testplane.js",
+            "sha256": "d67d1c0ceec6851dd7d4899e13e6943f2d92991386e76318bc1f7a485ba1d817"
+        },
+        {
+            "page": "docs/commands/browser/setViewport.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/setViewport.mdx",
+            "test": "examples/browser/setViewport.testplane.js",
+            "sha256": "a9e21cedb776167e6a798568439165abce6c2ee19e871d11b822e49af906ab95"
+        },
+        {
+            "page": "docs/commands/browser/switchFrame.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/switchFrame.mdx",
+            "test": "examples/browser/switchFrame.testplane.js",
+            "sha256": "83e2421201ade409ae8163f29e1f823c8a81e85af31cdf9792228696ce50e6c1"
+        },
+        {
+            "page": "docs/commands/browser/throttleCPU.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/throttleCPU.mdx",
+            "test": "examples/browser/throttleCPU.testplane.js",
+            "sha256": "968fd888a124f5db03f24cface4e50fdb1b3406da3d9388dafc929bc046785cd"
+        },
+        {
+            "page": "docs/commands/browser/throttleNetwork.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/throttleNetwork.mdx",
+            "test": "examples/browser/throttleNetwork.testplane.js",
+            "sha256": "b3496e94bafd2482a2e032dc325733f2ca9d023a712d33ffbff156a0bb51ade8"
+        },
+        {
+            "page": "docs/commands/browser/unstable_captureDomSnapshot.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/unstable_captureDomSnapshot.mdx",
+            "test": "examples/testplane-browser/unstable_captureDomSnapshot.testplane.js",
+            "sha256": "f551df7c8ae0e74f91ad9204cb8115dfa8cf1c726d6821a8f1f512fb1f27417e"
+        },
+        {
+            "page": "docs/commands/browser/unstable_getCdp.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/unstable_getCdp.mdx",
+            "test": "examples/testplane-browser/unstable_getCdp.testplane.js",
+            "sha256": "bf5b809d5084250ac88a74fc382d714ffc91e03fd4e117fcb9c1f22dcd278753"
+        },
+        {
+            "page": "docs/commands/element/customDollar.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/customDollar.mdx",
+            "test": "examples/element/customDollar.testplane.js",
+            "sha256": "b3a579688123360632e96756f0936aed58c707e7d1e5234c0a84c464067265f2"
+        },
+        {
+            "page": "docs/commands/element/customDollarDollar.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/customDollarDollar.mdx",
+            "test": "examples/element/customDollarDollar.testplane.js",
+            "sha256": "fa0a81cc4d34ce4a07759adde8d57c2a1e258cfab6e7680c812ea2372056c4c7"
+        },
+        {
+            "page": "docs/commands/element/execute.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/execute.mdx",
+            "test": "examples/element/execute.testplane.js",
+            "sha256": "cc1c8428ffe01e8e0170dfe955218fc22ec6a01f9a2d297f32d7d6b7f8705461"
+        },
+        {
+            "page": "docs/commands/element/executeAsync.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/executeAsync.mdx",
+            "test": "examples/element/executeAsync.testplane.js",
+            "sha256": "266df3b783ddac471147851f8d27bbfb6ee4c4a3bb0d15aff55f8a654c2fc6f4"
+        },
+        {
+            "page": "docs/commands/element/getElement.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/getElement.mdx",
+            "test": "examples/element/getElement.testplane.js",
+            "sha256": "feefbd6979f8493a2fdd5b4870f8024cdd7d27a4f9a292e83bdf3d6b69dd6cb1"
+        },
+        {
+            "page": "docs/commands/element/isStable.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/isStable.mdx",
+            "test": "examples/element/isStable.testplane.js",
+            "sha256": "ee082258ad603829340ba5eac5d485e3304619e7949ab65f8880f7c8baeb633e"
+        },
+        {
+            "page": "docs/commands/element/unstable_captureDomSnapshot.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/unstable_captureDomSnapshot.mdx",
+            "test": "examples/testplane-element/unstable_captureDomSnapshot.testplane.js",
+            "sha256": "be199e34a79a42115aad07225acf10116e5806dc47ddb1d134ade4fda93bed30"
+        },
+        {
+            "page": "docs/commands/element/waitForStable.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/waitForStable.mdx",
+            "test": "examples/element/waitForStable.testplane.js",
+            "sha256": "9066ff7b7cb5a3175e36e932a84abea58ea84ded8978eddce59a1569fb086edf"
+        },
+        {
+            "page": "docs/commands/mock/redirect.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/redirect.mdx",
+            "test": "examples/mock/redirect.testplane.js",
+            "sha256": "f362a733e4909eb4b58e60bb45cc92ade9bf933ea3723c38bc939b13fce9f42e"
+        },
+        {
+            "page": "docs/commands/mock/redirectOnce.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/redirectOnce.mdx",
+            "test": "examples/mock/redirectOnce.testplane.js",
+            "sha256": "ed86e4c7146b3484f941e186ac4c49baecd4148bbb358d15e3363a2a622d8ed0"
+        },
+        {
+            "page": "docs/commands/mock/request.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/request.mdx",
+            "test": "examples/mock/request.testplane.js",
+            "sha256": "b8da8bfc95355851d8a01785b798961171b811104e97f4b2eb52a7fad504165c"
+        },
+        {
+            "page": "docs/commands/mock/requestOnce.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/requestOnce.mdx",
+            "test": "examples/mock/requestOnce.testplane.js",
+            "sha256": "e339931f04966a2aa0e87f4176b215c1feb0f333c30de876fcec4b786b95d435"
+        },
+        {
+            "page": "docs/commands/mock/reset.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/reset.mdx",
+            "test": "examples/mock/reset.testplane.js",
+            "sha256": "3fe14483ea475775f8f91baf57058d516a6e25eb004448918f0ec77dae2fec99"
+        },
+        {
+            "page": "docs/commands/mock/waitForResponse.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/waitForResponse.mdx",
+            "test": "examples/mock/waitForResponse.testplane.js",
+            "sha256": "d78605f47c178250380369deff5a11143425e2a0fe310829b905fc9482ae74a8"
+        },
+        {
+            "page": "docs/commands/browser/getState.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/getState.mdx",
+            "test": "examples/related/getState.testplane.js",
+            "sha256": "436875f2534701695a3c767da1fb6234d01fd34d15562f0cc152abefe19f4706"
+        },
+        {
+            "page": "docs/commands/browser/url.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/url.mdx",
+            "test": "examples/related/url.testplane.js",
+            "sha256": "9631e160135bc2e2a60190ea4e417c1b980527eb5bcc022af7ca726939a2ff23"
+        },
+        {
+            "page": "docs/commands/browser/executeAsync.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/executeAsync.mdx",
+            "test": "examples/related/executeAsync.testplane.js",
+            "sha256": "e356a27fa52422114b132925b0677afd048ceb11183aa8f0b9fd3ffcfd1365fb"
+        },
+        {
+            "page": "docs/commands/browser/throttle.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/throttle.mdx",
+            "test": "examples/related/throttle.testplane.js",
+            "sha256": "8ff3e494546ffb0534d3afe97da31b7a020ac01d7380646c107e988967abcfac"
+        },
+        {
+            "page": "docs/commands/browser/mock.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/mock.mdx",
+            "test": "examples/related/mock.testplane.js",
+            "sha256": "d2c152fdefa34c00f5667c1583f4b75655482216dd3dfa5c13d1958e8762671a"
+        },
+        {
+            "page": "docs/commands/mock/abort.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/abort.mdx",
+            "test": "examples/related/abort.testplane.js",
+            "sha256": "aec9e28a6676cf70bf66bdc72e8a466db5ec19cfd759176f1a1257ca34d025e2"
+        },
+        {
+            "page": "docs/commands/mock/abortOnce.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/abortOnce.mdx",
+            "test": "examples/related/abortOnce.testplane.js",
+            "sha256": "52bcbe56f930af6174ee870b2e6bd27a352001038d9317018d7f530dacbe598b"
+        },
+        {
+            "page": "docs/commands/mock/respond.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/respond.mdx",
+            "test": "examples/related/respond.testplane.js",
+            "sha256": "24ffd149c46e561bd401905eacdd54161b755e047787016bed06ec8a729345e1"
+        },
+        {
+            "page": "docs/commands/mock/respondOnce.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/respondOnce.mdx",
+            "test": "examples/related/respondOnce.testplane.js",
+            "sha256": "91b19acf6ff1af404dbe30ef3429503cea39388ddaf755df5a7c473d13b90cf1"
+        },
+        {
+            "page": "docs/commands/mock/clear.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/clear.mdx",
+            "test": "examples/related/clear.testplane.js",
+            "sha256": "492b041e8070ba8d34da0a719e399aea88dc21d2e5a0ebdd3fdf44e30f14c9af"
+        },
+        {
+            "page": "docs/commands/mock/restore.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/restore.mdx",
+            "test": "examples/related/restore.testplane.js",
+            "sha256": "94b75b88a21fe768831cfabed74af9467e6dc93d36affc338c2c715af310b1a0"
+        },
+        {
+            "page": "docs/commands/overview.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/commands/overview.mdx",
+            "test": "examples/related/overview.testplane.js",
+            "sha256": "19de249697daf73acc83d6e417d0e5f7f03d9bde4117bc3fe9542062c515c48f"
+        },
+        {
+            "page": "docs/basic-guides/user-environment-emulation.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/basic-guides/user-environment-emulation.mdx",
+            "test": "examples/browser/throttleNetwork.testplane.js",
+            "blockIndex": 0,
+            "blockCount": 3,
+            "sha256": "b3496e94bafd2482a2e032dc325733f2ca9d023a712d33ffbff156a0bb51ade8"
+        },
+        {
+            "page": "docs/basic-guides/user-environment-emulation.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/basic-guides/user-environment-emulation.mdx",
+            "test": "examples/related/slowNetwork.testplane.js",
+            "blockIndex": 1,
+            "blockCount": 3,
+            "sha256": "c7adce91647bcd4fbe23f7547b78f5209b1612dc6a8b2c00d040d543a5ca4008"
+        },
+        {
+            "page": "docs/basic-guides/user-environment-emulation.mdx",
+            "translation": "i18n/ru/docusaurus-plugin-content-docs/current/basic-guides/user-environment-emulation.mdx",
+            "test": "examples/browser/throttleCPU.testplane.js",
+            "blockIndex": 2,
+            "blockCount": 3,
+            "sha256": "968fd888a124f5db03f24cface4e50fdb1b3406da3d9388dafc929bc046785cd"
+        }
+    ],
+    "unverified": [
+        "Mobile/Appium commands and associated links (user-deferred stage 5 and mobile part of stage 6)",
+        "Firefox, broad Classic/CDP, Sauce Labs and external Grid runtime compatibility",
+        "Unchanged examples in existing guides",
+        "Illustration workflow: infradocs-screenshot-producer unavailable; no illustrations created"
+    ],
+    "log_format": "Captured output; build logs normalized to LF without trailing whitespace.",
+    "review": {
+        "important_fixed": [
+            "mock.respond accepts WebDriver Cookie[]; real RED→GREEN and final whole suite passed"
+        ],
+        "minor_deferred": [],
+        "report": "review.md",
+        "independent_runtime_rerun": false,
+        "minor_fixed": [
+            "setViewport: actual WDIO client bounds distinguished from backend limits (EN/RU)",
+            "addInitScript: registration scoped to current top-level context and child frames; other windows require registration (EN/RU)"
+        ],
+        "minor_fixes_verified_at": "2026-10-14",
+        "independent_review_date": "2026-10-09"
+    },
+    "follow_up_verification": {
+        "date": "2026-10-14",
+        "previous_full_verification_at_utc": "2026-10-09T13:42:35.347994+00:00",
+        "example_project": "/private/tmp/testplane-docs-review-20261014/project",
+        "dependency_install": {
+            "command": "npm ci --legacy-peer-deps --no-audit --no-fund",
+            "result": "passed",
+            "package_and_lock_unchanged": true,
+            "plain_npm_ci": "failed: saved proxy-agent 6.5.0 conflicts with @puppeteer/browsers 3.0.4 peer >=8.0.1",
+            "failure_log": "review-fixes-20261014/npm-ci.log",
+            "success_log": "review-fixes-20261014/npm-ci-legacy.log"
+        },
+        "checks": {
+            "npm_test": "passed",
+            "build_en": "passed",
+            "build_ru": "passed",
+            "snippets": {
+                "blocks": 86,
+                "pages": 82,
+                "test_files": 41,
+                "result": "passed"
+            },
+            "visual_pages": 4,
+            "explicit_html_anchors": 28,
+            "code_links_anchors_and_examples_unchanged": true,
+            "scope_snapshot_files": 1037,
+            "mobile_changed": false,
+            "source_worktrees_clean": true
+        },
+        "logs": {
+            "npm_test": "review-fixes-20261014/final-docs-test.log",
+            "build_en": "review-fixes-20261014/build-en.log",
+            "build_ru": "review-fixes-20261014/build-ru.log",
+            "snippets": "review-fixes-20261014/snippets.log",
+            "source_and_scope": "review-fixes-20261014/scope-check.json",
+            "html": "review-fixes-20261014/html-check.json"
+        },
+        "historical_only": [
+            "docs.combined_build and docs.relative_file_links_checked refer to 2026-10-09; not rerun for this prose-only follow-up"
+        ],
+        "build_warnings": "Existing SWC/Babel, retry-progressive HTML minifier and admonition undefined warnings; builds successful",
+        "independent_review_rerun": false
+    },
+    "pre_commit_verification": {
+        "date": "2026-10-14",
+        "branch": "codex/missing-command-docs",
+        "scope": "nonmobile only; user authorized local commit, not push or publication",
+        "npm_test": "passed",
+        "build_en": "passed",
+        "build_ru": "passed",
+        "runtime": {
+            "desktop_passed": 42,
+            "selenium_passed": 1,
+            "failed": 0,
+            "retries": 0
+        },
+        "snippet_blocks": 86,
+        "snippet_pages": 82,
+        "snippet_test_files": 41,
+        "saved_test_sha256": "all match",
+        "logs_directory": "commit-check-20261014",
+        "mobile_changes": false
+    }
+}

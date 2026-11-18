@@ -1,0 +1,57 @@
+# isStable
+
+## Overview {/* #overview */}
+
+Check whether the element’s bounding rectangle stays unchanged across two animation frames. Use the result to detect geometric movement, not arbitrary page activity.
+
+## Usage {/* #usage */}
+
+`element.isStable()`
+
+## Parameters {/* #parameters */}
+
+This command has no parameters.
+
+## Result {/* #result */}
+
+`Promise<boolean>`: `true` when the compared bounding-rectangle properties are equal; otherwise `false`.
+
+## Limitations {/* #limitations */}
+
+Use an existing element in the active tab. A hidden document causes an error because animation frames do not run normally there. Opacity, colors and network activity can change without affecting geometry. A `true` result is a measurement at this moment, not a guarantee that all animations have finished.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("isStable: check whether element geometry changes", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = '<div id="box" style="width:40px;height:40px">Box</div>';
+    });
+    const box = await browser.$("#box");
+    await box.waitForExist();
+    assert.equal(await box.isStable(), true);
+    await box.execute(node => {
+        node.animate([{ transform: "translateX(0)" }, { transform: "translateX(200px)" }], {
+            duration: 500,
+            iterations: Infinity,
+            direction: "alternate",
+        });
+    });
+    try {
+        assert.equal(await box.isStable(), false);
+    } finally {
+        await box.execute(node => node.getAnimations().forEach(animation => animation.cancel()));
+    }
+    assert.equal(await box.isStable(), true);
+});
+```
+
+## See also {/* #see-also */}
+
+-   [waitForStable](./waitForStable.mdx)
+-   [waitForExist](./waitForExist.mdx)

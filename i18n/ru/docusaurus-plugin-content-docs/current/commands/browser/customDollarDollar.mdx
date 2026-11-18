@@ -1,0 +1,51 @@
+# custom$$
+
+## Обзор {/* #overview */}
+
+Найдите несколько элементов с помощью зарегистрированной стратегии. Если DOM API возвращает NodeList, преобразуйте его через `Array.from` внутри стратегии.
+
+## Использование {/* #usage */}
+
+`browser.custom$$(strategyName, ...strategyArguments)`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**        | **Тип**     | **По умолчанию** | **Описание**                            |
+| ------------------- | ----------- | ---------------- | --------------------------------------- |
+| `strategyName`      | `string`    | Обязателен       | Имя зарегистрированной стратегии.       |
+| `strategyArguments` | `unknown[]` | []               | Аргументы браузерной функции стратегии. |
+
+## Результат {/* #result */}
+
+Ожидаемая коллекция, разрешающаяся в массив объектов `WebdriverIO.Element`. Если совпадений нет, возвращается пустой массив.
+
+## Ограничения {/* #limitations */}
+
+Неизвестное имя стратегии вызывает ошибку. Команда возвращает совпадения на момент поиска и не ожидает появления заданного количества элементов.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("custom$$: find several elements", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = "<ul><li>First</li><li>Second</li></ul>";
+    });
+    browser.addLocatorStrategy("byCss", selector =>
+        Array.from(document.querySelectorAll(selector)),
+    );
+    const items = await browser.custom$$("byCss", "li");
+    assert.equal(items.length, 2);
+    assert.equal(await items[1].getText(), "Second");
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [addLocatorStrategy](./addLocatorStrategy.mdx)
+-   [custom$](./customDollar.mdx)
+-   [$$](./$$.mdx)

@@ -2,60 +2,62 @@
 
 ## Overview {/* #overview */}
 
-Use the `abortOnce` command to abort a request once with a specified error.
-
-A request can be aborted with one of the following errors:
-
--   Failed
--   Aborted
--   TimedOut
--   AccessDenied
--   ConnectionClosed | ConnectionReset | ConnectionRefused | ConnectionAborted | ConnectionFailed
--   NameNotResolved
--   InternetDisconnected
--   AddressUnreachable
--   BlockedByClient | BlockedByResponse
+Aborts one matching request. BiDi and Classic/CDP signatures differ. Do not pass an error-code string in BiDi: it does not select a network error and may change whether the rule is one-shot.
 
 ## Usage {/* #usage */}
 
-```javascript
-mock.abortOnce(errorCode);
-```
+**BiDi:** `mock.abortOnce()`
 
-## Command Parameters {/* #parameters */}
+**Classic/CDP:** `mock.abortOnce(errorReason)`
 
-<table>
-<thead>
-<tr><td>**Name**</td><td>**Type**</td><td>**Description**</td></tr>
-</thead>
-<tbody>
-<tr><td>errorCode</td><td>ErrorCode</td><td>The response error code. Possible values are listed [above](#overview).</td></tr>
+## Parameters and result {/* #parameters */}
 
-</tbody>
-</table>
+BiDi takes no arguments. Classic/CDP requires `errorReason`.
 
-## Usage Examples {/* #examples */}
+Classic/CDP error codes: `Failed`, `Aborted`, `TimedOut`, `AccessDenied`, `ConnectionClosed`, `ConnectionReset`, `ConnectionRefused`, `ConnectionAborted`, `ConnectionFailed`, `NameNotResolved`, `InternetDisconnected`, `AddressUnreachable`, `BlockedByClient`, `BlockedByResponse`.
+
+BiDi synchronously returns the same mock; Classic/CDP has no useful return value. BiDi rules share a queue with [request](./request.mdx) and [redirect](./redirect.mdx). A persistent rule replaces the queue; a one-shot rule retains other one-shot rules and removes the persistent rule. CDP appends rules: an earlier persistent rule can prevent a later rule from being used.
+
+## Example {/* #examples */}
+
+The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
 
 ```javascript
-it("should block mock only once", async ({ browser }) => {
-    const mock = await browser.mock("https://webdriver.io");
-    mock.abortOnce("Failed");
+const assert = require("node:assert/strict");
 
-    await browser
-        .url("https://webdriver.io")
-        // catch exception as the request to the page will fail
-        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
-
-    await browser.url("https://webdriver.io");
-    console.log(await browser.getTitle());
-    // will output: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+it("mock.abortOnce: block one BiDi request", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.abortOnce();
+        const failed = await browser.execute(async () => {
+            try {
+                await fetch("/api/items", { cache: "no-store" });
+                return false;
+            } catch {
+                return true;
+            }
+        });
+        assert.equal(failed, true);
+        const status = await browser.execute(
+            async () => (await fetch("/api/items", { cache: "no-store" })).status,
+        );
+        assert.equal(status, 200);
+    } finally {
+        await mock.restore();
+    }
 });
 ```
 
-## Related Commands {/* #related */}
+## Related commands {/* #related */}
 
--   [abort](../abort)
+-   [abort](./abort.mdx)
+-   [restore](./restore.mdx)
+-   [browser.mock](../browser/mock.mdx)
 
-## References
+## References {/* #references */}
 
-We'd like to give credit to the original WebdriverIO docs [article](https://webdriver.io/docs/api/mock/abortOnce), from which we drew some information while writing our version.
+This page draws on the [original WebdriverIO article](https://webdriver.io/docs/api/mock/abortOnce).

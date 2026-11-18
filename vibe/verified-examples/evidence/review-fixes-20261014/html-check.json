@@ -1,0 +1,26 @@
+[
+    {
+        "locale": "en",
+        "page": "setViewport",
+        "text": "passed",
+        "anchors": 7
+    },
+    {
+        "locale": "en",
+        "page": "addInitScript",
+        "text": "passed",
+        "anchors": 7
+    },
+    {
+        "locale": "ru",
+        "page": "setViewport",
+        "text": "passed",
+        "anchors": 7
+    },
+    {
+        "locale": "ru",
+        "page": "addInitScript",
+        "text": "passed",
+        "anchors": 7
+    }
+]

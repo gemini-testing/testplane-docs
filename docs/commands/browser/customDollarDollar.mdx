@@ -1,0 +1,51 @@
+# custom$$
+
+## Overview {/* #overview */}
+
+Find multiple elements with a registered custom strategy. Use `Array.from` in the strategy when a DOM API returns a NodeList.
+
+## Usage {/* #usage */}
+
+`browser.custom$$(strategyName, ...strategyArguments)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter**       | **Type**    | **Default** | **Description**                                |
+| ------------------- | ----------- | ----------- | ---------------------------------------------- |
+| `strategyName`      | `string`    | Required    | The name of a registered strategy.             |
+| `strategyArguments` | `unknown[]` | []          | Arguments passed to the browser-side strategy. |
+
+## Result {/* #result */}
+
+An awaitable collection resolving to an array of `WebdriverIO.Element` objects. No matches produces an empty array.
+
+## Limitations {/* #limitations */}
+
+An unknown strategy name throws an error. The command returns the matches found at the time of the query; it does not wait for a required number of elements.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript
+const assert = require("node:assert/strict");
+
+it("custom$$: find several elements", async ({ browser }) => {
+    await browser.url("/");
+    await browser.execute(() => {
+        document.body.innerHTML = "<ul><li>First</li><li>Second</li></ul>";
+    });
+    browser.addLocatorStrategy("byCss", selector =>
+        Array.from(document.querySelectorAll(selector)),
+    );
+    const items = await browser.custom$$("byCss", "li");
+    assert.equal(items.length, 2);
+    assert.equal(await items[1].getText(), "Second");
+});
+```
+
+## See also {/* #see-also */}
+
+-   [addLocatorStrategy](./addLocatorStrategy.mdx)
+-   [custom$](./customDollar.mdx)
+-   [$$](./$$.mdx)
