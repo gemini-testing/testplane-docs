@@ -7,3 +7,10 @@ package-lock.json
 storybook-static
 build
 tmp
+
+# Generated example-validation output
+test/doc-examples/artifacts/
+test/doc-examples/validation-environment.json
+test/doc-examples/testplane-debug/
+test/doc-examples/.testplane/
+test/doc-examples/generated/

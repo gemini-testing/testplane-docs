@@ -31,21 +31,12 @@ await browser.execute(script, arguments);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should inject javascript on the page", async ({ browser }) => {
-    const result = await browser.execute(
-        (a, b, c, d) => {
-            // здесь мы в browser-контексте: доступа к консоли и к клиенту у нас нет
-            return a + b + c + d;
-        },
-        1,
-        2,
-        3,
-        4,
-    );
+```javascript testplane=browser-execute
+const assert = require("node:assert/strict");
 
-    // здесь мы в node.js-контексте: доступ к консоли и к клиенту у нас есть
-    console.log(result); // выведет: 10
+it("execute: return a value from the page", async ({ browser }) => {
+    const sum = await browser.execute((a, b, c, d) => a + b + c + d, 1, 2, 3, 4);
+    assert.equal(sum, 10);
 });
 ```
 

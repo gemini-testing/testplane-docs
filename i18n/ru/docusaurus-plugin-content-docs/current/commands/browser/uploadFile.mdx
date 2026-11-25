@@ -33,17 +33,19 @@ await browser.uploadFile(localPath);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-const path = require("path");
+Пример загружает файл самого теста в ваш Selenium Grid и проверяет имя файла в поле загрузки.
 
-it("should upload a file", async ({ browser }) => {
-    await browser.url("https://the-internet.herokuapp.com/upload");
+```javascript testplane=browser-upload-file suite=selenium
+const assert = require("node:assert/strict");
+const path = require("node:path");
 
-    const filePath = "/path/to/some/file.png";
-    const remoteFilePath = await browser.uploadFile(filePath);
+it("uploadFile: select a local file on a Grid node", async ({ browser }) => {
+    await browser.url("data:text/html,<input type=file>");
+    const remotePath = await browser.uploadFile(__filename);
+    await browser.$("input[type=file]").setValue(remotePath);
 
-    await browser.$("#file-upload").setValue(remoteFilePath);
-    await browser.$("#file-submit").click();
+    const name = await browser.execute(() => document.querySelector("input").files[0]?.name);
+    assert.equal(name, path.basename(__filename));
 });
 ```
 
