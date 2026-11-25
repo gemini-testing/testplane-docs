@@ -34,15 +34,38 @@ await browser.$(selector).waitForClickable({ timeout, reverse, timeoutMsg, inter
 
 ## Примеры использования {/* #examples */}
 
-```javascript
+```html testplane-html=element-html
+<button
+    id="enable"
+    onclick="setTimeout(() => document.querySelector('#save').disabled = false, 100)"
+>
+    Enable save
+</button>
+<button id="save" disabled onclick="setTimeout(() => this.disabled = true, 100)">Save</button>
+```
+
+```javascript testplane=element-wait-for-clickable fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should detect when element is clickable", async ({ browser }) => {
-    const elem = await browser.$("#elem");
-    await elem.waitForClickable({ timeout: 3000 });
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForClickable({ timeout: 3000 });
+    assert.equal(await save.isClickable(), true);
 });
 
 it("should detect when element is no longer clickable", async ({ browser }) => {
-    const elem = await browser.$("#elem");
-    await elem.waitForClickable({ reverse: true });
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForClickable({ timeout: 3000 });
+
+    await save.click();
+    await save.waitForClickable({ reverse: true });
+    assert.equal(await save.isClickable(), false);
 });
 ```
 

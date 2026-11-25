@@ -12,18 +12,20 @@ await browser.clearSession();
 
 ## Usage Examples {/* #examples */}
 
-```typescript
-it("test", async ({ browser }) => {
-    await browser.url("https://github.com/gemini-testing/testplane");
+```typescript testplane=browser-clear-session fixture=browser-page
+const assert = require("node:assert/strict");
 
-    (await browser.getCookies()).length; // 5
-    await browser.execute(() => localStorage.length); // 2
-    await browser.execute(() => sessionStorage.length); // 1
+it("should clear cookies, localStorage and sessionStorage", async ({ browser }) => {
+    await browser.url("/fixtures/browser/session.html");
+
+    assert.equal((await browser.getCookies()).length, 1);
+    assert.equal(await browser.execute(() => localStorage.length), 2);
+    assert.equal(await browser.execute(() => sessionStorage.length), 1);
 
     await browser.clearSession();
 
-    (await browser.getCookies()).length; // 0
-    await browser.execute(() => localStorage.length); // 0
-    await browser.execute(() => sessionStorage.length); // 0
+    assert.equal((await browser.getCookies()).length, 0);
+    assert.equal(await browser.execute(() => localStorage.length), 0);
+    assert.equal(await browser.execute(() => sessionStorage.length), 0);
 });
 ```

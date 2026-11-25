@@ -14,17 +14,20 @@ await browser.$(selector).getTagName();
 
 **index.html**
 
-```html
+```html testplane-html=element-html
 <div id="elem">Lorem ipsum</div>
 ```
 
 **getTagName.js**
 
-```javascript
-it("should demonstrate the getTagName command", async ({ browser }) => {
-    const tagName = await browser.$("#elem").getTagName();
+```javascript testplane=element-get-tag-name fixture=element-html
+const assert = require("node:assert/strict");
 
+it("should demonstrate the getTagName command", async ({ browser }) => {
+    const elem = await browser.$("#elem");
+    const tagName = await elem.getTagName();
     console.log(tagName); // outputs: "div"
+    assert.equal(tagName, "div");
 });
 ```
 

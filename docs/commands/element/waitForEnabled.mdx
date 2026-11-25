@@ -36,26 +36,40 @@ await browser.$(selector).waitForEnabled({ timeout, reverse, timeoutMsg, interva
 
 **index.html**
 
-```html
-<div id="elem" style="visibility: hidden;">Hello World!</div>
-<script type="text/javascript">
-    setTimeout(() => {
-        document.getElementById("elem").style.visibility = "visible";
-    }, 2000);
-</script>
+```html testplane-html=element-html
+<button
+    id="enable"
+    onclick="setTimeout(() => document.querySelector('#save').disabled = false, 100)"
+>
+    Enable save
+</button>
+<button id="save" disabled onclick="setTimeout(() => this.disabled = true, 100)">Save</button>
 ```
 
 **waitForEnabled.js**
 
-```javascript
-it("should detect when element is visible", async ({ browser }) => {
-    const elem = await browser.$("#elem");
-    await elem.waitForDisplayed({ timeout: 3000 });
+```javascript testplane=element-wait-for-enabled fixture=element-html
+const assert = require("node:assert/strict");
+
+it("should detect when element is enabled", async ({ browser }) => {
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForEnabled({ timeout: 3000 });
+    assert.equal(await save.isEnabled(), true);
 });
 
-it("should detect when element is no longer visible", async ({ browser }) => {
-    const elem = await browser.$("#elem");
-    await elem.waitForDisplayed({ reverse: true });
+it("should detect when element is no longer enabled", async ({ browser }) => {
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForEnabled({ timeout: 3000 });
+
+    await save.click();
+    await save.waitForEnabled({ reverse: true });
+    assert.equal(await save.isEnabled(), false);
 });
 ```
 

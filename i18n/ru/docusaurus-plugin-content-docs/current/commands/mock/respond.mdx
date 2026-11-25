@@ -14,7 +14,7 @@ import Admonition from "@theme/Admonition";
 ## Использование {/* #usage */}
 
 ```javascript
-mock.respond(overwrites, { header, statusCode, fetchResponse });
+mock.respond(overwrites, { headers, statusCode, fetchResponse });
 ```
 
 ## Параметры команды {/* #parameters */}
@@ -25,56 +25,88 @@ mock.respond(overwrites, { header, statusCode, fetchResponse });
 </thead>
 <tbody>
 <tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ для перезаписи ответа.</td></tr>
-<tr><td>header</td><td>Object</td><td>Перезаписать определенные заголовки.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Перезаписать код состояния ответа.</td></tr>
-<tr><td>fetchResponse</td><td>Boolean</td><td>Получить реальный ответ, прежде чем отвечать с помощью поддельных данных.</td></tr>
+<tr><td>headers</td><td>Object | Function</td><td>Перезаписать определенные заголовки.</td></tr>
+<tr><td>statusCode</td><td>Number | Function</td><td>Перезаписать код состояния ответа.</td></tr>
+<tr><td>fetchResponse</td><td>Boolean</td><td>Только CDP: получить реальный ответ перед подстановкой данных.</td></tr>
 
 </tbody>
 </table>
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it('should demonstrate response overwrite with static data', async ({ browser }) => {
-    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/', {
-        method: 'get'
-    });
+Страница при каждом открытии запрашивает JSON-список задач. В этом примере WebDriver BiDi запрос доходит до сервера, но страница отображает подставленные задачи вместо исходных.
 
-    mock.respond([{
-        title: 'Injected (non) completed Todo',
-        order: null,
-        completed: false
-    }, {
-        title: 'Injected completed Todo',
-        order: null,
-        completed: true
-    }], {
-        statusCode: 200,
-        fetchResponse: true // по умолчанию
-    });
+```javascript testplane=mock-respond-ru fixture=matchers-intercept
+it("показывает одни и те же две подставленные задачи при каждом посещении", async ({ browser }) => {
+    const todos = await browser.mock("/fixtures/matchers/todos.json", { method: "GET" });
 
-    await browser.url('https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/');
+    // Вместо списка с сервера возвращаем две задачи: открытую и завершенную.
+    todos.respond(
+        [
+            { title: "Write the guide", order: 1, completed: false },
+            { title: "Publish the example", order: 2, completed: true },
+        ],
+        { statusCode: 200 },
+    );
 
-    await browser.$('#todo-list li').waitForExist();
+    // При каждом посещении страница запрашивает список заново; respond по-прежнему возвращает те же задачи.
+    for (let visit = 0; visit < 2; visit++) {
+        await browser.url("/fixtures/matchers/todos.html");
+        const firstTodo = await browser.$("#todo-list li");
+        await firstTodo.waitForExist();
 
-    const todoElements = await browser.$$('#todo-list li');
-    console.log(await Promise.all(todoElements.map(el => el.getText())));
-    // выведет: "[ 'Injected (non) completed Todo', 'Injected completed Todo' ]"
+        const elements = await browser.$$("#todo-list li");
+        const titles = await Promise.all(elements.map(element => element.getText()));
+        expect(titles).toEqual(["Write the guide", "Publish the example"]);
+
+        const completed = await browser.$("#todo-list li.completed");
+        await expect(completed).toHaveText("Publish the example");
+    }
 });
+```
 
-it('should demonstrate response overwrite with dynamic data', async ({ browser }) => {
-    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/');
+В сессии CDP кнопка Save отправляет название задачи и имя пользователя. Колбэк изменит задачу только для тестового пользователя. По умолчанию CDP запрашивает исходный ответ (`fetchResponse: true`); укажите `false`, чтобы сформировать ответ без сервера. Реализация для WebDriver BiDi не принимает колбэк вместо тела ответа.
 
-    mock.respond((request) => {
-        if (request.body.username === 'test') {
-            return { ...request.body, foo: 'bar' };
-        }
-        return request.body;
-    }, {
-        statusCode: () => 200,
-        headers: () => ({ foo: 'bar }),
-        fetchResponse: false // не получать настоящий ответ
-    });
+```javascript testplane=mock-respond-dynamic-ru fixture=matchers-intercept transport=cdp
+it("формирует ответ из данных отправленной задачи", async ({ browser }) => {
+    const items = await browser.mock("**/api/items", { method: "POST" });
+
+    items.respond(
+        request => {
+            // При отключенном fetchResponse читаем данные POST-запроса, а не тело ответа сервера.
+            const task = JSON.parse(request.postData);
+            if (task.username === "test") {
+                return { ...task, title: task.title + " (preview)" };
+            }
+            return task;
+        },
+        {
+            fetchResponse: false,
+            statusCode: () => 201,
+            headers: request => ({
+                "Content-Type": "application/json",
+                "X-Owner": JSON.parse(request.postData).username,
+            }),
+        },
+    );
+
+    await browser.url("/fixtures/matchers/tasks.html");
+    const username = await browser.$("#username");
+    const save = await browser.$("#save");
+    const receipt = await browser.$("#source");
+
+    // Тестовый пользователь видит измененное название; мок также возвращает свой заголовок ответа.
+    await username.setValue("test");
+    await save.click();
+    await expect(receipt).toHaveText("Ship feature (preview)");
+    await expect(receipt).toHaveAttribute("data-owner", "test");
+    await expect(receipt).toHaveAttribute("data-status", "201");
+
+    // Для другого пользователя колбэк возвращает присланную задачу без изменений.
+    await username.setValue("alice");
+    await save.click();
+    await expect(receipt).toHaveText("Ship feature");
+    await expect(receipt).toHaveAttribute("data-owner", "alice");
 });
 ```
 

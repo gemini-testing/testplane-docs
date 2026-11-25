@@ -26,15 +26,26 @@ await browser.$(selector).isEqual(el);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
+```html testplane-html=element-html
+<button id="el">Save</button> <button id="anotherEl">Cancel</button>
+```
+
+```javascript testplane=element-is-equal fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should detect if an element is equal to another", async ({ browser }) => {
     const el = await browser.$("#el");
 
     const sameEl = await browser.$("#el");
     const anotherEl = await browser.$("#anotherEl");
 
-    el.isEqual(sameEl); // outputs: true
-    el.isEqual(anotherEl); // outputs: false
+    const same = await el.isEqual(sameEl);
+    console.log(same); // outputs: true
+    assert.equal(same, true);
+
+    const matchesAnother = await el.isEqual(anotherEl);
+    console.log(matchesAnother); // outputs: false
+    assert.equal(matchesAnother, false);
 });
 ```
 

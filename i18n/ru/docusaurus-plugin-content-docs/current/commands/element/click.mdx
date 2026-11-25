@@ -42,33 +42,57 @@ await browser.$(selector).click({ button, x, y, skipRelease });
 
 **example-1.html**
 
-```javascript
-<button id="myButton" onclick="document.getElementById('someText').innerHTML='I was clicked'">Click me</button>
+```html testplane-html=element-html
+<button id="myButton" onclick="document.querySelector('#someText').textContent = 'I was clicked'">
+    Click me
+</button>
 <div id="someText">I was not clicked</div>
 ```
 
 **click-1.js**
 
-```javascript
+```javascript testplane=element-click fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should demonstrate the click command", async ({ browser }) => {
     const myButton = await browser.$("#myButton");
     await myButton.click();
 
     const myText = await browser.$("#someText");
-    const text = await myText.getText();
-
-    assert.equal(text, "I was clicked"); // true
+    const text = await myText.getText(); // "I was clicked"
+    assert.equal(text, "I was clicked");
 });
+```
+
+Чтобы посетить каждую страницу из меню, откройте ссылку в новой вкладке, проверьте адрес и вернитесь в меню. В этом примере файлы `guide.html` и `api.html` лежат рядом со страницей меню.
+
+```html testplane-html=element-links
+<nav id="menu">
+    <a href="guide.html" target="_blank">Guide</a>
+    <a href="api.html" target="_blank">API</a>
+</nav>
 ```
 
 **example-1.js**
 
-```javascript
-it("should fetch menu links and visit each page", async ({ browser }) => {
-    const links = await browser.$$("#menu a");
+```javascript testplane=element-click-links fixture=element-links
+const assert = require("node:assert/strict");
 
-    for (let link of links) {
+it("should fetch menu links and visit each page", async ({ browser }) => {
+    const menuWindow = await browser.getWindowHandle();
+    const links = await browser.$$("#menu a");
+    assert.equal(links.length, 2);
+
+    for (const link of links) {
+        const href = await link.getProperty("href");
+        const title = await link.getText();
         await link.click();
+
+        await browser.switchWindow(href);
+        assert.equal(await browser.getUrl(), href);
+        assert.equal(await browser.getTitle(), title);
+        await browser.closeWindow();
+        await browser.switchToWindow(menuWindow);
     }
 });
 ```
@@ -77,18 +101,19 @@ it("should fetch menu links and visit each page", async ({ browser }) => {
 
 **example-2.html**
 
-```javascript
-<button id="myButton">Click me</button>
+```html testplane-html=element-click-offset
+<button id="myButton" style="width: 120px">Click me</button>
 ```
+
+Кликнем на 30 пикселей правее центра кнопки:
 
 **example-2.js**
 
-```javascript
+```javascript testplane=element-click-offset-ru fixture=element-click-offset
 it("should demonstrate a click using an offset", async ({ browser }) => {
     const myButton = await browser.$("#myButton");
 
-    // кликаем на расстоянии 30 горизонтальных пикселей
-    // от местоположения кнопки (от центра элемента)
+    // Кликаем на 30 пикселей правее центра кнопки.
     await myButton.click({ x: 30 });
 });
 ```
@@ -97,17 +122,19 @@ it("should demonstrate a click using an offset", async ({ browser }) => {
 
 **example-3.html**
 
-```javascript
-<button id="myButton">Click me</button>
+```html testplane-html=element-click-right
+<button id="myButton" style="width: 120px; height: 100px">Click me</button>
 ```
+
+Для правого клика можно указать имя или номер кнопки. Последний вызов пропускает `releaseActions`:
 
 **example-3.js**
 
-```javascript
+```javascript testplane=element-click-right-ru fixture=element-click-right
 it("should demonstrate a right click passed as string", async ({ browser }) => {
     const myButton = await browser.$("#myButton");
 
-    // открываем контекстное меню в месте расположения кнопки
+    // Открываем контекстное меню в центре кнопки.
     await myButton.click({ button: "right" });
 });
 
@@ -116,17 +143,15 @@ it("should demonstrate a right click passed as number while adding an offset", a
 }) => {
     const myButton = await browser.$("#myButton");
 
-    // открываем контекстное меню на расстоянии 30 горизонтальных и 40 вертикальных пикселей
-    // от местоположения кнопки (от центра элемента)
+    // Открываем контекстное меню на 30 пикселей правее и на 40 пикселей ниже
+    // центра кнопки.
     await myButton.click({ button: 2, x: 30, y: 40 });
 });
 
-it("should skip sending releaseAction command that cause unexpected alert closure", async ({
-    browser,
-}) => {
+it("should skip sending releaseActions to avoid closing an alert", async ({ browser }) => {
     const myButton = await browser.$("#myButton");
 
-    // пропускаем отправку releaseActions
+    // Пропускаем отправку releaseActions после клика.
     await myButton.click({ button: 2, x: 30, y: 40, skipRelease: true });
 });
 ```

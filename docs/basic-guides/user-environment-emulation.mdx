@@ -190,7 +190,7 @@ If the application formats numbers or dates through `Intl`, change the `Intl` lo
 
 For example, you can test number formatting for the German locale as follows:
 
-```typescript
+```typescript testplane=orders-locale-en fixture=environment-en
 it("formats a number for the German locale", async ({ browser }) => {
     const puppeteer = await browser.getPuppeteer();
     const [page] = await puppeteer.pages();
@@ -200,7 +200,7 @@ it("formats a number for the German locale", async ({ browser }) => {
         locale: "de-DE",
     });
 
-    await browser.url("/");
+    await browser.url("/orders");
 
     const averageValue = await browser.getByTestId("average-value");
     await expect(averageValue).toHaveText("1.234,56");
@@ -213,13 +213,13 @@ In this example, the application formats the value `1234.56` through `Intl.Numbe
 
 If the way dates and times are displayed depends on the user's time zone, set the desired time zone using Puppeteer's [`page.emulateTimezone()`][page-emulate-timezone].
 
-```typescript
+```typescript testplane=orders-timezone-en fixture=environment-en
 it("shows the event time in the user's time zone", async ({ browser }) => {
     const puppeteer = await browser.getPuppeteer();
     const [page] = await puppeteer.pages();
 
     await page.emulateTimezone("America/New_York");
-    await browser.url("/");
+    await browser.url("/orders");
 
     const eventTime = await browser.getByTestId("event-time");
     await expect(eventTime).toHaveText("07:00");
@@ -242,7 +242,7 @@ Unlike other `emulate()` settings, time can also be overridden on an already ope
 
 For example, you can test the state of a page at a specific time as follows:
 
-```typescript
+```typescript testplane=orders-clock-en fixture=environment-en
 it("shows an active promotion during the specified period", async ({ browser }) => {
     const clock = await browser.emulate("clock", {
         now: new Date("2024-09-04T12:30:00Z"),
@@ -250,7 +250,7 @@ it("shows an active promotion during the specified period", async ({ browser }) 
     });
 
     try {
-        await browser.url("/");
+        await browser.url("/orders");
 
         const promoStatus = await browser.getByTestId("promo-status");
         await expect(promoStatus).toHaveText("Promotion started");
@@ -264,14 +264,14 @@ it("shows an active promotion during the specified period", async ({ browser }) 
 
 [`tick(ms)`][clock-tick] advances virtual time by the specified number of milliseconds. Any timers scheduled within that interval fire as time advances.
 
-```typescript
+```typescript testplane=orders-timers-en fixture=environment-en
 it("hides the notification after 5 seconds", async ({ browser }) => {
     const clock = await browser.emulate("clock", {
         now: new Date("2024-09-04T12:30:00Z"),
     });
 
     try {
-        await browser.url("/");
+        await browser.url("/orders");
 
         await clock.tick(5000);
 
@@ -289,10 +289,10 @@ If the application determines the color scheme through `window.matchMedia()`, us
 
 For example, you can test which image is selected for the dark color scheme as follows:
 
-```typescript
+```typescript testplane=orders-scheme-en fixture=environment-en
 it("shows the image for the dark color scheme", async ({ browser }) => {
     await browser.emulate("colorScheme", "dark");
-    await browser.url("/");
+    await browser.url("/orders");
 
     const themeLogo = await browser.getByTestId("theme-logo");
     await expect(themeLogo).toHaveAttribute("src", "/images/night.svg");
@@ -303,7 +303,7 @@ The emulation persists until the end of the session, so restore it in the same t
 
 `browser.emulate("colorScheme")` changes the result of `matchMedia()` for `prefers-color-scheme` but does not affect CSS. To test styles from `@media (prefers-color-scheme)`, use [`Emulation.setEmulatedMedia`][cdp-set-emulated-media].
 
-```typescript
+```typescript testplane=orders-css-media-en fixture=environment-en
 it("applies styles for the dark color scheme", async ({ browser }) => {
     const puppeteer = await browser.getPuppeteer();
     const [page] = await puppeteer.pages();
@@ -318,7 +318,7 @@ it("applies styles for the dark color scheme", async ({ browser }) => {
         ],
     });
 
-    await browser.url("/");
+    await browser.url("/orders");
 
     const themeBox = await browser.getByTestId("theme-box");
     const background = await themeBox.getCSSProperty("background-color");
@@ -335,9 +335,9 @@ To test how the application works without a network connection, use [`browser.th
 
 For example, you can test the error message displayed when a network request fails:
 
-```typescript
+```typescript testplane=orders-offline-request-en fixture=environment-en
 it("shows a message when there is no network connection", async ({ browser }) => {
-    await browser.url("/");
+    await browser.url("/orders");
 
     await browser.throttleNetwork("offline");
 
@@ -351,13 +351,13 @@ it("shows a message when there is no network connection", async ({ browser }) =>
 });
 ```
 
-Load the page first, then disable the network before the action that sends a request. Unlike `emulate()`, `throttleNetwork()` must be called after navigation. To restore the normal network mode, use the `"online"` profile.
+In this scenario, load the page before going offline: the test checks the error from the button’s request, not a failed page load. To test navigation itself on a slow connection, apply the network profile before opening the page. To restore the normal network mode, use the `"online"` profile.
 
 ### Slow connection
 
 To test the interface over a slow connection, pass network parameters to [`browser.throttleNetwork()`][throttle-network]:
 
-```typescript
+```typescript testplane=orders-slow-request-en fixture=environment-en
 it("shows the loading state on a slow network", async ({ browser }) => {
     await browser.url("/orders");
 
@@ -386,10 +386,10 @@ For common network conditions, you do not have to specify the parameters manuall
 
 If the application determines the connection state using `navigator.onLine`, use [`browser.emulate("onLine")`][emulate-online]:
 
-```typescript
+```typescript testplane=orders-online-en fixture=environment-en
 it("shows offline mode", async ({ browser }) => {
     await browser.emulate("onLine", false);
-    await browser.url("/");
+    await browser.url("/orders");
 
     const connectionStatus = await browser.getByTestId("connection-status");
     await expect(connectionStatus).toHaveText("Offline");
@@ -426,14 +426,14 @@ If the application uses the user's coordinates, set them through [`browser.emula
 
 For example, you can test the search for the nearest pickup point for a user in Berlin as follows:
 
-```typescript
+```typescript testplane=orders-geolocation-en fixture=environment-en-geolocation
 it("shows the nearest pickup point", async ({ browser }) => {
     await browser.emulate("geolocation", {
         latitude: 52.52,
         longitude: 13.405,
     });
 
-    await browser.url("/");
+    await browser.url("/orders");
 
     const nearestPoint = await browser.findByTestId("nearest-point");
     await expect(nearestPoint).toHaveText("Pickup point at Alexanderplatz");
@@ -450,9 +450,9 @@ If application behavior depends on browser permissions, use [`browser.setPermiss
 
 For example, you can test the notification status as follows:
 
-```typescript
+```typescript testplane=orders-permissions-en fixture=environment-en
 it("shows the notification status", async ({ browser }) => {
-    await browser.url("/");
+    await browser.url("/orders");
 
     await browser.setPermissions(
         {
@@ -515,9 +515,9 @@ In Firefox, `javascript.enabled` takes a Boolean value rather than a number.
 
 The test then starts directly in a browser with JavaScript disabled:
 
-```typescript
+```typescript testplane=orders-nojs-en fixture=environment-en-nojs
 it("shows the content without JavaScript", async ({ browser }) => {
-    await browser.url("/");
+    await browser.url("/orders");
 
     await expect(browser.$("[data-testid='no-js-message']")).toBeDisplayed();
 });
@@ -531,7 +531,7 @@ Restore emulation in the same test where you enabled it or in `afterEach`. Do no
 
 If the same emulation is required in multiple tests, enable and restore it in hooks:
 
-```typescript
+```typescript testplane=orders-restore-en fixture=environment-en
 describe("dark color scheme", () => {
     beforeEach(async ({ browser }) => {
         await browser.emulate("colorScheme", "dark");
@@ -542,9 +542,11 @@ describe("dark color scheme", () => {
     });
 
     it("shows the image for the dark color scheme", async ({ browser }) => {
-        await browser.url("/");
+        await browser.url("/orders");
 
-        // ...
+        // Other steps of the test go here.
+        const image = await browser.getByTestId("theme-logo");
+        await expect(image).toHaveAttribute("src", "/images/night.svg");
     });
 });
 ```

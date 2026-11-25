@@ -14,9 +14,11 @@ import Admonition from "@theme/Admonition";
 
 ### Пример: замедляем скорость процессора в 8 раз
 
-```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
-    // Получаем инстанс puppeteer'а
+В примерах ниже по пути `/navigation` открывается страница с заголовком «Navigation». Чтобы запустить тесты на своем сайте, укажите его адрес в `baseUrl`, а в тестах подставьте путь страницы и ее заголовок.
+
+```javascript testplane=guide-cpu-emulation-ru fixture=guides-page transport=cdp
+it("открывает страницу при восьмикратном замедлении процессора", async function ({ browser }) {
+    // Получаем экземпляр Puppeteer
     const puppeteer = await browser.getPuppeteer();
 
     // Получаем первую открытую страницу (считаем, что она активная в данный момент)
@@ -25,7 +27,12 @@ it("should open yandex.ru with emulation 8x slower CPU", async function ({ brows
     // Замедляем скорость процессора в 8 раз
     await page.emulateCPUThrottling(8);
 
-    await browser.url("https://yandex.ru");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await page.emulateCPUThrottling(1);
+    }
 });
 ```
 
@@ -37,9 +44,9 @@ it("should open yandex.ru with emulation 8x slower CPU", async function ({ brows
 
 </Admonition>
 
-Огромное количество пользователей пользуются сервисами с мобильных устройств, на которых скорость интернета бывает довольно медленной или совсем пропадает на время. В _webdriverio_ мы можем ограничить пропускную способность сети с помощью метода [throttle][throttle] и таким образом протестировать поведение сайта в сетях с разной пропускной способностью.
+Огромное количество пользователей пользуются сервисами с мобильных устройств, на которых скорость интернета бывает довольно медленной или совсем пропадает на время. В _webdriverio_ мы можем ограничить пропускную способность сети с помощью метода [throttleNetwork][throttle] и таким образом протестировать поведение сайта в сетях с разной пропускной способностью.
 
-Помимо индивидуальных настроек метод [throttle][throttle] поддерживает следующие готовые пресеты:
+Помимо индивидуальных настроек метод [throttleNetwork][throttle] поддерживает следующие готовые пресеты:
 
 -   offline | online
 -   GPRS
@@ -51,14 +58,19 @@ it("should open yandex.ru with emulation 8x slower CPU", async function ({ brows
 
 ### Пример 1: эмуляция 2G-соединения
 
-Сэмулируем 2G-соединение и откроем yandex.ru в Хроме с эмуляцией телефона:
+Ограничим скорость сети в обычной вкладке Chrome и убедимся, что страница по-прежнему доступна:
 
-```javascript
-it("should open yandex.ru with emulation of 2G-connection", async function ({ browser }) {
+```javascript testplane=guide-network-preset-ru fixture=guides-page transport=cdp
+it("открывает страницу при 2G-соединении", async function ({ browser }) {
     // Имитируем 2G-соединение
-    await browser.throttle("Good2G");
+    await browser.throttleNetwork("Good2G");
 
-    await browser.url("https://yandex.ru");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
 });
 ```
 
@@ -66,19 +78,24 @@ it("should open yandex.ru with emulation of 2G-connection", async function ({ br
 
 Также мы можем сэмулировать соединение с конкретными характеристиками:
 
-```javascript
-it("should open yandex.ru with emulation of custom connection", async function ({ browser }) {
+```javascript testplane=guide-network-custom-ru fixture=guides-page transport=cdp
+it("открывает страницу с заданными параметрами сети", async function ({ browser }) {
     // Имитируем соединение в сети с заданными характеристиками
-    await browser.throttle({
-        offline: false, // имитация отключения от интернета
-        downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (byte/sec)
-        uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (byte/sec)
-        latency: 10, // минимальная задержка от отправки запроса до получения заголовков ответа
+    await browser.throttleNetwork({
+        offline: false, // false — сеть остается доступной
+        downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (байт/с)
+        uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (байт/с)
+        latency: 10, // минимальная задержка в миллисекундах от отправки запроса до получения заголовков ответа
     });
 
-    await browser.url("https://yandex.ru");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
 });
 ```
 
 [emulate-cpu-throttling]: https://pptr.dev/api/puppeteer.page.emulatecputhrottling
-[throttle]: ../../commands/browser/throttle
+[throttle]: https://webdriver.io/docs/api/browser/throttleNetwork

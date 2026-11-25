@@ -12,11 +12,15 @@ await browser.getWindowSize();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should return browser window size", async ({ browser }) => {
+```javascript testplane=browser-get-window-size fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("should return the browser window size", async ({ browser }) => {
+    await browser.setWindowSize(1024, 768);
     const windowSize = await browser.getWindowSize();
 
-    console.log(windowSize); // outputs: { width: 1280, height: 767 }
+    console.log(windowSize); // outputs: { width: 1024, height: 768 }
+    assert.deepEqual(windowSize, { width: 1024, height: 768 });
 });
 ```
 

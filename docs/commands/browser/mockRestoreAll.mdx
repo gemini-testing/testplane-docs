@@ -12,20 +12,28 @@ await browser.mockRestoreAll();
 
 ## Usage Examples {/* #examples */}
 
-```typescript
-it("should restore all mocks", async ({ browser }) => {
-    const googleMock = await browser.mock("https://google.com/");
-    googleMock.respond("https://webdriver.io");
-    const wdioMock = await browser.mock("https://webdriver.io");
-    wdioMock.respond("http://json.org");
+```typescript testplane=browser-mock-restore-all fixture=browser-mock
+const assert = require("node:assert/strict");
 
-    await browser.url("https://google.com/");
-    console.log(await browser.getTitle()); // JSON
+it("should restore all mocks", async ({ browser }) => {
+    const origin = new URL(await browser.getUrl()).origin;
+    const pageMock = await browser.mock("/original");
+    const previewMock = await browser.mock("/fixtures/browser/preview.html");
+    await pageMock.redirect(new URL("/frame", origin).href);
+    await previewMock.redirect(new URL("/frame", origin).href);
+
+    await browser.url("/original");
+    assert.equal(await browser.getTitle(), "Frame");
+    await browser.url("/fixtures/browser/preview.html");
+    assert.equal(await browser.getTitle(), "Frame");
 
     await browser.mockRestoreAll();
 
-    await browser.url("https://google.com/");
-    console.log(await browser.getTitle()); // Google
+    // Both URLs now return their original pages.
+    await browser.url("/original");
+    assert.equal(await browser.getTitle(), "Command examples");
+    await browser.url("/fixtures/browser/preview.html");
+    assert.equal(await browser.getTitle(), "Preview");
 });
 ```
 

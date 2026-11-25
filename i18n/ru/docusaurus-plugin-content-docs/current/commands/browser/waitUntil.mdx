@@ -29,24 +29,24 @@ await browser.waitUntil(condition, { timeout, timeoutMsg, interval });
 
 **example.html**
 
-```javascript
+```html testplane-html=browser-wait-text
 <div id="someText">I am some text</div>
 <script>
     setTimeout(() => {
-        $('#someText').html('I am now different');
-    }, 1000);
+        document.querySelector("#someText").textContent = "I am now different";
+    }, 250);
 </script>
 ```
 
 **waitUntil.js**
 
-```javascript
-it("should wait until text has changed", async ({ browser }) => {
+```javascript testplane=browser-wait-until fixture=browser-wait-text
+it("should wait until the text has changed", async ({ browser }) => {
     await browser.waitUntil(
         async () => (await browser.$("#someText").getText()) === "I am now different",
         {
             timeout: 5000,
-            timeoutMsg: "expected text to be different after 5s",
+            timeoutMsg: "Expected the text to change within 5 seconds",
         },
     );
 });

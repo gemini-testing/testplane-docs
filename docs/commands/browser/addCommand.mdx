@@ -51,25 +51,30 @@ browser.addCommand(name, callback, elementScope);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-// add the getUrlAndTitle command
-browser.addCommand("getUrlAndTitle", async function (customParam) {
-    return {
-        url: await this.getUrl(), // `this` here and below refers to the "browser" object
-        title: await this.getTitle(),
-        customParam: customParam,
-    };
-});
+```javascript testplane=browser-add-command fixture=browser-page
+const assert = require("node:assert/strict");
 
-// use the new getUrlAndTitle command
-it("should use my add command", async ({ browser }) => {
-    await browser.url("https://testplane.io");
+describe("getUrlAndTitle", () => {
+    beforeEach(({ browser }) => {
+        // Add the getUrlAndTitle command.
+        browser.addCommand("getUrlAndTitle", async function (customParam) {
+            return {
+                url: await this.getUrl(), // `this` refers to the browser.
+                title: await this.getTitle(),
+                customParam,
+            };
+        });
+    });
 
-    const result = await browser.getUrlAndTitle("foobar");
+    it("should use a custom browser command", async ({ browser }) => {
+        // Use the new command on the current page.
+        await browser.url("/");
+        const result = await browser.getUrlAndTitle("foobar");
 
-    assert.strictEqual(result.url, "https://testplane.io");
-    assert.strictEqual(result.title, "Testplane Docs | Testplane Docs");
-    assert.strictEqual(result.customParam, "foobar");
+        assert.equal(result.url, await browser.getUrl());
+        assert.equal(result.title, "Command examples");
+        assert.equal(result.customParam, "foobar");
+    });
 });
 ```
 

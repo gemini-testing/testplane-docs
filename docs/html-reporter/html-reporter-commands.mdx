@@ -73,10 +73,10 @@ The `merge-reports` command supports the following required option:
     </tbody>
 </table>
 
-Usage example:
+For example, merge two local Testplane reports:
 
-```bash
-npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report -h foo=bar
+```bash testplane-project=reporter
+npx testplane merge-reports html-report custom-report -d merged-report
 ```
 
 Http headers can also be send using the environment variable — `html_reporter_headers` (has a higher priority than the cli option `--header'). Example:
@@ -139,12 +139,12 @@ npx testplane remove-unused-screens -p 'screens/**/chrome/*.png' -p 'screens/**/
 
 Specifying the folder in which to search for unused screenshots and setting _do-not-ask-questions_ option:
 
-```bash
+```bash testplane-project=reporter
 npx testplane remove-unused-screens -p 'testplane-screens-folder' --skip-questions
 ```
 
 Getting the reference information about the command:
 
-```bash
+```bash testplane-project=reporter
 npx testplane remove-unused-screens --help
 ```

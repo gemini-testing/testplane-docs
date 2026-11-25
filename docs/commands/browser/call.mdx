@@ -26,31 +26,36 @@ await browser.call(callback);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("some testing here", async ({ browser }) => {
-    await browser.url("http://google.com");
+```javascript testplane=browser-call fixture=browser-page
+const assert = require("node:assert/strict");
 
-    // make an asynchronous call using a third-party library
-    // that supports promises, e.g., a call to a backend or DB
-    // to inject a fixture
-    await browser.call(() => {
-        return somePromiseLibrary.someMethod().then(() => {
-            // ...
-        });
+const http = require("node:http");
+
+it("should wait for asynchronous Node.js APIs", async ({ browser }) => {
+    await browser.url("/");
+    const url = new URL("/api/items", await browser.getUrl());
+
+    // With a third-party library that returns a promise, return that promise from the callback.
+    // For example, a test can prepare its data in a backend or database this way.
+    // Here we read the fixture from the backend using fetch.
+    const data = await browser.call(async () => {
+        const response = await fetch(url);
+        return response.json();
     });
+    assert.equal(data.source, "original");
 
-    // example for an asynchronous call using a third-party library
-    // that does not support promises
-    const result = await browser.call(() => {
+    // A library that only takes a callback needs a Promise wrapper.
+    // Resolve it when the response arrives, or reject it on error.
+    const status = await browser.call(() => {
         return new Promise((resolve, reject) => {
-            someOtherNodeLibrary.someMethod(param1, (err, res) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(res);
+            const request = http.get(url, response => {
+                response.resume();
+                resolve(response.statusCode);
             });
+            request.on("error", reject);
         });
     });
+    assert.equal(status, 200);
 });
 ```
 

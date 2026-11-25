@@ -26,7 +26,7 @@ await browser.$(selector).getHTML(includeSelectorTag);
 
 **index.html**
 
-```javascript
+```html testplane-html=element-html
 <div id="test">
     <span>Lorem ipsum dolor amet</span>
 </div>
@@ -34,16 +34,23 @@ await browser.$(selector).getHTML(includeSelectorTag);
 
 **getHTML.js**
 
-```javascript
+```javascript testplane=element-get-html-ru fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should get html for certain elements", async ({ browser }) => {
-    var outerHTML = await browser.$("#test").getHTML();
+    const elem = await browser.$("#test");
+    const outerHTML = await elem.getHTML();
     console.log(outerHTML);
     // выведет:
-    // "<div id="test"><span>Lorem ipsum dolor amet</span></div>"
+    // <div id="test">
+    //     <span>Lorem ipsum dolor amet</span>
+    // </div>
 
-    var innerHTML = await browser.$("#test").getHTML(false);
-    console.log(innerHTML);
-    // выведет:
-    // "<span>Lorem ipsum dolor amet</span>"
+    const innerHTML = await elem.getHTML(false);
+    console.log(JSON.stringify(innerHTML));
+    // выведет: "\n    <span>Lorem ipsum dolor amet</span>\n"
+
+    assert.equal(innerHTML, "\n    <span>Lorem ipsum dolor amet</span>\n");
+    assert.equal(outerHTML, `<div id="test">${innerHTML}</div>`);
 });
 ```

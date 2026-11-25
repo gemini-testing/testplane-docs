@@ -6,7 +6,7 @@ import Admonition from "@theme/Admonition";
 
 Use the `getPuppeteer` command to get an instance of the browser's [Puppeteer][puppeteer] in order to execute specialized commands with it.
 
-Please note that all [Puppeteer][puppeteer] commands are asynchronous by default, so to switch between synchronous and asynchronous execution, be sure to wrap [Puppeteer][puppeteer] calls in [browser.call][browser-call], as shown in the example below.
+Puppeteer commands return promises; await them inside the test.
 
 <Admonition type="warning">
 The _getPuppeteer_ command only works when using _Chrome DevTools Protocol (CDP)_.
@@ -23,22 +23,28 @@ await browser.getPuppeteer();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should allow me to use Puppeteer", async ({ browser }) => {
-    await browser.url("https://webdriver.io");
+```javascript testplane=browser-get-puppeteer fixture=browser-page
+const assert = require("node:assert/strict");
 
+it("should use Puppeteer on the current page", async ({ browser }) => {
+    await browser.url("/");
+    const url = await browser.getUrl();
     const puppeteerBrowser = await browser.getPuppeteer();
 
-    // switch to Puppeteer
+    // Switch to Puppeteer and find the page opened by Testplane.
     const metrics = await browser.call(async () => {
         const pages = await puppeteerBrowser.pages();
+        const page = pages.find(page => page.url() === url);
+        assert.equal(await page.title(), "Command examples");
+        await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
-        await pages[0].setGeolocation({ latitude: 59.95, longitude: 30.31667 });
-
-        return pages[0].metrics();
+        return page.metrics();
     });
 
-    console.log(metrics.LayoutCount); // outputs: 42
+    // LayoutCount is the number of layouts; the exact value depends on the page.
+    console.log(metrics.LayoutCount);
+    assert.ok(Number.isInteger(metrics.LayoutCount) && metrics.LayoutCount >= 0);
+    assert.ok(metrics.Nodes > 0);
 });
 ```
 

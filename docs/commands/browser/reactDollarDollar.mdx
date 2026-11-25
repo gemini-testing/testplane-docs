@@ -35,16 +35,19 @@ await browser.react$$(reactComponentSelector, { props, state });
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should calculate 7 * 6", async ({ browser }) => {
-    await browser.url("https://ahfarmer.github.io/calculator/");
+```javascript testplane=browser-react-components fixture=browser-page
+const assert = require("node:assert/strict");
 
-    const orangeButtons = await browser.react$$("t", {
+it("should find the orange operator buttons", async ({ browser }) => {
+    await browser.url("/fixtures/browser/calculator16.html");
+
+    const orangeButtons = await browser.react$$("Button", {
         props: { orange: true },
     });
 
-    console.log(await Promise.all(orangeButtons.map(btn => btn.getText())));
-    // outputs: "[ '÷', 'x', '-', '+', '=' ]"
+    const labels = await Promise.all(Array.from(orangeButtons, button => button.getText()));
+    console.log(labels); // outputs: ["÷", "x", "-", "+", "="]
+    assert.deepEqual(labels, ["÷", "x", "-", "+", "="]);
 });
 ```
 

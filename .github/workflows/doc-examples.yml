@@ -1,0 +1,98 @@
+name: Documentation examples
+
+on:
+    pull_request:
+        branches: [master]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: doc-examples-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    coverage:
+        name: Examples coverage
+        runs-on: ubuntu-24.04
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.21.1
+                  cache: npm
+            - run: npm ci
+            - run: npm run test:examples:unit
+            - name: Check new and changed examples against the PR base
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+              run: npm run check:examples -- --base "$BASE_SHA"
+            - name: Publish coverage summary
+              if: ${{ always() }}
+              run: |
+                  if [ -f tmp/doc-examples/summary.md ]; then
+                    cat tmp/doc-examples/summary.md >> "$GITHUB_STEP_SUMMARY"
+                  fi
+            - name: Upload full inventory including legacy debt
+              if: ${{ always() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: doc-examples-coverage
+                  path: tmp/doc-examples/
+                  if-no-files-found: warn
+                  retention-days: 14
+
+    runtime:
+        name: Examples runtime (chrome)
+        runs-on: ubuntu-24.04
+        timeout-minutes: 45
+        defaults:
+            run:
+                working-directory: test/doc-examples
+                shell: bash
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.21.1
+                  cache: npm
+                  cache-dependency-path: |
+                      package-lock.json
+                      test/doc-examples/package-lock.json
+            - name: Cache Testplane browsers and drivers
+              uses: actions/cache@v4
+              with:
+                  path: ~/.testplane
+                  key: doc-examples-${{ runner.os }}-${{ runner.arch }}-chrome150-${{ hashFiles('test/doc-examples/package-lock.json', 'test/doc-examples/testplane.config.js', 'test/doc-examples/run-ci.cjs') }}
+            - name: Install documentation parser dependencies
+              working-directory: .
+              run: npm ci
+            - run: npm ci --legacy-peer-deps
+            - name: Run all enrolled Chrome and temporary-project examples from the docs
+              run: |
+                  mkdir -p artifacts
+                  node run-ci.cjs 2>&1 | tee artifacts/testplane.log
+            - name: Publish runtime summary
+              if: ${{ always() }}
+              run: |
+                  if [ -f artifacts/runtime-summary.md ]; then
+                    cat artifacts/runtime-summary.md >> "$GITHUB_STEP_SUMMARY"
+                  fi
+            - name: Upload results even on failure
+              if: ${{ always() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: doc-examples-chrome
+                  path: |
+                      test/doc-examples/artifacts/
+                      test/doc-examples/validation-environment.json
+                      test/doc-examples/testplane-debug/
+                      test/doc-examples/generated/
+                  if-no-files-found: warn
+                  retention-days: 14

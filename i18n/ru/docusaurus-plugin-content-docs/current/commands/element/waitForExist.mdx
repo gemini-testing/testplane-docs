@@ -36,7 +36,11 @@ await browser.$(selector).waitForExist({ timeout, reverse, timeoutMsg, interval 
 
 ## Примеры использования {/* #examples */}
 
-```javascript
+После отправки формы сообщение о черновике исчезает, а вместо него появляется подтверждение.
+
+```javascript testplane=element-wait-for-exist fixture=element-notification
+const assert = require("node:assert/strict");
+
 it("should display a notification message after successful form submit", async ({ browser }) => {
     const form = await browser.$("form");
     const notification = await browser.$(".notification");
@@ -44,15 +48,18 @@ it("should display a notification message after successful form submit", async (
     await form.$(".send").click();
     await notification.waitForExist({ timeout: 5000 });
 
-    assert.equal(await notification.getText(), "Data transmitted successfully!");
+    const text = await notification.getText();
+    assert.equal(text, "Data transmitted successfully!");
 });
 
 it("should remove a message after successful form submit", async ({ browser }) => {
     const form = await browser.$("form");
     const message = await browser.$(".message");
+    assert.equal(await message.isExisting(), true);
 
     await form.$(".send").click();
     await message.waitForExist({ reverse: true });
+    assert.equal(await message.isExisting(), false);
 });
 ```
 

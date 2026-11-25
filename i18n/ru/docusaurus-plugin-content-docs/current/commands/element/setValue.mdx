@@ -33,13 +33,21 @@ await browser.$(selector).setValue(value);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
+```html testplane-html=element-html
+<input class="input" />
+```
+
+```javascript testplane=element-set-value-ru fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should set value for a certain element", async ({ browser }) => {
     const input = await browser.$(".input");
     await input.setValue("test");
     await input.setValue(123);
 
-    console.log(await input.getValue()); // выведет: '123'
+    const value = await input.getValue();
+    console.log(value); // выведет: "123"
+    assert.equal(value, "123");
 });
 ```
 

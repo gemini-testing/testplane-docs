@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Fast testplane docs</title>
+<style>
+    .navbar__brand {
+        display: block;
+        width: 40px;
+        height: 40px;
+        background: green;
+    }
+</style>
+<nav class="navbar">
+    <a class="navbar__brand" href="docs.html" aria-label="Home"></a>
+    <a href="docs.html">Docs</a>
+    <button class="DocSearch" aria-label="Search">Search</button>
+</nav>
+<h1 class="title">Fast testplane docs</h1>
+<button id="start" style="visibility: hidden">Get started</button>
+<section class="DocSearch-Modal" aria-label="Search results" hidden>
+    <label>Search docs <input class="DocSearch-Input" placeholder="Search docs" /></label>
+    <ul id="docsearch-list" role="listbox" aria-label="Pages"></ul>
+</section>
+<script>
+    const search = document.querySelector(".DocSearch-Input");
+    const results = document.querySelector("#docsearch-list");
+    const pages = ["Browser configuration", "Plugin configuration", "Writing tests"];
+    function filter() {
+        results.replaceChildren();
+        for (const page of pages.filter(name =>
+            name.toLowerCase().includes(search.value.toLowerCase()),
+        )) {
+            const item = document.createElement("li");
+            item.setAttribute("role", "option");
+            item.setAttribute("aria-selected", "false");
+            item.textContent = page;
+            results.append(item);
+        }
+    }
+    const searchButton = document.querySelector(".DocSearch");
+    searchButton.onclick = () => {
+        document.querySelector(".DocSearch-Modal").hidden = false;
+        filter();
+    };
+    searchButton.ondblclick = () => search.focus();
+    search.addEventListener("input", filter);
+    setTimeout(() => {
+        document.querySelector("#start").style.visibility = "visible";
+    }, 100);
+</script>

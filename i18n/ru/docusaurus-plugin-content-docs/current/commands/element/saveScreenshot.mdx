@@ -24,9 +24,11 @@ await browser.$(selector).saveScreenshot(filepath);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should save a screenshot of the browser view", async ({ browser }) => {
-    const elem = await browser.$("#someElem");
-    await elem.saveScreenshot("./some/path/elemScreenshot.png");
+Сохраним изображение бейджа, а не всей видимой области страницы. Каталог назначения должен существовать.
+
+```javascript testplane=element-save-screenshot fixture=element-screenshot
+it("should save a screenshot of an element", async ({ browser }) => {
+    const badge = await browser.$("#badge");
+    await badge.saveScreenshot(`./artifacts/badge-${browser.sessionId}.png`);
 });
 ```

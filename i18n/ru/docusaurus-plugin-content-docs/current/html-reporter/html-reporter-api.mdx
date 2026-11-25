@@ -152,8 +152,8 @@ module.exports = (testplane, opts) => {
 
 ### Пример вызова {/* #add_extra_item_call_example */}
 
-```javascript
-testplane.htmlReporter.addExtraItem(caption, url);
+```javascript testplane-project=reporter
+testplane.htmlReporter.addExtraItem("Release notes", "../release-notes.html");
 ```
 
 ### Параметры вызова {/* #add_extra_item_call_params */}
@@ -177,9 +177,10 @@ testplane.htmlReporter.addExtraItem(caption, url);
 
 ### Пример вызова {/* #download_databases_call_example */}
 
-```javascript
-const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.json"], {
-    pluginConfig,
+```javascript testplane-project=reporter
+const file = require("node:path").resolve("html-report/databaseUrls.json");
+const dbPaths = await testplane.htmlReporter.downloadDatabases([file], {
+    pluginConfig: testplane.htmlReporter.config,
 });
 ```
 
@@ -195,9 +196,11 @@ const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.j
 
 ### Пример вызова {/* #merge_databases_call_example */}
 
-```javascript
-await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
+```javascript testplane-project=reporter
+await testplane.htmlReporter.mergeDatabases(["first.db", "second.db"], "merged");
 ```
+
+Каталог `merged` должен существовать. Передайте копии исходных баз: после объединения исходные файлы удаляются.
 
 ### Параметры вызова {/* #merge_databases_call_params */}
 
@@ -218,8 +221,8 @@ await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
 
 ### Пример вызова {/* #get_tests_tree_from_database_call_example */}
 
-```javascript
-const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+```javascript testplane-project=reporter
+const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase("html-report/sqlite.db");
 ```
 
 ### Параметры вызова {/* #get_tests_tree_from_database_call_params */}
@@ -228,7 +231,7 @@ const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPat
 
 ### Пример использования {/* #get_tests_tree_from_database_usage_example */}
 
-```javascript
+```javascript testplane-project=reporter
 async function getSuccessTestRunIds({ testplane, mergedDbPath }) {
     const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 
@@ -236,10 +239,10 @@ async function getSuccessTestRunIds({ testplane, mergedDbPath }) {
 
     for (const browserId of dbTree.browsers.allIds) {
         const browser = dbTree.browsers.byId[browserId];
-        const lastResultId = _.last(browser.resultIds);
+        const lastResultId = browser.resultIds.at(-1);
         const lastResult = lastResultId && dbTree.results.byId[lastResultId];
 
-        if (!lastResult || lastResult.status !== SUCCESS) {
+        if (!lastResult || lastResult.status !== "success" || !lastResult.suiteUrl) {
             continue;
         }
 

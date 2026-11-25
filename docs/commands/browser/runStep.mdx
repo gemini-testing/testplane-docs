@@ -37,22 +37,28 @@ await browser.runStep(stepName, stepCb);
 
 ## Usage Examples {/* #examples */}
 
-```typescript
-it("test", async ({ browser }) => {
+```typescript testplane=browser-nested-steps fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("keeps the missing element error from a nested step", async ({ browser }) => {
     await browser.runStep("prepare page", async () => {
-        await browser.url("some/url");
-        await browser.setCookies(someCookies);
+        await browser.url("/");
+        await browser.setCookies({ name: "cart", value: "empty" });
     });
 
-    await browser.runStep("make an order", async () => {
-        await browser.runStep("navigate to the shopping cart", async () => {
-            await browser.$("not-exist-selector").click();
-        });
-    });
+    await assert.rejects(
+        () =>
+            browser.runStep("make an order", async () => {
+                await browser.runStep("navigate to the shopping cart", async () => {
+                    await browser.$("not-exist-selector").click();
+                });
+            }),
+        /not-exist-selector/,
+    );
 });
 ```
 
-This test will fail with the error "Cannot call click on element with selector 'not-exist-selector' because element wasn't found" due to the missing selector and the following history will be generated:
+The assertion expects the missing element error. Without `assert.rejects`, the error would fail the test; the nested steps make its origin visible in the report:
 
 ```
 - testplane: init browser
@@ -64,15 +70,19 @@ This test will fail with the error "Cannot call click on element with selector '
             - waitForExist
 ```
 
-In this example step `some step name` is collapsed, because it is completed successfully.
+In this example step `prepare page` is collapsed, because it is completed successfully.
 
 You can also return values from step:
 
-```typescript
+```typescript testplane=browser-step-result fixture=browser-page
+const assert = require("node:assert/strict");
+
 const parsedPage = await browser.runStep("parse page", async () => {
-    // ...
-    return someData;
+    const heading = await browser.$("h1").getText();
+    return { heading };
 });
+
+assert.equal(parsedPage.heading, "Command examples");
 ```
 
 [reporter]: ../../../html-reporter/html-reporter-setup

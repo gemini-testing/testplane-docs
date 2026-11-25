@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Loading example</title>
+<style>
+    .status {
+        width: 20px;
+        height: 20px;
+        background: green;
+    }
+</style>
+<main></main>
+<img class="logo" src="/fixtures/browser/header.svg" alt="Header" />
+<script>
+    if (new URLSearchParams(location.search).has("metrics")) {
+        const beacon = document.createElement("img");
+        beacon.alt = "";
+        beacon.onerror = () => {
+            document.body.dataset.metrics = "failed";
+        };
+        beacon.src = "/fixtures/browser/metrics-missing.svg";
+        document.body.append(beacon);
+    }
+
+    setTimeout(() => {
+        const content = document.querySelector("main");
+        content.className = "content";
+        content.textContent = "Ready";
+        const status = document.createElement("div");
+        status.className = "status";
+        content.append(status);
+        document.body.dataset.ready = "true";
+    }, 100);
+</script>

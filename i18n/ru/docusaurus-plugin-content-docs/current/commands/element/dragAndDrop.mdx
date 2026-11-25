@@ -25,15 +25,23 @@ await browser.$(selector).dragAndDrop(target, { duration });
 
 ## Примеры использования {/* #examples */}
 
-```javascript
+Перетащим плитку на цель того же размера, а затем сдвинем на 100 пикселей вправо и на 200 вниз.
+
+```javascript testplane=element-drag-and-drop-ru fixture=element-drag
+const assert = require("node:assert/strict");
+
 it("should demonstrate the dragAndDrop command", async ({ browser }) => {
     const elem = await browser.$("#someElem");
     const target = await browser.$("#someTarget");
 
-    // выполнить drag and drop в другой элемент
+    // Перетаскиваем элемент на другой элемент.
     await elem.dragAndDrop(target);
+    const location = await elem.getLocation();
+    assert.deepEqual(location, await target.getLocation());
 
-    // выполнить drag and drop относительно текущей позиции
+    // Перетаскиваем элемент относительно его текущего положения.
     await elem.dragAndDrop({ x: 100, y: 200 });
+    const newLocation = await elem.getLocation();
+    assert.deepEqual(newLocation, { x: location.x + 100, y: location.y + 200 });
 });
 ```

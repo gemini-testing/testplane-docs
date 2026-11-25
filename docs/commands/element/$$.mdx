@@ -38,7 +38,7 @@ await browser.$(selector).$$(subSelector);
 
 **index.html**
 
-```html
+```html testplane-html=element-html
 <ul id="menu">
     <li>
         <a href="/">Home</a>
@@ -57,30 +57,39 @@ await browser.$(selector).$$(subSelector);
 
 **$$.js**
 
-```javascript
-it("should get text of a menu link", async ({ browser }) => {
-    const text = await browser.$("#menu");
+```javascript testplane=element-find-all-css fixture=element-html
+const assert = require("node:assert/strict");
 
-    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
+it("should get text of a menu link", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const items = await menu.$$("li");
+    const link = await items[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
 });
+```
+
+```javascript testplane=element-find-all-function fixture=element-html
+const assert = require("node:assert/strict");
 
 it("should get text of a menu link - JS Function", async ({ browser }) => {
-    const text = await browser.$("#menu");
+    const menu = await browser.$("#menu");
+    const items = await menu.$$(function () {
+        // Use a regular function: an arrow function has no element receiver.
+        // Here this is an HTMLUListElement (a DOM Element):
+        // https://developer.mozilla.org/en-US/docs/Web/API/Element
+        //
+        // In TypeScript you can declare the receiver as:
+        // function (this: HTMLUListElement) { ... }
+        return this.querySelectorAll("li"); // NodeListOf<HTMLLIElement>
+    });
+    const link = await items[2].$("a");
 
-    console.log(
-        await text
-            .$$(function () {
-                // Arrow function cannot be used here.
-                // This is Element – https://developer.mozilla.org/en-US/docs/Web/API/Element
-                // in this specific example – this is HTMLUListElement
-                //
-                // TypeScript users can do something like:
-                // return (this as Element).querySelector('li')
-                return this.querySelectorAll("li"); // Element[]
-            })[2]
-            .$("a")
-            .getText(),
-    ); // outputs: "API"
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
 });
 ```
 

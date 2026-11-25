@@ -41,19 +41,27 @@ await browser.getMeta(key);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should get meta info of test", async ({ browser }) => {
+```javascript testplane=browser-test-metadata-ru fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("should get metadata for the current test", async ({ browser }) => {
     await browser.setMeta("foo", "bar");
     await browser.url("/foo/bar?baz=qux");
 
     const val = await browser.getMeta("foo");
-    console.log(val); // выведет: bar
+    console.log(val); // выведет: "bar"
+    assert.equal(val, "bar");
 
     const url = await browser.getMeta("url");
-    console.log(url); // выведет: /foo/bar?baz=qux
+    console.log(url); // полный URL, заканчивающийся на /foo/bar?baz=qux
+    assert.equal(url, await browser.getUrl());
 
     const meta = await browser.getMeta();
-    console.log(meta); // выведет: {foo: 'bar', url: '/foo/bar?baz=qux'}
+    console.log(meta);
+    // Пример для baseUrl http://example.com; результат может содержать и другие поля:
+    // { foo: "bar", url: "http://example.com/foo/bar?baz=qux", ... }
+    assert.equal(meta.foo, "bar");
+    assert.equal(meta.url, url);
 });
 ```
 

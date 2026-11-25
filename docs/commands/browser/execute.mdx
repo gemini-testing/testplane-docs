@@ -31,11 +31,14 @@ await browser.execute(script, arguments);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should inject javascript on the page", async ({ browser }) => {
+```javascript testplane=browser-execute fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("should execute JavaScript on the page", async ({ browser }) => {
     const result = await browser.execute(
         (a, b, c, d) => {
-            // here we are in the browser context: no access to console or client
+            // This function runs in the page; it cannot use the Node.js browser client.
+            // Here console refers to the page console, not the test terminal.
             return a + b + c + d;
         },
         1,
@@ -44,8 +47,8 @@ it("should inject javascript on the page", async ({ browser }) => {
         4,
     );
 
-    // here we are in the node.js context: access to console and client is available
-    console.log(result); // outputs: 10
+    // Back in Node.js, the test receives the result from the page.
+    assert.equal(result, 10);
 });
 ```
 

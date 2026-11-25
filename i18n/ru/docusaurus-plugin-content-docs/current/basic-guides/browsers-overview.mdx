@@ -178,7 +178,7 @@ npx testplane --local
 
 -   Через `gridUrl: "local"` в конфигурации:
 
-```ts title="testplane.config.ts"
+```ts title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -312,7 +312,7 @@ docker run hello-world
 
 Укажите `gridUrl: "docker"` и образ для каждого браузера:
 
-```ts title="testplane.config.ts"
+```ts title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -335,7 +335,7 @@ export default {
 
 Запустите тесты:
 
-```bash
+```bash testplane-project=cli
 npx testplane --browser chrome
 ```
 
@@ -345,7 +345,7 @@ Testplane автоматически подготовит образы и зап
 
 Если приложение работает на хосте, запустите его, например на порту 3000, и задайте соответствующий `baseUrl`:
 
-```ts
+```ts testplane-project=config
 export default {
     baseUrl: "http://host.docker.internal:3000",
     // ... остальные настройки

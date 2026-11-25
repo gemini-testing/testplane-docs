@@ -23,36 +23,49 @@ await browser.$(selector).isDisplayed();
 
 **index.html**
 
-```html
-<div id="notDisplayed" style="display: none"></div>
-<div id="notVisible" style="visibility: hidden"></div>
-<div id="notInViewport" style="position:absolute; left: 9999999"></div>
-<div id="zeroOpacity" style="opacity: 0"></div>
+```html testplane-html=element-html
+<div id="visible">Visible</div>
+<div id="notDisplayed" style="display: none">Hidden</div>
+<div id="notVisible" style="visibility: hidden">Hidden</div>
+<div id="notInViewport" style="position: absolute; left: 10000px">Off screen</div>
+<div id="zeroOpacity" style="opacity: 0">Transparent</div>
 ```
 
 **isDisplayed.js**
 
-```javascript
+```javascript testplane=element-is-displayed fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should detect if an element is displayed", async ({ browser }) => {
-    let elem = await browser.$("#notDisplayed");
+    let elem = await browser.$("#visible");
     let isDisplayed = await elem.isDisplayed();
+    console.log(isDisplayed); // outputs: true
+    assert.equal(isDisplayed, true);
+
+    elem = await browser.$("#notDisplayed");
+    isDisplayed = await elem.isDisplayed();
     console.log(isDisplayed); // outputs: false
+    assert.equal(isDisplayed, false);
 
     elem = await browser.$("#notVisible");
     isDisplayed = await elem.isDisplayed();
     console.log(isDisplayed); // outputs: false
+    assert.equal(isDisplayed, false);
 
     elem = await browser.$("#notExisting");
     isDisplayed = await elem.isDisplayed();
     console.log(isDisplayed); // outputs: false
+    assert.equal(isDisplayed, false);
 
     elem = await browser.$("#notInViewport");
     isDisplayed = await elem.isDisplayed();
     console.log(isDisplayed); // outputs: true
+    assert.equal(isDisplayed, true);
 
     elem = await browser.$("#zeroOpacity");
     isDisplayed = await elem.isDisplayed();
-    console.log(isDisplayed); // outputs: true
+    console.log(isDisplayed); // outputs: false
+    assert.equal(isDisplayed, false);
 });
 ```
 

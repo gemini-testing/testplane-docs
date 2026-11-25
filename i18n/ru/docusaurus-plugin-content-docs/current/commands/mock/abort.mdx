@@ -2,9 +2,9 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `abort`, чтобы прервать запрос с заданной ошибкой.
+Используйте команду `abort`, чтобы прервать запрос.
 
-Запрос можно прервать с одной из следующих ошибок:
+В сессии WebDriver BiDi вызывайте `mock.abort()` без кода ошибки. В сессии CDP укажите одну из следующих ошибок:
 
 -   Failed
 -   Aborted
@@ -36,10 +36,39 @@ mock.abort(errorCode);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should block Google Analytics from page", async ({ browser }) => {
-    const mock = await browser.mock("https://www.google-analytics.com/**");
-    mock.abort("Failed");
+Страница задач загружает скрипт аналитики и показывает, загрузился он или произошла ошибка. В сессии WebDriver BiDi:
+
+```javascript testplane=mock-abort-ru fixture=matchers-intercept
+it("блокирует аналитику при каждой загрузке страницы", async ({ browser }) => {
+    // Блокируем скрипт аналитики, не мешая переходу на страницу задач.
+    const analytics = await browser.mock("/fixtures/matchers/analytics.js");
+    analytics.abort();
+
+    // Запрос скрипта завершается ошибкой при каждой загрузке страницы, а не только при первой.
+    for (let visit = 0; visit < 2; visit++) {
+        await browser.url("/fixtures/matchers/tasks.html");
+        const status = await browser.$("#analytics");
+        await expect(status).toHaveText("Analytics unavailable");
+        await expect(browser).toHaveTitle("Task list");
+    }
+});
+```
+
+Для CDP можно указать причину сетевой ошибки:
+
+```javascript testplane=mock-abort-cdp-ru fixture=matchers-intercept transport=cdp
+it("блокирует скрипт аналитики с заданной сетевой ошибкой", async ({ browser }) => {
+    const analytics = await browser.mock("**/fixtures/matchers/analytics.js");
+
+    // Записываем причину ошибки из события CDP-мока.
+    const reasons = [];
+    analytics.on("fail", ({ errorReason }) => reasons.push(errorReason));
+    analytics.abort("ConnectionRefused");
+
+    await browser.url("/fixtures/matchers/tasks.html");
+    const status = await browser.$("#analytics");
+    await expect(status).toHaveText("Analytics unavailable");
+    expect(reasons).toEqual(["ConnectionRefused"]);
 });
 ```
 

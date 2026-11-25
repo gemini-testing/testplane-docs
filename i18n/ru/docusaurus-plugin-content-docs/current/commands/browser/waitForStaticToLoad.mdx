@@ -21,9 +21,14 @@ import Version from "../../_partials/specs/version.mdx";
 
 ## Использование {/* #usage */}
 
-```javascript
+```javascript testplane=browser-wait-for-static-ru fixture=browser-page
+const assert = require("node:assert/strict");
+
+await browser.url("/");
 const result = await browser.waitForStaticToLoad({ timeout: 5000, interval: 300 });
-// { ready: true }
+assert.deepEqual(result, { ready: true });
+
+// Возможные результаты при истечении таймаута:
 // { ready: false, reason: "Document is loading" }
 // { ready: false, reason: "JavaScript is running" }
 // { ready: false, reason: "Fonts are loading" }
@@ -31,6 +36,8 @@ const result = await browser.waitForStaticToLoad({ timeout: 5000, interval: 300 
 // { ready: false, reason: "Styles from https://example.com/style.css are loading" }
 // { ready: false, reason: "Resources are not loaded", pendingResources: ["https://example.com/image.jpg"] }
 ```
+
+При истечении таймаута проверьте `result.reason` (например, `"Fonts are loading"`). Если остались незагруженные сетевые ресурсы, их URL перечислены в `result.pendingResources`.
 
 ## Параметры команды {/* #parameters */}
 

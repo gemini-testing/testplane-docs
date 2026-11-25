@@ -14,7 +14,7 @@ await browser.$(selector).nextElement();
 
 **index.html**
 
-```javascript
+```html testplane-html=element-html
 <div class="parent">
     <p>Sibling One</p>
     <p>Sibling Two</p>
@@ -24,12 +24,16 @@ await browser.$(selector).nextElement();
 
 **nextElement.js**
 
-```javascript
-it("should get text from next sibling element", async ({ browser }) => {
-    const elem = await browser.$$("p");
-    const nextElement = await elem[1].nextElement();
+```javascript testplane=element-next-element-ru fixture=element-html
+const assert = require("node:assert/strict");
 
-    console.log(await nextElement.getText()); // выведет: "Sibling Three"
+it("should get text from next sibling element", async ({ browser }) => {
+    const paragraphs = await browser.$$("p");
+    const nextElement = await paragraphs[1].nextElement();
+
+    const text = await nextElement.getText();
+    console.log(text); // выведет: "Sibling Three"
+    assert.equal(text, "Sibling Three");
 });
 ```
 

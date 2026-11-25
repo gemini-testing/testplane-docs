@@ -18,7 +18,7 @@ If you use only `respondOnce` and access the resource more times than `respondOn
 ## Usage {/* #usage */}
 
 ```javascript
-mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
+mock.respondOnce(overwrites, { headers, statusCode, fetchResponse });
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -29,75 +29,51 @@ mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
 </thead>
 <tbody>
 <tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ to overwrite the response.</td></tr>
-<tr><td>header</td><td>Object</td><td>Overwrite specific headers.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Overwrite the response status code.</td></tr>
-<tr><td>fetchResponse</td><td>Boolean</td><td>Fetch the actual response before replying with fake data.</td></tr>
+<tr><td>headers</td><td>Object | Function</td><td>Overwrite specific headers.</td></tr>
+<tr><td>statusCode</td><td>Number | Function</td><td>Overwrite the response status code.</td></tr>
+<tr><td>fetchResponse</td><td>Boolean</td><td>CDP only: fetch the actual response before applying the overwrite.</td></tr>
 
 </tbody>
 </table>
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-async function getToDos(browser) {
-    await browser.$("#todo-list li").waitForExist();
+The todo page fetches its list on every visit. In this WebDriver BiDi example, the list shrinks three times; the fourth visit displays the server’s original list.
 
-    const todoElements = await browser.$$("#todo-list li");
-
-    return Promise.all(todoElements.map(el => el.getText()));
+```javascript testplane=mock-respond-once fixture=matchers-intercept
+async function getTodoTitles(browser) {
+    // Wait for the list from this page load, then read its items in order.
+    const firstTodo = await browser.$("#todo-list li");
+    await firstTodo.waitForExist();
+    const items = await browser.$$("#todo-list li");
+    return Promise.all(items.map(item => item.getText()));
 }
 
-it("should demonstrate the respondOnce command", async ({ browser }) => {
-    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/", {
-        method: "get",
-    });
+it("uses the queued responses before falling back to the real list", async ({ browser }) => {
+    const todos = await browser.mock("/fixtures/matchers/todos.json", { method: "GET" });
+    // Queue three different lists on the same mock.
+    todos.respondOnce([{ title: "3" }, { title: "2" }, { title: "1" }]);
+    todos.respondOnce([{ title: "2" }, { title: "1" }]);
+    todos.respondOnce([{ title: "1" }]);
 
-    mock.respondOnce([
-        {
-            title: "3",
-        },
-        {
-            title: "2",
-        },
-        {
-            title: "1",
-        },
-    ]);
+    // Each visit makes one GET request and consumes the next list.
+    const page = "/fixtures/matchers/todos.html";
+    await browser.url(page);
+    const firstList = await getTodoTitles(browser);
+    expect(firstList).toEqual(["3", "2", "1"]);
 
-    mock.respondOnce([
-        {
-            title: "2",
-        },
-        {
-            title: "1",
-        },
-    ]);
+    await browser.url(page);
+    const secondList = await getTodoTitles(browser);
+    expect(secondList).toEqual(["2", "1"]);
 
-    mock.respondOnce([
-        {
-            title: "1",
-        },
-    ]);
+    await browser.url(page);
+    const thirdList = await getTodoTitles(browser);
+    expect(thirdList).toEqual(["1"]);
 
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: [ '3', '2', '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: [ '2', '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: [ '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: the actual resource response
+    // No overwrites remain: this is the actual resource response.
+    await browser.url(page);
+    const originalList = await getTodoTitles(browser);
+    expect(originalList).toEqual(["Original todo"]);
 });
 ```
 

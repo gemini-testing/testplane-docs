@@ -43,26 +43,38 @@ export default {
 
 После подключения вы сможете использовать в тестах поиск по селекторам из `testing-library`, описанные в [официальной документации](https://testing-library.com/docs/queries/about/). Например, поиск элемента по его тексту
 
-```javascript
-it("example", async ({ browser }) => {
-    await browser.url("https://github.com/");
+```javascript testplane=selectors-library-browser-ru fixture=selectors-library
+const assert = require("node:assert/strict");
 
-    const newRepoButton = await browser.getByText("New");
+it("открывает форму репозитория по надписи на кнопке", async ({ browser }) => {
+    await browser.url("/fixtures/selectors/dashboard.html");
 
+    // Ищем кнопку по надписи, которую видит пользователь, а не по CSS-классам.
+    const newRepoButton = await browser.getByText("New repository");
     await newRepoButton.click();
+
+    const heading = await browser.$("h1");
+    const title = await heading.getText();
+    assert.equal(title, "Create a repository");
 });
 ```
 
-В контексте найденных элементов эта возможность также будет доступна:
+Если на странице две кнопки `New`, ограничьте поиск боковой панелью репозиториев:
 
-```javascript
-it("example", async ({ browser }) => {
-    await browser.url("https://github.com/");
+```javascript testplane=selectors-library-element-ru fixture=selectors-library
+const assert = require("node:assert/strict");
 
+it("находит кнопку New в боковой панели репозиториев", async ({ browser }) => {
+    await browser.url("/fixtures/selectors/dashboard.html");
+
+    // Ищем внутри боковой панели репозиториев: в разделе задач тоже есть кнопка New.
     const sidebar = await browser.$(".dashboard-sidebar");
     const newRepoButton = await sidebar.getByText("New");
-
     await newRepoButton.click();
+
+    const heading = await browser.$("h1");
+    const title = await heading.getText();
+    assert.equal(title, "Create a repository");
 });
 ```
 

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+    <meta charset="utf-8" />
+    <title>Project dashboard</title>
+    <h1>Dashboard</h1>
+    <button onclick="openForm('Create a repository')">New repository</button>
+    <aside class="dashboard-sidebar">
+        Repositories
+        <button onclick="openForm('Create a repository')">New</button>
+    </aside>
+    <section>
+        Issues
+        <button onclick="openForm('Create an issue')">New</button>
+    </section>
+    <script>
+        function openForm(title) {
+            document.querySelector("h1").textContent = title;
+        }
+    </script>
+</html>

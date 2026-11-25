@@ -31,7 +31,7 @@ import Admonition from "@theme/Admonition";
 
 Чтобы запустить тесты в локально установленном браузере, укажите `gridUrl: "local"` (или передайте CLI-флаг `--local`) — Testplane сам скачает необходимые браузеры и драйверы и запустит их по протоколу WebDriver:
 
-```javascript
+```javascript testplane-project=config
 // .testplane.conf.js
 
 module.exports = {
@@ -76,7 +76,7 @@ npx testplane ... --local
 -   использовать `automationProtocol: webdriver` (значение по умолчанию);
 -   в `desiredCapabilities` браузера добавить вендорное поле `selenoid:options`: данная опция необходима, чтобы _webdriverio_ понял, что нужно подключиться именно к удаленной машине, а не к локальному браузеру.
 
-```javascript
+```javascript testplane-project=config
 // .testplane.conf.js
 
 module.exports = {

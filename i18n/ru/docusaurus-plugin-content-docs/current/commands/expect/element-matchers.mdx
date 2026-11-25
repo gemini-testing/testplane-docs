@@ -1,14 +1,16 @@
 # expect для элементов
 
+Примеры начинаются на странице с полем имени пользователя, кнопками, тремя этапами работы и списком из пяти задач.
+
 ## toBeDisplayed
 
 Вызывает [isDisplayed](../../element/isDisplayed) на заданном элементе.
 
 Например:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBeDisplayed();
+```javascript testplane=expect-to-be-displayed fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBeDisplayed();
 ```
 
 ## toExist
@@ -17,9 +19,9 @@ await expect(elem).toBeDisplayed();
 
 Например:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toExist();
+```javascript testplane=expect-to-exist fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toExist();
 ```
 
 ## toBePresent
@@ -28,9 +30,9 @@ await expect(elem).toExist();
 
 Например:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBePresent();
+```javascript testplane=expect-to-be-present fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBePresent();
 ```
 
 ## toBeExisting
@@ -39,9 +41,9 @@ await expect(elem).toBePresent();
 
 Например:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBeExisting();
+```javascript testplane=expect-to-be-existing fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBeExisting();
 ```
 
 ## toBeFocused
@@ -50,9 +52,10 @@ await expect(elem).toBeExisting();
 
 Например:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBeFocused();
+```javascript testplane=expect-to-be-focused fixture=matchers-page
+const input = await browser.$("#username");
+await input.click();
+await expect(input).toBeFocused();
 ```
 
 ## toHaveAttribute
@@ -61,9 +64,9 @@ await expect(elem).toBeFocused();
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttribute("class", "form-control");
+```javascript testplane=expect-to-have-attribute fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttribute("class", "form-control");
 ```
 
 ## toHaveAttr
@@ -72,9 +75,9 @@ await expect(myInput).toHaveAttribute("class", "form-control");
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttr("class", "form-control");
+```javascript testplane=expect-to-have-attr fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttr("class", "form-control");
 ```
 
 ## toHaveAttributeContaining
@@ -83,20 +86,20 @@ await expect(myInput).toHaveAttr("class", "form-control");
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttributeContaining("class", "form");
+```javascript testplane=expect-to-have-attribute-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttributeContaining("class", "form");
 ```
 
 ## toHaveAttrContaining
 
-То же, что и [toHaveAttributeContaining](#tohaveattrcontaining).
+То же, что и [toHaveAttributeContaining](#tohaveattributecontaining).
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttrContaining("class", "form");
+```javascript testplane=expect-to-have-attr-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttrContaining("class", "form");
 ```
 
 ## toHaveElementClass
@@ -105,9 +108,9 @@ await expect(myInput).toHaveAttrContaining("class", "form");
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveElementClass("form-control", { message: "Not a form control!" });
+```javascript testplane=expect-to-have-element-class fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveElementClass("form-control", { message: "Not a form control!" });
 ```
 
 ## toHaveElementClassContaining
@@ -116,9 +119,9 @@ await expect(myInput).toHaveElementClass("form-control", { message: "Not a form 
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveElementClassContaining("form");
+```javascript testplane=expect-to-have-element-class-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveElementClassContaining("form");
 ```
 
 ## toHaveElementProperty
@@ -127,8 +130,8 @@ await expect(myInput).toHaveElementClassContaining("form");
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-have-element-property fixture=matchers-page
+const elem = await browser.$("#preview");
 await expect(elem).toHaveElementProperty("height", 23);
 await expect(elem).not.toHaveElementProperty("height", 0);
 ```
@@ -139,9 +142,9 @@ await expect(elem).not.toHaveElementProperty("height", 0);
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveValue("user", { ignoreCase: true });
+```javascript testplane=expect-to-have-value fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveValue("USER", { ignoreCase: true });
 ```
 
 ## toHaveValueContaining
@@ -150,9 +153,9 @@ await expect(myInput).toHaveValue("user", { ignoreCase: true });
 
 Например:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveValueContaining("us");
+```javascript testplane=expect-to-have-value-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveValueContaining("us");
 ```
 
 ## toBeClickable
@@ -161,8 +164,8 @@ await expect(myInput).toHaveValueContaining("us");
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-clickable fixture=matchers-page
+const elem = await browser.$("#save");
 await expect(elem).toBeClickable();
 ```
 
@@ -172,11 +175,12 @@ await expect(elem).toBeClickable();
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
-await expect(elem).toBeDisabled();
-// или, что то же самое:
-await expect(elem).not.toBeEnabled();
+```javascript testplane=expect-to-be-disabled-ru fixture=matchers-page
+const button = await browser.$("#pending");
+await expect(button).toBeDisabled();
+
+// То же состояние можно проверить отрицанием противоположного матчера:
+await expect(button).not.toBeEnabled();
 ```
 
 ## toBeEnabled
@@ -185,11 +189,12 @@ await expect(elem).not.toBeEnabled();
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
-await expect(elem).toBeEnabled();
-// или, что то же самое:
-await expect(elem).not.toBeDisabled();
+```javascript testplane=expect-to-be-enabled-ru fixture=matchers-page
+const button = await browser.$("#save");
+await expect(button).toBeEnabled();
+
+// То же состояние можно проверить отрицанием противоположного матчера:
+await expect(button).not.toBeDisabled();
 ```
 
 ## toBeSelected
@@ -198,8 +203,8 @@ await expect(elem).not.toBeDisabled();
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-selected fixture=matchers-page
+const elem = await browser.$("#notifications");
 await expect(elem).toBeSelected();
 ```
 
@@ -209,8 +214,8 @@ await expect(elem).toBeSelected();
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-checked fixture=matchers-page
+const elem = await browser.$("#notifications");
 await expect(elem).toBeChecked();
 ```
 
@@ -220,7 +225,7 @@ await expect(elem).toBeChecked();
 
 Например:
 
-```javascript
+```javascript testplane=expect-to-have-href fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveHref("https://webdriver.io");
 ```
@@ -231,7 +236,7 @@ await expect(link).toHaveHref("https://webdriver.io");
 
 Например:
 
-```javascript
+```javascript testplane=expect-to-have-link fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveLink("https://webdriver.io");
 ```
@@ -242,7 +247,7 @@ await expect(link).toHaveLink("https://webdriver.io");
 
 Например:
 
-```javascript
+```javascript testplane=expect-to-have-href-containing fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveHrefContaining("webdriver.io");
 ```
@@ -253,7 +258,7 @@ await expect(link).toHaveHrefContaining("webdriver.io");
 
 Например:
 
-```javascript
+```javascript testplane=expect-to-have-link-containing fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveLinkContaining("webdriver.io");
 ```
@@ -264,9 +269,9 @@ await expect(link).toHaveLinkContaining("webdriver.io");
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
-await expect(elem).toHaveId("elem");
+```javascript testplane=expect-to-have-id fixture=matchers-page
+const elem = await browser.$("#save");
+await expect(elem).toHaveId("save");
 ```
 
 ## toHaveText
@@ -277,16 +282,13 @@ await expect(elem).toHaveId("elem");
 
 Например:
 
-```javascript
-await browser.url("https://testplane.io/");
-const elem = await browser.$(".container");
-await expect(elem).toHaveText(
-    "Fast, scalable and robust end-to-end web testing solution | Testplane",
-);
-await expect(elem).toHaveText([
-    "Fast, scalable and robust end-to-end web testing solution | Testplane",
-    "Get Started",
-]);
+```javascript testplane=expect-to-have-text-ru fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
+const heading = await browser.$("h1");
+await expect(heading).toHaveText("Task list");
+
+// Передаем массив, если допустим любой из двух вариантов заголовка.
+await expect(heading).toHaveText(["Task list", "No tasks yet"]);
 ```
 
 ## toHaveTextContaining
@@ -297,14 +299,13 @@ await expect(elem).toHaveText([
 
 Например:
 
-```javascript
-await browser.url("https://testplane.io/");
-const elem = await browser.$("h1");
-await expect(elem).toHaveTextContaining("ultimate solution for end-to-end testing");
-await expect(elem).toHaveTextContaining([
-    "ultimate solution for end-to-end testing",
-    "battle-hardened framework for creating tests at any scale, any browser, any platform",
-]);
+```javascript testplane=expect-to-have-text-containing-ru fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
+const heading = await browser.$("h1");
+await expect(heading).toHaveTextContaining("Task");
+
+// Передаем массив, если допустим любой из двух вариантов заголовка.
+await expect(heading).toHaveTextContaining(["Task", "No tasks"]);
 ```
 
 ## toBeDisplayedInViewport
@@ -313,28 +314,33 @@ await expect(elem).toHaveTextContaining([
 
 Например:
 
-```javascript
-const elem = await browser.$("#elem");
-await expect(elem).toBeDisplayedInViewport();
+```javascript testplane=expect-to-be-displayed-in-viewport fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBeDisplayedInViewport();
 ```
 
 ## toHaveChildren
 
-Проверяет количество дочерних элементов заданного элемента, используя команду [element.$('./\*')](../../element/_dollar).
+Проверяет количество дочерних элементов заданного элемента, используя команду [element.$$('./\*')](../../element/_dollardollar).
+
+Передавайте объект опций: в используемой версии expect-webdriverio вызов без аргументов завершается ошибкой. Пустой объект означает «хотя бы один дочерний элемент».
 
 Например:
 
-```javascript
-const list = await browser.$("ul");
-await expect(list).toHaveChildren(); // в списке есть как минимум 1 элемент
-// или, что то же самое:
-await expect(list).toHaveChildren({ gte: 1 });
+```javascript testplane=expect-to-have-children-ru fixture=matchers-page
+const stages = await browser.$("#stages");
+await expect(stages).toHaveChildren({}); // Есть хотя бы один дочерний элемент.
+
+// То же нижнее ограничение можно задать явно:
+await expect(stages).toHaveChildren({ gte: 1 });
 ```
 
-```javascript
-await expect(list).toHaveChildren(3); // в списке есть 3 элемента
-// или, что то же самое:
-await expect(list).toHaveChildren({ eq: 3 });
+```javascript testplane=expect-to-have-children-count-ru fixture=matchers-page
+const stages = await browser.$("#stages");
+await expect(stages).toHaveChildren(3); // Ровно три этапа.
+
+// Эквивалентный вариант с объектом опций:
+await expect(stages).toHaveChildren({ eq: 3 });
 ```
 
 ## toBeElementsArrayOfSize
@@ -343,13 +349,17 @@ await expect(list).toHaveChildren({ eq: 3 });
 
 Например:
 
-```javascript
-const listItems = await browser.$$("ul>li");
-await expect(listItems).toBeElementsArrayOfSize(5); // 5 элементов в списке
+```javascript testplane=expect-to-be-elements-array-of-size-ru fixture=matchers-page
+const listItems = await browser.$$("#tasks > li");
+await expect(listItems).toBeElementsArrayOfSize(5); // В списке ровно пять задач.
 ```
 
-```javascript
+```javascript testplane=expect-to-be-elements-array-of-size-limit-ru fixture=matchers-page
+const assert = require("node:assert/strict");
+
+const listItems = await browser.$$("#tasks > li");
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 });
-// или, что то же самое:
+
+// Чтобы проверить текущую длину напрямую, можно использовать обычный assert:
 assert.ok(listItems.length <= 10);
 ```

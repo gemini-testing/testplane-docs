@@ -61,12 +61,13 @@ Specifies the settings for the `assertView` command:
 
 ## Usage Examples {/* #examples */}
 
+Compare the button to two reference images: before and after a click.
+
 **example.js**
 
-```javascript
+```javascript testplane=element-assert-view fixture=element-visual
 it("should assert view", async ({ browser }) => {
-    await browser.url("some/url");
-
+    await browser.url("/fixtures/browser/swatch.html");
     const elem = await browser.$(".button");
 
     await elem.assertView("plain");

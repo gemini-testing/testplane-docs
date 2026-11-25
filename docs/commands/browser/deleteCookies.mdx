@@ -26,36 +26,48 @@ await browser.deleteCookies(names);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
+```javascript testplane=browser-delete-cookies fixture=browser-page
+const assert = require("node:assert/strict");
+
+// Show only names and values; cookies also have fields such as domain, path and expiry.
+const namesAndValues = cookies =>
+    cookies
+        .map(({ name, value }) => ({ name, value }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
 it("should delete cookies", async ({ browser }) => {
-    await browser.setCookies([
+    const initial = [
         { name: "test", value: "123" },
         { name: "test2", value: "456" },
         { name: "test3", value: "789" },
-    ]);
+    ];
+    await browser.setCookies(initial);
 
     let cookies = await browser.getCookies();
-    console.log(cookies);
-    // outputs:
+    console.log(namesAndValues(cookies));
+    // Output:
     // [
-    //     { name: 'test', value: '123' },
-    //     { name: 'test2', value: '456' },
-    //     { name: 'test3', value: '789' }
+    //     { name: "test", value: "123" },
+    //     { name: "test2", value: "456" },
+    //     { name: "test3", value: "789" }
     // ]
+    assert.deepEqual(namesAndValues(cookies), initial);
 
+    // Delete only the named cookie.
     await browser.deleteCookies(["test3"]);
-
     cookies = await browser.getCookies();
-    console.log(cookies);
-    // outputs:
+    console.log(namesAndValues(cookies));
+    // Output:
     // [
-    //     { name: 'test', value: '123' },
-    //     { name: 'test2', value: '456' }
+    //     { name: "test", value: "123" },
+    //     { name: "test2", value: "456" }
     // ]
+    assert.deepEqual(namesAndValues(cookies), [initial[0], initial[1]]);
 
     await browser.deleteCookies();
     cookies = await browser.getCookies();
     console.log(cookies); // outputs: []
+    assert.deepEqual(cookies, []);
 });
 ```
 

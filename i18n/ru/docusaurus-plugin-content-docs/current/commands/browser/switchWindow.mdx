@@ -24,18 +24,23 @@ await browser.switchWindow(urlOrTitleToMatch);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
+```javascript testplane=browser-switch-window-ru fixture=browser-page
+const assert = require("node:assert/strict");
+
 it("should switch to another window", async ({ browser }) => {
-    // открываем url
-    await browser.url("https://google.com");
+    // Открываем исходную страницу.
+    await browser.url("/original");
 
-    // создаем новое окно
-    await browser.newWindow("https://webdriver.io");
+    // Открываем вторую страницу в новой вкладке.
+    const newUrl = new URL("/frame", await browser.getUrl()).href;
+    await browser.newWindow(newUrl, { type: "tab" });
 
-    // переключаемся назад через соответствие заданному урлу
-    await browser.switchWindow("google.com");
+    // Переключаемся обратно по части URL.
+    await browser.switchWindow("/original");
+    assert.equal(await browser.getTitle(), "Command examples");
 
-    // снова переключаемся через соответствие заданному заголовку страницы
-    await browser.switchWindow("Next-gen browser and mobile automation test framework for Node.js");
+    // Снова переключаемся, теперь по заголовку страницы.
+    await browser.switchWindow("Frame");
+    assert.equal(await browser.getUrl(), newUrl);
 });
 ```

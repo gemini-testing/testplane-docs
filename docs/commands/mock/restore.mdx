@@ -12,16 +12,28 @@ mock.restore();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate the addValue command", async ({ browser }) => {
-    const mock = await browser.mock("**/googlelogo_color_272x92dp.png");
-    mock.respond("https://webdriver.io/img/webdriverio.png");
+In WebDriver BiDi, replace the task page’s logo with a redirect. After `restore`, loading the same page displays its own logo again.
 
-    await browser.url("https://google.com"); // will show WebdriverIO logo instead of Google logo
-    mock.restore();
-    await browser.url("https://google.com"); // will show the native Google logo
+```javascript testplane=mock-restore fixture=matchers-intercept
+it("restores the original logo after a redirect", async ({ browser }) => {
+    const logo = await browser.mock("/fixtures/guides/logo.svg");
+    const previewUrl = new URL("/fixtures/matchers/preview-logo.svg", browser.options.baseUrl).href;
+
+    // Redirect the image request, not the page. The preview logo is 48 pixels wide.
+    logo.redirect(previewUrl);
+    await browser.url("/fixtures/matchers/tasks.html");
+    const preview = await browser.$("#logo");
+    await expect(preview).toHaveElementProperty("naturalWidth", 48);
+
+    // After restore, the page loads its original 28-pixel logo again.
+    await logo.restore();
+    await browser.url("/fixtures/matchers/tasks.html");
+    const original = await browser.$("#logo");
+    await expect(original).toHaveElementProperty("naturalWidth", 28);
 });
 ```
+
+In a CDP session, use `logo.respond(previewUrl)` rather than `logo.redirect(previewUrl)` to [redirect the resource](../../../guides/how-to-intercept-requests-and-responses#example_4). In both cases, `restore` removes the override.
 
 ## Related Commands {/* #related */}
 

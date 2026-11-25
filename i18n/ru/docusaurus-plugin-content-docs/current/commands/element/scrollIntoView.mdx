@@ -45,14 +45,20 @@ await browser.$(selector).scrollIntoView({ behavior, block, inline });
 
 ## Примеры использования {/* #examples */}
 
-```javascript
+Прокрутим страницу к элементу ниже видимой области, а затем выровняем его по центру экрана.
+
+```javascript testplane=element-scroll-into-view-ru fixture=element-scroll
+const assert = require("node:assert/strict");
+
 it("should demonstrate the scrollIntoView command", async ({ browser }) => {
     const elem = await browser.$("#myElement");
+    assert.equal(await elem.isDisplayedInViewport(), false);
 
-    // выполнить подскролл к элементу
+    // Прокручиваем страницу до элемента.
     await elem.scrollIntoView();
+    assert.equal(await elem.isDisplayedInViewport(), true);
 
-    // подскроллировать так, чтобы элемент был по центру вьюпорта
+    // Прокручиваем страницу так, чтобы элемент оказался в центре видимой области.
     await elem.scrollIntoView({ block: "center", inline: "center" });
 });
 ```

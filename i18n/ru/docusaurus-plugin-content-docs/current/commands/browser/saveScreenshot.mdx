@@ -26,9 +26,9 @@ await browser.saveScreenshot(filepath);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should save a screenshot of the browser view", async ({ browser }) => {
-    await browser.saveScreenshot("./some/path/screenshot.png");
+```javascript testplane=browser-save-screenshot fixture=browser-png
+it("should save a PNG of the browser view", async ({ browser }) => {
+    await browser.saveScreenshot("./artifacts/screenshot.png");
 });
 ```
 

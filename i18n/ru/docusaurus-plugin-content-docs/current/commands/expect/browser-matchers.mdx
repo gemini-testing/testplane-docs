@@ -1,14 +1,18 @@
 # expect для браузера
 
+В примерах тестовое приложение задано через `baseUrl`, а у открытой страницы заголовок `Task list`.
+
 ## toHaveUrl
 
 Проверяет, находится ли браузер на заданной странице.
 
 Например:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveUrl("https://testplane.io");
+```javascript testplane=expect-to-have-url-ru fixture=matchers-page
+const expectedUrl = new URL("/navigation", browser.options.baseUrl).href;
+await browser.url("/navigation");
+// toHaveUrl сравнивает адрес целиком, включая протокол, хост и порт.
+await expect(browser).toHaveUrl(expectedUrl);
 ```
 
 ## toHaveUrlContaining
@@ -17,9 +21,9 @@ await expect(browser).toHaveUrl("https://testplane.io");
 
 Например:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveUrlContaining("testplane");
+```javascript testplane=expect-to-have-url-containing fixture=matchers-page
+await browser.url("/navigation");
+await expect(browser).toHaveUrlContaining("/navigation");
 ```
 
 ## toHaveTitle
@@ -28,11 +32,9 @@ await expect(browser).toHaveUrlContaining("testplane");
 
 Например:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveTitle(
-    "Fast, scalable and robust end-to-end web testing solution | Testplane",
-);
+```javascript testplane=expect-to-have-title fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
+await expect(browser).toHaveTitle("Task list");
 ```
 
 ## toHaveTitleContaining
@@ -41,7 +43,7 @@ await expect(browser).toHaveTitle(
 
 Например:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveTitleContaining("Testplane");
+```javascript testplane=expect-to-have-title-containing fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
+await expect(browser).toHaveTitleContaining("Task");
 ```

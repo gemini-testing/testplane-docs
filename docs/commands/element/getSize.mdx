@@ -24,19 +24,27 @@ await browser.$(selector).getSize(prop);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
+```html testplane-html=element-html
+<div id="logo" style="width: 32px; height: 32px">Logo</div>
+```
+
+```javascript testplane=element-get-size fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should demonstrate the getSize command", async ({ browser }) => {
-    await browser.url("http://github.com");
-    const logo = await browser.$(".octicon-mark-github");
+    const logo = await browser.$("#logo");
 
     const size = await logo.getSize();
     console.log(size); // outputs: { width: 32, height: 32 }
+    assert.deepEqual(size, { width: 32, height: 32 });
 
     const width = await logo.getSize("width");
     console.log(width); // outputs: 32
+    assert.equal(width, 32);
 
     const height = await logo.getSize("height");
     console.log(height); // outputs: 32
+    assert.equal(height, 32);
 });
 ```
 

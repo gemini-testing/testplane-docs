@@ -42,7 +42,7 @@ await browser.$(selector);
 
 **index.html**
 
-```html
+```html testplane-html=browser-menu
 <ul id="menu">
     <li>
         <a href="/">Home</a>
@@ -61,41 +61,54 @@ await browser.$(selector);
 
 **$.js**
 
-```javascript
-it("should get text a menu link", async ({ browser }) => {
-    const text = await browser.$("#menu");
+```javascript testplane=browser-find-element-ru fixture=browser-menu
+const assert = require("node:assert/strict");
 
-    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+it("should get the text of a menu link", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const link = await menu.$$("li")[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
 });
 
-it("should get text a menu link - JS Function", async ({ browser }) => {
-    const text = await browser.$(function () {
-        // Использовать здесь стрелочную функцию нельзя.
-        // Это Window – https://developer.mozilla.org/en-US/docs/Web/API/Window
-        //
-        // TypeScript-пользователи могут сделать что-нибудь вроде:
-        // return (this as Window).document.querySelector('#menu')
-        return this.document.querySelector("#menu"); // Element
+it("should get the text of a menu link using a function selector", async ({ browser }) => {
+    const menu = await browser.$(function () {
+        // Используйте обычную функцию: WebdriverIO привязывает `this` к Window страницы.
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window
+        // Пример для TypeScript:
+        // return (this as Window).document.querySelector("#menu");
+        return this.document.querySelector("#menu");
     });
+    const link = await menu.$$("li")[2].$("a");
 
-    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
 });
 
-it("should allow to convert protocol result of an element into a WebdriverIO element", async ({
-    browser,
-}) => {
+it("should convert a protocol reference into a WebdriverIO element", async ({ browser }) => {
+    await browser.execute(() => document.querySelector("a").focus());
     const activeElement = await browser.getActiveElement();
 
-    console.log(await browser.$(activeElement).getTagName()); // выведет активный элемент
+    const element = await browser.$(activeElement);
+    const tagName = await element.getTagName();
+    console.log(tagName); // выведет "a" — тег активного элемента
+    assert.equal(tagName, "a");
 });
+```
 
+**Android (Appium)**
+
+```javascript
 it("should use Androids DataMatcher or ViewMatcher selector", async ({ browser }) => {
-    const menuItem = await browser.$({
+    const viewMatch = await browser.$({
         name: "hasEntry",
         args: ["title", "ViewTitle"],
         class: "androidx.test.espresso.matcher.ViewMatchers",
     });
-    await menuItem.click();
+    await viewMatch.click();
 
     const menuItem = await browser.$({
         name: "hasEntry",

@@ -4,13 +4,13 @@ import TabItem from "@theme/TabItem";
 
 <Tabs>
     <TabItem value="Testplane" label="Testplane">
-        ```javascript title="testplane.config.ts"
+        ```typescript title="testplane.config.ts" testplane-project=reporter
         export = {
             // ...
             plugins: {
-                'html-reporter/testplane': {
+                "html-reporter/testplane": {
                     enabled: true,
-                    path: 'html-report',
+                    path: "html-report",
                 },
             },
         };

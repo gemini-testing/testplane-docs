@@ -135,7 +135,7 @@ const defaultExpectOpts = {
 
 Additional options for `mocha`, which are passed to `mocha.setup`. See the list of available options in the [Mocha documentation](https://mochajs.org/). Default: `{ timeout: 60000 }`.
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -154,7 +154,7 @@ Context that will be available in all tests via the `testplane.ctx` method. Inte
 
 Example usage:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -181,7 +181,7 @@ The session will be closed if a test fails with an error matching one of the spe
 
 Example:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -207,7 +207,7 @@ There are two configuration forms:
 
 For example, start cancelling the run after three errors containing `Service unavailable`, ignoring case:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -225,7 +225,7 @@ The first two matching failures do not trigger cancellation. Errors that do not 
 
 To count all errors, use a numeric limit:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {

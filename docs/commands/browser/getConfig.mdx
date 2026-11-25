@@ -12,15 +12,17 @@ await browser.getConfig();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("some test", async ({ browser }) => {
+```javascript testplane=browser-get-config fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("should read the browser configuration", async ({ browser }) => {
     const browserConfig = await browser.getConfig();
-    console.log(browserConfig.id);
-    // outputs: "chromeDesktop" – the name of the browser configuration specified in the config
+    console.log(browserConfig.id); // outputs "chrome", the name used in the browsers section
+    assert.equal(browserConfig.id, "chrome");
 
     const { browserName } = browserConfig.desiredCapabilities;
-    console.log(browserName);
-    // outputs: "chrome" – the actual name of the browser
+    console.log(browserName); // outputs "chrome", the actual browser even if the config is named "desktop"
+    assert.equal(browserName, "chrome");
 });
 ```
 

@@ -1,0 +1,19 @@
+{
+    "name": "testplane-docs-examples",
+    "version": "1.0.0",
+    "scripts": {
+        "test": "node run-ci.cjs",
+        "check:snippets": "node verify-snippets.cjs --base HEAD"
+    },
+    "license": "ISC",
+    "devDependencies": {
+        "@swc/core": "^1.16.13",
+        "@testplane/globals": "^1.0.1",
+        "@testplane/testing-library": "^1.0.5",
+        "html-reporter": "^11.17.2",
+        "react-dom16": "npm:react-dom@16.14.0",
+        "react16": "npm:react@16.14.0",
+        "testplane": "9.7.2"
+    },
+    "private": true
+}

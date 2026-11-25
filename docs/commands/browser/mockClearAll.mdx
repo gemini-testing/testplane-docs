@@ -12,23 +12,28 @@ await browser.mockClearAll();
 
 ## Usage Examples {/* #examples */}
 
-```typescript
+```typescript testplane=browser-mock-clear-all fixture=browser-mock
+const assert = require("node:assert/strict");
+
 it("should clear all mocks", async ({ browser }) => {
-    const docMock = await browser.mock("**", {
-        headers: { "Content-Type": "text/html" },
-    });
-    const jsMock = await browser.mock("**", {
-        headers: { "Content-Type": "application/javascript" },
-    });
+    const docMock = await browser.mock("/frame");
+    const jsMock = await browser.mock("/fixtures/browser/banner.js");
+    const calls = () => [docMock.calls.length, jsMock.calls.length];
 
-    await browser.url("http://guinea-pig.webdriver.io/");
-    console.log(docMock.calls.length, jsMock.calls.length); // returns "1 4"
+    await browser.url("/fixtures/browser/resources.html");
+    const load = await browser.$("button");
 
-    await browser.url("http://guinea-pig.webdriver.io/");
-    console.log(docMock.calls.length, jsMock.calls.length); // returns "2 4" (JavaScript comes from cache)
+    await load.click();
+    await browser.waitUntil(async () => (await browser.$("output").getText()) === "1");
+    assert.deepEqual(calls(), [1, 1]); // both resources were requested
+
+    await load.click();
+    await browser.waitUntil(async () => (await browser.$("output").getText()) === "2");
+    assert.deepEqual(calls(), [2, 1]); // the browser reuses the imported JavaScript module
 
     await browser.mockClearAll();
-    console.log(docMock.calls.length, jsMock.calls.length); // returns "0 0"
+    assert.deepEqual(calls(), [0, 0]); // both histories were cleared
+    await browser.mockRestoreAll();
 });
 ```
 

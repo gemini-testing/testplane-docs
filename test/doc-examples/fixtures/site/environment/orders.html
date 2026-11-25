@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Orders</title>
+<style>
+    [data-testid="theme-box"] {
+        background: white;
+    }
+    @media (prefers-color-scheme: dark) {
+        [data-testid="theme-box"] {
+            background: black;
+        }
+    }
+</style>
+<h1 data-testid="page-title">Orders</h1>
+<span data-testid="average-value"></span><time data-testid="event-time"></time>
+<p data-testid="promo-status"></p>
+<p data-testid="notification">Order received</p>
+<img data-testid="theme-logo" alt="Shop" />
+<div data-testid="theme-box">Theme</div>
+<button data-testid="load-orders">Load orders</button
+><span data-testid="loading" hidden>Loading…</span>
+<p data-testid="network-error"></p>
+<p data-testid="connection-status"></p>
+<button data-testid="check-notifications">Check notifications</button>
+<p data-testid="notification-status"></p>
+<p data-testid="nearest-point"></p>
+<p data-testid="no-js-message">Orders without JavaScript</p>
+<script>
+    const get = id => document.querySelector('[data-testid="' + id + '"]');
+    get("no-js-message").remove();
+    const label = (en, ru) => (document.cookie.includes("orders-language=ru") ? ru : en);
+    if (navigator.language.startsWith("de")) get("page-title").textContent = "Bestellungen";
+    get("average-value").textContent = new Intl.NumberFormat().format(1234.56);
+    get("event-time").textContent = new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+    }).format(new Date("2024-01-10T12:00:00Z"));
+    get("promo-status").textContent = new Date().toISOString().startsWith("2024-09-04")
+        ? label("Promotion started", "Акция началась")
+        : "No promotion";
+    setTimeout(() => (get("notification").hidden = true), 5000);
+    get("theme-logo").src = matchMedia("(prefers-color-scheme: dark)").matches
+        ? "/images/night.svg"
+        : "/images/day.svg";
+    get("connection-status").textContent = navigator.onLine ? "Online" : label("Offline", "Офлайн");
+    get("load-orders").onclick = async () => {
+        get("loading").hidden = false;
+        try {
+            await (await fetch("/api/items")).text();
+        } catch {
+            get("network-error").textContent = label(
+                "No network connection",
+                "Нет подключения к сети",
+            );
+        } finally {
+            get("loading").hidden = true;
+        }
+    };
+    get("check-notifications").onclick = async () => {
+        const permission = await navigator.permissions.query({ name: "notifications" });
+        get("notification-status").textContent =
+            permission.state === "granted"
+                ? label("Notifications enabled", "Уведомления включены")
+                : "Disabled";
+    };
+    navigator.geolocation.getCurrentPosition(({ coords }) => {
+        if (Math.abs(coords.latitude - 52.52) < 0.01 && Math.abs(coords.longitude - 13.405) < 0.01)
+            get("nearest-point").textContent = label(
+                "Pickup point at Alexanderplatz",
+                "Пункт выдачи на Alexanderplatz",
+            );
+    });
+</script>

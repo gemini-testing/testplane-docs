@@ -42,7 +42,7 @@ await browser.$$(selector);
 
 **index.html**
 
-```html
+```html testplane-html=browser-menu
 <ul id="menu">
     <li>
         <a href="/">Home</a>
@@ -61,24 +61,31 @@ await browser.$$(selector);
 
 **$.js**
 
-```javascript
-it("should get text of a menu link", async ({ browser }) => {
-    const text = await browser.$$("#menu")[0];
+```javascript testplane=browser-find-elements fixture=browser-menu
+const assert = require("node:assert/strict");
 
-    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
+it("should get the text of a menu link", async ({ browser }) => {
+    const menu = await browser.$$("#menu")[0];
+    const link = await menu.$$("li")[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
 });
 
-it("should get text of a menu link - JS Function", async ({ browser }) => {
-    const text = await browser.$$(function () {
-        // Arrow function cannot be used here.
-        // This is Window – https://developer.mozilla.org/en-US/docs/Web/API/Window
-        //
-        // TypeScript users can do something like:
-        // return (this as Window).document.querySelectorAll('#menu')
-        return this.document.querySelectorAll("#menu"); // Element[]
+it("should get the text of a menu link using a function selector", async ({ browser }) => {
+    const menu = await browser.$$(function () {
+        // Use a regular function: WebdriverIO binds `this` to the page's Window.
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window
+        // TypeScript example:
+        // return Array.from((this as Window).document.querySelectorAll("#menu"));
+        return Array.from(this.document.querySelectorAll("#menu"));
     })[0];
+    const link = await menu.$$("li")[2].$("a");
 
-    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
 });
 ```
 

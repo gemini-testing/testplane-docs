@@ -10,12 +10,15 @@ import Version from "../../_partials/specs/version.mdx";
 
 ## Использование {/* #usage */}
 
-```typescript
+```typescript testplane=browser-get-state-file fixture=browser-saved-state
 import type { SaveStateData } from "testplane";
+const assert = require("node:assert/strict");
 
 const stateDump: SaveStateData = await browser.getState({
-    path: "./stateDump.json",
+    path: "./artifacts/stateDump.json",
 });
+const theme = stateDump.cookies?.find(cookie => cookie.name === "theme");
+assert.equal(theme?.value, "dark");
 ```
 
 ## Параметры команды {/* #parameters */}
@@ -41,13 +44,20 @@ const stateDump: SaveStateData = await browser.getState({
 
 ## Usage Examples {/* #examples */}
 
-Save state in file.
+Прочитайте сохраненное состояние, не меняя текущую сессию.
 
-```typescript
-it("test", async ({ browser }) => {
-    const stateData = await browser.getState({
-        path: "./stateDump.json",
-    });
+```typescript testplane=browser-read-saved-state fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("should read a saved session without restoring it", async ({ browser }) => {
+    await browser.setCookies({ name: "theme", value: "dark" });
+    const path = "./artifacts/stateDump.json";
+    const saved = await browser.saveState({ path });
+    await browser.clearSession();
+
+    const stateData = await browser.getState({ path });
+    assert.deepEqual(stateData, saved);
+    assert.deepEqual(await browser.getCookies(), []);
 });
 ```
 

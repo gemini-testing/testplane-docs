@@ -32,17 +32,22 @@ await browser.uploadFile(localPath);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-const path = require("path");
+The example uploads a local SVG through ChromeDriver, submits the form and checks the file name in the confirmation.
+
+```javascript testplane=browser-upload-file fixture=browser-page
+const path = require("node:path");
 
 it("should upload a file", async ({ browser }) => {
-    await browser.url("https://the-internet.herokuapp.com/upload");
+    await browser.url("/fixtures/browser/upload.html");
 
-    const filePath = "/path/to/some/file.png";
+    const filePath = path.resolve("fixtures/site/browser/banner.svg");
     const remoteFilePath = await browser.uploadFile(filePath);
 
     await browser.$("#file-upload").setValue(remoteFilePath);
     await browser.$("#file-submit").click();
+
+    const status = await browser.$("output");
+    await browser.waitUntil(async () => (await status.getText()) === "Uploaded: banner.svg");
 });
 ```
 

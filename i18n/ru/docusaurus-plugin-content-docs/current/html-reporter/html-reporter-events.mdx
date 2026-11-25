@@ -20,9 +20,11 @@ sidebar_class_name: hidden
 
 ### Подписка на событие {/* #database_created_subscription */}
 
-```javascript
+```javascript testplane-project=reporter
 testplane.htmlReporter.on(testplane.htmlReporter.events.DATABASE_CREATED, db => {
     console.info(`Выполняется обработка события DATABASE_CREATED...`);
+    const result = db.exec("SELECT sqlite_version()");
+    console.info(result[0].values[0][0]);
 });
 ```
 
@@ -32,22 +34,18 @@ testplane.htmlReporter.on(testplane.htmlReporter.events.DATABASE_CREATED, db => 
 
 ### Пример использования {/* #database_created_example */}
 
-```javascript
-const parseConfig = require("./config");
-
-module.exports = (testplane, opts) => {
-    const pluginConfig = parseConfig(opts);
-
+```javascript testplane-project=reporter
+module.exports = (testplane, pluginConfig) => {
     if (!pluginConfig.enabled || testplane.isWorker()) {
         // или плагин отключен, или мы находимся в контексте воркера – уходим
         return;
     }
 
-    // свойство "htmlreporter" гарантированно есть в объекте "testplane"
+    // свойство "htmlReporter" гарантированно есть в объекте "testplane"
     // в момент срабатывания события INIT
     testplane.on(testplane.events.INIT, () => {
         testplane.htmlReporter.on(testplane.htmlReporter.events.DATABASE_CREATED, db => {
-            db.prepare(`CREATE TABLE IF NOT EXISTS testTable (foo TEXT, bar TEXT)`).run();
+            db.run("CREATE TABLE IF NOT EXISTS testTable (foo TEXT, bar TEXT)");
         });
     });
 };
@@ -61,7 +59,7 @@ module.exports = (testplane, opts) => {
 
 ### Подписка на событие {/* #test_screenshots_saved_subscription */}
 
-```javascript
+```javascript testplane-project=reporter
 testplane.htmlReporter.on(
     testplane.htmlReporter.events.TEST_SCREENSHOTS_SAVED,
     async ({ testId, attempt, imagesInfo }) => {
@@ -70,7 +68,7 @@ testplane.htmlReporter.on(
             imagesInfo,
         );
 
-        /* Expected output:
+        /* Пример вывода при несовпадении скриншотов:
         Screenshots for test "Feature Test.chrome-desktop" (attempt #0) were saved:
         [
             {
@@ -79,15 +77,17 @@ testplane.htmlReporter.on(
                 status: 'fail',
                 error: undefined,
                 diffClusters: [...],
-                expectedImg: { path: '...', size: { width: 400, height: 200 } }
-                actualImg: { path: '...', size: { width: 400, height: 200 } }
-                diffImg: { path: '...', size: { width: 400, height: 200 } }
+                expectedImg: { path: '...', size: { width: 400, height: 200 } },
+                actualImg: { path: '...', size: { width: 400, height: 200 } },
+                diffImg: { path: '...', size: { width: 400, height: 200 } },
             }
         ]
         */
     },
 );
 ```
+
+При успешном сравнении статус изображения — `success`. При несовпадении в полях `expectedImg`, `actualImg` и `diffImg` доступны пути к изображениям и их размеры.
 
 #### Параметры обработчика {/* #test_screenshots_saved_handler_params */}
 
@@ -109,7 +109,7 @@ testplane.htmlReporter.on(
 
 ### Подписка на событие {/* #report_saved_subscription */}
 
-```javascript
+```javascript testplane-project=reporter
 testplane.htmlReporter.on(testplane.htmlReporter.events.REPORT_SAVED, async ({ reportPath }) => {
     console.info(`Выполняется обработка события REPORT_SAVED, report path = ${reportPath}...`);
 });

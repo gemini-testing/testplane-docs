@@ -20,19 +20,21 @@ import Admonition from "@theme/Admonition";
 
 -   в WebDriverIO объект `browser` существует в глобальном пространстве, тогда как в testplane нужно либо писать `this.browser`:
 
-    ```javascript
-    it("should test something", async () => {
-        await this.browser.url("https://testplane.io");
+    ```javascript testplane=commands-browser-context-ru
+    it("открывает страницу через контекст теста", async function () {
+        await this.browser.url("data:text/html,<title>Welcome</title>");
         // код теста...
+        await expect(this.browser).toHaveTitle("Welcome");
     });
     ```
 
     либо получать объект `browser` из аргумента функции (обратите внимание, что объект `browser` передается внутри объекта!):
 
-    ```javascript
-    it("should test something", async ({ browser }) => {
-        await browser.url("https://testplane.io");
+    ```javascript testplane=commands-browser-argument-ru
+    it("открывает страницу через аргумент browser", async ({ browser }) => {
+        await browser.url("data:text/html,<title>Welcome</title>");
         // код теста...
+        await expect(browser).toHaveTitle("Welcome");
     });
     ```
 

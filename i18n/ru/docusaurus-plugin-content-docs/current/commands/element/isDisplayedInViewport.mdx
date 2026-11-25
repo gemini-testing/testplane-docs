@@ -16,30 +16,48 @@ await browser.$(selector).isDisplayedInViewport();
 
 **index.html**
 
-```javascript
-<div id="notDisplayed" style="display: none"></div>
-<div id="notVisible" style="visibility: hidden"></div>
-<div id="notInViewport" style="position:absolute; left: 9999999"></div>
-<div id="zeroOpacity" style="opacity: 0"></div>
+```html testplane-html=element-html
+<div id="visible">Visible</div>
+<div id="notDisplayed" style="display: none">Hidden</div>
+<div id="notVisible" style="visibility: hidden">Hidden</div>
+<div id="notInViewport" style="position: absolute; left: 10000px">Off screen</div>
+<div id="zeroOpacity" style="opacity: 0">Transparent</div>
 ```
 
-**isDisplayed.js**
+**isDisplayedInViewport.js**
 
-```javascript
+```javascript testplane=element-is-displayed-in-viewport-ru fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should detect if an element is visible", async ({ browser }) => {
-    let isDisplayedInViewport = await browser.$("#notDisplayed").isDisplayedInViewport();
-    console.log(isDisplayedInViewport); // выведет: false
+    let elem = await browser.$("#visible");
+    let isDisplayedInViewport = await elem.isDisplayedInViewport();
+    console.log(isDisplayedInViewport); // выведет: true
+    assert.equal(isDisplayedInViewport, true);
 
-    isDisplayedInViewport = await browser.$("#notVisible").isDisplayedInViewport();
+    elem = await browser.$("#notDisplayed");
+    isDisplayedInViewport = await elem.isDisplayedInViewport();
     console.log(isDisplayedInViewport); // выведет: false
+    assert.equal(isDisplayedInViewport, false);
 
-    isDisplayedInViewport = await browser.$("#notExisting").isDisplayedInViewport();
+    elem = await browser.$("#notVisible");
+    isDisplayedInViewport = await elem.isDisplayedInViewport();
     console.log(isDisplayedInViewport); // выведет: false
+    assert.equal(isDisplayedInViewport, false);
 
-    isDisplayedInViewport = await browser.$("#notInViewport").isDisplayedInViewport();
+    elem = await browser.$("#notExisting");
+    isDisplayedInViewport = await elem.isDisplayedInViewport();
     console.log(isDisplayedInViewport); // выведет: false
+    assert.equal(isDisplayedInViewport, false);
 
-    isDisplayedInViewport = await browser.$("#zeroOpacity").isDisplayedInViewport();
+    elem = await browser.$("#notInViewport");
+    isDisplayedInViewport = await elem.isDisplayedInViewport();
     console.log(isDisplayedInViewport); // выведет: false
+    assert.equal(isDisplayedInViewport, false);
+
+    elem = await browser.$("#zeroOpacity");
+    isDisplayedInViewport = await elem.isDisplayedInViewport();
+    console.log(isDisplayedInViewport); // выведет: false
+    assert.equal(isDisplayedInViewport, false);
 });
 ```

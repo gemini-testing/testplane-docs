@@ -1,33 +1,70 @@
 # expect for network mocks
 
+The `toBeRequested*` matchers work with Chrome DevTools Protocol (CDP) mocks, not WebDriver BiDi mocks. Each section also shows a BiDi alternative. On the example page, `#reload` sends a GET and `#save` sends a POST to `/api/items`.
+
 ## toBeRequested
 
 Checks if the specified request was made.
 
-For example:
+In a CDP session:
 
-```javascript
-const mock = browser.mock("**/api/todo*");
+```javascript testplane=expect-cdp-requested fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+const reload = await browser.$("#reload");
+await reload.click();
 await expect(mock).toBeRequested();
+```
+
+In a WebDriver BiDi session:
+
+```javascript testplane=expect-bidi-requested fixture=matchers-network
+const mock = await browser.mock("/api/items");
+const reload = await browser.$("#reload");
+await reload.click();
+// Wait for the response before inspecting the recorded calls.
+await mock.waitForResponse();
+expect(mock.calls).toHaveLength(1);
 ```
 
 ## toBeRequestedTimes
 
 Checks if the specified request was made the expected number of times.
 
-For example:
+In a CDP session:
 
-```javascript
-const mock = browser.mock("**/api/todo*");
+```javascript testplane=expect-cdp-request-count fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+const reload = await browser.$("#reload");
+await reload.click();
+await reload.click();
+
 await expect(mock).toBeRequestedTimes(2);
-// or, equivalently:
+// Or specify the same exact count using eq:
 await expect(mock).toBeRequestedTimes({ eq: 2 });
 ```
 
-```javascript
-const mock = browser.mock("**/api/todo*");
-// Check if the request was made at least 5 times but no more than 10 times
+```javascript testplane=expect-cdp-request-range fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+const reload = await browser.$("#reload");
+for (let i = 0; i < 5; i++) {
+    await reload.click();
+}
+
+// At least five requests, but no more than ten.
 await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 });
+```
+
+In a WebDriver BiDi session:
+
+```javascript testplane=expect-bidi-request-count fixture=matchers-network
+const mock = await browser.mock("/api/items");
+const reload = await browser.$("#reload");
+await reload.click();
+await reload.click();
+
+// waitForResponse waits for the first call; here we need both.
+await browser.waitUntil(() => mock.calls.length >= 2);
+expect(mock.calls).toHaveLength(2);
 ```
 
 ## toBeRequestedWith
@@ -36,28 +73,51 @@ Checks if the specified request was made with the given options.
 
 Most options support partial matchers _expect.* / jasmine.*_ such as [expect.objectContaining](https://jestjs.io/docs/expect#expectobjectcontainingobject).
 
-For example:
+In a CDP session:
 
-```javascript
-const mock = browser.mock("**/api/todo*", { method: "POST" });
+```javascript testplane=expect-cdp-request-details fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items", { method: "POST" });
+const save = await browser.$("#save");
+await save.click();
 
+// All fields are optional. Use exact values when the request and its result are known.
+const expectedUrl = new URL("/api/items", browser.options.baseUrl).href;
 await expect(mock).toBeRequestedWith({
-    url: "http://localhost:8080/api/todo", // [optional] string | function | custom matcher
-    method: "POST", // [optional] string | array
-    statusCode: 200, // [optional] number | array
-    requestHeaders: { Authorization: "foo" }, // [optional] object | function | custom matcher
-    responseHeaders: { Authorization: "bar" }, // [optional] object | function | custom matcher
-    postData: { title: "foo", description: "bar" }, // [optional] object | function | custom matcher
-    response: { success: true }, // [optional] object | function | custom matcher
+    url: expectedUrl, // String, predicate or matcher.
+    method: "POST", // One method or an array of alternatives.
+    statusCode: 200, // One status or an array of alternatives.
+    // For headers and bodies, use an object, a predicate or a matcher.
+    requestHeaders: expect.objectContaining({ "X-Example": "tasks" }),
+    responseHeaders: expect.objectContaining({ "Content-Type": "application/json" }),
+    postData: { title: "Ship feature", username: "user" },
+    response: { source: "original", method: "POST", header: "tasks" },
 });
 
+// For variable values, combine alternatives, predicates and partial matchers.
 await expect(mock).toBeRequestedWith({
-    url: expect.stringMatching(/.*\/api\/.*/i),
-    method: ["POST", "PUT"], // Either POST or PUT
-    statusCode: [401, 403], // Either 401 or 403
-    requestHeaders: headers => headers.Authorization.startsWith("Bearer "),
-    postData: expect.objectContaining({ released: true, title: expect.stringContaining("foobar") }),
-    response: r => Array.isArray(r) && r.data.items.length === 20,
+    url: expect.stringMatching(/\/api\/items$/),
+    method: ["POST", "PUT"], // Either method is acceptable.
+    statusCode: [200, 201], // Either success status is acceptable.
+    requestHeaders: headers => headers["X-Example"] === "tasks",
+    responseHeaders: expect.objectContaining({ "Content-Type": "application/json" }),
+    postData: expect.objectContaining({ title: expect.stringContaining("Ship") }),
+    response: item => item.source === "original",
+});
+```
+
+In a WebDriver BiDi session:
+
+```javascript testplane=expect-bidi-request-details fixture=matchers-network
+const mock = await browser.mock("/api/items", { method: "POST" });
+const save = await browser.$("#save");
+await save.click();
+await mock.waitForResponse();
+
+// BiDi records request and response details in two separate objects.
+const [call] = mock.calls;
+expect(call).toMatchObject({
+    request: { method: "POST", url: expect.stringMatching(/\/api\/items$/) },
+    response: { status: 200 },
 });
 ```
 

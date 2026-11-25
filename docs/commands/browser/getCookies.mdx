@@ -26,27 +26,38 @@ await browser.getCookies(names);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should return a cookie for me", async ({ browser }) => {
-    await browser.setCookies([
+```javascript testplane=browser-get-cookies fixture=browser-page
+const assert = require("node:assert/strict");
+
+// Show only names and values; cookies also have fields such as domain, path and expiry.
+const namesAndValues = cookies =>
+    cookies
+        .map(({ name, value }) => ({ name, value }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+it("should read one cookie or all cookies", async ({ browser }) => {
+    const initial = [
         { name: "test", value: "123" },
         { name: "test2", value: "456" },
-    ]);
+    ];
+    await browser.setCookies(initial);
 
     const testCookie = await browser.getCookies(["test"]);
-    console.log(testCookie);
-    // outputs:
+    console.log(namesAndValues(testCookie));
+    // Output:
     // [
-    //    { name: 'test', value: '123' }
+    //     { name: "test", value: "123" }
     // ]
+    assert.deepEqual(namesAndValues(testCookie), [initial[0]]);
 
     const allCookies = await browser.getCookies();
-    console.log(allCookies);
-    // outputs:
+    console.log(namesAndValues(allCookies));
+    // Output:
     // [
-    //    { name: 'test', value: '123' },
-    //    { name: 'test2', value: '456' }
+    //     { name: "test", value: "123" },
+    //     { name: "test2", value: "456" }
     // ]
+    assert.deepEqual(namesAndValues(allCookies), initial);
 });
 ```
 

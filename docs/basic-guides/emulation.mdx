@@ -14,11 +14,11 @@ The CPU speed on mobile devices is significantly slower than on computers. There
 
 ### Example: Slowing Down CPU Speed by 8x {/* #example */}
 
-Let's use this method to slow down CPU speed by 8 times:
+The examples below open `/navigation`, a page with the heading “Navigation”. To run them against your site, set `baseUrl` to its address and substitute your page path and heading.
 
-```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
-    // Get puppeteer instance
+```javascript testplane=guide-cpu-emulation fixture=guides-page transport=cdp
+it("opens the page with an eightfold CPU slowdown", async function ({ browser }) {
+    // Get the Puppeteer instance
     const puppeteer = await browser.getPuppeteer();
 
     // Get the first open page (considering it to be currently active)
@@ -27,7 +27,12 @@ it("should open yandex.ru with emulation 8x slower CPU", async function ({ brows
     // Slow down the CPU speed by 8 times
     await page.emulateCPUThrottling(8);
 
-    await browser.url("https://yandex.ru");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await page.emulateCPUThrottling(1);
+    }
 });
 ```
 
@@ -43,9 +48,9 @@ This feature only works with browsers supporting _Chrome DevTools Protocol (CDP)
 
 </Admonition>
 
-A large number of users access services from mobile devices where internet speed can be quite slow or may even drop out intermittently. In _webdriverio_, we can limit network bandwidth using the [throttle][throttle] method, thereby testing the website's behavior under various network conditions.
+A large number of users access services from mobile devices where internet speed can be quite slow or may even drop out intermittently. In _webdriverio_, we can limit network bandwidth using the [throttleNetwork][throttle] command, thereby testing the website's behavior under various network conditions.
 
-Besides custom settings, the [throttle][throttle] method supports the following ready-made presets:
+Besides custom settings, the [throttleNetwork][throttle] command supports the following ready-made presets:
 
 -   offline | online
 -   GPRS
@@ -57,14 +62,19 @@ Besides custom settings, the [throttle][throttle] method supports the following 
 
 ### Example 1: Emulating a 2G Connection {/* #example_1 */}
 
-Let's emulate a 2G connection and open yandex.ru in Chrome with phone emulation:
+Throttle the connection of a desktop Chrome tab, then check that the page remains usable:
 
-```javascript
-it("should open yandex.ru with emulation of 2G-connection", async function ({ browser }) {
+```javascript testplane=guide-network-preset fixture=guides-page transport=cdp
+it("opens the page with a 2G connection", async function ({ browser }) {
     // Emulate a 2G connection
-    await browser.throttle("Good2G");
+    await browser.throttleNetwork("Good2G");
 
-    await browser.url("https://yandex.ru");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
 });
 ```
 
@@ -72,18 +82,23 @@ it("should open yandex.ru with emulation of 2G-connection", async function ({ br
 
 We can also emulate a connection with specific characteristics:
 
-```javascript
-it("should open yandex.ru with emulation of custom connection", async function ({ browser }) {
+```javascript testplane=guide-network-custom fixture=guides-page transport=cdp
+it("opens the page with custom network conditions", async function ({ browser }) {
     // Emulate a network connection with specified characteristics
-    await browser.throttle({
-        offline: false, // emulate offline state
-        downloadThroughput: (10 * 1024) / 8, // max download bandwidth (byte/sec)
-        uploadThroughput: (10 * 1024) / 8, // max upload bandwidth (byte/sec)
-        latency: 10, // min latency from sending the request to receiving the response headers
+    await browser.throttleNetwork({
+        offline: false, // false keeps the network online
+        downloadThroughput: (10 * 1024) / 8, // max download bandwidth (bytes/s)
+        uploadThroughput: (10 * 1024) / 8, // max upload bandwidth (bytes/s)
+        latency: 10, // min latency in ms from sending the request to receiving the response headers
     });
 
-    await browser.url("https://yandex.ru");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
 });
 ```
 
-[throttle]: ../../commands/browser/throttle
+[throttle]: https://webdriver.io/docs/api/browser/throttleNetwork

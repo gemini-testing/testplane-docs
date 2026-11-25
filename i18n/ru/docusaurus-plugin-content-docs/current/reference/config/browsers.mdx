@@ -174,7 +174,7 @@ Testplane использует текущее подключение Docker CLI.
 
 Пример конфигурации с дополнительными настройками контейнера:
 
-```ts title="testplane.config.ts"
+```ts title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -1313,7 +1313,7 @@ type StateOpts = {
 
 Пример валидной конфигурации:
 
-```typescript
+```typescript testplane-project=config
 export = {
     stateOpts: {
         path: "stateDump.json",

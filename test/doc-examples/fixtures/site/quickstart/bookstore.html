@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Bookstore</title>
+<nav class="navbar"><a href="bookstore.html">Bookstore</a></nav>
+<h1>Bookstore</h1>
+<label>Search <input data-testid="search-input" type="search" /></label>
+<label
+    >Sort by
+    <select data-testid="sort-select">
+        <option value="title">Title</option>
+        <option value="rating">Highest Rated</option>
+    </select></label
+>
+<section id="login">
+    <label><input type="checkbox" data-testid="remember-checkbox" />Remember me</label>
+</section>
+<ul id="books">
+    <li><img src="../selectors/cover.svg" alt="The Great Gatsby" />The Great Gatsby</li>
+    <li>A Study in Scarlet</li>
+</ul>
+<script>
+    document.querySelector('[data-testid="search-input"]').oninput = ({ target }) => {
+        for (const book of document.querySelectorAll("#books li")) {
+            book.hidden = !book.textContent.toLowerCase().includes(target.value.toLowerCase());
+        }
+    };
+</script>

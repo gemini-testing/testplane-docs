@@ -45,43 +45,47 @@ await browser.setCookies(cookies);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should set a cookie for the page", async ({ browser }) => {
+```javascript testplane=browser-set-cookies-ru fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("should set cookies for the page", async ({ browser }) => {
     await browser.url("/");
 
-    // устанавливаем одну cookie
+    // Устанавливаем одну cookie.
     await browser.setCookies({
         name: "test1",
         value: "one",
-        // Следующие параметры опциональны:
-        // путь к cookie, по умолчанию: "/"
-        //      path: '/foo',
-        // домен, для которого будет видна cookie
-        // по умолчанию: домен урла активного документа в текущем контексте браузера
-        //      domain: '.example.com',
-        // признак, что это безопасная cookie, по умолчанию: false
-        //      secure: true,
-        // признак, что это cookie только для http, по умолчанию: false
-        //      httpOnly: true,
-        // срок, когда cookie истекает, указывается в секундах с начала эпохи Unix
-        //      expiry: 1551393875
+        // Необязательные параметры:
+        // path: "/",                 // путь cookie, по умолчанию "/"
+        // domain: "shop.example.com", // по умолчанию хост текущей страницы
+        // secure: true,              // отправлять только по HTTPS
+        // httpOnly: true,            // скрыть от JavaScript на странице
+        // expiry: 1893456000,        // секунды с начала эпохи Unix
     });
 
-    // устанавливаем несколько cookies
+    // Устанавливаем несколько cookie за один вызов.
     await browser.setCookies([
         { name: "test2", value: "two" },
         { name: "test3", value: "three" },
     ]);
 
     const cookies = await browser.getCookies();
-
-    await console.log(cookies);
-    // выведет:
+    const result = cookies.map(({ name, value, domain }) => ({ name, value, domain }));
+    result.sort((a, b) => a.name.localeCompare(b.name));
+    console.log(result);
+    // Для страницы на www.example.com:
     // [
-    //      { name: 'test1', value: 'one', domain: 'www.example.com' },
-    //      { name: 'test2', value: 'two', domain: 'www.example.com' },
-    //      { name: 'test3', value: 'three', domain: 'www.example.com' }
+    //     { name: "test1", value: "one", domain: "www.example.com" },
+    //     { name: "test2", value: "two", domain: "www.example.com" },
+    //     { name: "test3", value: "three", domain: "www.example.com" }
     // ]
+
+    const domain = new URL(await browser.getUrl()).hostname;
+    assert.deepEqual(result, [
+        { name: "test1", value: "one", domain },
+        { name: "test2", value: "two", domain },
+        { name: "test3", value: "three", domain },
+    ]);
 });
 ```
 

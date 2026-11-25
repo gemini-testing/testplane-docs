@@ -8,7 +8,7 @@ Testplane runs tests in parallel by launching multiple browsers simultaneously, 
 
 In the configuration file, browser types are declared in the `browsers` field. For each browser type, you can independently configure how many instances can run simultaneously:
 
-```typescript
+```typescript testplane-project=config
 // .testplane.config.ts
 export default {
     browsers: {
@@ -385,7 +385,7 @@ The recommended value is 8. Any other value should not exceed the number of CPU 
 
 Base the value on your hardware capabilities — for debugging or running individual tests, this value typically falls within the 1–5 range. When using local browsers in CI/Docker images, rely on a rough estimate: one `LinuxDesktop`-browser session consumes 1.2 CPU cores. If you’re using a remote grid, the provider usually specifies the number of available slots — for example, 400. Next, calculate the number of concurrent task runs in CI — say, up to 10. In this case, you can set the total `sessionsPerBrowser` value in the CI config:
 
-```typescript
+```typescript testplane-project=config
 // .testplane.config.ts
 export default {
     browsers: {

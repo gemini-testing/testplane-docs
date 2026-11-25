@@ -25,7 +25,7 @@ This command starts a local development server and opens up a browser window. Mo
 
 This repository uses TypeScript, Eslint and Prettier.
 
-To run all tests available, run:
+To run linting, type checks and the example-checker unit tests, run:
 
 ```shell
 npm test
@@ -42,3 +42,22 @@ To fix code issues and formatting, run:
 ```shell
 npm run reformat
 ```
+
+### Check documentation examples
+
+Write the example once, in the documentation. Add `testplane=<stable-id>` to a JavaScript or TypeScript fence; short snippets can use a fixture and the HTML shown on the same page. For CLI, configuration or API examples, use a temporary-project recipe. CI regenerates and runs all enrolled examples on every PR. A new or changed block on a current non-mobile EN/RU page must have coverage or a reviewed exception. The report lists unchanged, untested examples separately from runtime results.
+
+The Chrome suite uses Node.js 22.21.1, **not** the version in the site's `.nvmrc`. From the repository root, install both sets of dependencies and run it:
+
+```shell
+nvm install 22.21.1
+nvm use 22.21.1
+npm ci
+npm --prefix test/doc-examples ci --legacy-peer-deps
+npm run check:examples -- --base origin/master
+npm run test:examples
+```
+
+Browser tests run separately from `npm test`. To inspect the generated files without
+launching a browser, run `npm run generate:examples`. Do not commit the generated files.
+See the [example authoring and Chrome setup guide](test/doc-examples/README.md).

@@ -16,7 +16,7 @@ await browser.$(selector).getText();
 
 **index.html**
 
-```javascript
+```html testplane-html=element-html
 <div id="elem">
     Lorem ipsum <strong>dolor</strong> sit amet,<br />
     consetetur sadipscing elitr
@@ -26,22 +26,52 @@ await browser.$(selector).getText();
 
 **getText.js**
 
-```javascript
-it("should demonstrate the getText function", async ({ browser }) => {
-    console.log(await browser.$("#elem").getText());
-    // выведет: "Lorem ipsum dolor sit amet,consetetur sadipscing elitr"
+```javascript testplane=element-get-text-ru fixture=element-html
+const assert = require("node:assert/strict");
 
-    console.log(await browser.$("span").getText());
-    // выведет: "" (пустую строку) т. к. элемент – не интерактивный
+it("should demonstrate the getText function", async ({ browser }) => {
+    const elem = await browser.$("#elem");
+    const text = await elem.getText();
+    console.log(text);
+    // выведет:
+    // Lorem ipsum dolor sit amet,
+    // consetetur sadipscing elitr
+    assert.equal(text, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr");
+
+    const hidden = await browser.$("span");
+    const hiddenText = await hidden.getText();
+    console.log(hiddenText); // выведет: "" (пустую строку), потому что элемент скрыт
+    assert.equal(hiddenText, "");
 });
+```
+
+Чтобы прочитать третий столбец второй строки:
+
+```html testplane-html=element-table
+<table id="table1">
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Email</th>
+    </tr>
+    <tr>
+        <td>John</td>
+        <td>Doe</td>
+        <td>john@example.com</td>
+    </tr>
+</table>
+```
+
+```javascript testplane=element-get-text-table-ru fixture=element-table
+const assert = require("node:assert/strict");
 
 it("get content from table cell", async ({ browser }) => {
-    await browser.url("http://the-internet.herokuapp.com/tables");
-
     const rows = await browser.$$("#table1 tr");
-    const columns = await rows[1].$$("td"); // получить столбцы 2-го ряда
+    const columns = await rows[1].$$("td"); // Получаем ячейки второй строки.
 
-    console.log(await columns[2].getText()); // получить текст из 3-го столбца
+    const text = await columns[2].getText(); // Получаем текст из третьего столбца.
+    console.log(text); // выведет: "john@example.com"
+    assert.equal(text, "john@example.com");
 });
 ```
 

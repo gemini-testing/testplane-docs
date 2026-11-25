@@ -12,11 +12,20 @@ await browser.$(selector).getComputedRole();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
+```html testplane-html=element-html
+<select name="q" aria-label="Search">
+    <option>All</option>
+</select>
+```
+
+```javascript testplane=element-get-computed-role fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should demonstrate the getComputedRole command", async ({ browser }) => {
-    await browser.url("https://www.google.com/ncr");
-    const elem = await browser.$('*[name="q"]');
-    console.log(await elem.getComputedRole()); // outputs: "combobox"
+    const elem = await browser.$('[name="q"]');
+    const role = await elem.getComputedRole();
+    console.log(role); // outputs: "combobox"
+    assert.equal(role, "combobox");
 });
 ```
 

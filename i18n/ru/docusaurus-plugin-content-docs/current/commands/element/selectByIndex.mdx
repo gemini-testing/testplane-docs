@@ -26,7 +26,7 @@ await browser.$(selector).selectByIndex(index);
 
 **example.html**
 
-```javascript
+```html testplane-html=element-html
 <select id="selectbox">
     <option value="someValue0">uno</option>
     <option value="someValue1">dos</option>
@@ -39,13 +39,19 @@ await browser.$(selector).selectByIndex(index);
 
 **selectByIndex.js**
 
-```javascript
+```javascript testplane=element-select-by-index-ru fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should demonstrate the selectByIndex command", async ({ browser }) => {
     const selectBox = await browser.$("#selectbox");
-    console.log(await selectBox.getValue()); // выведет: "someValue0"
+    let value = await selectBox.getValue();
+    console.log(value); // выведет: "someValue0"
+    assert.equal(value, "someValue0");
 
     await selectBox.selectByIndex(4);
-    console.log(await selectBox.getValue()); // выведет: "someValue4"
+    value = await selectBox.getValue();
+    console.log(value); // выведет: "someValue4"
+    assert.equal(value, "someValue4");
 });
 ```
 

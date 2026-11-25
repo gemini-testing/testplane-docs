@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+    <meta charset="utf-8" />
+    <title>Todo list</title>
+    <h1>Todos</h1>
+    <ul id="todo-list"></ul>
+    <script>
+        async function loadTodos() {
+            const response = await fetch("todos.json");
+            const todos = await response.json();
+            const list = document.querySelector("#todo-list");
+            for (const todo of todos) {
+                const item = document.createElement("li");
+                item.textContent = todo.title;
+                if (todo.completed) item.classList.add("completed");
+                list.append(item);
+            }
+        }
+        loadTodos();
+    </script>
+</html>

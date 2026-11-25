@@ -82,21 +82,21 @@ await browser.assertView(state, selector, options);
 
 **Визуальная проверка элемента**
 
-```typescript
-it("should assert view", async ({ browser }) => {
-    await browser.url("some/url");
+```typescript testplane=browser-assert-view-element fixture=browser-visual-element
+it("should compare the button before and after a click", async ({ browser }) => {
+    await browser.url("/fixtures/browser/swatch.html");
     await browser.assertView("plain", ".button");
 
-    await browser.click(".button");
+    await browser.$(".button").click();
     await browser.assertView("clicked", ".button");
 });
 ```
 
 **Визуальная проверка всего вьюпорта**
 
-```typescript
-it("should assert viewport without selector", async ({ browser }) => {
-    await browser.url("some/url");
+```typescript testplane=browser-assert-view-viewport fixture=browser-visual-viewport
+it("should compare the viewport without a selector", async ({ browser }) => {
+    await browser.url("/fixtures/browser/swatch.html?fullscreen");
     await browser.execute(() => window.scrollTo(0, 1000));
     await browser.assertView("plain");
 
@@ -107,9 +107,9 @@ it("should assert viewport without selector", async ({ browser }) => {
 
 **Визуальная проверка с дополнительными опциями**
 
-```typescript
-it("should assert view with given options", async ({ browser }) => {
-    await browser.url("some/url");
+```typescript testplane=browser-assert-view-options fixture=browser-visual-options
+it("should compare the form using capture options", async ({ browser }) => {
+    await browser.url("/fixtures/browser/swatch.html?showLink");
     await browser.assertView("plain", ".form", {
         ignoreElements: [".link"],
         tolerance: 5,

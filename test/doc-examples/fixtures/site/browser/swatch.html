@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Color switch</title>
+<style>
+    body {
+        margin: 0;
+    }
+    .form,
+    .button {
+        width: 40px;
+        height: 40px;
+    }
+    .button {
+        display: block;
+        padding: 0;
+        border: 0;
+        outline: none;
+        background: green;
+    }
+    .button[aria-pressed="true"] {
+        background: blue;
+    }
+    .form {
+        position: relative;
+    }
+    .link {
+        display: none;
+    }
+    .show-link .link {
+        display: block;
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 8px;
+        height: 8px;
+        background: yellow;
+    }
+    /* Keep scrolling available without painting platform-specific scrollbar tracks. */
+    html.fullscreen {
+        scrollbar-width: none;
+    }
+    .fullscreen .modal {
+        padding-top: 1000px;
+    }
+    .fullscreen .form,
+    .fullscreen .button {
+        width: 100%;
+        height: 100vh;
+    }
+</style>
+<main class="modal">
+    <div class="form">
+        <button
+            class="button"
+            aria-label="Toggle color"
+            aria-pressed="false"
+            onclick="this.setAttribute('aria-pressed', 'true')"
+        ></button>
+        <a class="link" href="/" aria-label="Help"></a>
+    </div>
+</main>
+<script>
+    const options = new URLSearchParams(location.search);
+    if (options.has("fullscreen")) document.documentElement.classList.add("fullscreen");
+    if (options.has("showLink")) document.body.classList.add("show-link");
+</script>

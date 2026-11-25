@@ -47,9 +47,9 @@ await browser.savePDF(filepath, {
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should save a PDF screenshot of the browser view", async ({ browser }) => {
-    await browser.savePDF("./some/path/screenshot.pdf");
+```javascript testplane=browser-save-pdf fixture=browser-pdf
+it("should save a PDF of the browser view", async ({ browser }) => {
+    await browser.savePDF("./artifacts/screenshot.pdf");
 });
 ```
 

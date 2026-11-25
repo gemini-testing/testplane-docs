@@ -2,9 +2,9 @@
 
 ## Overview {/* #overview */}
 
-Use the `abortOnce` command to abort a request once with a specified error.
+Use the `abortOnce` command to abort a request once.
 
-A request can be aborted with one of the following errors:
+In a WebDriver BiDi session, call `mock.abortOnce()` without an error code. In a CDP session, specify one of these errors:
 
 -   Failed
 -   Aborted
@@ -36,19 +36,52 @@ mock.abortOnce(errorCode);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should block mock only once", async ({ browser }) => {
-    const mock = await browser.mock("https://webdriver.io");
-    mock.abortOnce("Failed");
+On the task page, Reload fetches `/api/items`. If the first request fails, the user can try again. In a WebDriver BiDi session:
 
-    await browser
-        .url("https://webdriver.io")
-        // catch exception as the request to the page will fail
-        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
+```javascript testplane=mock-abort-once fixture=matchers-intercept
+it("lets the user retry after one failed request", async ({ browser }) => {
+    const items = await browser.mock("/api/items");
+    items.abortOnce();
 
-    await browser.url("https://webdriver.io");
-    console.log(await browser.getTitle());
-    // will output: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+    await browser.url("/fixtures/matchers/tasks.html");
+    const reload = await browser.$("#reload");
+    const source = await browser.$("#source");
+
+    // The page catches the first failed fetch and displays a fallback.
+    await reload.click();
+    await expect(source).toHaveText("Unavailable");
+
+    // The next click reaches the actual resource.
+    await reload.click();
+    await expect(source).toHaveText("original");
+});
+```
+
+In a CDP session, you can specify the network failure:
+
+```javascript testplane=mock-abort-once-cdp fixture=matchers-intercept transport=cdp
+const assert = require("node:assert/strict");
+
+it("allows a second navigation to the same page", async ({ browser }) => {
+    const path = "/fixtures/matchers/todos.html";
+    const page = await browser.mock("**/fixtures/matchers/todos.html");
+    const failures = [];
+    page.on("fail", ({ errorReason }) => failures.push(errorReason));
+    page.abortOnce("Failed");
+
+    // Chrome can reject the navigation or show an error page. Only handle the expected error.
+    try {
+        await browser.url(path);
+    } catch (error) {
+        if (!error.message.includes("ERR_FAILED")) throw error;
+    }
+    assert.deepEqual(failures, ["Failed"]);
+
+    // The one-off error has been consumed. Open the same URL and read the real page title.
+    await browser.url(path);
+    const title = await browser.getTitle();
+    assert.equal(title, "Todo list");
+    assert.deepEqual(failures, ["Failed"]);
 });
 ```
 

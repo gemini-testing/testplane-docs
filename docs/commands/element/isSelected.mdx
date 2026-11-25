@@ -16,7 +16,7 @@ await browser.$(selector).isSelected();
 
 **index.html**
 
-```html
+```html testplane-html=element-html
 <select name="selectbox" id="selectbox">
     <option value="John Doe">John Doe</option>
     <option value="Layla Terry" selected="selected">Layla Terry</option>
@@ -26,13 +26,19 @@ await browser.$(selector).isSelected();
 
 **isSelected.js**
 
-```javascript
+```javascript testplane=element-is-selected fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should detect if an element is selected", async ({ browser }) => {
     let element = await browser.$('[value="Layla Terry"]');
-    console.log(await element.isSelected()); // outputs: true
+    let selected = await element.isSelected();
+    console.log(selected); // outputs: true
+    assert.equal(selected, true);
 
     element = await browser.$('[value="Bill Gilbert"]');
-    console.log(await element.isSelected()); // outputs: false
+    selected = await element.isSelected();
+    console.log(selected); // outputs: false
+    assert.equal(selected, false);
 });
 ```
 

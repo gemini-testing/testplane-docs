@@ -16,7 +16,7 @@ await browser.$(selector).getText();
 
 **index.html**
 
-```html
+```html testplane-html=element-html
 <div id="elem">
     Lorem ipsum <strong>dolor</strong> sit amet,<br />
     consetetur sadipscing elitr
@@ -26,22 +26,52 @@ await browser.$(selector).getText();
 
 **getText.js**
 
-```javascript
-it("should demonstrate the getText function", async ({ browser }) => {
-    console.log(await browser.$("#elem").getText());
-    // outputs: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr"
+```javascript testplane=element-get-text fixture=element-html
+const assert = require("node:assert/strict");
 
-    console.log(await browser.$("span").getText());
-    // outputs: "" (empty string) because the element is not interactable
+it("should demonstrate the getText function", async ({ browser }) => {
+    const elem = await browser.$("#elem");
+    const text = await elem.getText();
+    console.log(text);
+    // outputs:
+    // Lorem ipsum dolor sit amet,
+    // consetetur sadipscing elitr
+    assert.equal(text, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr");
+
+    const hidden = await browser.$("span");
+    const hiddenText = await hidden.getText();
+    console.log(hiddenText); // outputs: "" (empty string) because the element is hidden
+    assert.equal(hiddenText, "");
 });
+```
+
+To read the third column of the second row:
+
+```html testplane-html=element-table
+<table id="table1">
+    <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Email</th>
+    </tr>
+    <tr>
+        <td>John</td>
+        <td>Doe</td>
+        <td>john@example.com</td>
+    </tr>
+</table>
+```
+
+```javascript testplane=element-get-text-table fixture=element-table
+const assert = require("node:assert/strict");
 
 it("get content from table cell", async ({ browser }) => {
-    await browser.url("http://the-internet.herokuapp.com/tables");
-
     const rows = await browser.$$("#table1 tr");
-    const columns = await rows[1].$$("td"); // get columns of the 2nd row
+    const columns = await rows[1].$$("td"); // Get the cells of the second row.
 
-    console.log(await columns[2].getText()); // get text from the 3rd column
+    const text = await columns[2].getText(); // Get the text from the third column.
+    console.log(text); // outputs: "john@example.com"
+    assert.equal(text, "john@example.com");
 });
 ```
 

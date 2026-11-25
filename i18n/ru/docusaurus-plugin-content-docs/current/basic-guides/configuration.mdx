@@ -94,7 +94,7 @@ Testplane поддерживает каскадное наследование �
 
 ### Пример наследования {/* #inheritance-example */}
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -137,7 +137,7 @@ export default {
 
 Параметр [`retry`](../reference/config/browsers.mdx#retry) определяет, сколько раз Testplane будет перезапускать упавший тест.
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -181,7 +181,7 @@ export default {
 
 Запуск конкретного сета:
 
-```bash
+```bash testplane-project=cli
 npx testplane --set desktop
 ```
 
@@ -230,7 +230,7 @@ Testplane запускает тесты параллельно, что знач�
 -   `sessionsPerBrowser` определяет максимальное число параллельных браузерных сессий для каждого браузера
 -   `workers` определяет число воркер-процессов Node.js для параллельного выполнения тестов
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -266,7 +266,7 @@ Testplane позволяет настроить тайм-ауты для для 
 -   `pageLoadTimeout` — тайм-аут загрузки страницы в браузере
 -   `waitTimeout` — тайм-аут для команд ожидания (`waitFor*`)
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -304,7 +304,7 @@ npm install html-reporter --save-dev
 
 **Подключение:**
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -356,7 +356,7 @@ Testplane позволяет задать значения по умолчани
 
 Настройки по умолчанию для скриншотного тестирования. Позволяют задать, какие элементы игнорировать, допустимую разницу в пикселях, задержку перед снимком и другие параметры сравнения скриншотов.
 
-```typescript
+```typescript testplane-project=config
 export default {
     assertViewOpts: {
         ignoreElements: [".ads", ".dynamic-banner"],
@@ -372,7 +372,7 @@ export default {
 
 Настройки для асинхронных проверок с ожиданием.
 
-```typescript
+```typescript testplane-project=config
 export default {
     system: {
         expectOpts: {
@@ -390,7 +390,7 @@ export default {
 
 Настройки для команд сохранения и восстановления состояния браузера. Определяют, что сохранять (cookies, localStorage, sessionStorage), куда сохранять, и нужно ли удалять файл после тестов.
 
-```typescript
+```typescript testplane-project=config
 export default {
     stateOpts: {
         path: "./tmp/auth-state.json",

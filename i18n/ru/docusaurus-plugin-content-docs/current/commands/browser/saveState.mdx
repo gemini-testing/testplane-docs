@@ -16,15 +16,22 @@ import Version from "../../_partials/specs/version.mdx";
 Если вы укажете параметр `path`, снимок состояния будет сохранён в файл.
 Сохранённое состояние можно впоследствии восстановить с помощью команды [restoreState](../restoreState).
 
-```typescript
+```typescript testplane=browser-save-state-data fixture=browser-page
 import type { SaveStateData } from "testplane";
+const assert = require("node:assert/strict");
 
+await browser.url("/fixtures/browser/session.html");
 const stateDump: SaveStateData = await browser.saveState({
-    path: "./stateDump.json",
+    path: "./artifacts/stateDump.json",
     cookies: true,
     localStorage: true,
     sessionStorage: true,
 });
+
+const origin = new URL(await browser.getUrl()).origin;
+assert.equal(stateDump.cookies?.find(cookie => cookie.name === "theme")?.value, "dark");
+assert.equal(stateDump.framesData?.[origin]?.localStorage?.theme, "dark");
+assert.equal(stateDump.framesData?.[origin]?.sessionStorage?.draft, "hello");
 ```
 
 ## Параметры команды {/* #parameters */}
@@ -85,14 +92,28 @@ const stateDump: SaveStateData = await browser.saveState({
 
 Сохранение данных в файл.
 
-```typescript
-it("test", async ({ browser }) => {
-    await browser.url("https://github.com/gemini-testing/testplane");
+```typescript testplane=browser-save-state-file fixture=browser-page
+const assert = require("node:assert/strict");
 
+it("should write only selected cookies to the state file", async ({ browser }) => {
+    await browser.url("/");
+    await browser.setCookies([
+        { name: "theme", value: "dark" },
+        { name: "temporary", value: "1" },
+    ]);
+
+    const path = "./artifacts/stateDump.json";
+    const host = new URL(await browser.getUrl()).hostname;
     await browser.saveState({
-        path: "./stateDump.json",
-        cookieFilter: ({ domain }) => domain === ".example.com",
+        path,
+        cookieFilter: ({ domain, name }) => domain === host && name === "theme",
     });
+
+    const stateDump = await browser.getState({ path });
+    assert.deepEqual(
+        stateDump.cookies.map(({ name, value }) => [name, value]),
+        [["theme", "dark"]],
+    );
 });
 ```
 

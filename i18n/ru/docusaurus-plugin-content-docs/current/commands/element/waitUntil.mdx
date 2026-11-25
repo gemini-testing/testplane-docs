@@ -29,18 +29,20 @@ await browser.$(selector).waitUntil(condition, { timeout, timeoutMsg, interval }
 
 **example.html**
 
-```javascript
+```html testplane-html=element-html
 <div id="someText">I am some text</div>
 <script>
     setTimeout(() => {
-        await $('#someText').html('I am now different');
+        document.getElementById("someText").innerHTML = "I am now different";
     }, 1000);
 </script>
 ```
 
 **waitUntil.js**
 
-```javascript
+```javascript testplane=element-wait-until fixture=element-html
+const assert = require("node:assert/strict");
+
 it("should wait until text has changed", async ({ browser }) => {
     const elem = await browser.$("#someText");
 
@@ -50,9 +52,10 @@ it("should wait until text has changed", async ({ browser }) => {
         },
         {
             timeout: 5000,
-            timeoutMsg: "expected text to be different after 5s",
+            timeoutMsg: "expected text to change within 5s",
         },
     );
+    assert.equal(await elem.getText(), "I am now different");
 });
 ```
 

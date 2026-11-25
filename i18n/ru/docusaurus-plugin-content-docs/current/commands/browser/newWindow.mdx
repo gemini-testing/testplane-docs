@@ -12,23 +12,7 @@ import Admonition from "@theme/Admonition";
 
 <Admonition type="warning">Команда _newWindow_ не работает в мобильных окружениях (!)</Admonition>
 
-<Admonition type="warning">
-    Команда может не работать c _devtools_ протоколом. Также она не дожидается загрузки страницы.
-    Чтобы решить эти проблемы, рекомендуется перезаписать команду (на стороне Testplane это будет сделано в версии 9.0.0):
-    ```javascript
-    browser.overwriteCommand("newWindow", async function(pageUrl, windowName, windowFeatures) {
-        if (browser.isDevTools) {
-            const puppeteer = await browser.getPuppeteer();
-            await puppeteer.newPage();
-        } else {
-            await browser.newWindow("about:blank", windowName, windowFeatures);
-        }
-
-        await browser.url(pageUrl);
-    });
-    ```
-
-</Admonition>
+Используйте `{ type: "tab" }` для вкладки и `{ type: "window" }` для окна. Параметры `windowName` и `windowFeatures` устарели и поддерживаются только в WebDriver Classic.
 
 ## Использование {/* #usage */}
 
@@ -52,23 +36,39 @@ await browser.newWindow(url, { windowName, windowFeatures });
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should open a new tab", async ({ browser }) => {
-    await browser.url("http://google.com");
-    console.log(await browser.getTitle());
-    // выведет: "Google"
+```javascript testplane=browser-new-window-ru fixture=browser-page
+const assert = require("node:assert/strict");
 
-    await browser.newWindow(
-        "https://webdriver.io",
-        "WebdriverIO window",
-        "width=420,height=230,resizable,scrollbars=yes,status=1",
-    );
-    console.log(await browser.getTitle());
-    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+it("should open a new tab", async ({ browser }) => {
+    await browser.url("/");
+    const original = await browser.getWindowHandle();
+    assert.equal(await browser.getTitle(), "Command examples"); // исходная вкладка
+
+    const frameUrl = new URL("/frame", await browser.getUrl()).href;
+    await browser.newWindow(frameUrl, { type: "tab" });
+    assert.equal(await browser.getTitle(), "Frame"); // новая вкладка
 
     await browser.closeWindow();
-    console.log(await browser.getTitle());
-    // выведет: "Google"
+    await browser.switchToWindow(original);
+    assert.equal(await browser.getTitle(), "Command examples"); // снова исходная вкладка
+});
+```
+
+В WebDriver Classic можно передать имя и параметры окна в объекте опций:
+
+```javascript testplane=browser-new-named-window fixture=browser-page transport=cdp
+const assert = require("node:assert/strict");
+
+it("should open a named window in WebDriver Classic", async ({ browser }) => {
+    const url = new URL("/frame", await browser.getUrl()).href;
+    await browser.newWindow(url, {
+        windowName: "Preview",
+        windowFeatures: "width=420,height=230,resizable,scrollbars=yes",
+    });
+
+    const name = await browser.execute(() => window.name);
+    assert.equal(name, "Preview");
+    assert.equal(await browser.getTitle(), "Frame");
 });
 ```
 

@@ -4,6 +4,8 @@ import Admonition from "@theme/Admonition";
 
 ## Обзор {/* #overview */}
 
+Команда `throttle` устарела. В новых тестах используйте `throttleNetwork`.
+
 Используйте команду `throttle`, чтобы эмулировать разные типы сетевого соединения у пользователя.
 
 Эта команда позволяет промоделировать поведение сайта или веб-приложения при различной пропускной способности канала связи у пользователя.
@@ -50,18 +52,50 @@ await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput 
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should throttle the network", async ({ browser }) => {
-    // используем готовый пресет
-    await browser.throttle("Regular 3G");
+```javascript testplane=browser-throttle-ru fixture=browser-page
+const assert = require("node:assert/strict");
 
-    // а здесь настраиваем конфигурацию сети сами
+function measureFetch(browser) {
+    return browser.execute(async () => {
+        const start = performance.now();
+        const response = await fetch("/api/items", { cache: "no-store" });
+        await response.text();
+        return performance.now() - start;
+    });
+}
+
+it("uses a 3G preset", async ({ browser }) => {
+    // Применяем готовый пресет для пропускной способности и задержки 3G.
+    await browser.throttle("Regular3G");
+    const elapsed = await measureFetch(browser);
+    assert.ok(elapsed >= 90);
+});
+
+it("uses an offline preset", async ({ browser }) => {
+    const canFetch = () =>
+        browser.execute(async () => {
+            try {
+                return (await fetch("/api/items", { cache: "no-store" })).ok;
+            } catch {
+                return false;
+            }
+        });
+    assert.equal(await canFetch(), true);
+
+    await browser.throttle("offline");
+    assert.equal(await canFetch(), false);
+});
+
+it("introduces latency with custom network settings", async ({ browser }) => {
+    // Задаём параметры сети вручную.
     await browser.throttle({
         offline: false,
         downloadThroughput: (200 * 1024) / 8,
         uploadThroughput: (200 * 1024) / 8,
-        latency: 20,
+        latency: 200,
     });
+    const elapsed = await measureFetch(browser);
+    assert.ok(elapsed >= 180);
 });
 ```
 

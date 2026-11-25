@@ -2,9 +2,9 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `abortOnce`, чтобы прервать запрос один раз с заданной ошибкой.
+Используйте команду `abortOnce`, чтобы прервать запрос один раз.
 
-Запрос можно прервать с одной из следующих ошибок:
+В сессии WebDriver BiDi вызывайте `mock.abortOnce()` без кода ошибки. В сессии CDP укажите одну из следующих ошибок:
 
 -   Failed
 -   Aborted
@@ -36,19 +36,52 @@ mock.abortOnce(errorCode);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should block mock only once", async ({ browser }) => {
-    const mock = await browser.mock("https://webdriver.io");
-    mock.abortOnce("Failed");
+На странице задач кнопка Reload запрашивает `/api/items`. Если первый запрос не удался, пользователь может попробовать снова. В сессии WebDriver BiDi:
 
-    await browser
-        .url("https://webdriver.io")
-        // ловим исключение, так как запрос к странице упадет
-        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
+```javascript testplane=mock-abort-once-ru fixture=matchers-intercept
+it("дает повторить запрос после одной ошибки", async ({ browser }) => {
+    const items = await browser.mock("/api/items");
+    items.abortOnce();
 
-    await browser.url("https://webdriver.io");
-    console.log(await browser.getTitle());
-    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+    await browser.url("/fixtures/matchers/tasks.html");
+    const reload = await browser.$("#reload");
+    const source = await browser.$("#source");
+
+    // Страница обрабатывает ошибку первого запроса и показывает сообщение.
+    await reload.click();
+    await expect(source).toHaveText("Unavailable");
+
+    // При следующем нажатии запрос доходит до исходного ресурса.
+    await reload.click();
+    await expect(source).toHaveText("original");
+});
+```
+
+Для CDP можно указать причину сетевой ошибки:
+
+```javascript testplane=mock-abort-once-cdp-ru fixture=matchers-intercept transport=cdp
+const assert = require("node:assert/strict");
+
+it("разрешает второй переход на ту же страницу", async ({ browser }) => {
+    const path = "/fixtures/matchers/todos.html";
+    const page = await browser.mock("**/fixtures/matchers/todos.html");
+    const failures = [];
+    page.on("fail", ({ errorReason }) => failures.push(errorReason));
+    page.abortOnce("Failed");
+
+    // Chrome может вернуть ошибку перехода или показать страницу ошибки. Обрабатываем только ожидаемую ошибку.
+    try {
+        await browser.url(path);
+    } catch (error) {
+        if (!error.message.includes("ERR_FAILED")) throw error;
+    }
+    assert.deepEqual(failures, ["Failed"]);
+
+    // Однократная ошибка исчерпана. Открываем тот же URL и читаем заголовок настоящей страницы.
+    await browser.url(path);
+    const title = await browser.getTitle();
+    assert.equal(title, "Todo list");
+    assert.deepEqual(failures, ["Failed"]);
 });
 ```
 

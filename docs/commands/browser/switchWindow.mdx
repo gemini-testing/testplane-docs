@@ -24,19 +24,24 @@ await browser.switchWindow(urlOrTitleToMatch);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
+```javascript testplane=browser-switch-window fixture=browser-page
+const assert = require("node:assert/strict");
+
 it("should switch to another window", async ({ browser }) => {
-    // open URL
-    await browser.url("https://google.com");
+    // Open the original page.
+    await browser.url("/original");
 
-    // create a new window
-    await browser.newWindow("https://webdriver.io");
+    // Open a second page in a new tab.
+    const newUrl = new URL("/frame", await browser.getUrl()).href;
+    await browser.newWindow(newUrl, { type: "tab" });
 
-    // switch back by matching the URL
-    await browser.switchWindow("google.com");
+    // Switch back by matching the URL.
+    await browser.switchWindow("/original");
+    assert.equal(await browser.getTitle(), "Command examples");
 
-    // switch again by matching the page title
-    await browser.switchWindow("Next-gen browser and mobile automation test framework for Node.js");
+    // Switch again by matching the page title.
+    await browser.switchWindow("Frame");
+    assert.equal(await browser.getUrl(), newUrl);
 });
 ```
 

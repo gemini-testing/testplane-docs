@@ -152,8 +152,8 @@ Adds an additional item to the burger menu of the report.
 
 ### Example of a call {/* #add_extra_item_call_example */}
 
-```javascript
-testplane.htmlReporter.addExtraItem(caption, url);
+```javascript testplane-project=reporter
+testplane.htmlReporter.addExtraItem("Release notes", "../release-notes.html");
 ```
 
 ### Call parameters {/* #add_extra_item_call_params */}
@@ -177,9 +177,10 @@ Downloads all databases from the given files of the type `databaseUrls.json`.
 
 ### Example of a call {/* #download_databases_call_example */}
 
-```javascript
-const dbPaths = await testplane.htmlReporter.downloadDatabases([".databaseUrls.json"], {
-    pluginConfig,
+```javascript testplane-project=reporter
+const file = require("node:path").resolve("html-report/databaseUrls.json");
+const dbPaths = await testplane.htmlReporter.downloadDatabases([file], {
+    pluginConfig: testplane.htmlReporter.config,
 });
 ```
 
@@ -195,9 +196,11 @@ Merges all given databases and saves the final report on the specified path.
 
 ### Example of a call {/* #merge_databases_call_example */}
 
-```javascript
-await testplane.htmlReporter.mergeDatabases(srcDbPaths, path);
+```javascript testplane-project=reporter
+await testplane.htmlReporter.mergeDatabases(["first.db", "second.db"], "merged");
 ```
+
+The `merged` directory must exist. Pass copies of the source databases: merging removes the input files.
 
 ### Call parameters {/* #merge_databases_call_params */}
 
@@ -218,8 +221,8 @@ Resolves the test tree from the passed database.
 
 ### Example of a call {/* #get_tests_tree_from_database_call_example */}
 
-```javascript
-const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
+```javascript testplane-project=reporter
+const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase("html-report/sqlite.db");
 ```
 
 ### Call parameters {/* #get_tests_tree_from_database_call_params */}
@@ -228,7 +231,7 @@ The function takes one argument—the path to the database with the result of th
 
 ### Usage example {/* #get_tests_tree_from_database_usage_example */}
 
-```javascript
+```javascript testplane-project=reporter
 async function getSuccessTestRunIds({ testplane, mergedDbPath }) {
     const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 
@@ -236,10 +239,10 @@ async function getSuccessTestRunIds({ testplane, mergedDbPath }) {
 
     for (const browserId of dbTree.browsers.allIds) {
         const browser = dbTree.browsers.byId[browserId];
-        const lastResultId = _.last(browser.resultIds);
+        const lastResultId = browser.resultIds.at(-1);
         const lastResult = lastResultId && dbTree.results.byId[lastResultId];
 
-        if (!lastResult || lastResult.status !== SUCCESS) {
+        if (!lastResult || lastResult.status !== "success" || !lastResult.suiteUrl) {
             continue;
         }
 

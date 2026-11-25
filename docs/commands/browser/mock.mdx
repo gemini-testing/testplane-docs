@@ -11,11 +11,11 @@ You can enable mocking depending on the URL, headers, or status code. Calling th
 There are 3 ways to modify the response:
 
 -   return a custom JSON object (e.g., to mock an API response);
--   replace the response with a local file (inject a modified JavaScript file);
+-   replace a text response, for example the contents of a script;
 -   redirect to another URL and return the response from there.
 
 <Admonition type="warning">
-The _mock_ command only works when using _Chrome DevTools Protocol (CDP)_.
+The examples below use WebDriver BiDi unless marked WebDriver Classic/CDP. The two implementations support different response-header and request-body filters.
 
 Read more in the section "[How to use Chrome DevTools Protocol in testplane][how-to-use-cdp]".
 
@@ -26,7 +26,7 @@ Also, see the recipe "[How to intercept requests and responses][how-to-intercept
 ## Usage {/* #usage */}
 
 ```javascript
-await browser.mock(url, { method, headers, responseHeaders, postData, statusCode });
+await browser.mock(url, { method, requestHeaders, responseHeaders, statusCode });
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -38,91 +38,146 @@ await browser.mock(url, { method, headers, responseHeaders, postData, statusCode
 <tbody>
 <tr><td>url</td><td>String</td><td>The URL of the request to mock.</td></tr>
 <tr><td>method</td><td>String or Function</td><td>The HTTP method to filter the resource.</td></tr>
-<tr><td>headers</td><td>Object or Function</td><td>The request headers to filter the resource.</td></tr>
+<tr><td>requestHeaders</td><td>Object or Function</td><td>The request headers to filter the resource.</td></tr>
 <tr><td>responseHeaders</td><td>Object or Function</td><td>The response headers to filter the resource.</td></tr>
-<tr><td>postData</td><td>String or Function</td><td>The request postData to filter the resource.</td></tr>
 <tr><td>statusCode</td><td>Number or Function</td><td>The status code to filter the resource.</td></tr>
+
+<tr>
+    <td>headers, postData</td>
+    <td>Object, String or Function</td>
+    <td>
+        In WebDriver Classic/CDP, `headers` filters response headers and `postData` filters the
+        request body. In BiDi, use `responseHeaders` for response headers; request-body filters are
+        not supported.
+    </td>
+</tr>
 
 </tbody>
 </table>
 
 ## Usage Examples {/* #examples */}
 
-```javascript
+```javascript testplane=browser-mock-resources fixture=browser-mock
+const assert = require("node:assert/strict");
+
 it("should mock network resources", async ({ browser }) => {
-    // use a static string
-    const userListMock = await browser.mock("**" + "/users/list");
+    // Match a URL with a static string.
+    const userListMock = await browser.mock("/fixtures/browser/users.json");
 
-    // we can also mock responses based on
-    // request or response headers, status code, or postData
-    const strictMock = await browser.mock("**", {
-        // mock all json responses
+    // Narrow the match to requests carrying a specific header.
+    const strictMock = await browser.mock("/api/items", {
+        requestHeaders: { "x-example": "list" },
         statusCode: 200,
-        headers: { "Content-Type": "application/json" },
-        responseHeaders: { "Cache-Control": "no-cache" },
-        postData: "foobar",
     });
 
-    // comparator function
-    const apiV1Mock = await browser.mock("**" + "/api/v1", {
-        statusCode: statusCode => statusCode >= 200 && statusCode <= 203,
-        headers: headers =>
-            headers["Authorization"] && headers["Authorization"].startsWith("Bearer "),
-        responseHeaders: headers => headers["Impersonation"],
-        postData: data => typeof data === "string" && data.includes("foo"),
+    // Use a comparator to match a range of status codes and JSON responses.
+    const apiMock = await browser.mock("/api/other", {
+        statusCode: code => code >= 200 && code <= 203,
+        responseHeaders: headers =>
+            Object.entries(headers).some(
+                ([name, value]) =>
+                    name.toLowerCase() === "content-type" && value.includes("application/json"),
+            ),
     });
+
+    await browser.execute(async () => {
+        await fetch("/fixtures/browser/users.json");
+        await fetch("/api/items"); // no matching header
+        await fetch("/api/items", { headers: { "x-example": "list" } });
+        await fetch("/api/other");
+    });
+    await browser.waitUntil(() =>
+        [userListMock, strictMock, apiMock].every(mock => mock.calls.length === 1),
+    );
+    await browser.mockRestoreAll();
 });
 
 it("should modify API responses", async ({ browser }) => {
-    // filter by method
-    const todoMock = await browser.mock("**" + "/todos", {
-        method: "get",
-    });
+    // Filter by HTTP method.
+    const todoMock = await browser.mock("/api/items", { method: "get" });
+    const todos = [{ title: "Injected Todo", completed: false }];
 
-    // mock the response of the endpoint with predefined fixture
-    mock.respond([
-        {
-            title: "Injected Todo",
-            order: null,
-            completed: false,
-            url: "http://todo-backend-express-knex.herokuapp.com/916",
-        },
-    ]);
+    const fetchTodos = () =>
+        browser.execute(async () => {
+            const response = await fetch("/api/items");
+            return {
+                status: response.status,
+                header: response.headers.get("x-custom-header"),
+                body: await response.json(),
+            };
+        });
 
-    // respond with a different status code or header
-    mock.respond(
-        [
-            {
-                title: "Injected Todo",
-                order: null,
-                completed: false,
-                url: "http://todo-backend-express-knex.herokuapp.com/916",
-            },
-        ],
-        {
-            statusCode: 404,
-            headers: {
-                "x-custom-header": "foobar",
-            },
-        },
-    );
+    // Replace the response body with a predefined list.
+    await todoMock.respond(todos);
+    assert.deepEqual((await fetchTodos()).body, todos);
+
+    // You can also change the status code and response headers.
+    await todoMock.respond(todos, { statusCode: 404, headers: { "x-custom-header": "foobar" } });
+    assert.deepEqual(await fetchTodos(), { status: 404, header: "foobar", body: todos });
+    await todoMock.restore();
 });
 
 it("should modify text assets", async ({ browser }) => {
-    const scriptMock = await browser.mock("**" + "/script.min.js");
-    scriptMock.respond("./tests/fixtures/script.js");
+    const scriptMock = await browser.mock("/fixtures/browser/banner.js");
+    await scriptMock.respond("window.banner = 'Preview';");
+
+    await browser.url("/fixtures/browser/preview.html");
+    assert.equal(await browser.execute(() => window.banner), "Preview");
+    await scriptMock.restore();
+});
+
+it("should replace a script with a local JavaScript file", async ({ browser }) => {
+    const { readFile } = require("node:fs/promises");
+    const scriptMock = await browser.mock("/fixtures/browser/banner.js");
+
+    // BiDi responds with the given text: read the file, do not pass its path as the response.
+    const source = await readFile("fixtures/site/browser/preview-banner.js", "utf8");
+    await scriptMock.respond(source);
+
+    await browser.url("/fixtures/browser/preview.html");
+    assert.equal(await browser.execute(() => window.banner), "Release notes");
+    await scriptMock.restore();
 });
 
 it("should redirect web resources", async ({ browser }) => {
-    const headerMock = await browser.mock("**" + "/header.png");
-    headerMock.respond("https://media.giphy.com/media/F9hQLAVhWnL56/giphy.gif");
+    const origin = new URL(await browser.getUrl()).origin;
+    const headerMock = await browser.mock("/fixtures/browser/header.svg");
+    await headerMock.redirect(new URL("/fixtures/browser/banner.svg", origin).href);
 
-    const pageMock = await browser.mock("https://google.com/");
-    pageMock.respond("https://webdriver.io");
-    await browser.url("https://google.com");
+    const pageMock = await browser.mock("/original");
+    await pageMock.redirect(new URL("/fixtures/browser/preview.html", origin).href);
+    await browser.url("/original");
 
-    console.log(await browser.getTitle());
-    // outputs: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+    assert.equal(await browser.getTitle(), "Preview");
+    const header = await browser.$("img");
+    assert.equal(await header.getProperty("naturalWidth"), 32); // width of banner.svg
+    await browser.mockRestoreAll();
+});
+```
+
+For the WebDriver Classic/CDP form that accepts a file path directly, see [Returning an HTML fixture](../../../guides/how-to-intercept-requests-and-responses#example_3).
+
+In a WebDriver Classic session with CDP, you can also match the body of a POST request:
+
+```javascript testplane=browser-mock-post-data fixture=browser-page transport=cdp
+const assert = require("node:assert/strict");
+
+it("should match the request payload in WebDriver Classic", async ({ browser }) => {
+    const endpoint = new URL("/api/items", await browser.getUrl()).href;
+    const postMock = await browser.mock(endpoint, {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        postData: data => typeof data === "string" && data.includes("foo"),
+    });
+
+    await browser.execute(async () => {
+        await fetch("/api/items", { method: "POST", body: "other" });
+        await fetch("/api/items", { method: "POST", body: "foobar" });
+    });
+
+    await browser.waitUntil(() => postMock.calls.length === 1);
+    assert.equal(postMock.calls[0].postData, "foobar");
+    await postMock.restore();
 });
 ```
 

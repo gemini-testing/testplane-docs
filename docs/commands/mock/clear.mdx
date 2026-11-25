@@ -12,14 +12,23 @@ mock.clear();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should clear mock", async ({ browser }) => {
-    const mock = await browser.mock("https://google.com/");
-    await browser.url("https://google.com");
+Record a navigation, clear the history, and visit the page again in a WebDriver BiDi session:
 
-    console.log(mock.calls.length); // outputs: 1
-    mock.clear();
-    console.log(mock.calls.length); // outputs: 0
+```javascript testplane=mock-clear fixture=matchers-intercept
+it("clears the recorded calls and keeps recording", async ({ browser }) => {
+    const page = await browser.mock("/fixtures/matchers/tasks.html");
+    await browser.url("/fixtures/matchers/tasks.html");
+    await page.waitForResponse();
+
+    // One navigation was recorded; clear its history without removing the mock.
+    expect(page.calls).toHaveLength(1);
+    page.clear();
+    expect(page.calls).toHaveLength(0);
+
+    // The next navigation starts a new history.
+    await browser.url("/fixtures/matchers/tasks.html");
+    await page.waitForResponse();
+    expect(page.calls).toHaveLength(1);
 });
 ```
 

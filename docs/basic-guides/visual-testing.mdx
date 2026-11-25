@@ -29,25 +29,25 @@ await element.assertView(state, options);
 
 The `assertView` command is available both in the browser context and in the context of the found element. The set of arguments is different in these cases:
 
-```typescript
+```typescript testplane=guide-visual-testing fixture=guides-visual
 it("check search view", async ({ browser }) => {
-    // ...
+    await browser.url("/fixtures/visual/search.html");
 
     // screenshot of the current browser viewport
     await browser.assertView("viewport-screen");
 
     // screenshot of a specific element on the page (call from the browser context)
-    await browser.assertView("any-state-name", ".DocSearch", opts);
+    await browser.assertView("search-button", ".DocSearch", { tolerance: 0 });
 
     const searchInput = await browser.$(".DocSearch");
     await searchInput.click();
 
     // taking screenshot of a previously found item (from the element context)
-    await searchInput.assertView("any-state-name");
+    await searchInput.assertView("search-open");
 });
 ```
 
-Read more about the capabilities of the `assertView' command in the relevant sections.
+Read more about the capabilities of the `assertView` command in the relevant sections.
 
 ### Useful links {/* #useful_links */}
 

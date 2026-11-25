@@ -28,7 +28,7 @@ npx html-reporter gui
 
 Для того, чтобы включить Time Travel в CI, необходимо задать опцию `timeTravel` в конфиге testplane:
 
-```typescript
+```typescript testplane-project=config
 export = {
     /* ... */
     timeTravel: "on", // Также можно указать "retries-only" или "last-failed-run"

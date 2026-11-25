@@ -48,7 +48,7 @@ npx testplane --config ./config.js --reporter flat --browser firefox --grep name
 
 Вывести текущую версию `testplane`.
 
-```bash
+```bash testplane-project=cli
 testplane --version
 ```
 
@@ -64,7 +64,7 @@ testplane --config ./local.testplane.config.ts
 
 Запускать тесты только в указанном браузере.
 
-```bash
+```bash testplane-project=cli
 testplane --browser chrome
 ```
 
@@ -72,7 +72,7 @@ testplane --browser chrome
 
 Запускать тесты только в указанном наборе.
 
-```bash
+```bash testplane-project=cli
 testplane --set desktop
 ```
 
@@ -271,7 +271,7 @@ testplane --repl --grep 'my test name' --browser chrome
 
 Например, [html-reporter][html-reporter] добавляет команду `gui`.
 
-```bash
+```bash testplane-project=cli
 testplane --help
 ```
 
@@ -333,7 +333,7 @@ npx testplane list-tests --config ./config.js --browser firefox --grep name --fo
 
 Использовать пользовательский файл конфигурации.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --config ./local.testplane.config.ts
 ```
 
@@ -341,7 +341,7 @@ testplane list-tests --config ./local.testplane.config.ts
 
 Выводит тесты только в указанном браузере.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --browser chrome
 ```
 
@@ -349,7 +349,7 @@ testplane list-tests --browser chrome
 
 Выводит тесты только в указанном наборе.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --set desktop
 ```
 
@@ -384,7 +384,7 @@ describe("test", () => {
 
 Вы можете вывести тесты внутри "nested path" набора, не включая тесты внутри "other path" набора, с любым из этих вариантов:
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --grep "nested path"
 testplane list-tests --grep "with nested path"
 testplane list-tests --grep "test with nested path"
@@ -394,7 +394,7 @@ testplane list-tests --grep "test with nested path"
 
 Выводит тесты без генерации событий.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --silent
 ```
 
@@ -402,7 +402,7 @@ testplane list-tests --silent
 
 Сохранить список тестов в указанный файл.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --output-file "./tests.json"
 ```
 
@@ -414,7 +414,7 @@ testplane list-tests --output-file "./tests.json"
 
 Выводит тесты в формате `list`.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --formatter "list"
 ```
 
@@ -475,7 +475,7 @@ it("test2", () => {});
 
 Выводит тесты в формате `tree`.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --formatter "tree"
 ```
 
@@ -554,7 +554,7 @@ it("test2", () => {});
 
 Например, [html-reporter][html-reporter] добавляет команду `gui`.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --help
 ```
 
@@ -578,7 +578,7 @@ testplane list-tests --help
 
 Например,
 
-```
+```bash testplane-project=cli
 npx testplane list-browsers --type ids --format plain
 ```
 
@@ -588,7 +588,7 @@ npx testplane list-browsers --type ids --format plain
 
 Укажите тип выводимых данных: browserId из конфигурации или browserName с browserVersion.
 
-```bash
+```bash testplane-project=cli
 testplane list-browsers --type tags
 ```
 
@@ -596,7 +596,7 @@ testplane list-browsers --type tags
 
 Укажите формат выводимых данных: обычный текст или json.
 
-```bash
+```bash testplane-project=cli
 testplane list-browsers --format json
 ```
 
@@ -624,7 +624,7 @@ testplane list-browsers --format json
 
 Выводит информацию команде и ее опциях.
 
-```bash
+```bash testplane-project=cli
 testplane list-browsers --help
 ```
 
@@ -648,7 +648,7 @@ testplane list-browsers --help
 
 Например:
 
-```bash
+```bash testplane-project=cli
 npx testplane config --space 4
 ```
 
@@ -658,7 +658,7 @@ npx testplane config --space 4
 
 Укажите количество пробелов, используемых для форматирования человекочитаемого вывода команды.
 
-```bash
+```bash testplane-project=cli
 testplane config --space 4
 ```
 
@@ -666,7 +666,7 @@ testplane config --space 4
 
 Выводит информацию команде и ее опциях.
 
-```bash
+```bash testplane-project=cli
 testplane config --help
 ```
 

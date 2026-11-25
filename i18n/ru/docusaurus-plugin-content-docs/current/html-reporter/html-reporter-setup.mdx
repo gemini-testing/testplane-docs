@@ -361,7 +361,7 @@ customScripts: [
 Если вы не хотите делиться аналитикой с нами, вы можете отключить это любым из способов:
 
 -   В конфиге
-    ```javascript
+    ```javascript testplane-project=config
     module.exports = {
         plugins: {
             "html-reporter/testplane": {
@@ -460,12 +460,12 @@ describe("badges", () => {
 
 Например, параметр настроек [path](#path) можно передать следующими способами:
 
-```bash
-testplane path/to/mytest.js --html-reporter-path custom/dir
+```bash testplane-project=reporter
+npx testplane sample.testplane.js --html-reporter-path custom-report
 ```
 
-```bash
-html_reporter_path=custom/dir testplane path/to/mytest.js
+```bash testplane-project=reporter
+html_reporter_path=custom-report npx testplane sample.testplane.js
 ```
 
 ## Хранение данных {/* #data_storage */}

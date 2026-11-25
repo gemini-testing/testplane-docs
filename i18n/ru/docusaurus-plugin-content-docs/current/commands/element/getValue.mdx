@@ -18,16 +18,19 @@ await browser.$(selector).getValue();
 
 **index.html**
 
-```javascript
-<input type="text" value="John Doe" id="username">
+```html testplane-html=element-html
+<input type="text" value="John Doe" id="username" />
 ```
 
 **getValue.js**
 
-```javascript
-it("should demonstrate the getValue command", async ({ browser }) => {
-    const value = await browser.$("#username").getValue();
+```javascript testplane=element-get-value-ru fixture=element-html
+const assert = require("node:assert/strict");
 
+it("should demonstrate the getValue command", async ({ browser }) => {
+    const input = await browser.$("#username");
+    const value = await input.getValue();
     console.log(value); // выведет: "John Doe"
+    assert.equal(value, "John Doe");
 });
 ```

@@ -31,16 +31,19 @@ await browser.executeAsync(script, arguments);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should execute async JavaScript on the page", async ({ browser }) => {
+```javascript testplane=browser-execute-async fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("should execute asynchronous JavaScript on the page", async ({ browser }) => {
     await browser.setTimeout({ script: 5000 });
 
     const result = await browser.executeAsync(
         function (a, b, c, d, done) {
-            // here we are in the browser context: no access to console or client
+            // This callback runs in the browser, not in Node.js.
+            // Here console refers to the page console, not the test terminal.
             setTimeout(() => {
                 done(a + b + c + d);
-            }, 3000);
+            }, 250);
         },
         1,
         2,
@@ -48,8 +51,8 @@ it("should execute async JavaScript on the page", async ({ browser }) => {
         4,
     );
 
-    // here we are in the node.js context: access to console and client is available
-    console.log(result); // outputs: 10
+    // Back in Node.js, the test receives the result from the page.
+    assert.equal(result, 10);
 });
 ```
 

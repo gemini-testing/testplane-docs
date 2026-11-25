@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 Используйте команду `react$`, чтобы найти на странице React-компоненты по их настоящему имени, одновременно фильтруя их по props'ам и состоянию.
 
 <Admonition type="warning">
-Команда _react$_ работает только в приложениях, которые используют _React v16.x._
+Начинайте поиск с DOM-элемента, отрисованного React, а не с внешнего контейнера монтирования. Пример ниже проверяется на React 18.2.
 
 Читайте больше о React-селекторах в рецепте «[Как использовать селекторы][how-to-use-selectors]».
 
@@ -35,36 +35,43 @@ await browser.$(selector).react$(reactComponentSelector, { props, state });
 
 ## Примеры использования {/* #examples */}
 
-```javascript
+Найдём клавиши калькулятора по имени компонента `Button` и значению его пропа `name`.
+
+```javascript testplane=element-react-dollar-ru fixture=element-document
+const assert = require("node:assert/strict");
+
 it("should calculate 7 * 6", async ({ browser }) => {
-    await browser.url("https://ahfarmer.github.io/calculator/");
-    const appWrapper = await browser.$("div#root");
+    await browser.url("/fixtures/browser/calculator.html");
+    const appWrapper = await browser.$(".calculator");
 
     await appWrapper
-        .react$("t", {
+        .react$("Button", {
             props: { name: "7" },
         })
         .click();
 
     await appWrapper
-        .react$("t", {
+        .react$("Button", {
             props: { name: "x" },
         })
         .click();
 
     await appWrapper
-        .react$("t", {
+        .react$("Button", {
             props: { name: "6" },
         })
         .click();
 
     await appWrapper
-        .react$("t", {
+        .react$("Button", {
             props: { name: "=" },
         })
         .click();
 
-    console.log(await browser.$(".component-display").getText()); // выведет: "42"
+    const display = await appWrapper.$(".component-display");
+    const value = await display.getText();
+    console.log(value); // выведет: "42"
+    assert.equal(value, "42");
 });
 ```
 
