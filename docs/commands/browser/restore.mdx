@@ -6,7 +6,7 @@ Remove emulation installed by `emulate` on the same browser instance. This comma
 
 ## Usage {/* #usage */}
 
-`browser.restore(scopes)`
+`await browser.restore()` or `await browser.restore(scopes)`
 
 ## Parameters {/* #parameters */}
 
@@ -20,13 +20,15 @@ Remove emulation installed by `emulate` on the same browser instance. This comma
 
 ## Limitations {/* #limitations */}
 
-Call cleanup in the same test that enabled emulation, preferably in `finally`. For preload-based overrides, reload the page after restoration to observe the original behavior. `device` is not registered as a restore scope: call the function returned by `emulate("device", name)`. That function restores the Desktop Chrome viewport (1280 × 720, DPR 1), not the original viewport.
+Choose one cleanup method for each emulation: call the function returned by `emulate`, **or** use `browser.restore(scope)` in `finally` in the same test. Do not also call `browser.restore()` for a scope you have already cleaned up: in `@testplane/webdriverio` 9.6.2 it can try to remove the same preload script twice. Reload the page to see the original value if a preload script changed it.
+
+`device` is not a restore scope. Use the function returned by `emulate("device", name)`. It removes the user-agent override and applies the Desktop Chrome viewport (1280 × 720, DPR 1), not the previous dimensions.
 
 ## Example {/* #examples */}
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-restore
 const assert = require("node:assert/strict");
 
 it("restore: remove a user-agent override", async ({ browser }) => {

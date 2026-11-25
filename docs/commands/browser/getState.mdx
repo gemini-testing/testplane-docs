@@ -24,13 +24,13 @@ When `options` is omitted, the command uses `browser.config.stateOpts`. An expli
 
 Returns a Promise with the parsed data. A `saveState` file contains `SaveStateData`: an optional `cookies` array and `framesData`, with `localStorage` and `sessionStorage` grouped by origin. The command does not validate the JSON schema.
 
-If no path is set, it logs an error and returns `null`. File read and JSON parsing errors reject the Promise.
+If no path is set, the command logs an error and returns `null`. File read and JSON parsing errors reject the promise. A state file can contain session cookies and storage values: keep it out of source control and test logs.
 
 ## Example {/* #examples */}
 
 Set `baseUrl` to a test HTML page. The example saves localStorage to a temporary file, changes the browser value and verifies that reading the file does not restore the session.
 
-```javascript
+```javascript testplane=related-get-state
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const os = require("node:os");

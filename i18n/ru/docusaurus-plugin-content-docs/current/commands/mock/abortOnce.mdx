@@ -2,7 +2,7 @@
 
 ## Обзор {/* #overview */}
 
-Прерывает один подходящий запрос. Сигнатуры BiDi и Classic/CDP различаются. В BiDi не передавайте строку с кодом ошибки: она не задает сетевую ошибку и может изменить однократность правила.
+Прерывает следующий подходящий запрос. В BiDi вызывайте `abortOnce()` без аргументов: дополнительные аргументы не задают тип ошибки и не меняют однократность правила. В Classic/CDP передайте `errorReason`.
 
 ## Использование {/* #usage */}
 
@@ -22,7 +22,7 @@ BiDi возвращает тот же объект мока синхронно; 
 
 Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-abort-once
 const assert = require("node:assert/strict");
 
 it("mock.abortOnce: block one BiDi request", async ({ browser }) => {

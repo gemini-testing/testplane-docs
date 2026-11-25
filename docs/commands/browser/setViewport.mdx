@@ -22,13 +22,15 @@ Set the size of the page viewport and its device pixel ratio. Unlike `setWindowS
 
 ## Limitations {/* #limitations */}
 
-Requires WebDriver BiDi (`webSocketUrl: true`) and backend support for viewport resizing. In WDIO 9.6.2, the client checks width and height against 0 and `Number.MAX_SAFE_INTEGER`. The backend can impose stricter limits: passing the client check does not guarantee support for that viewport size. Save the previous dimensions if they must be restored. Changing dimensions does not emulate a mobile device, touch input or its browser engine.
+Requires WebDriver BiDi (`webSocketUrl: true`) and a driver that supports viewport resizing. Run the command in the top-level document. If a test has switched into an iframe, return with [switchFrame(null)](./switchFrame.mdx) first.
+
+Use integer dimensions in CSS pixels and a positive DPR. In `@testplane/webdriverio` 9.6.2 the client checks width and height against 0 and `Number.MAX_SAFE_INTEGER`; the driver can reject a size within that range. Save both dimensions and DPR if you need to restore them. Changing the viewport does not enable touch input or change the browser engine.
 
 ## Example {/* #examples */}
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-set-viewport
 const assert = require("node:assert/strict");
 
 it("setViewport: change page dimensions", async ({ browser }) => {
@@ -39,8 +41,9 @@ it("setViewport: change page dimensions", async ({ browser }) => {
         devicePixelRatio,
     }));
     try {
-        await browser.setViewport({ width: 800, height: 600, devicePixelRatio: 1 });
-        assert.deepEqual(await browser.execute(() => [innerWidth, innerHeight]), [800, 600]);
+        await browser.setViewport({ width: 800, height: 600, devicePixelRatio: 2 });
+        const viewport = await browser.execute(() => [innerWidth, innerHeight, devicePixelRatio]);
+        assert.deepEqual(viewport, [800, 600, 2]);
     } finally {
         await browser.setViewport(original);
     }

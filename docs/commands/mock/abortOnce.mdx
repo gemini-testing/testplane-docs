@@ -2,7 +2,7 @@
 
 ## Overview {/* #overview */}
 
-Aborts one matching request. BiDi and Classic/CDP signatures differ. Do not pass an error-code string in BiDi: it does not select a network error and may change whether the rule is one-shot.
+Aborts the next matching request. In BiDi, call `abortOnce()` with no arguments; extra arguments do not select an error or change the one-shot behavior. In Classic/CDP, pass an `errorReason`.
 
 ## Usage {/* #usage */}
 
@@ -22,7 +22,7 @@ BiDi synchronously returns the same mock; Classic/CDP has no useful return value
 
 The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-abort-once
 const assert = require("node:assert/strict");
 
 it("mock.abortOnce: block one BiDi request", async ({ browser }) => {

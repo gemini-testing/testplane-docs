@@ -30,7 +30,7 @@ This is an unstable Testplane API. Its signature, behavior and result format may
 
 Run this test in a Chromium browser with an available CDP connection. It reads browser version metadata without changing the page or closing the shared connection.
 
-```javascript
+```javascript testplane=testplane-browser-unstable-get-cdp
 const assert = require("node:assert/strict");
 
 it("unstable_getCdp: query the connected Chromium browser", async ({ browser }) => {

@@ -35,7 +35,7 @@
 
 Пример использует Chrome/BiDi и тестовый HTTP-сервер в `baseUrl`. На `/navigation` скрипт страницы записывает `window.initialSeed = window.navigationSeed ?? null`, а сервер встраивает значение заголовка `x-example` в `window.receivedHeader`. Корневой путь отдает обычную HTML-страницу.
 
-```javascript
+```javascript testplane=related-url
 const assert = require("node:assert/strict");
 
 it("url: navigate with BiDi options and read the current URL", async ({ browser }) => {

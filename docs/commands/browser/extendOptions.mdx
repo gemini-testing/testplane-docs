@@ -26,7 +26,7 @@ Nested objects are replaced, not deeply merged. Existing fields not present in t
 
 Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
 
-```javascript
+```javascript testplane=testplane-browser-extend-options
 const assert = require("node:assert/strict");
 
 it("extendOptions: change WebdriverIO wait settings for this browser", async ({ browser }) => {

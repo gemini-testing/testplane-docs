@@ -24,7 +24,7 @@
 
 Укажите в `baseUrl` адрес тестового HTTP-сервера, который отвечает `200` на корневой путь. Пример использует новую сессию на каждый тест.
 
-```javascript
+```javascript testplane=related-throttle
 const assert = require("node:assert/strict");
 
 it("throttle: use the deprecated alias in an isolated session", async ({ browser }) => {

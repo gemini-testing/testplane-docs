@@ -24,13 +24,13 @@ import Version from "../../_partials/specs/version.mdx";
 
 Возвращает Promise с прочитанными данными. Для файла `saveState` это `SaveStateData`: необязательный массив `cookies` и `framesData`, где состояния `localStorage` и `sessionStorage` сгруппированы по origin. Схема прочитанного JSON не проверяется.
 
-Если путь не задан, команда пишет сообщение об ошибке в лог и возвращает `null`. Ошибки чтения и разбора JSON отклоняют Promise.
+Если путь не задан, команда пишет ошибку в лог и возвращает `null`. Ошибки чтения или разбора JSON отклоняют промис. В файле состояния могут быть cookies сессии и значения из хранилищ: не коммитьте его и не выводите содержимое в лог теста.
 
 ## Пример {/* #examples */}
 
 Укажите в `baseUrl` адрес тестовой HTML-страницы. Пример сохраняет localStorage во временный файл, меняет значение в браузере и проверяет, что чтение файла не восстанавливает сессию.
 
-```javascript
+```javascript testplane=related-get-state
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const os = require("node:os");

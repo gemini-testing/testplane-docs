@@ -33,7 +33,7 @@ Deprecated in the bundled WebdriverIO API. For new BiDi tests, prefer `element.e
 
 Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
 
-```javascript
+```javascript testplane=element-execute-async
 const assert = require("node:assert/strict");
 
 it("element.executeAsync: return data through the final callback", async ({ browser }) => {
@@ -43,7 +43,6 @@ it("element.executeAsync: return data through the final callback", async ({ brow
     });
     const element = await browser.$("#message");
     await element.waitForExist();
-    await browser.setTimeout({ script: 5000 });
     const result = await element.executeAsync((node, prefix, done) => {
         setTimeout(() => done(prefix + node.textContent), 20);
     }, "Status: ");

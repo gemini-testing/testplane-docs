@@ -31,9 +31,9 @@
 
 ## Пример {/* #examples */}
 
-Укажите в `baseUrl` локальный HTTP-сайт. `/` возвращает HTML. `/api/items` возвращает JSON: `source: "original"`, метод запроса в `method` и заголовок запроса `x-example` в `header` (`null`, если заголовка нет). `/api/other` возвращает те же поля с `source: "redirected"`. Примеры выполняют настоящие запросы к этим обработчикам.
+Укажите [тестовый сайт](../overview.mdx#run-examples) в `baseUrl`. `/api/items` возвращает значение заголовка `x-example` в поле JSON `header` или `null`, если заголовка нет. Заголовок должен прийти только с первым запросом.
 
-```javascript
+```javascript testplane=mock-request-once
 const assert = require("node:assert/strict");
 
 it("mock.requestOnce: change only the next request", async ({ browser }) => {

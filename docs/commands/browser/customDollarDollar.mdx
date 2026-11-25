@@ -27,7 +27,7 @@ An unknown strategy name throws an error. The command returns the matches found 
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-custom-dollar-dollar
 const assert = require("node:assert/strict");
 
 it("custom$$: find several elements", async ({ browser }) => {

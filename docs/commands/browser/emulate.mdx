@@ -18,7 +18,7 @@ Override part of the browser environment, such as the user agent or clock. Use t
 Supported scopes:
 
 -   `clock` — Fake-timer options, including `now` and `toFake`; virtual timers advance through `tick`.
--   `geolocation` — An object with coordinates for `navigator.geolocation.getCurrentPosition`.
+-   `geolocation` — Coordinates, for example `{ latitude: 52.52, longitude: 13.405 }`, returned by `navigator.geolocation.getCurrentPosition`. This does not override `watchPosition` or grant browser permissions.
 -   `userAgent` — A string overriding `navigator.userAgent`, not HTTP request headers.
 -   `device` — A supported device profile name; changes viewport, DPR and user agent, not engine or touch hardware.
 -   `colorScheme` — `"light"` or `"dark"`; affects `matchMedia`, not CSS media queries in this implementation.
@@ -30,13 +30,15 @@ For `clock`, `Promise<ClockManager>`; otherwise, a promise resolving to an async
 
 ## Limitations {/* #limitations */}
 
-Requires WebDriver BiDi (`webSocketUrl: true`). Most scopes affect documents created after the call, so enable emulation before navigation. Clock emulation also affects the current document. Restore changes before the test ends: a later test receives a different browser object. An unsupported scope or invalid option throws an error.
+Requires WebDriver BiDi (`webSocketUrl: true`). Enable emulation before navigation: most overrides take effect when a new document loads. The clock also changes in the current document. Use just one [cleanup method](./restore.mdx#limitations) per emulation.
+
+With `@testplane/webdriverio` 9.6.2, `clock.restore()` restores native timers in the current document but leaves a clock initialization script registered for later navigations. Use `testsPerSession: 1` for clock tests if a later test must start with a clean session.
 
 ## Example {/* #examples */}
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-emulate
 const assert = require("node:assert/strict");
 
 it("emulate: control time without waiting", async ({ browser }) => {

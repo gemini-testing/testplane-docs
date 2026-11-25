@@ -24,9 +24,9 @@ Requires a WebDriver BiDi session (`webSocketUrl: true`); this method is not pro
 
 ## Example {/* #examples */}
 
-Use a local HTTP test site as `baseUrl`. `/` serves HTML. `/api/items` returns JSON with `source: "original"`, the request method in `method`, and the `x-example` request header in `header` (`null` when absent). `/api/other` returns the same fields with `source: "redirected"`. The examples use real requests to these endpoints.
+Use the [local example site](../overview.mdx#run-examples) as `baseUrl`. `/api/items` returns JSON with `source: "original"` and the received `x-example` header in `header` (`null` if absent). The test resets the same mock between requests.
 
-```javascript
+```javascript testplane=mock-reset
 const assert = require("node:assert/strict");
 
 it("mock.reset: remove overrides but keep the mock usable", async ({ browser }) => {

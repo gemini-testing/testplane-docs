@@ -8,7 +8,7 @@
 -   **Classic с CDP/Puppeteer**: прежняя реализация для совместимого браузера. Это не универсальная возможность Classic WebDriver.
 -   **WebDriver-перехват Sauce Labs**: отдельное расширение провайдера с другим API и без событий; не переносите на него BiDi-пример без проверки.
 
-См. [подключение CDP](../../guides/how-to-use-cdp.mdx) и [перехват запросов](../../guides/how-to-intercept-requests-and-responses.mdx). Различия ниже относятся к Testplane 9.3.2 / WDIO 9.6.2.
+О настройке Classic — в материалах [«Как использовать CDP»](../../guides/how-to-use-cdp.mdx) и [«Перехват запросов через CDP»](../../guides/how-to-intercept-requests-and-responses.mdx). Сравнение ниже относится к `@testplane/webdriverio` 9.6.2. Пример на этой странице использует BiDi.
 
 ## Использование {/* #usage */}
 
@@ -26,7 +26,7 @@
 | `postData`        | Не применяется.                                                                     | Строка или функция-фильтр тела запроса.   |
 | `statusCode`      | Число или функция-фильтр статуса ответа.                                            | То же.                                    |
 
-Опции фильтрации необязательны. Фильтры ответа проверяются только на стадии ответа: событие `request` в BiDi может произойти раньше. Glob-строки CDP и `URLPattern` BiDi не взаимозаменяемы.
+Фильтры передаются одним объектом во втором, необязательном аргументе. В BiDi `statusCode` и `responseHeaders` фильтруют **ответы**, а не исходящие запросы: `request`, `redirect` или `abort` могут сработать раньше, чем станет известен статус. Чтобы ограничить такие правила, фильтруйте по методу или заголовкам запроса. Glob-шаблоны CDP и строки `URLPattern` BiDi не взаимозаменяемы.
 
 ## Результат {/* #result */}
 
@@ -34,10 +34,10 @@
 
 Только в BiDi: [request](../mock/request.mdx), [requestOnce](../mock/requestOnce.mdx), [redirect](../mock/redirect.mdx), [redirectOnce](../mock/redirectOnce.mdx) и [reset](../mock/reset.mdx).
 
-`mock.calls` хранит историю ответов:
+`mock.calls` хранит историю совпадений, а не только полученные ответы:
 
 -   BiDi: объекты `network.responseStarted`, например `call.request.url` и `call.response.status`. Это не гарантия полной загрузки тела.
--   Classic/CDP: записи с `url`, `body`, `headers`, `responseHeaders`, `statusCode`.
+-   Classic/CDP: в записи есть `url`, `body`, `headers`, `responseHeaders` и `statusCode`. Отмененный или подмененный до отправки запрос может попасть в историю без HTTP-ответа сервера.
 
 Не используйте поля одной реализации как общий контракт. `clear()` очищает историю, но сохраняет правила. `restore()` удаляет перехватчик; ожидайте его завершения в `finally`.
 
@@ -59,7 +59,7 @@
 
 Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-mock
 const assert = require("node:assert/strict");
 
 it("browser.mock: observe and replace a BiDi response", async ({ browser }) => {

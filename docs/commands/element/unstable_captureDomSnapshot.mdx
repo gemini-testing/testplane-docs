@@ -32,7 +32,7 @@ This is an unstable Testplane API. Its signature, behavior and result format may
 
 Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
 
-```javascript
+```javascript testplane=testplane-element-unstable-capture-dom-snapshot
 const assert = require("node:assert/strict");
 
 it("element.unstable_captureDomSnapshot: capture only this element", async ({ browser }) => {

@@ -8,7 +8,7 @@ sidebar_class_name: hidden
 
 <span id="обзор" />
 
-Справочник описывает Testplane v9 и команды используемой им ветки WebdriverIO v9. Доступность команды зависит от браузера, протокола сессии и версии зависимости; условия указаны на страницах команд. Для старых версий используйте архив документации и [WebdriverIO v8](https://v8.webdriver.io/docs/api).
+Справочник описывает Testplane v9 и команды пакета `@testplane/webdriverio`. Перед запуском проверьте, какой протокол нужен команде: даже в одном браузере API WebDriver BiDi и Classic могут различаться. Для прежних версий используйте архив документации и [WebdriverIO v8](https://v8.webdriver.io/docs/api).
 
 В Testplane нет неявных глобальных `browser`, `$` и `$$` из WDIO runner. Получайте `browser` из аргумента теста или через `this.browser` в обычной функции. Стрелочная функция не получает контекст `this` теста. Ищите элементы через `browser.$` и `browser.$$`.
 
@@ -16,7 +16,7 @@ sidebar_class_name: hidden
 
 Оба теста открывают `/` относительно `baseUrl`. Тестовая страница должна содержать `h1` с текстом `Command examples`.
 
-```javascript
+```javascript testplane=related-overview
 const assert = require("node:assert/strict");
 
 it("commands: use the browser fixture", async ({ browser }) => {
@@ -29,6 +29,10 @@ it("commands: use this.browser with a regular function", async function () {
     assert.equal(await this.browser.$("h1").getText(), "Command examples");
 });
 ```
+
+## Как запустить примеры {/* #run-examples */}
+
+Сохраните JavaScript-блок в файл теста Testplane. Для примеров с относительными URL укажите в `baseUrl` адрес локального HTTP-сервера. Настройте сервер так, чтобы он отдавал HTML-страницу по `/` и отвечал на запросы, описанные на странице команды. Запустите тест командой `npx testplane`. Для примера [downloadFile](./browser/downloadFile.mdx) также нужен Selenium Grid с поддержкой управляемых загрузок.
 
 ## Выбор команды {/* #command-groups */}
 

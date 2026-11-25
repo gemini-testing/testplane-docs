@@ -20,7 +20,7 @@ Switch subsequent browser commands into an iframe, or return to the top-level do
 
 ## Limitations {/* #limitations */}
 
-Classic supports an iframe element and `null`, but rejects string and function selectors. Use `null` in `finally` when the following test steps must run in the main document. A frame that cannot be found causes an error. Do not confuse this command with `switchWindow`.
+Classic supports an iframe element and `null`, but rejects string and function selectors. To switch between sibling frames, first return to the main document with `await browser.switchFrame(null)`, then locate the next iframe. Use `finally` if later steps must run in the main document. A frame that cannot be found causes an error. Do not confuse this command with `switchWindow`.
 
 :::warning
 
@@ -32,7 +32,7 @@ In WDIO 9.6.2, the predicate-function branch references a global `browser`. In a
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-switch-frame
 const assert = require("node:assert/strict");
 
 it("switchFrame: enter an iframe and return", async ({ browser }) => {

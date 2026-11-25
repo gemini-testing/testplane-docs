@@ -19,33 +19,35 @@
 
 ## Результат {/* #result */}
 
-`Promise<InitScript>`: объект с асинхронным методом `remove()` и подпиской `on("data", listener)`. Для передачи данных в Node.js вызовите callback `emit`, который добавляется последним аргументом функции.
+`Promise<InitScript>`. Чтобы получить данные в Node.js, до навигации подпишитесь через `script.on("data", listener)`. Браузерная функция отправляет данные через свой последний аргумент `emit`. Подписка синхронная, а `script.remove()` возвращает промис.
 
 ## Ограничения {/* #limitations */}
 
-Требуется сессия WebDriver BiDi (`webSocketUrl: true`). Вызовите команду до перехода на страницу. `remove()` отменяет последующее внедрение, но не откатывает изменения текущего документа. Удаляйте скрипт в том же тесте, даже если проверка завершилась ошибкой. Реализация этой версии принимает функцию, а не строку.
+Нужна сессия WebDriver BiDi (`webSocketUrl: true`). Зарегистрируйте функцию до навигации. После `await script.remove()` она не запустится в новых документах, но уже загруженная страница не изменится.
+
+В `@testplane/webdriverio` 9.6.2 передавайте функцию, а не строку. В ее теле используйте обычные кавычки: шаблонные строки могут нарушить синтаксис внедряемого скрипта. Символы вне Latin-1 (например, кириллица) в коде функции или сериализованных аргументах могут помешать регистрации.
 
 ## Пример {/* #examples */}
 
-Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+На [тестовом сайте](../overview.mdx#run-examples) страница `/navigation` при загрузке выполняет `window.initialSeed = window.navigationSeed ?? null`. Тест проверяет, какое значение прочитал **скрипт страницы** до и после удаления инициализатора.
 
-```javascript
+```javascript testplane=browser-add-init-script
 const assert = require("node:assert/strict");
 
 it("addInitScript: set a value before page scripts", async ({ browser }) => {
     const script = await browser.addInitScript(value => {
-        window.exampleSeed = value;
+        window.navigationSeed = value;
     }, 42);
 
     try {
-        await browser.url("/");
-        assert.equal(await browser.execute(() => window.exampleSeed), 42);
+        await browser.url("/navigation");
+        assert.equal(await browser.execute(() => window.initialSeed), 42);
     } finally {
         await script.remove();
     }
 
-    await browser.url("/");
-    assert.equal(await browser.execute(() => typeof window.exampleSeed), "undefined");
+    await browser.url("/navigation");
+    assert.equal(await browser.execute(() => window.initialSeed), null);
 });
 ```
 

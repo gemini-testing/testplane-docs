@@ -27,7 +27,7 @@ An unknown strategy name throws an error. Finding an element does not imply that
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-custom-dollar
 const assert = require("node:assert/strict");
 
 it("custom$: find one element with a custom strategy", async ({ browser }) => {

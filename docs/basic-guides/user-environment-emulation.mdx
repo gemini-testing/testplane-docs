@@ -335,7 +335,7 @@ Use [throttleNetwork][throttle-network] to block actual requests. The example re
 
 In the verified Testplane 9.3.2 / WDIO 9.6.2 / Chrome 150 combination, the `online` profile did not restore connectivity after `offline`. The example therefore ends the offline session and checks connectivity in a new one rather than promising recovery through that call. Point `baseUrl` to a test HTTP server that returns `200` at the root path.
 
-```javascript
+```javascript testplane=browser-throttle-network
 const assert = require("node:assert/strict");
 
 // Configure testsPerSession: 1 so this offline session is not reused.
@@ -367,7 +367,7 @@ it("throttleNetwork: the next session starts online", async ({ browser }) => {
 
 Pass an object to [throttleNetwork][throttle-network] to limit throughput. The example uses the same isolation requirements. The server at `baseUrl` must serve HTML at `/` and JSON with `source: "original"` at `/api/items`.
 
-```javascript
+```javascript testplane=related-slow-network
 const assert = require("node:assert/strict");
 
 it("slow network: fetch data under custom throughput limits", async ({ browser }) => {
@@ -411,7 +411,7 @@ The emulation persists until the end of the session, so restore it in the same t
 
 The example applies a 2× slowdown and removes it in `finally`.
 
-```javascript
+```javascript testplane=browser-throttle-cpu
 const assert = require("node:assert/strict");
 
 it("throttleCPU: run a page with a slower CPU", async ({ browser }) => {

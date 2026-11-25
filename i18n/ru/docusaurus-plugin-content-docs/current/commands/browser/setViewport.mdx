@@ -22,13 +22,15 @@
 
 ## Ограничения {/* #limitations */}
 
-Требуются WebDriver BiDi (`webSocketUrl: true`) и поддержка изменения viewport на стороне драйвера. В WDIO 9.6.2 клиент проверяет ширину и высоту по границам 0 и `Number.MAX_SAFE_INTEGER`. Драйвер может накладывать более строгие ограничения: прохождение клиентской проверки не гарантирует поддержку такого размера viewport. Сохраните прежние размеры, если их нужно восстановить. Изменение размеров не эмулирует мобильное устройство, сенсорный ввод или его браузерный движок.
+Нужны WebDriver BiDi (`webSocketUrl: true`) и драйвер, который поддерживает изменение области отображения. Вызывайте команду из основного документа. Если тест переключился в iframe, сначала вернитесь через [switchFrame(null)](./switchFrame.mdx).
+
+Задавайте целые размеры в CSS-пикселях и положительный DPR. В `@testplane/webdriverio` 9.6.2 клиент сравнивает ширину и высоту с 0 и `Number.MAX_SAFE_INTEGER`, но драйвер может отклонить и значение внутри этого диапазона. Для восстановления сохраните не только ширину и высоту, но и DPR. Изменение области отображения не включает сенсорный ввод и не меняет движок браузера.
 
 ## Пример {/* #examples */}
 
 Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
 
-```javascript
+```javascript testplane=browser-set-viewport
 const assert = require("node:assert/strict");
 
 it("setViewport: change page dimensions", async ({ browser }) => {
@@ -39,8 +41,9 @@ it("setViewport: change page dimensions", async ({ browser }) => {
         devicePixelRatio,
     }));
     try {
-        await browser.setViewport({ width: 800, height: 600, devicePixelRatio: 1 });
-        assert.deepEqual(await browser.execute(() => [innerWidth, innerHeight]), [800, 600]);
+        await browser.setViewport({ width: 800, height: 600, devicePixelRatio: 2 });
+        const viewport = await browser.execute(() => [innerWidth, innerHeight, devicePixelRatio]);
+        assert.deepEqual(viewport, [800, 600, 2]);
     } finally {
         await browser.setViewport(original);
     }

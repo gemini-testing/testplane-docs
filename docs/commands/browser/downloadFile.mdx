@@ -6,7 +6,7 @@ Copy a file downloaded by the browser on a Selenium Grid node to the Testplane p
 
 ## Requirements {/* #requirements */}
 
-Requires Selenium Grid with managed downloads enabled (`--enable-managed-downloads true`) and the capability `se:downloadsEnabled: true`. Chrome, Edge and Firefox are supported. Using `gridUrl: "local"` alone does not provide the Selenium downloads API. See the [Selenium documentation](https://www.selenium.dev/documentation/webdriver/remote_webdriver/#enable-downloads-in-the-grid).
+Requires Selenium Grid with managed downloads enabled (`--enable-managed-downloads true`) and the capability `se:downloadsEnabled: true`. Chrome, Edge and Firefox are supported. Using `gridUrl: "local"` alone does not provide the Selenium downloads API. See the [Selenium documentation](https://www.selenium.dev/documentation/webdriver/drivers/remote_webdriver/#enable-downloads-in-the-grid).
 
 ## Usage {/* #usage */}
 
@@ -27,9 +27,9 @@ Requires Selenium Grid with managed downloads enabled (`--enable-managed-downloa
 
 Set `gridUrl` to your Grid address and enable `se:downloadsEnabled: true` in `desiredCapabilities`. Set `baseUrl` to a test HTTP site: `/` serves HTML, and `/report.csv` serves `name,value\nexample,42\n` with the header `Content-Disposition: attachment; filename="report.csv"`.
 
-Wait for the file to appear on the Grid node first: listing files does not wait for a download to finish. Then copy the file and clean up the remote and local directories used by the test.
+Use a fresh browser session for this example (`testsPerSession: 1`), with `baseUrl` reachable **from the Grid node**. `getDownloadableFiles()` lists files already present; it does not wait for this download. `deleteDownloadableFiles()` deletes **all** managed downloads in the current session, not only `report.csv`.
 
-```javascript
+```javascript testplane=selenium-download-file suite=selenium
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const os = require("node:os");
@@ -55,8 +55,11 @@ it("downloadFile: copy a browser download from Selenium Grid", async ({ browser 
         assert.ok(files.includes(localFile));
         assert.equal(await fs.readFile(localFile, "utf8"), "name,value\nexample,42\n");
     } finally {
-        await browser.deleteDownloadableFiles();
-        await fs.rm(targetDirectory, { recursive: true, force: true });
+        try {
+            await browser.deleteDownloadableFiles();
+        } finally {
+            await fs.rm(targetDirectory, { recursive: true, force: true });
+        }
     }
 });
 ```

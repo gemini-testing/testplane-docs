@@ -16,7 +16,7 @@
 
 Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-clear
 const assert = require("node:assert/strict");
 
 it("mock.clear: clear history but retain response rules", async ({ browser }) => {
@@ -48,7 +48,6 @@ it("mock.clear: clear history but retain response rules", async ({ browser }) =>
 
 ## Связанные команды {/* #related */}
 
--   [clear](./clear.mdx)
 -   [reset](./reset.mdx)
 -   [restore](./restore.mdx)
 -   [browser.mock](../browser/mock.mdx)

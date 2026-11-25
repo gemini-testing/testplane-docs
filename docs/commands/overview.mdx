@@ -6,7 +6,7 @@ sidebar_class_name: hidden
 
 ## Overview {/* #overview */}
 
-This reference covers Testplane v9 and commands from its WebdriverIO v9 dependency. Availability depends on the browser, session protocol and dependency version; each page lists its requirements. For older versions, use the documentation archive and [WebdriverIO v8](https://v8.webdriver.io/docs/api).
+This reference covers Testplane v9 and its `@testplane/webdriverio` dependency. Check the protocol on the command page: WebDriver BiDi and Classic can expose different methods, even in the same browser. For older versions, use the documentation archive and [WebdriverIO v8](https://v8.webdriver.io/docs/api).
 
 Testplane does not provide the WDIO runner's implicit global `browser`, `$` and `$$`. Get `browser` from the test argument, or use `this.browser` in a regular function. An arrow function does not receive the test's `this` context. Find elements with `browser.$` and `browser.$$`.
 
@@ -14,7 +14,7 @@ Testplane does not provide the WDIO runner's implicit global `browser`, `$` and 
 
 Both tests open `/` relative to `baseUrl`. The test page must contain an `h1` with the text `Command examples`.
 
-```javascript
+```javascript testplane=related-overview
 const assert = require("node:assert/strict");
 
 it("commands: use the browser fixture", async ({ browser }) => {
@@ -27,6 +27,10 @@ it("commands: use this.browser with a regular function", async function () {
     assert.equal(await this.browser.$("h1").getText(), "Command examples");
 });
 ```
+
+## Run the examples {/* #run-examples */}
+
+Save the JavaScript block in a Testplane test file. For examples that open relative URLs, set `baseUrl` to a local HTTP site. Serve an HTML page at `/` and provide the routes and responses listed on the command page. Run the test with `npx testplane`. The [downloadFile](./browser/downloadFile.mdx) example also needs a Selenium Grid with managed downloads.
 
 ## Choose a command {/* #command-groups */}
 

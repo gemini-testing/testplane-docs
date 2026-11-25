@@ -21,12 +21,11 @@ Returns a Promise with the value passed to the callback. In Classic, configure t
 
 Set `baseUrl` to a test HTML page.
 
-```javascript
+```javascript testplane=related-execute-async
 const assert = require("node:assert/strict");
 
 it("browser.executeAsync: return a result through the injected callback", async ({ browser }) => {
     await browser.url("/");
-    await browser.setTimeout({ script: 5000 });
     const result = await browser.executeAsync(
         (a, b, done) => {
             setTimeout(() => done(a + b), 20);

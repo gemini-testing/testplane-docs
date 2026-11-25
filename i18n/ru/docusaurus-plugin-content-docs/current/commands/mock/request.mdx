@@ -32,9 +32,9 @@
 
 ## Пример {/* #examples */}
 
-Укажите в `baseUrl` локальный HTTP-сайт. `/` возвращает HTML. `/api/items` возвращает JSON: `source: "original"`, метод запроса в `method` и заголовок запроса `x-example` в `header` (`null`, если заголовка нет). `/api/other` возвращает те же поля с `source: "redirected"`. Примеры выполняют настоящие запросы к этим обработчикам.
+Укажите [тестовый сайт](../overview.mdx#run-examples) в `baseUrl`. `/api/items` принимает GET и POST. Обработчик возвращает метод запроса в поле JSON `method`, а значение заголовка `x-example` — в `header`. Подмена должна сработать для обоих запросов.
 
-```javascript
+```javascript testplane=mock-request
 const assert = require("node:assert/strict");
 
 it("mock.request: change outgoing requests", async ({ browser }) => {

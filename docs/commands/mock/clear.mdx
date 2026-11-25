@@ -16,7 +16,7 @@ Takes no arguments. BiDi synchronously returns the same mock; Classic/CDP has no
 
 The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-clear
 const assert = require("node:assert/strict");
 
 it("mock.clear: clear history but retain response rules", async ({ browser }) => {
@@ -48,7 +48,6 @@ it("mock.clear: clear history but retain response rules", async ({ browser }) =>
 
 ## Related commands {/* #related */}
 
--   [clear](./clear.mdx)
 -   [reset](./reset.mdx)
 -   [restore](./restore.mdx)
 -   [browser.mock](../browser/mock.mdx)

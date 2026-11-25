@@ -7,12 +7,10 @@
     "start": "docusaurus start",
     "lint": "eslint --cache src plugins && prettier --check .",
     "reformat": "eslint --cache --fix src plugins && prettier --write .",
-    "test": "npm run lint && npm run typecheck && npm run test:examples:unit",
+    "test": "npm run lint && npm run typecheck",
     "typecheck": "tsc",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "check:examples": "node vibe/verified-examples/verify-snippets.cjs",
-    "test:examples:unit": "node --test vibe/verified-examples/tests/*.test.*"
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",
@@ -62,10 +60,7 @@
     "typed.js": "2.1.0",
     "typescript": "5.4.3",
     "typescript-eslint": "7.4.0",
-    "zustand": "4.5.2",
-    "unified": "11.0.4",
-    "remark-parse": "11.0.0",
-    "remark-mdx": "3.0.1"
+    "zustand": "4.5.2"
   },
   "browserslist": {
     "production": [

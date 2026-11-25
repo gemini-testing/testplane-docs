@@ -21,12 +21,11 @@ Callback добавляет сама команда как последний а
 
 Укажите в `baseUrl` адрес тестовой HTML-страницы.
 
-```javascript
+```javascript testplane=related-execute-async
 const assert = require("node:assert/strict");
 
 it("browser.executeAsync: return a result through the injected callback", async ({ browser }) => {
     await browser.url("/");
-    await browser.setTimeout({ script: 5000 });
     const result = await browser.executeAsync(
         (a, b, done) => {
             setTimeout(() => done(a + b), 20);

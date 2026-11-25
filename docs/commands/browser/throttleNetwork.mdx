@@ -36,7 +36,7 @@ With Testplane 9.3.2, WDIO 9.6.2 and Chrome for Testing 150.0.7871.124, a subseq
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-throttle-network
 const assert = require("node:assert/strict");
 
 // Configure testsPerSession: 1 so this offline session is not reused.

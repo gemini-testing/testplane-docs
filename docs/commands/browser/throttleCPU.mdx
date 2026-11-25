@@ -26,7 +26,7 @@ Requires Chromium and an available Puppeteer/CDP connection. The current impleme
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-throttle-cpu
 const assert = require("node:assert/strict");
 
 it("throttleCPU: run a page with a slower CPU", async ({ browser }) => {

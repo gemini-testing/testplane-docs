@@ -27,7 +27,7 @@ Register the strategy before its first use. Registering an existing name throws 
 
 Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
 
-```javascript
+```javascript testplane=browser-add-locator-strategy
 const assert = require("node:assert/strict");
 
 it("addLocatorStrategy: find by data attribute", async ({ browser }) => {

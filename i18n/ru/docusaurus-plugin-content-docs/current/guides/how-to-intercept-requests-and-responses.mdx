@@ -7,15 +7,11 @@ import Admonition from "@theme/Admonition";
 [//]: # "TODO: add screencasts"
 
 <Admonition type="warning">
-Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
-
-Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]»
+Примеры используют [Chrome DevTools Protocol (CDP)][how-to-use-cdp]. Для примеров с `browser.mock` нужна сессия **WebDriver Classic** с подключением к CDP. В BiDi-сессии [browser.mock](../commands/browser/mock.mdx) использует сетевые события BiDi: например, `respond(..., { fetchResponse: false })` не препятствует отправке запроса на сервер.
 
 </Admonition>
 
-В CDP имеются домены [Fetch][fetch] и [Network][network], с помощью которых можно получить полный доступ ко всем сетевым запросам и ответам. При использовании Webdriver-протокола нам бы пришлось писать отдельный proxy-сервер и весь трафик направлять через него.
-
-В _webdriverio_ для работы с сетевыми запросами существует метод [mock][mock], который использует API домена [Fetch][fetch].
+В сессии Classic `browser.mock` перехватывает трафик через домен CDP [Fetch][fetch]. Домен [Network][network] предоставляет дополнительные сетевые события.
 
 С помощью этого метода мы можем:
 

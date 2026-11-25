@@ -339,7 +339,7 @@ it("применяет стили для темной цветовой схем�
 
 В проверенной связке Testplane 9.3.2 / WDIO 9.6.2 / Chrome 150 вызов с профилем `online` не восстановил сеть после `offline`. Поэтому пример заканчивает офлайн-сессию и проверяет соединение в новой, а не обещает восстановление тем же вызовом. `baseUrl` должен указывать на тестовый HTTP-сервер, отвечающий `200` на корневой путь.
 
-```javascript
+```javascript testplane=browser-throttle-network
 const assert = require("node:assert/strict");
 
 // Configure testsPerSession: 1 so this offline session is not reused.
@@ -373,7 +373,7 @@ it("throttleNetwork: the next session starts online", async ({ browser }) => {
 
 Для ограничения скорости передайте объект в [throttleNetwork][throttle-network]. Пример использует те же условия изоляции. Сервер по адресу `baseUrl` должен отдавать HTML на `/` и JSON с `source: "original"` на `/api/items`.
 
-```javascript
+```javascript testplane=related-slow-network
 const assert = require("node:assert/strict");
 
 it("slow network: fetch data under custom throughput limits", async ({ browser }) => {
@@ -419,7 +419,7 @@ it("показывает офлайн-режим", async ({ browser }) => {
 
 Пример задает двукратное замедление и отменяет его в `finally`.
 
-```javascript
+```javascript testplane=browser-throttle-cpu
 const assert = require("node:assert/strict");
 
 it("throttleCPU: run a page with a slower CPU", async ({ browser }) => {

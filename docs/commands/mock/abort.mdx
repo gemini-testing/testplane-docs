@@ -22,7 +22,7 @@ BiDi synchronously returns the same mock; Classic/CDP has no useful return value
 
 The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-abort
 const assert = require("node:assert/strict");
 
 it("mock.abort: block matching BiDi requests", async ({ browser }) => {

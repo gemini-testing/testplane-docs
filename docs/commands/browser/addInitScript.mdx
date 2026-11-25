@@ -19,33 +19,35 @@ The script is registered for the tab or window that is current when `addInitScri
 
 ## Result {/* #result */}
 
-`Promise<InitScript>`: an object with asynchronous `remove()` and `on("data", listener)`. To send data to Node.js, call the `emit` callback appended to the script arguments.
+`Promise<InitScript>`. Call `script.on("data", listener)` before navigation to receive values sent by the script's final `emit` argument. Subscribing with `on` is synchronous; `script.remove()` returns a promise.
 
 ## Limitations {/* #limitations */}
 
-Requires a WebDriver BiDi session (`webSocketUrl: true`). Call the command before navigation. `remove()` prevents future injection; it does not undo changes already made in the current document. Remove the script in the same test, even if an assertion fails. In this version the implementation accepts a function, not a string.
+Requires WebDriver BiDi (`webSocketUrl: true`). Register the function before navigation. `await script.remove()` prevents injection into future documents; it does not undo changes in the current one.
+
+In `@testplane/webdriverio` 9.6.2, pass a function, not a string. Use ordinary quotes in its source: template literals can break the injected script. Characters outside Latin-1 (such as Cyrillic) in the function source or serialized arguments can prevent registration.
 
 ## Example {/* #examples */}
 
-Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+On the [example site](../overview.mdx#run-examples), `/navigation` runs `window.initialSeed = window.navigationSeed ?? null` as it loads. The test checks what the **page script** saw, both with and without the init script.
 
-```javascript
+```javascript testplane=browser-add-init-script
 const assert = require("node:assert/strict");
 
 it("addInitScript: set a value before page scripts", async ({ browser }) => {
     const script = await browser.addInitScript(value => {
-        window.exampleSeed = value;
+        window.navigationSeed = value;
     }, 42);
 
     try {
-        await browser.url("/");
-        assert.equal(await browser.execute(() => window.exampleSeed), 42);
+        await browser.url("/navigation");
+        assert.equal(await browser.execute(() => window.initialSeed), 42);
     } finally {
         await script.remove();
     }
 
-    await browser.url("/");
-    assert.equal(await browser.execute(() => typeof window.exampleSeed), "undefined");
+    await browser.url("/navigation");
+    assert.equal(await browser.execute(() => window.initialSeed), null);
 });
 ```
 

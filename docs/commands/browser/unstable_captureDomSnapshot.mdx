@@ -49,7 +49,7 @@ This is an unstable Testplane API. Its signature, behavior and result format may
 
 Set `baseUrl` to a local HTTP test site where `/` serves an HTML page. Run the example in a Testplane test file.
 
-```javascript
+```javascript testplane=testplane-browser-unstable-capture-dom-snapshot
 const assert = require("node:assert/strict");
 
 it("browser.unstable_captureDomSnapshot: capture a filtered subtree", async ({ browser }) => {

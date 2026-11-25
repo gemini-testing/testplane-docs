@@ -24,7 +24,7 @@ In Testplane 9.3.2 / WDIO 9.6.2 / Chrome 150, the `online` profile did not resto
 
 Set `baseUrl` to a test HTTP server that returns `200` at the root path. The example uses a new session for each test.
 
-```javascript
+```javascript testplane=related-throttle
 const assert = require("node:assert/strict");
 
 it("throttle: use the deprecated alias in an isolated session", async ({ browser }) => {

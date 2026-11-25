@@ -10,7 +10,7 @@
 
 ## Параметры команды {/* #parameters */}
 
-Параметры и их различия между BiDi и Classic/CDP совпадают с [respond](./respond.mdx#parameters), включая имя `headers`, а не `header`. В BiDi тело — строка или JSON; callback тела и `fetchResponse: false` не поддерживаются. Запрос доходит до сервера.
+Параметры и их различия между BiDi и Classic/CDP совпадают с [respond](./respond.mdx#parameters), включая имя `headers`, а не `header`. В BiDi для подмены тела используйте непустую строку или JSON. Пустая строка сохраняет исходное тело. Как и в `respond`, callback тела и `fetchResponse: false` не поддерживаются. Запрос доходит до сервера.
 
 В BiDi однократное правило удаляет постоянное правило и добавляется к другим однократным. В Classic/CDP ранее добавленное постоянное правило может перекрыть очередь. Не полагайтесь на одинаковое смешивание `respond` и `respondOnce` между протоколами.
 
@@ -20,7 +20,7 @@ BiDi синхронно возвращает тот же мок; Classic/CDP н�
 
 Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-respond-once
 const assert = require("node:assert/strict");
 
 it("mock.respondOnce: consume BiDi responses in order", async ({ browser }) => {
@@ -51,7 +51,7 @@ it("mock.respondOnce: consume BiDi responses in order", async ({ browser }) => {
 -   [respond](./respond.mdx)
 -   [reset](./reset.mdx)
 -   [restore](./restore.mdx)
--   [Network interception](../../guides/how-to-intercept-requests-and-responses.mdx)
+-   [Перехват сетевых запросов](../../guides/how-to-intercept-requests-and-responses.mdx)
 
 ## Источники {/* #references */}
 

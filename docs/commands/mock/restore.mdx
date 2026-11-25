@@ -2,9 +2,9 @@
 
 ## Overview {/* #overview */}
 
-Removes the network interceptor, clears history and disables overrides. Subsequent requests proceed without this mock. This is not [browser.restore](../browser/restore.mdx), which restores emulation.
+Removes this mock's network interceptor, clears its history and disables its override rules. It does not reverse effects of requests that already ran, such as cookies stored by the browser. To undo browser emulation instead, use [browser.restore](../browser/restore.mdx).
 
-Await `restore()` before sending the next request or ending the test. In BiDi, a restored mock cannot be reused: create another with [browser.mock](../browser/mock.mdx). To retain the interceptor, use [reset](./reset.mdx).
+Await `restore()` before the next request or the end of the test. To change rules for the same URL in the same BiDi session, use [reset](./reset.mdx) on the existing mock rather than restoring it and creating another. In `@testplane/webdriverio` 9.6.2, listeners from the old mock can still see requests blocked by the new one.
 
 ## Usage {/* #usage */}
 
@@ -18,7 +18,7 @@ Takes no arguments. Returns a Promise resolving to the same mock in BiDi and no 
 
 The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-restore
 const assert = require("node:assert/strict");
 
 it("mock.restore: remove interception before the next request", async ({ browser }) => {
@@ -49,7 +49,6 @@ it("mock.restore: remove interception before the next request", async ({ browser
 
 -   [clear](./clear.mdx)
 -   [reset](./reset.mdx)
--   [restore](./restore.mdx)
 -   [browser.mock](../browser/mock.mdx)
 
 ## References {/* #references */}

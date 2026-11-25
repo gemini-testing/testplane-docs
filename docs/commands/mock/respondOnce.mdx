@@ -10,7 +10,7 @@ Overrides one response. Repeated calls queue responses in call order. Once the o
 
 ## Command parameters {/* #parameters */}
 
-Parameters and BiDi versus Classic/CDP differences match [respond](./respond.mdx#parameters), including `headers`, not `header`. BiDi accepts a string or JSON body; body callbacks and `fetchResponse: false` are not supported. The request reaches the server.
+Parameters and BiDi versus Classic/CDP differences match [respond](./respond.mdx#parameters), including `headers`, not `header`. In BiDi, use a nonempty string or JSON to replace the body; an empty string leaves the original body intact. As with `respond`, body callbacks and `fetchResponse: false` are not supported. The request reaches the server.
 
 In BiDi, a one-shot rule removes the persistent rule and appends to other one-shot rules. In Classic/CDP, an earlier persistent rule can mask the queue. Do not assume identical behavior when mixing `respond` and `respondOnce` across protocols.
 
@@ -20,7 +20,7 @@ BiDi synchronously returns the same mock; Classic/CDP has no useful return value
 
 The example uses Chrome with WebDriver BiDi. Point `baseUrl` to a test HTTP server: `/` serves an HTML page, and `/api/items` returns JSON with `source: "original"` and status `200`. The explicit event subscription supports new sessions in the same worker in WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-respond-once
 const assert = require("node:assert/strict");
 
 it("mock.respondOnce: consume BiDi responses in order", async ({ browser }) => {

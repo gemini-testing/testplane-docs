@@ -30,7 +30,7 @@
 
 Запустите тест в Chromium-браузере с доступным CDP-подключением. Он читает данные о версии браузера, не меняет страницу и не закрывает общее подключение.
 
-```javascript
+```javascript testplane=testplane-browser-unstable-get-cdp
 const assert = require("node:assert/strict");
 
 it("unstable_getCdp: query the connected Chromium browser", async ({ browser }) => {

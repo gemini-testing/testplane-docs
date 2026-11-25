@@ -33,7 +33,7 @@
 
 Настройте `baseUrl` на локальный HTTP-сайт, где `/` возвращает HTML-страницу. Запустите пример в файле тестов Testplane.
 
-```javascript
+```javascript testplane=element-execute-async
 const assert = require("node:assert/strict");
 
 it("element.executeAsync: return data through the final callback", async ({ browser }) => {
@@ -43,7 +43,6 @@ it("element.executeAsync: return data through the final callback", async ({ brow
     });
     const element = await browser.$("#message");
     await element.waitForExist();
-    await browser.setTimeout({ script: 5000 });
     const result = await element.executeAsync((node, prefix, done) => {
         setTimeout(() => done(prefix + node.textContent), 20);
     }, "Status: ");

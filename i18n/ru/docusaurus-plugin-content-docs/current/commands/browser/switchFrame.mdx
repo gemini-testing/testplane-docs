@@ -20,7 +20,7 @@
 
 ## Ограничения {/* #limitations */}
 
-Classic поддерживает элемент iframe и `null`, но отклоняет строку и функцию. Используйте `null` в `finally`, если последующие шаги должны выполняться в основном документе. Если фрейм не найден, команда завершается ошибкой. Не путайте ее с `switchWindow`.
+Classic поддерживает элемент iframe и `null`, но отклоняет строку и функцию. Для перехода между соседними фреймами сначала вернитесь в основной документ через `await browser.switchFrame(null)`, затем найдите следующий iframe. Используйте `finally`, если дальнейшие шаги теста должны выполняться в основном документе. Если фрейм не найден, команда завершается ошибкой. Не путайте ее с `switchWindow`.
 
 :::warning
 
@@ -32,7 +32,7 @@ Classic поддерживает элемент iframe и `null`, но откл�
 
 Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
 
-```javascript
+```javascript testplane=browser-switch-frame
 const assert = require("node:assert/strict");
 
 it("switchFrame: enter an iframe and return", async ({ browser }) => {

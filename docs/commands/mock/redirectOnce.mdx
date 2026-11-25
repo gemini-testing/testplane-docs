@@ -26,9 +26,9 @@ The destination must be reachable. Redirects use the same queue as `request` and
 
 ## Example {/* #examples */}
 
-Use a local HTTP test site as `baseUrl`. `/` serves HTML. `/api/items` returns JSON with `source: "original"`, the request method in `method`, and the `x-example` request header in `header` (`null` when absent). `/api/other` returns the same fields with `source: "redirected"`. The examples use real requests to these endpoints.
+Use the [local example site](../overview.mdx#run-examples) as `baseUrl`. `/api/items` returns JSON with `source: "original"`; `/api/other` returns `source: "redirected"`. Only the first request should reach `/api/other`.
 
-```javascript
+```javascript testplane=mock-redirect-once
 const assert = require("node:assert/strict");
 
 it("mock.redirectOnce: redirect only the next request", async ({ browser }) => {

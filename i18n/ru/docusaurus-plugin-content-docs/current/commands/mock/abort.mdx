@@ -22,7 +22,7 @@ BiDi возвращает тот же объект мока синхронно; 
 
 Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-abort
 const assert = require("node:assert/strict");
 
 it("mock.abort: block matching BiDi requests", async ({ browser }) => {

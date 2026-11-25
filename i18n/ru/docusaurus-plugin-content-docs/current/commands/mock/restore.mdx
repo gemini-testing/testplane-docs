@@ -2,9 +2,9 @@
 
 ## Обзор {/* #overview */}
 
-Удаляет сетевой перехватчик, очищает историю и отключает подмены. Следующие запросы идут без этого мока. Это не [browser.restore](../browser/restore.mdx): восстановление эмуляции — другая команда.
+Снимает сетевой перехватчик этого мока, очищает его историю и отключает правила подмены. Команда не отменяет последствий уже выполненного запроса, например не удаляет сохраненные браузером cookies. Для отмены эмуляции используйте [browser.restore](../browser/restore.mdx).
 
-Дождитесь `restore()` перед следующим запросом или завершением теста. В BiDi восстановленный мок нельзя переиспользовать: создайте новый через [browser.mock](../browser/mock.mdx). Для сохранения перехватчика используйте [reset](./reset.mdx).
+Дождитесь `restore()` перед следующим запросом или завершением теста. Если нужно поменять правила для того же URL в той же BiDi-сессии, вызовите [reset](./reset.mdx) у существующего мока. В `@testplane/webdriverio` 9.6.2 обработчики прежнего мока могут получить событие запроса, остановленного новым перехватчиком.
 
 ## Использование {/* #usage */}
 
@@ -18,7 +18,7 @@
 
 Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
 
-```javascript
+```javascript testplane=related-restore
 const assert = require("node:assert/strict");
 
 it("mock.restore: remove interception before the next request", async ({ browser }) => {
@@ -49,7 +49,6 @@ it("mock.restore: remove interception before the next request", async ({ browser
 
 -   [clear](./clear.mdx)
 -   [reset](./reset.mdx)
--   [restore](./restore.mdx)
 -   [browser.mock](../browser/mock.mdx)
 
 ## Источники {/* #references */}
