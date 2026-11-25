@@ -37,22 +37,28 @@ await browser.runStep(stepName, stepCb);
 
 ## Примеры использования {/* #examples */}
 
-```typescript
-it("test", async ({ browser }) => {
+```typescript testplane=browser-nested-steps fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("keeps the missing element error from a nested step", async ({ browser }) => {
     await browser.runStep("prepare page", async () => {
-        await browser.url("some/url");
-        await browser.setCookies(someCookies);
+        await browser.url("/");
+        await browser.setCookies({ name: "cart", value: "empty" });
     });
 
-    await browser.runStep("make an order", async () => {
-        await browser.runStep("navigate to the shopping cart", async () => {
-            await browser.$("not-exist-selector").click();
-        });
-    });
+    await assert.rejects(
+        () =>
+            browser.runStep("make an order", async () => {
+                await browser.runStep("navigate to the shopping cart", async () => {
+                    await browser.$("not-exist-selector").click();
+                });
+            }),
+        /not-exist-selector/,
+    );
 });
 ```
 
-Данный тест завершится с ошибкой "Cannot call click on element with selector 'not-exist-selector' because element wasn't found" из-за отсутствующего селектора и будет создана следующая история:
+Проверка ожидает ошибку об отсутствующем элементе. Без `assert.rejects` ошибка прервала бы тест. Вложенные шаги показывают в отчете, где она возникла:
 
 ```
 - testplane: init browser
@@ -68,11 +74,11 @@ it("test", async ({ browser }) => {
 
 Также, вы можете вернуть конкретное значение из шага.
 
-```typescript
-const parsedPage = await browser.runStep("parse page", async () => {
-    // ...
-    return someData;
-});
+```typescript testplane=browser-step-result fixture=browser-page
+const assert = require("node:assert/strict");
+
+const heading = await browser.runStep("parse page", () => browser.$("h1").getText());
+assert.equal(heading, "Command examples");
 ```
 
 [reporter]: ../../../html-reporter/html-reporter-setup

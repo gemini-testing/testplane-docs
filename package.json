@@ -14,8 +14,7 @@
     "check:examples": "node test/doc-examples/verify-snippets.cjs",
     "test:examples:unit": "node --test test/doc-examples/tests/*.test.*",
     "generate:examples": "node test/doc-examples/generate-snippets.mjs",
-    "test:examples": "cd test/doc-examples && node run-ci.cjs chrome",
-    "test:examples:selenium": "cd test/doc-examples && node run-ci.cjs selenium"
+    "test:examples": "cd test/doc-examples && node run-ci.cjs"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",

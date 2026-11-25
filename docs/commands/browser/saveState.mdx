@@ -16,15 +16,19 @@ You can use parameters to exclude specific types of data if needed.
 If you provide the `path` parameter, the state dump will be saved to a file.
 The saved state can later be restored using the [restoreState](../restoreState) command.
 
-```typescript
+```typescript testplane=browser-save-state-data fixture=browser-page
+const assert = require("node:assert/strict");
+
 import type { SaveStateData } from "testplane";
 
-const stateDump: SaveStateData = await browser.saveState({
-    path: "./stateDump.json",
+await browser.execute(() => localStorage.setItem("theme", "dark"));
+const state: SaveStateData = await browser.saveState({
     cookies: true,
     localStorage: true,
     sessionStorage: true,
 });
+const origin = new URL(await browser.getUrl()).origin;
+assert.equal(state.framesData?.[origin]?.localStorage?.theme, "dark");
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -87,14 +91,21 @@ const stateDump: SaveStateData = await browser.saveState({
 
 Save state in file.
 
-```typescript
-it("test", async ({ browser }) => {
-    await browser.url("https://github.com/gemini-testing/testplane");
+```typescript testplane=browser-save-state-file fixture=browser-page
+const assert = require("node:assert/strict");
 
-    await browser.saveState({
-        path: "./stateDump.json",
-        cookieFilter: ({ domain }) => domain === ".example.com",
-    });
+it("writes only selected cookies to the state file", async ({ browser }) => {
+    const path = `./artifacts/demo-${browser.sessionId}.json`;
+    await browser.setCookies([
+        { name: "theme", value: "dark" },
+        { name: "temporary", value: "1" },
+    ]);
+    await browser.saveState({ path, cookieFilter: ({ name }) => name === "theme" });
+    const state = await browser.getState({ path });
+    assert.deepEqual(
+        state.cookies.map(({ name, value }) => [name, value]),
+        [["theme", "dark"]],
+    );
 });
 ```
 

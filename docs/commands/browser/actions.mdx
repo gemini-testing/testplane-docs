@@ -12,12 +12,16 @@ await browser.actions([action1, action2, ...]);
 
 ## Usage Examples {/* #examples */}
 
-```typescript
-it("run multiple actions at once for a pinch zoom", async ({ browser }) => {
+```typescript testplane=browser-actions-pinch fixture=browser-pinch
+const assert = require("node:assert/strict");
+
+it("spreads two fingers in one gesture", async ({ browser }) => {
+    const finger = id => browser.action("pointer", { id, parameters: { pointerType: "touch" } });
     await browser.actions([
-        browser.action("pointer").move(500, 500).down().move(250, 250).up(),
-        browser.action("pointer").move(500, 500).down().move(750, 750).up(),
+        finger("left").move(160, 180).down().move(80, 180).up(),
+        finger("right").move(200, 180).down().move(280, 180).up(),
     ]);
+    assert.equal(await browser.$("output").getText(), "Spread");
 });
 ```
 

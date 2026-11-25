@@ -34,29 +34,27 @@ await browser.$(selector).waitForDisplayed({ timeout, reverse, timeoutMsg, inter
 
 ## Usage Examples {/* #examples */}
 
-**index.html**
-
-```html
-<div id="elem" style="visibility: hidden;">Hello World!</div>
-<script type="text/javascript">
-    setTimeout(() => {
-        document.getElementById("elem").style.visibility = "visible";
-    }, 2000);
-</script>
+```html testplane-html=element-html
+<button
+    id="toggle"
+    onclick="setTimeout(() => document.querySelector('#message').toggleAttribute('hidden'), 100)"
+>
+    Toggle message
+</button>
+<div id="message" hidden>Hello World!</div>
 ```
 
-**waitForDisplayed.js**
+```javascript testplane=element-wait-for-displayed fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should detect when element is visible", async ({ browser }) => {
-    const elem = await browser.$("#elem");
-    await elem.waitForDisplayed({ timeout: 3000 });
-});
-
-it("should detect when element is no longer visible", async ({ browser }) => {
-    const elem = await browser.$("#elem");
-    await elem.waitForDisplayed({ reverse: true });
-});
+const message = await browser.$("#message");
+const toggle = await browser.$("#toggle");
+await toggle.click();
+await message.waitForDisplayed({ timeout: 3000 });
+assert.equal(await message.isDisplayed(), true);
+await toggle.click();
+await message.waitForDisplayed({ reverse: true });
+assert.equal(await message.isDisplayed(), false);
 ```
 
 ## References

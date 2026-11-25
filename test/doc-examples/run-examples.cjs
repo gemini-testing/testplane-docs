@@ -1,7 +1,9 @@
 const http = require("node:http");
 const { spawn } = require("node:child_process");
+const { serveFixture } = require("./fixture-site.cjs");
 const server = http.createServer((req, res) => {
     const path = new URL(req.url, "http://localhost").pathname;
+    if (serveFixture(path, res)) return;
     if (path === "/navigation") {
         res.setHeader("Content-Type", "text/html");
         res.end(

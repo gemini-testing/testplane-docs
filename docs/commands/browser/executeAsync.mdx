@@ -31,25 +31,19 @@ await browser.executeAsync(script, arguments);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should execute async JavaScript on the page", async ({ browser }) => {
-    await browser.setTimeout({ script: 5000 });
+```javascript testplane=browser-execute-async fixture=browser-page
+const assert = require("node:assert/strict");
 
+it("returns the sum through the page callback", async ({ browser }) => {
+    await browser.setTimeout({ script: 5000 });
     const result = await browser.executeAsync(
-        function (a, b, c, d, done) {
-            // here we are in the browser context: no access to console or client
-            setTimeout(() => {
-                done(a + b + c + d);
-            }, 3000);
-        },
+        (a, b, c, d, done) => setTimeout(() => done(a + b + c + d), 25),
         1,
         2,
         3,
         4,
     );
-
-    // here we are in the node.js context: access to console and client is available
-    console.log(result); // outputs: 10
+    assert.equal(result, 10);
 });
 ```
 

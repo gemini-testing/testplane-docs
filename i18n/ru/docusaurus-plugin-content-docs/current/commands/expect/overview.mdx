@@ -10,25 +10,26 @@ sidebar_class_name: hidden
 
 Например, можно проверить находится ли браузер на заданной странице
 
-```typescript
-await browser.url("https://testplane.io/");
-// ...
-await expect(browser).toHaveUrl("https://testplane.io");
+```typescript testplane=expect-to-have-url fixture=matchers-page
+const expectedUrl = new URL("/navigation", browser.options.baseUrl).href;
+await browser.url("/navigation");
+await expect(browser).toHaveUrl(expectedUrl);
 ```
 
 или проверить есть ли у элемента атрибут с заданным значением
 
-```typescript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttribute("class", "form-control");
+```typescript testplane=expect-to-have-attribute fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttribute("class", "form-control");
 ```
 
-или проверить был ли сделан указанный запрос для вашего мока
+или проверить, что нажатие кнопки загрузки отправляет запрос в сессии WebDriver BiDi
 
-```typescript
-const mock = browser.mock("**/api/todo*");
-// ...
-await expect(mock).toBeRequested();
+```typescript testplane=expect-bidi-requested fixture=matchers-network
+const mock = await browser.mock("/api/items");
+await browser.$("#reload").click();
+await mock.waitForResponse();
+expect(mock.calls).toHaveLength(1);
 ```
 
 По умолчанию таймаут на выполнение ассертов равен 2000мс с интервалом проверок в 100мс. Но при необходимости эти значения можно переопределить в [секции system][system_config] в общем конфиге.

@@ -12,15 +12,16 @@ mock.clear();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should clear mock", async ({ browser }) => {
-    const mock = await browser.mock("https://google.com/");
-    await browser.url("https://google.com");
+In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
 
-    console.log(mock.calls.length); // outputs: 1
-    mock.clear();
-    console.log(mock.calls.length); // outputs: 0
-});
+```javascript testplane=mock-clear fixture=matchers-network
+const mock = await browser.mock("/api/items");
+await browser.$("#reload").click();
+await mock.waitForResponse();
+
+expect(mock.calls).toHaveLength(1);
+mock.clear();
+expect(mock.calls).toHaveLength(0);
 ```
 
 ## Related Commands {/* #related */}

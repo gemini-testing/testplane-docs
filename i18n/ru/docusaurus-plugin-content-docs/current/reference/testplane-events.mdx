@@ -341,15 +341,10 @@ module.exports = {
 
 ### Подписка на событие {/* #cli_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.CLI, cli => {
-    console.info("Выполняется обработка события CLI...");
-
-    cli.option(
-        "--some-option <some-value>",
-        "the full description of the option",
-        // см. подробнее в https://github.com/tj/commander.js#options
-    );
+    cli.option("--some-option <value>", "Use the specified value");
+    console.info("Registered --some-option");
 });
 ```
 
@@ -406,7 +401,7 @@ module.exports = (testplane, opts) => {
 
 ### Подписка на событие {/* #init_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.INIT, async () => {
     console.info("Выполняется обработка события INIT...");
 });
@@ -520,13 +515,11 @@ testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }
 
 **Код плагина**
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testParser }) => {
     testParser.setController("logger", {
-        log: function (prefix) {
-            console.log(
-                `${prefix}: только что распарсил ${this.fullTitle()} из файла ${file} для браузера ${this.browserId}`,
-            );
+        log(prefix) {
+            console.info(`${prefix}: ${this.fullTitle()} (${this.browserId}) in ${file}`);
         },
     });
 });
@@ -555,7 +548,7 @@ describe("foo", () => {
 
 ### Подписка на событие {/* #after_file_read_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
     console.info("Выполняется обработка события AFTER_FILE_READ...");
 });
@@ -582,7 +575,7 @@ testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
 
 ### Подписка на событие {/* #after_tests_read_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
     console.info("Выполняется обработка события AFTER_TESTS_READ...");
 });
@@ -636,7 +629,7 @@ module.exports = (testplane, opts) => {
 
 ### Подписка на событие {/* #runner_start_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.RUNNER_START, async runner => {
     console.info("Выполняется обработка события RUNNER_START...");
 });
@@ -690,7 +683,7 @@ module.exports = (testplane, opts) => {
 
 ### Подписка на событие {/* #runner_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.RUNNER_END, async result => {
     console.info("Выполняется обработка события RUNNER_END...");
 });
@@ -724,7 +717,7 @@ testplane.on(testplane.events.RUNNER_END, async result => {
 
 ### Подписка на событие {/* #profiler_result_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.PROFILER_RESULT, async result => {
     console.info(`Profile ${result.run.id}: ${result.run.durationMs} ms`);
 });
@@ -744,7 +737,7 @@ testplane.on(testplane.events.PROFILER_RESULT, async result => {
 
 ### Подписка на событие {/* #new_worker_process_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.NEW_WORKER_PROCESS, workerProcess => {
     console.info("Выполняется обработка события NEW_WORKER_PROCESS...");
 });
@@ -819,7 +812,7 @@ module.exports = plugin;
 
 ### Подписка на событие {/* #session_start_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessionId }) => {
     console.info("Выполняется обработка события SESSION_START...");
 });
@@ -890,7 +883,7 @@ module.exports = (testplane, opts) => {
 
 ### Подписка на событие {/* #session_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionId }) => {
     console.info("Выполняется обработка события SESSION_END...");
 });
@@ -911,7 +904,7 @@ testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionI
 
 ### Подписка на событие {/* #begin_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.BEGIN, () => {
     console.info("Выполняется обработка события BEGIN...");
 });
@@ -933,7 +926,7 @@ testplane.on(testplane.events.BEGIN, () => {
 
 ### Подписка на событие {/* #end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.END, () => {
     console.info("Выполняется обработка события END...");
 });
@@ -955,7 +948,7 @@ testplane.on(testplane.events.END, () => {
 
 ### Подписка на событие {/* #suite_begin_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SUITE_BEGIN, suite => {
     console.info(`Выполняется обработка события SUITE_BEGIN для "${suite.fullTitle()}"...`);
 });
@@ -967,7 +960,7 @@ testplane.on(testplane.events.SUITE_BEGIN, suite => {
 
 ### Перехват события {/* #suite_begin_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
     console.info(`Выполняется перехват события SUITE_BEGIN для "${suite.fullTitle()}"...`);
 });
@@ -981,7 +974,7 @@ testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
 
 ### Подписка на событие {/* #suite_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SUITE_END, suite => {
     console.info(`Выполняется обработка события SUITE_END для "${suite.fullTitle()}"...`);
 });
@@ -993,7 +986,7 @@ testplane.on(testplane.events.SUITE_END, suite => {
 
 ### Перехват события {/* #suite_end_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
     console.info(`Выполняется перехват события SUITE_END для "${suite.fullTitle()}"...`);
 });
@@ -1007,7 +1000,7 @@ testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
 
 ### Подписка на событие {/* #test_begin_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_BEGIN, test => {
     if (test.pending) {
         // тест отключен, ничего делать не нужно
@@ -1027,7 +1020,7 @@ testplane.on(testplane.events.TEST_BEGIN, test => {
 
 ### Перехват события {/* #test_begin_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
     console.info(
         `Выполняется перехват события TEST_BEGIN ` +
@@ -1048,7 +1041,7 @@ testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
 
 ### Подписка на событие {/* #test_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_END, test => {
     if (test.pending) {
         // тест отключен, ничего делать не нужно
@@ -1068,7 +1061,7 @@ testplane.on(testplane.events.TEST_END, test => {
 
 ### Перехват события {/* #test_end_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
     console.info(
         `Выполняется перехват события TEST_END ` +
@@ -1089,7 +1082,7 @@ testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
 
 ### Подписка на событие {/* #test_pass_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_PASS, test => {
     console.info(
         `Выполняется обработка события TEST_PASS ` +
@@ -1104,7 +1097,7 @@ testplane.on(testplane.events.TEST_PASS, test => {
 
 ### Перехват события {/* #test_pass_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
     console.info(
         `Выполняется перехват события TEST_PASS ` +
@@ -1125,7 +1118,7 @@ testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
 
 ### Подписка на событие {/* #test_fail_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_FAIL, test => {
     console.info(
         `Выполняется обработка события TEST_FAIL ` +
@@ -1140,10 +1133,10 @@ testplane.on(testplane.events.TEST_FAIL, test => {
 
 ### Перехват события {/* #test_fail_interception */}
 
-```javascript
-testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+```javascript testplane-project=event
+testplane.intercept(testplane.events.TEST_FAIL, ({ event, data: test }) => {
     console.info(
-        `Выполняется перехват события TEST_PASS ` +
+        `Выполняется перехват события TEST_FAIL ` +
             `для теста "${test.fullTitle()}" в браузере "${test.browserId}"...`,
     );
 });
@@ -1161,7 +1154,7 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 
 ### Подписка на событие {/* #test_pending_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_PENDING, test => {
     console.info(
         `Выполняется обработка события TEST_PENDING ` +
@@ -1188,7 +1181,7 @@ testplane.on(testplane.events.TEST_PENDING, test => {
 
 ### Подписка на событие {/* #retry_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.RETRY, test => {
     console.info(
         `Выполняется обработка события RETRY ` +
@@ -1203,7 +1196,7 @@ testplane.on(testplane.events.RETRY, test => {
 
 ### Перехват события {/* #retry_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.RETRY, ({ event, data: test }) => {
     console.info(
         `Выполняется перехват события RETRY ` +
@@ -1276,7 +1269,7 @@ testplane.on(testplane.events.EXIT, async () => {
 
 ### Подписка на событие {/* #new_browser_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId, browserVersion }) => {
     console.info("Выполняется обработка события NEW_BROWSER...");
 });
@@ -1326,7 +1319,7 @@ module.exports = (testplane, opts) => {
 
 ### Подписка на событие {/* #update_reference_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
     console.info("Выполняется обработка события UPDATE_REFERENCE...");
 });

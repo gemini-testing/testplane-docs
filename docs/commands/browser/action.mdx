@@ -29,8 +29,14 @@ await browser.action(...).perform(true);
 
 Used when specifying `key` as the argument for the `action` command. Example:
 
-```typescript
-await browser.action("key");
+```typescript testplane=browser-create-key-action fixture=browser-input
+const assert = require("node:assert/strict");
+
+const keyboard = browser.action("key");
+const input = await browser.$("input");
+await input.click();
+await keyboard.down("a").up("a").perform();
+assert.equal(await input.getValue(), "a");
 ```
 
 Returns a `KeyAction` object that supports the following actions:
@@ -41,29 +47,28 @@ Returns a `KeyAction` object that supports the following actions:
 
 ### Special Symbols {/* #special_symbols */}
 
-To use special symbols (`Control`, `Page Up`, `Shift`, etc.), you can use the `Key` object from the [webdriverio][webdriverio-npm] package. It contains Unicode representations of all necessary special symbols. Example:
+To use special symbols (`Control`, `Page Up`, `Shift`, etc.), you can use the `Key` object from the [@testplane/webdriverio][webdriverio-npm] package. It contains Unicode representations of all necessary special symbols. Example:
 
-```typescript
-import { Key } from "webdriverio";
+```typescript testplane=browser-action-special-key fixture=browser-input
+const assert = require("node:assert/strict");
 
-await browser.action("key").down(Key.Ctrl).perform();
+const { Key } = require("@testplane/webdriverio");
+const input = await browser.$("input");
+await input.setValue("abc");
+await browser.action("key").down(Key.Backspace).up(Key.Backspace).perform();
+assert.equal(await input.getValue(), "ab");
 ```
 
 ### Usage Examples {/* #keyboard_examples */}
 
-```typescript
-import { Key } from "webdriverio";
+```typescript testplane=browser-action-keys fixture=browser-input
+const assert = require("node:assert/strict");
 
-it("should emit key events using key action commands", async ({ browser }) => {
-    const elem = await browser.$("input");
-    await elem.click(); // make the element active
-
-    await browser.action("key").down("f").down("o").down("o").up("f").up("o").up("o").perform();
-
-    console.log(await elem.getValue()); // returns "foo"
-
-    // copy value from input element
-    await browser.action("key").down(Key.Ctrl).down("c").pause(10).up(Key.Ctrl).up("c").perform();
+it("types a word with key actions", async ({ browser }) => {
+    const input = await browser.$("input");
+    await input.click();
+    await browser.action("key").down("f").up("f").down("o").up("o").down("o").up("o").perform();
+    assert.equal(await input.getValue(), "foo");
 });
 ```
 
@@ -73,10 +78,13 @@ Instead of a series of `down/up` events, it is better to use the `setValue` comm
 
 Used when specifying `pointer` as the argument for the `action` command, and you can also specify the pointer type. Example:
 
-```typescript
-await browser.action("pointer", {
-    parameters: { pointerType: "mouse" }, // "mouse" is the default value, also available: "pen" or "touch"
-});
+```typescript testplane=browser-create-pointer-action fixture=browser-input
+const assert = require("node:assert/strict");
+
+const mouse = browser.action("pointer", { parameters: { pointerType: "mouse" } });
+const input = await browser.$("input");
+await mouse.move({ origin: input }).down("left").up("left").perform();
+assert.equal(await input.isFocused(), true);
 ```
 
 Returns a `PointerAction` object that supports the following actions:
@@ -94,19 +102,20 @@ Detailed information on the parameter types [PointerActionParams][pointer-action
 
 ### Usage Examples {/* #pointer_examples */}
 
-```typescript
-it("drag and drop using pointer action command", async ({ browser }) => {
-    const origin = await browser.$("#source");
-    const targetOrigin = await browser.$("#target");
+```typescript testplane=browser-action-pointer fixture=browser-pointer
+const assert = require("node:assert/strict");
 
+it("drops the source on the target", async ({ browser }) => {
+    const origin = await browser.$("#source");
+    const target = await browser.$("#target");
     await browser
         .action("pointer")
-        .move({ duration: 0, origin, x: 0, y: 0 })
-        .down({ button: 0 }) // left button
-        .pause(10)
-        .move({ duration: 0, origin: targetOrigin })
+        .move({ origin })
+        .down({ button: 0 })
+        .move({ origin: target, duration: 100 })
         .up({ button: 0 })
         .perform();
+    assert.equal(await browser.$("output").getText(), "Dropped");
 });
 ```
 
@@ -114,8 +123,10 @@ it("drag and drop using pointer action command", async ({ browser }) => {
 
 Used when specifying `wheel` as the argument for the `action` command. Example:
 
-```typescript
-await browser.action("wheel");
+```typescript testplane=browser-create-wheel-action fixture=browser-scroll
+const wheel = browser.action("wheel");
+await wheel.scroll({ deltaX: 0, deltaY: 120 }).perform();
+await browser.waitUntil(async () => (await browser.execute(() => window.scrollY)) === 120);
 ```
 
 Returns a `WheelAction` object that supports the following actions:
@@ -127,20 +138,13 @@ Detailed information on the parameter type [ScrollParams][scroll-params] can be 
 
 ### Usage Examples {/* #scroll_examples */}
 
-```typescript
-it("should scroll using wheel action commands", async ({ browser }) => {
-    console.log(await browser.execute(() => window.scrollY)); // returns 0
+```typescript testplane=browser-action-wheel fixture=browser-scroll
+const assert = require("node:assert/strict");
 
-    await browser
-        .action("wheel")
-        .scroll({
-            deltaX: 0,
-            deltaY: 500,
-            duration: 200,
-        })
-        .perform();
-
-    console.log(await browser.execute(() => window.scrollY)); // returns 500
+it("scrolls using the wheel", async ({ browser }) => {
+    assert.equal(await browser.execute(() => window.scrollY), 0);
+    await browser.action("wheel").scroll({ deltaX: 0, deltaY: 500, duration: 200 }).perform();
+    await browser.waitUntil(async () => (await browser.execute(() => window.scrollY)) === 500);
 });
 ```
 
@@ -158,7 +162,7 @@ We'd like to give credit to the original WebdriverIO docs [article](https://webd
 [appium]: http://appium.io
 [appium-ios]: https://appium.github.io/appium-xcuitest-driver/latest/reference/execute-methods/#mobile-pinch
 [appium-android]: https://github.com/appium/appium-uiautomator2-driver#mobile-gesture-commands
-[webdriverio-npm]: https://www.npmjs.com/package/webdriverio
+[webdriverio-npm]: https://www.npmjs.com/package/@testplane/webdriverio
 [pointer-action-params]: https://github.com/webdriverio/webdriverio/blob/8ca026c75bf7c27ef9d574f0ec48d8bc13658602/packages/webdriverio/src/utils/actions/pointer.ts#L20-L35
 [pointer-action-move-params]: https://github.com/webdriverio/webdriverio/blob/8ca026c75bf7c27ef9d574f0ec48d8bc13658602/packages/webdriverio/src/utils/actions/pointer.ts#L20-L42
 [pointer-action-up-params]: https://github.com/webdriverio/webdriverio/blob/8ca026c75bf7c27ef9d574f0ec48d8bc13658602/packages/webdriverio/src/utils/actions/pointer.ts#L13-L19

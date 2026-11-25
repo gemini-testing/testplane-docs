@@ -48,7 +48,7 @@ npx testplane --config ./config.js --reporter flat --browser firefox --grep name
 
 Print current `testplane` version.
 
-```bash
+```bash testplane-project=cli
 testplane --version
 ```
 
@@ -64,7 +64,7 @@ testplane --config ./local.testplane.config.ts
 
 Run tests only in specified browser.
 
-```bash
+```bash testplane-project=cli
 testplane --browser chrome
 ```
 
@@ -72,7 +72,7 @@ testplane --browser chrome
 
 Run tests only in the specified set.
 
-```bash
+```bash testplane-project=cli
 testplane --set desktop
 ```
 
@@ -270,7 +270,7 @@ Prints out information about options and commands. Testplane Plugins can add the
 
 For example, [html-reporter][html-reporter] adds `gui` command.
 
-```bash
+```bash testplane-project=cli
 testplane --help
 ```
 
@@ -332,7 +332,7 @@ npx testplane list-tests --config ./config.js --browser firefox --grep name --fo
 
 Use custom configuration file.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --config ./local.testplane.config.ts
 ```
 
@@ -340,7 +340,7 @@ testplane list-tests --config ./local.testplane.config.ts
 
 List tests only in specified browser.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --browser chrome
 ```
 
@@ -348,7 +348,7 @@ testplane list-tests --browser chrome
 
 List tests only in the specified set.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --set desktop
 ```
 
@@ -383,7 +383,7 @@ describe("test", () => {
 
 You can list tests inside "nested path" suite without listing tests inside "other path" suite with any of these variants:
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --grep "nested path"
 testplane list-tests --grep "with nested path"
 testplane list-tests --grep "test with nested path"
@@ -393,7 +393,7 @@ testplane list-tests --grep "test with nested path"
 
 List tests silently (without emitting events).
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --silent
 ```
 
@@ -401,7 +401,7 @@ testplane list-tests --silent
 
 Save listed tests to specified file.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --output-file "./tests.json"
 ```
 
@@ -413,7 +413,7 @@ List tests in specified format. Available formatters: `list` (default) and `tree
 
 List tests in `list` format.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --formatter "list"
 ```
 
@@ -474,7 +474,7 @@ Here, we got plain list of unique tests, where:
 
 List tests in `tree` format.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --formatter "tree"
 ```
 
@@ -553,7 +553,7 @@ Prints out information about options and commands. Testplane Plugins can add the
 
 For example, [html-reporter][html-reporter] adds `gui` command.
 
-```bash
+```bash testplane-project=cli
 testplane list-tests --help
 ```
 
@@ -577,7 +577,7 @@ Command to get all browsers from the config.
 
 For example,
 
-```
+```bash testplane-project=cli
 npx testplane list-browsers --type ids --format plain
 ```
 
@@ -587,7 +587,7 @@ npx testplane list-browsers --type ids --format plain
 
 Specify type of output data: browserId from config or browserName with browserVersion.
 
-```bash
+```bash testplane-project=cli
 testplane list-browsers --type tags
 ```
 
@@ -595,7 +595,7 @@ testplane list-browsers --type tags
 
 Specify format of output data: plain text or json.
 
-```bash
+```bash testplane-project=cli
 testplane list-browsers --format json
 ```
 
@@ -622,7 +622,7 @@ The following commands will provide corresponding result:
 
 Prints out information about the command and its options.
 
-```bash
+```bash testplane-project=cli
 testplane list-browsers --help
 ```
 
@@ -646,7 +646,7 @@ This command is used to retrieve all configuration values of Testplane, includin
 
 For example:
 
-```bash
+```bash testplane-project=cli
 npx testplane config --space 4
 ```
 
@@ -656,7 +656,7 @@ npx testplane config --space 4
 
 Specify the number of spaces used for formatting the human-readable output of the command.
 
-```bash
+```bash testplane-project=cli
 testplane config --space 4
 ```
 
@@ -664,7 +664,7 @@ testplane config --space 4
 
 Outputs information about the command and its options.
 
-```bash
+```bash testplane-project=cli
 testplane config --help
 ```
 

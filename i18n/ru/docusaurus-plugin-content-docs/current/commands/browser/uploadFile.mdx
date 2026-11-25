@@ -33,13 +33,13 @@ await browser.uploadFile(localPath);
 
 ## Примеры использования {/* #examples */}
 
-Пример загружает файл самого теста в ваш Selenium Grid и проверяет имя файла в поле загрузки.
+Пример загружает файл самого теста через ChromeDriver и проверяет имя файла в браузере.
 
-```javascript testplane=browser-upload-file suite=selenium
+```javascript testplane=browser-upload-file
 const assert = require("node:assert/strict");
 const path = require("node:path");
 
-it("uploadFile: select a local file on a Grid node", async ({ browser }) => {
+it("uploadFile: select a local file in Chrome", async ({ browser }) => {
     await browser.url("data:text/html,<input type=file>");
     const remotePath = await browser.uploadFile(__filename);
     await browser.$("input[type=file]").setValue(remotePath);

@@ -24,14 +24,20 @@ import Version from "../../_partials/specs/version.mdx";
     перейти на страницу, используйте команду [url](../url) перед восстановлением состояния.
 </Admonition>
 
-```typescript
+```typescript testplane=browser-restore-state-data fixture=browser-page
+const assert = require("node:assert/strict");
+
+await browser.execute(() => localStorage.setItem("theme", "dark"));
+const state = await browser.saveState();
+await browser.clearSession();
+
 await browser.restoreState({
-    path: "./stateDump.json",
-    data: stateDump,
-    cookies: true,
+    data: state,
+    cookies: false,
     localStorage: true,
-    sessionStorage: true,
+    sessionStorage: false,
 });
+assert.equal(await browser.execute(() => localStorage.getItem("theme")), "dark");
 ```
 
 ## Параметры команды {/* #parameters */}
@@ -95,17 +101,20 @@ await browser.restoreState({
 
 Восстановление данных из файла.
 
-```typescript
-it("test", async ({ browser }) => {
-    await browser.url("https://github.com/gemini-testing/testplane");
+```typescript testplane=browser-restore-state-file fixture=browser-saved-state
+const assert = require("node:assert/strict");
 
+it("restores only selected cookies from a file", async ({ browser }) => {
+    await browser.url("/");
     await browser.restoreState({
-        path: "./stateDump.json",
-        cookieFilter: ({ domain }) => domain === ".example.com",
+        path: `./artifacts/demo-${browser.sessionId}.json`,
+        cookieFilter: ({ name }) => name === "theme",
     });
-
-    // Reload page for see auth result.
-    await browser.refresh();
+    const cookies = await browser.getCookies();
+    assert.deepEqual(
+        cookies.map(({ name, value }) => [name, value]),
+        [["theme", "dark"]],
+    );
 });
 ```
 

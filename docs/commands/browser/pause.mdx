@@ -32,13 +32,16 @@ await browser.pause(milliseconds);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should pause the execution", async ({ browser }) => {
-    const starttime = new Date().getTime();
-    await browser.pause(3000);
-    const endtime = new Date().getTime();
+```javascript testplane=browser-pause fixture=browser-page
+const assert = require("node:assert/strict");
 
-    console.log(endtime - starttime); // outputs: 3000
+it("pauses execution for the requested duration", async ({ browser }) => {
+    let timerFired = false;
+    setTimeout(() => {
+        timerFired = true;
+    }, 50);
+    await browser.pause(100);
+    assert.equal(timerFired, true);
 });
 ```
 

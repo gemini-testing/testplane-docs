@@ -26,27 +26,18 @@ await browser.getCookies(names);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should return a cookie for me", async ({ browser }) => {
+```javascript testplane=browser-get-cookies fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("reads one cookie or all cookies", async ({ browser }) => {
     await browser.setCookies([
         { name: "test", value: "123" },
         { name: "test2", value: "456" },
     ]);
-
-    const testCookie = await browser.getCookies(["test"]);
-    console.log(testCookie);
-    // выведет:
-    // [
-    //    { name: 'test', value: '123' }
-    // ]
-
-    const allCookies = await browser.getCookies();
-    console.log(allCookies);
-    // выведет:
-    // [
-    //    { name: 'test', value: '123' },
-    //    { name: 'test2', value: '456' }
-    // ]
+    const [cookie] = await browser.getCookies("test");
+    assert.equal(cookie.value, "123");
+    const cookies = await browser.getCookies();
+    assert.deepEqual(cookies.map(({ name }) => name).sort(), ["test", "test2"]);
 });
 ```
 

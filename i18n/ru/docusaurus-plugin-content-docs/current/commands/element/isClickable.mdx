@@ -33,13 +33,17 @@ await browser.$(selector).isClickable();
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should detect if an element is clickable", async ({ browser }) => {
-    const el = await browser.$("#el");
-    let clickable = await el.isClickable();
-    console.log(clickable); // выведет: true или false
+```html testplane-html=element-html
+<button id="enable" onclick="document.querySelector('#save').disabled = false">Enable save</button>
+<button id="save" disabled onclick="this.disabled = true">Save</button>
+```
 
-    // подождем, когда на элемент можно будет кликнуть
-    await browser.waitUntil(() => el.isClickable());
-});
+```javascript testplane=element-is-clickable fixture=element-html
+const assert = require("node:assert/strict");
+
+const save = await browser.$("#save");
+assert.equal(await save.isClickable(), false);
+await browser.$("#enable").click();
+await browser.waitUntil(() => save.isClickable());
+assert.equal(await save.isClickable(), true);
 ```

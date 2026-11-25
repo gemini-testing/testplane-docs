@@ -25,13 +25,13 @@ await browser.scroll(x, y);
 
 ## Usage Examples {/* #examples */}
 
-```typescript
-it("should demonstrate the scroll command", async ({ browser }) => {
-    await browser.url("https://webdriver.io");
+```typescript testplane=browser-scroll fixture=browser-scroll
+const assert = require("node:assert/strict");
 
-    console.log(await browser.execute(() => window.scrollY)); // returns 0
+it("scrolls the page by 200 pixels", async ({ browser }) => {
+    assert.equal(await browser.execute(() => window.scrollY), 0);
     await browser.scroll(0, 200);
-    console.log(await browser.execute(() => window.scrollY)); // returns 200
+    await browser.waitUntil(async () => (await browser.execute(() => window.scrollY)) === 200);
 });
 ```
 

@@ -36,9 +36,7 @@ await browser.$(selector).$$(subSelector);
 
 ## Примеры использования {/* #examples */}
 
-**index.html**
-
-```html
+```html testplane-html=element-html
 <ul id="menu">
     <li>
         <a href="/">Home</a>
@@ -55,33 +53,24 @@ await browser.$(selector).$$(subSelector);
 </ul>
 ```
 
-**$$.js**
+```javascript testplane=element-find-all-css fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should get text a menu link", async ({ browser }) => {
-    const text = await browser.$("#menu");
+const menu = await browser.$("#menu");
+const items = await menu.$$("li");
+assert.equal(await items[2].$("a").getText(), "API");
+```
 
-    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+В функции-селекторе `this` указывает на текущий `HTMLUListElement`. Используйте обычную функцию, а не стрелочную. В TypeScript можно указать тип контекста: `function (this: HTMLUListElement)`.
+
+```javascript testplane=element-find-all-function fixture=element-html
+const assert = require("node:assert/strict");
+
+const menu = await browser.$("#menu");
+const items = await menu.$$(function () {
+    return this.querySelectorAll("li");
 });
-
-it("should get text a menu link - JS Function", async ({ browser }) => {
-    const text = await browser.$("#menu");
-
-    console.log(
-        await text
-            .$$(function () {
-                // Использовать здесь стрелочную функцию нельзя.
-                // Это Element – https://developer.mozilla.org/en-US/docs/Web/API/Element
-                // в этом конкретном примере – это HTMLUListElement
-                //
-                // TypeScript-пользователи могут сделать что-нибудь вроде:
-                // return (this as Element).querySelector('li')
-                return this.querySelectorAll("li"); // Element[]
-            })[2]
-            .$("a")
-            .getText(),
-    ); // выведет: "API"
-});
+assert.equal(await items[2].$("a").getText(), "API");
 ```
 
 ## Связанные команды

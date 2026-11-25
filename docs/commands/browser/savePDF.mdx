@@ -47,9 +47,15 @@ await browser.savePDF(filepath, {
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should save a PDF screenshot of the browser view", async ({ browser }) => {
-    await browser.savePDF("./some/path/screenshot.pdf");
+```javascript testplane=browser-save-pdf fixture=browser-file
+const assert = require("node:assert/strict");
+
+it("writes the current page as a PDF", async ({ browser }) => {
+    const fs = require("node:fs/promises");
+    const path = `./artifacts/page-${browser.sessionId}.pdf`;
+    await browser.savePDF(path);
+    const file = await fs.readFile(path);
+    assert.equal(file.subarray(0, 5).toString(), "%PDF-");
 });
 ```
 

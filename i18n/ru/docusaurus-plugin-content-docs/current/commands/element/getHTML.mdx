@@ -24,26 +24,14 @@ await browser.$(selector).getHTML(includeSelectorTag);
 
 ## Примеры использования {/* #examples */}
 
-**index.html**
-
-```javascript
-<div id="test">
-    <span>Lorem ipsum dolor amet</span>
-</div>
+```html testplane-html=element-html
+<div id="test"><span>Lorem ipsum dolor amet</span></div>
 ```
 
-**getHTML.js**
+```javascript testplane=element-get-html fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should get html for certain elements", async ({ browser }) => {
-    var outerHTML = await browser.$("#test").getHTML();
-    console.log(outerHTML);
-    // выведет:
-    // "<div id="test"><span>Lorem ipsum dolor amet</span></div>"
-
-    var innerHTML = await browser.$("#test").getHTML(false);
-    console.log(innerHTML);
-    // выведет:
-    // "<span>Lorem ipsum dolor amet</span>"
-});
+const elem = await browser.$("#test");
+assert.equal(await elem.getHTML(), '<div id="test"><span>Lorem ipsum dolor amet</span></div>');
+assert.equal(await elem.getHTML(false), "<span>Lorem ipsum dolor amet</span>");
 ```

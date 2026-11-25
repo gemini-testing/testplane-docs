@@ -1,0 +1,12 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Archive</title>
+<h1>Archive</h1>
+<button id="details">Load details</button>
+<output></output>
+<script>
+    document.querySelector("#details").onclick = async () => {
+        const result = await (await fetch("details.json")).json();
+        document.querySelector("output").textContent = result.edition;
+    };
+</script>

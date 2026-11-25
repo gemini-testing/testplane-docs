@@ -4,7 +4,7 @@
 
 This directive allows you to skip the test in a specific browser. For example, if you don't want to run the test in `IE8`:
 
-```javascript
+```javascript testplane-project=collection
 describe("feature", function () {
     testplane.skip.in("ie8", "it cannot work in this browser");
     it("nowaday functionality", function () {
@@ -17,7 +17,7 @@ When using the `testplane.skip.in` directive, you will see a message in the repo
 
 To skip the test runs without notifications in the report, you can pass a special flag `silent` to the helper as the third argument:
 
-```javascript
+```javascript testplane-project=collection
 testplane.skip.in("ie8", "skipReason", { silent: true });
 ```
 
@@ -25,7 +25,7 @@ testplane.skip.in("ie8", "skipReason", { silent: true });
 
 This directive allows you to run the test only in a specific browser, for example, in `Chrome`:
 
-```javascript
+```javascript testplane-project=collection
 describe("feature", function () {
     testplane.skip.notIn("chrome", "it should work only in Chrome");
     it("specific functionality", function () {
@@ -36,7 +36,7 @@ describe("feature", function () {
 
 Similarly, to avoid notifications in the report, you can pass a special flag `silent` to the helper as the third argument:
 
-```javascript
+```javascript testplane-project=collection
 testplane.skip.notIn("chrome", "skipReason", { silent: true });
 ```
 
@@ -44,11 +44,11 @@ testplane.skip.notIn("chrome", "skipReason", { silent: true });
 
 These directives allow you to run the test only in a specific browser, whose logic is the opposite of the `testplane.skip.in` and `testplane.skip.notIn` directives. Additionally, these helpers do not, by default, produce any notifications in the report:
 
-```javascript
+```javascript testplane-project=collection
 testplane.only.in("chrome"); // run the test only in Chrome
 ```
 
-```javascript
+```javascript testplane-project=collection
 testplane.only.notIn("ie8"); // run the test in all browsers except IE8
 ```
 
@@ -56,7 +56,7 @@ testplane.only.notIn("ie8"); // run the test in all browsers except IE8
 
 If you are introducing a new browser and need to run it only in a few tests while having thousands of them, using the `.skip.in` helper may be inconvenient. You can use the [passive][passive-option] browser option and the helper `.also.in`:
 
-```javascript
+```javascript testplane-project=collection
 testplane.also.in("ie8"); // run the test in the passive browser IE8
 ```
 

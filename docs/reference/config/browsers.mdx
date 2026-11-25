@@ -176,7 +176,7 @@ Testplane uses the current Docker CLI connection. `socketPath` specifies the soc
 
 Example configuration with optional container settings:
 
-```ts title="testplane.config.ts"
+```ts title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -1310,7 +1310,7 @@ type StateOpts = {
 
 Example of a valid configuration:
 
-```typescript
+```typescript testplane-project=config
 export = {
     stateOpts: {
         path: "stateDump.json",

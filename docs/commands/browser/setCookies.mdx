@@ -45,43 +45,19 @@ await browser.setCookies(cookies);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should set a cookie for the page", async ({ browser }) => {
+```javascript testplane=browser-set-cookies fixture=browser-page
+const assert = require("node:assert/strict");
+
+it("sets one cookie and a list of cookies", async ({ browser }) => {
     await browser.url("/");
-
-    // set a single cookie
-    await browser.setCookies({
-        name: "test1",
-        value: "one",
-        // Optional parameters:
-        // cookie path, defaults to "/"
-        //      path: '/foo',
-        // domain the cookie is visible to
-        // defaults to domain of the current document's URL in the browser context
-        //      domain: '.example.com',
-        // secure cookie flag, defaults to false
-        //      secure: true,
-        // HTTP-only cookie flag, defaults to false
-        //      httpOnly: true,
-        // expiry date of the cookie in seconds since the Unix epoch
-        //      expiry: 1551393875
-    });
-
-    // set multiple cookies
+    await browser.setCookies({ name: "test1", value: "one", path: "/" });
     await browser.setCookies([
         { name: "test2", value: "two" },
         { name: "test3", value: "three" },
     ]);
-
     const cookies = await browser.getCookies();
-
-    await console.log(cookies);
-    // outputs:
-    // [
-    //      { name: 'test1', value: 'one', domain: 'www.example.com' },
-    //      { name: 'test2', value: 'two', domain: 'www.example.com' },
-    //      { name: 'test3', value: 'three', domain: 'www.example.com' }
-    // ]
+    const values = Object.fromEntries(cookies.map(({ name, value }) => [name, value]));
+    assert.deepEqual(values, { test1: "one", test2: "two", test3: "three" });
 });
 ```
 

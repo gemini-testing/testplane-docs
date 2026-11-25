@@ -25,17 +25,19 @@ await browser.$(selector).dragAndDrop(target, { duration });
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate the dragAndDrop command", async ({ browser }) => {
-    const elem = await browser.$("#someElem");
-    const target = await browser.$("#someTarget");
+Drag the tile onto a target of the same size, then move it 100 pixels right and 200 pixels down.
 
-    // perform drag and drop to another element
-    await elem.dragAndDrop(target);
+```javascript testplane=element-drag-and-drop fixture=element-drag
+const assert = require("node:assert/strict");
 
-    // perform drag and drop relative to the current position
-    await elem.dragAndDrop({ x: 100, y: 200 });
-});
+const tile = await browser.$("#someElem");
+const target = await browser.$("#someTarget");
+await tile.dragAndDrop(target);
+assert.deepEqual(await tile.getLocation(), await target.getLocation());
+
+const { x, y } = await tile.getLocation();
+await tile.dragAndDrop({ x: 100, y: 200 });
+assert.deepEqual(await tile.getLocation(), { x: x + 100, y: y + 200 });
 ```
 
 ## References

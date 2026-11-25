@@ -30,29 +30,28 @@ await browser.url(url);
 
 **url.js**
 
-```javascript
-// переходим на URL
-await browser.url("https://webdriver.io");
+```javascript testplane=browser-navigate fixture=browser-page
+const assert = require("node:assert/strict");
 
-// получаем url
-console.log(await browser.getUrl()); // выведет: "https://webdriver.io"
+await browser.url("/navigation");
+assert.equal(new URL(await browser.getUrl()).pathname, "/navigation");
 ```
 
 **baseUrlResolutions.js**
 
-```javascript
-// Пусть baseUrl = http://example.com/site/ важно указывать слэш в конце
+```javascript testplane=browser-resolve-url fixture=browser-page
+const assert = require("node:assert/strict");
 
-// При указании полного URL-адреса итоговый URL будет https://webdriver.io
-await browser.url("https://webdriver.io");
+const { baseUrl } = await browser.getConfig();
+const absolute = new URL("/frame", baseUrl).href;
+await browser.url(absolute);
+assert.equal(await browser.getUrl(), absolute);
 
-// При указании URL-адреса без начального слэша
-// итоговый URL формируется относительно всего baseUrl: http://example.com/site/relative
 await browser.url("relative");
+assert.equal(await browser.getUrl(), new URL("relative", baseUrl).href);
 
-// При указании URL-адреса с начальным слэшом
-// итоговый URL формируется относительно корня baseUrl: http://example.com/rootRelative
 await browser.url("/rootRelative");
+assert.equal(await browser.getUrl(), new URL("/rootRelative", baseUrl).href);
 ```
 
 [base-url]: ../../../reference/config/browsers#base_url

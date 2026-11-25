@@ -6,285 +6,185 @@ import Admonition from "@theme/Admonition";
 
 [//]: # "TODO: add screencasts"
 
-<Admonition type="warning">
-Данный рецепт работает только при использовании _Chrome DevTools Protocol (CDP)_.
+<Admonition type="info">
 
-Читайте подробности в разделе «[Как использовать CDP в Testplane][how-to-use-cdp]»
+Примеры используют локальный Chrome и [CDP][how-to-use-cdp]. Колбэки [mock][mock] ниже рассчитаны на CDP: у реализации для WebDriver BiDi другой API ответа.
 
 </Admonition>
 
-В CDP имеются домены [Fetch][fetch] и [Network][network], с помощью которых можно получить полный доступ ко всем сетевым запросам и ответам. При использовании Webdriver-протокола нам бы пришлось писать отдельный proxy-сервер и весь трафик направлять через него.
+Демонстрационная страница новостей загружает логотип и скрипт. Ссылка **Archive** открывает новую вкладку. Каждый пример начинается в новой сессии; обращения к публичным сайтам не нужны.
 
-В _webdriverio_ для работы с сетевыми запросами существует метод [mock][mock], который использует API домена [Fetch][fetch].
+## Пример 1: возвращаем свой ответ {/* #example_1 */}
 
-С помощью этого метода мы можем:
+С `fetchResponse: false` можно вернуть свой ответ без запроса к исходному ресурсу. Адрес страницы при этом не меняется.
 
--   замокать запрос к ресурсу и вернуть свои данные;
--   отменить запрос, вернув необходимую ошибку;
--   модифицировать ответ от ресурса;
--   перенаправить с запрошенного ресурса на какой-то другой ресурс;
--   замокать ресурс и, например, собрать информацию о том, сколько раз этот ресурс вызывался и какой ответ он возвращал.
+```javascript testplane=guide-mock-response fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
 
-Давайте попробуем написать тесты с использованием этого API и покрыть разные кейсы. Сразу уточним, что все графические изображения с процессом выполнения тестов замедлены в 2 раза, так как тесты локально выполняются очень быстро и что-то разглядеть довольно проблематично.
-
-## Пример 1: мокаем запрос к google.com и возвращаем свой ответ {/* #example_1 */}
-
-```javascript
-it("should mock google.com", async function ({ browser }) {
-    // Мокаем поход на google.com
-    const mock = await browser.mock("https://google.com");
-
-    // Возвращаем строку "Hello, world!" вместо ответа от сайта.
-    // Опция "fetchResponse" отвечает за то, нужно ли делать запрос
-    // на замоканный ресурс, по умолчанию - true
-    mock.respond("Hello, world!", { fetchResponse: false });
-
-    await browser.url("https://google.com");
-});
+const story = await browser.mock("**/fixtures/guides/story.html");
+story.respond("Hello, world!", { fetchResponse: false, headers: { "Content-Type": "text/plain" } });
+await browser.url("/fixtures/guides/story.html");
+assert.equal(await browser.$("body").getText(), "Hello, world!");
 ```
 
-По графическому изображению видно, что мы вернули свой текст, при этом в строке браузера отображается как будто мы выполнили переход на _google.com._ Также видно, что мы не замокали фавиконку и она приехала снаружи. Этот же самый пример мы можем написать с использованием API puppeteer'а, для этого в _webdriverio_ реализована команда [getPuppeteer()][get-puppeteer]:
+В [Puppeteer][get-puppeteer] нужно ответить на нужный запрос, а остальные пропустить. В этом тесте открыта одна страница.
 
-```javascript
-it("should mock google.com using puppeteer api", async function ({ browser }) {
-    // Получаем инстанс puppeteer'а
-    const puppeteer = await browser.getPuppeteer();
+```javascript testplane=guide-puppeteer-response fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
 
-    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
-    const [page] = await puppeteer.pages();
-
-    // Активируем перехват всех запросов
-    await page.setRequestInterception(true);
-    page.on("request", async request => {
-        if (request.url() !== "https://google.com/") {
-            // Если урл запроса не матчится на https://google.com/,
-            // то выполняем запрос (т. е. не перехватываем его)
-            return request.continue();
-        }
-
-        // отвечаем своими данными
-        return request.respond({ body: "Hello, world!" });
-    });
-
-    // Здесь можно было бы вызвать и "page.goto('https://google.com')", но лучше вызывать "url",
-    // так как в большинстве плагинов есть обертки команды "url", добавляющие дополнительную
-    // логику. Например, в testplane добавляется урл в мету.
-    await browser.url("https://google.com");
-});
-```
-
-### Хардкорный вариант с использованием CDP напрямую {/* #hardcore_example */}
-
-А теперь представим, что в _puppeteer_ еще нет API для мока запросов, но это уже реализовано в домене [Fetch][fetch] CDP. В этом случае воспользуемся методом этого домена через общение с CDP-сессией напрямую. Для этого в _puppeteer_ есть метод [CDPSession.send()][cdp-session-send]:
-
-```javascript
-it("should mock google.com using cdp fetch domain", async function ({ browser }) {
-    // Получаем инстанс puppeteer'а
-    const puppeteer = await browser.getPuppeteer();
-
-    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
-    const [page] = await puppeteer.pages();
-
-    // Создаем CDP-сессию
-    const client = await page.target().createCDPSession();
-
-    // Включаем возможность перехватить запрос с помощью подписки на событие "requestPaused"
-    await client.send("Fetch.enable");
-
-    client.on("Fetch.requestPaused", event => {
-        const {
-            request: { url },
-            requestId,
-            responseHeaders,
-        } = event;
-
-        if (url !== "https://google.com/") {
-            // Если урл запроса не матчится на https://google.com/,
-            // то выполняем запрос (т. е. не перехватываем его)
-            return client.send("Fetch.continueRequest", { requestId });
-        }
-
-        // Подменяем ответ на свой и упаковываем его в base64
-        return client.send("Fetch.fulfillRequest", {
-            requestId,
-            responseCode: 200,
-            responseHeaders,
-            body: Buffer.from("Hello, world!", "utf8").toString("base64"),
-        });
-    });
-
-    await browser.url("https://google.com");
-});
-```
-
-Очевидно, что при использовании API _webdriverio_ для мока запросов код получается сильно короче, но API _webdriverio_ сильно ограничен и для более сложных кейсов необходимо использовать API puppeteer'а. При этом в самом puppeteer'е тоже может не быть API для каких-то новых методов или доменов CDP. Поэтому в редких случаях может пригодиться общение по CDP напрямую с помощью [CDPSession.send()][cdp-session-send].
-
-## Пример 2: отменяем запрос за логотипом гугла {/* #example_2 */}
-
-```javascript
-it("should abort request to logo on google.com", async function ({ browser }) {
-    // В качестве урла можно использовать маску
-    const mock = await browser.mock("https://www.google.com/images/**/*.png");
-
-    // Кидаем ошибку "ERR_FAILED" при загрузке ресурса, сматчившегося на маску мока
-    mock.abort("Failed");
-
-    await browser.url("https://google.com");
-});
-```
-
-По графическому изображению видно, что логотип не отобразился и в логе присутствует ошибка `net::ERR_FAILED`. Такое решение может быть удобно для отключения каких-то скриптов, которые мешают быстрому выполнению теста. Например, можно отключить сбор аналитики.
-
-## Пример 3: при загрузке google.com берем ответ из фикстуры {/* #example_3 */}
-
-```javascript
-it("should mock google.com and return answer from fixture", async function ({ browser }) {
-    // Мокаем поход на google.com
-    const mock = await browser.mock("https://google.com");
-
-    // Указываем путь, откуда нужно взять фикстуру, а с помощью
-    // "fetchResponse: false" говорим, что выполнять реальный поход не нужно
-    mock.respond("./fixtures/my-google.com.html", { fetchResponse: false });
-
-    await browser.url("https://google.com");
-});
-```
-
-По графическому изображению видно, что вместо выдачи _google.com_ отобразились данные из нашей фикстуры.
-
-## Пример 4: перенаправляем запрос с google.com на yandex.ru {/* #example_4 */}
-
-```javascript
-it("should redirect from google.com to yandex.ru", async function ({ browser }) {
-    // Мокаем поход на google.com
-    const mock = await browser.mock("https://google.com");
-
-    // Для редиректа необходимо просто указать урл
-    mock.respond("https://yandex.ru");
-
-    await browser.url("https://google.com");
-});
-```
-
-## Пример 5: модифицируем ответ от google.com в реальном времени {/* #example_5 */}
-
-В _puppeteer_ все еще не реализован API для удобного изменения ответа. Про это есть [issue#1191](https://github.com/puppeteer/puppeteer/issues/1191). Но такая возможность уже поддержана в CDP. Webdriverio использует CDP напрямую через [puppeteer][puppeteer] и, соответственно, в _webdriverio_ это работает.
-
-Заменим в ответе от _google.com_ все строки содержащие `Google` на `Yandex`:
-
-```javascript
-it("should modify response from google.com", async function ({ browser }) {
-    // Тут нужно мокать именно с www, так как переход на google.com
-    // возвращает ответ 301 без body и перенаправляет нас на www
-    const mock = await browser.mock("https://www.google.com");
-
-    mock.respond(req => {
-        // С помощью регулярки заменяем "Google" на "Yandex"
-        return req.body.replace(/Google/g, "Yandex");
-    });
-
-    await browser.url("https://google.com");
-});
-```
-
-Кроме этого, мы можем видоизменять ответы от заранее неизвестных источников. Например, давайте модифицируем все скрипты, загружаемые на _google.com:_
-
-```javascript
-it("should modify response from google.com", async function ({ browser }) {
-    // Первым аргументом указываем, что будем перехватывать абсолютно все запросы
-    const mock = await browser.mock("**", {
-        headers: headers => {
-            // Фильтруем только запросы, в которых заголовок "content-type"
-            // содержит значения "text/javascript" или "application/javascript"
-            return (
-                headers["content-type"] &&
-                /^(text|application)\/javascript/.test(headers["content-type"])
-            );
-        },
-    });
-
-    mock.respond(req => {
-        // В конец каждого скрипта добавляем свой console.log
-        return (req.body += `\nconsole.log("This script was modified in realtime");`);
-    });
-
-    await browser.url("https://google.com");
-});
-```
-
-## Пример 6: перехватываем все запросы к ресурсу yandex.ru и собираем список всех загружаемых урлов {/* #example_6 */}
-
-Предположим, что нам необходимо собрать список всех урлов, которые загружаются на странице. Используя эту информацию мы могли бы определить, есть ли у нас походы за внешними ресурсами или в соседние сервисы, которые мы никак не контролируем. Это означает, что они в любой момент могут не ответить и сломать нам тесты. Как мог бы выглядеть наш код:
-
-```javascript
-it("should mock yandex.ru and log all loaded urls", async function ({ browser }) {
-    // Перехватываем абсолютно все запросы
-    const mock = await browser.mock("**");
-
-    await browser.url("https://yandex.ru");
-
-    // mock.calls содержит не только информацию о посещенном урле,
-    // Но также ответ от источника, хэдеры запроса, хэдеры ответа и т. д.
-    const urls = mock.calls.map(({ url }) => url);
-
-    console.log("visited urls:", JSON.stringify(urls, null, "\t"));
-    console.log("count of visited urls:", urls.length);
-});
-```
-
-Скорее всего, ваши тесты сложнее этих примеров и у вас будут различные клики в элементы, которые открываются в новых табах. В таких случаях предыдущий код ничего не узнает об открытии новых вкладок, а также о том, что в них тоже нужно собрать список урлов. Поэтому для такого случая нужно использовать API puppeteer'а:
-
-```javascript
-it("should mock yandex.ru and log all loaded urls (using puppeteer)", async function ({ browser }) {
-    // В этой переменной будем накапливать список всех урлов
-    const urls = [];
-
-    // Хелпер, который на вход ожидает инстанс страницы из puppeteer:
-    // https://pptr.dev/#?product=Puppeteer&version=v10.1.0&show=api-class-page
-    function urlsHandler(page) {
-        // Подписываемся на все запросы, которые будут происходить на переданной странице
-        page.on("request", req => {
-            urls.push(req.url());
-        });
+const puppeteer = await browser.getPuppeteer();
+const [page] = await puppeteer.pages();
+await page.setRequestInterception(true);
+page.on("request", request => {
+    if (new URL(request.url()).pathname === "/fixtures/guides/story.html") {
+        return request.respond({ contentType: "text/plain", body: "Hello, world!" });
     }
-
-    // Получаем инстанс puppeteer'а
-    const puppeteer = await browser.getPuppeteer();
-
-    // Получаем все открытые страницы на текущий момент
-    const pages = await puppeteer.pages();
-
-    // Подписываемся на все запросы, которые будут происходить на этих страницах
-    await Promise.all(pages.map(p => urlsHandler(p)));
-
-    // Подписываемся на открытие новой страницы
-    puppeteer.on("targetcreated", async target => {
-        // Проверяем, что открытый таргет, действительно, является новой страницей
-        const page = await target.page();
-
-        if (!page) {
-            return;
-        }
-
-        // Так как новая страница открывается уже с каким-то урлом,
-        // то его необходимо записывать явно (подписка на запрос его не обнаружит)
-        urls.push(target.url());
-
-        // Подписываемся на все запросы, которые будут происходить на новой вкладке
-        urlsHandler(page);
-    });
-
-    await browser.url("https://yandex.ru");
-
-    // Находим первым элемент в списке сервисов (на тот момент была страница с футболом)
-    const elem = await browser.$(".services-new__list-item > a");
-
-    // Выполняем клик в сервис, который открывается в новой вкладке
-    await elem.click();
-
-    console.log("visited urls:", JSON.stringify(urls, null, "\t"));
-    console.log("count of visited urls:", urls.length);
+    return request.continue();
 });
+
+await browser.url("/fixtures/guides/story.html");
+assert.equal(await browser.$("body").getText(), "Hello, world!");
+await page.setRequestInterception(false);
+```
+
+### Отправляем команды CDP напрямую {/* #hardcore_example */}
+
+Для низкоуровневого управления используйте [домен Fetch][fetch] протокола CDP. Маска URL приостанавливает только запросы страницы новостей; `Fetch.fulfillRequest` принимает тело в base64.
+
+```javascript testplane=guide-cdp-response fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const [page] = await (await browser.getPuppeteer()).pages();
+const client = await page.target().createCDPSession();
+client.on("Fetch.requestPaused", ({ requestId }) =>
+    client.send("Fetch.fulfillRequest", {
+        requestId,
+        responseCode: 200,
+        responseHeaders: [{ name: "Content-Type", value: "text/plain" }],
+        body: Buffer.from("Hello, world!").toString("base64"),
+    }),
+);
+await client.send("Fetch.enable", { patterns: [{ urlPattern: "*/fixtures/guides/story.html" }] });
+
+await browser.url("/fixtures/guides/story.html");
+assert.equal(await browser.$("body").getText(), "Hello, world!");
+await client.detach();
+```
+
+## Пример 2: отменяем запрос за логотипом {/* #example_2 */}
+
+Если запрос изображения завершился ошибкой, у изображения нет собственной ширины, даже когда загрузка уже завершена.
+
+```javascript testplane=guide-mock-abort fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const logo = await browser.mock("**/fixtures/guides/logo.svg");
+logo.abort("Failed");
+await browser.url("/fixtures/guides/story.html");
+const image = await browser.$("#logo");
+assert.equal(await image.getProperty("complete"), true);
+assert.equal(await image.getProperty("naturalWidth"), 0);
+```
+
+## Пример 3: возвращаем HTML из фикстуры {/* #example_3 */}
+
+В режиме CDP `respond` может прочитать файл относительно рабочего каталога тестового процесса. Вместо страницы новостей вернётся HTML архива.
+
+```javascript testplane=guide-mock-file fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const story = await browser.mock("**/fixtures/guides/story.html");
+story.respond("./fixtures/site/guides/archive.html", {
+    fetchResponse: false,
+    headers: { "Content-Type": "text/html" },
+});
+await browser.url("/fixtures/guides/story.html");
+assert.equal(await browser.$("h1").getText(), "Archive");
+```
+
+## Пример 4: перенаправляем запрос на другую страницу {/* #example_4 */}
+
+Если передать CDP-моку абсолютный URL, браузер выполнит редирект. В отличие от подмены тела ответа, при этом меняется адрес страницы.
+
+```javascript testplane=guide-mock-redirect fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const story = await browser.mock("**/fixtures/guides/story.html");
+const archive = new URL("/fixtures/guides/archive.html", await browser.getUrl());
+story.respond(archive.href);
+
+await browser.url("/fixtures/guides/story.html");
+assert.equal(await browser.getUrl(), archive.href);
+assert.equal(await browser.$("h1").getText(), "Archive");
+```
+
+## Пример 5: изменяем исходный ответ {/* #example_5 */}
+
+Чтобы сохранить остальную страницу, изменим только нужный текст в исходном теле ответа.
+
+```javascript testplane=guide-mock-edit-response fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const story = await browser.mock("**/fixtures/guides/story.html");
+story.respond(({ body }) => body.replaceAll("Daily report", "Preview report"));
+await browser.url("/fixtures/guides/story.html");
+assert.equal(await browser.$("h1").getText(), "Preview report");
+```
+
+Можно выбрать ответы и по типу содержимого. Добавим инструкцию только в JavaScript-файлы и проверим, что исходный код скрипта тоже отработал.
+
+```javascript testplane=guide-mock-edit-scripts fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const scripts = await browser.mock("**/fixtures/guides/**", {
+    headers: headers =>
+        Object.entries(headers).some(
+            ([name, value]) =>
+                name.toLowerCase() === "content-type" && value.includes("javascript"),
+        ),
+});
+scripts.respond(({ body }) => body + "\ndocument.body.dataset.preview = 'enabled';");
+
+await browser.url("/fixtures/guides/story.html");
+assert.equal(await browser.$("#edition").getText(), "Morning");
+assert.equal(await browser.$("body").getAttribute("data-preview"), "enabled");
+```
+
+## Пример 6: записываем запросы на нескольких страницах {/* #example_6 */}
+
+Сам по себе мок записывает подходящие запросы, не изменяя ответы. Проверяйте ожидаемые ресурсы, не полагаясь на их порядок или общее количество запросов браузера.
+
+```javascript testplane=guide-mock-request-list fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const traffic = await browser.mock("**/fixtures/guides/**");
+await browser.url("/fixtures/guides/story.html");
+const paths = traffic.calls.map(({ url }) => new URL(url).pathname);
+assert.ok(paths.includes("/fixtures/guides/story.html"));
+assert.ok(paths.includes("/fixtures/guides/edition.js"));
+assert.ok(paths.includes("/fixtures/guides/logo.svg"));
+```
+
+Puppeteer отправляет события запросов для каждой страницы отдельно. Подпишемся на запросы открытых страниц, а затем и новой вкладки архива, прежде чем вызвать в ней следующий запрос.
+
+```javascript testplane=guide-puppeteer-request-list fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
+
+const puppeteer = await browser.getPuppeteer();
+const paths = new Set();
+const track = page => page.on("request", req => paths.add(new URL(req.url()).pathname));
+for (const page of await puppeteer.pages()) track(page);
+
+await browser.url("/fixtures/guides/story.html");
+const opened = puppeteer.waitForTarget(target => target.url().endsWith("/archive.html"));
+await browser.$("a[target='_blank']").click();
+const archive = await (await opened).page();
+track(archive);
+await archive.click("#details");
+await archive.waitForFunction(() => document.querySelector("output").textContent === "Evening");
+
+assert.ok(paths.has("/fixtures/guides/edition.js"));
+assert.ok(paths.has("/fixtures/guides/details.json"));
 ```
 
 ## Пример 7: мокаем ресурс google.com во всех тестах Хрома {/* #example_7 */}

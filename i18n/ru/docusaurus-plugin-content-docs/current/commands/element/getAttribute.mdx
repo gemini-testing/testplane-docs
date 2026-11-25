@@ -24,22 +24,17 @@ await browser.$(selector).getAttribute(attributeName);
 
 ## Примеры использования {/* #examples */}
 
-**index.html**
-
-```javascript
+```html testplane-html=element-html
 <form action="/submit" method="post" class="loginForm">
-    <input type="text" name="name" placeholder="username"></input>
-    <input type="text" name="password" placeholder="password"></input>
-    <input type="submit" name="submit" value="submit"></input>
+    <input type="text" name="name" placeholder="username" />
+    <input type="password" name="password" placeholder="password" />
+    <input type="submit" value="Submit" />
 </form>
 ```
 
-**getAttribute.js**
+```javascript testplane=element-get-attribute fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should demonstrate the getAttribute command", async ({ browser }) => {
-    const form = await browser.$("form");
-    const attr = await form.getAttribute("method");
-    console.log(attr); // выведет: "post"
-});
+const form = await browser.$("form");
+assert.equal(await form.getAttribute("method"), "post");
 ```

@@ -36,9 +36,7 @@ await browser.$(selector).$$(subSelector);
 
 ## Usage Examples {/* #examples */}
 
-**index.html**
-
-```html
+```html testplane-html=element-html
 <ul id="menu">
     <li>
         <a href="/">Home</a>
@@ -55,33 +53,24 @@ await browser.$(selector).$$(subSelector);
 </ul>
 ```
 
-**$$.js**
+```javascript testplane=element-find-all-css fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should get text of a menu link", async ({ browser }) => {
-    const text = await browser.$("#menu");
+const menu = await browser.$("#menu");
+const items = await menu.$$("li");
+assert.equal(await items[2].$("a").getText(), "API");
+```
 
-    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
+The function selector receives the current `HTMLUListElement` as `this`. Use a regular function, not an arrow function. In TypeScript, you can type the receiver as `function (this: HTMLUListElement)`.
+
+```javascript testplane=element-find-all-function fixture=element-html
+const assert = require("node:assert/strict");
+
+const menu = await browser.$("#menu");
+const items = await menu.$$(function () {
+    return this.querySelectorAll("li");
 });
-
-it("should get text of a menu link - JS Function", async ({ browser }) => {
-    const text = await browser.$("#menu");
-
-    console.log(
-        await text
-            .$$(function () {
-                // Arrow function cannot be used here.
-                // This is Element – https://developer.mozilla.org/en-US/docs/Web/API/Element
-                // in this specific example – this is HTMLUListElement
-                //
-                // TypeScript users can do something like:
-                // return (this as Element).querySelector('li')
-                return this.querySelectorAll("li"); // Element[]
-            })[2]
-            .$("a")
-            .getText(),
-    ); // outputs: "API"
-});
+assert.equal(await items[2].$("a").getText(), "API");
 ```
 
 ## Related Commands

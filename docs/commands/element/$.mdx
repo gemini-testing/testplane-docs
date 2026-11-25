@@ -40,9 +40,7 @@ await browser.$(selector);
 
 ## Usage Examples {/* #examples */}
 
-**index.html**
-
-```html
+```html testplane-html=element-html
 <ul id="menu">
     <li>
         <a href="/">Home</a>
@@ -59,40 +57,39 @@ await browser.$(selector);
 </ul>
 ```
 
+```javascript testplane=element-find-css fixture=element-html
+const assert = require("node:assert/strict");
+
+const menu = await browser.$("#menu");
+const link = await menu.$("li:nth-child(3) a");
+assert.equal(await link.getText(), "API");
+```
+
+The function selector receives the current `HTMLLIElement` as `this`. Use a regular function, not an arrow function. In TypeScript, you can type the receiver as `function (this: HTMLLIElement)`.
+
+```javascript testplane=element-find-function fixture=element-html
+const assert = require("node:assert/strict");
+
+const item = await browser.$("#menu").$$("li")[2];
+const link = await item.$(function () {
+    return this.querySelector("a");
+});
+assert.equal(await link.getText(), "API");
+```
+
+You can also pass the active element reference returned by the protocol:
+
+```javascript testplane=element-find-active fixture=element-html
+const assert = require("node:assert/strict");
+
+await browser.$("#menu a").execute(link => link.focus());
+const active = await browser.getActiveElement();
+assert.equal(await browser.$(active).getTagName(), "a");
+```
+
+The following example is for Android with Espresso, not a web browser:
+
 ```javascript
-it("should get text of a menu link - JS Function", async ({ browser }) => {
-    const text = await browser.$("#menu");
-
-    console.log(
-        await text
-            .$$("li")[2]
-            .$(function () {
-                // Arrow function cannot be used here.
-                // This is Element – https://developer.mozilla.org/en-US/docs/Web/API/Element
-                // in this specific example – this is HTMLLIElement
-                //
-                // TypeScript users can do something like:
-                // return (this as Element).querySelector('a')
-                return this.querySelector("a"); // Element
-            })
-            .getText(),
-    ); // outputs: "API"
-});
-
-it("should get text of a menu link", async ({ browser }) => {
-    const text = await browser.$("#menu");
-
-    console.log(await text.$$("li")[2].$("a").getText()); // outputs: "API"
-});
-
-it("should allow to convert protocol result of an element into a WebdriverIO element", async ({
-    browser,
-}) => {
-    const activeElement = await browser.getActiveElement();
-
-    console.log(await browser.$(activeElement).getTagName()); // outputs the active element
-});
-
 it("should use Android's DataMatcher or ViewMatcher selector", async ({ browser }) => {
     const menuItem = await browser.$({
         name: "hasEntry",

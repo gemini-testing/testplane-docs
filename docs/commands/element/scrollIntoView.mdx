@@ -43,16 +43,16 @@ await browser.$(selector).scrollIntoView({ behavior, block, inline });
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate the scrollIntoView command", async ({ browser }) => {
-    const elem = await browser.$("#myElement");
+Scroll to an element below the fold, then center it in the viewport.
 
-    // scroll the element into view
-    await elem.scrollIntoView();
+```javascript testplane=element-scroll-into-view fixture=element-scroll
+const assert = require("node:assert/strict");
 
-    // scroll the element to the center of the viewport
-    await elem.scrollIntoView({ block: "center", inline: "center" });
-});
+const elem = await browser.$("#myElement");
+assert.equal(await elem.isDisplayedInViewport(), false);
+await elem.scrollIntoView();
+assert.equal(await elem.isDisplayedInViewport(), true);
+await elem.scrollIntoView({ block: "center", inline: "center" });
 ```
 
 ## Related Commands {/* #related */}

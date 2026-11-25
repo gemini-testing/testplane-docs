@@ -40,95 +40,65 @@ await browser.$(selector).click({ button, x, y, skipRelease });
 
 ### Example 1
 
-**example-1.html**
-
-```javascript
-<button id="myButton" onclick="document.getElementById('someText').innerHTML='I was clicked'">Click me</button>
+```html testplane-html=element-html
+<button id="myButton" onclick="document.querySelector('#someText').textContent = 'I was clicked'">
+    Click me
+</button>
 <div id="someText">I was not clicked</div>
 ```
 
-**click-1.js**
+```javascript testplane=element-click fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should demonstrate the click command", async ({ browser }) => {
-    const myButton = await browser.$("#myButton");
-    await myButton.click();
-
-    const myText = await browser.$("#someText");
-    const text = await myText.getText();
-
-    assert.equal(text, "I was clicked"); // true
-});
+await browser.$("#myButton").click();
+assert.equal(await browser.$("#someText").getText(), "I was clicked");
 ```
 
-**example-1.js**
+To follow each link in a menu of same-page anchors:
 
-```javascript
-it("should fetch menu links and visit each page", async ({ browser }) => {
-    const links = await browser.$$("#menu a");
+```html testplane-html=element-links
+<nav id="menu"><a href="#guide">Guide</a> <a href="#api">API</a></nav>
+<h2 id="guide">Guide</h2>
+<h2 id="api">API</h2>
+```
 
-    for (let link of links) {
-        await link.click();
-    }
-});
+```javascript testplane=element-click-links fixture=element-links
+const assert = require("node:assert/strict");
+
+const links = await browser.$$("#menu a");
+assert.equal(links.length, 2);
+for (const link of links) {
+    const href = await link.getAttribute("href");
+    await link.click();
+    assert.equal(new URL(await browser.getUrl()).hash, href);
+}
 ```
 
 ### Example 2
 
-**example-2.html**
-
-```javascript
-<button id="myButton">Click me</button>
+```html testplane-html=element-click-offset
+<button id="myButton" style="width: 120px">Click me</button>
 ```
 
-**example-2.js**
+Click 30 pixels to the right of the button’s center:
 
-```javascript
-it("should demonstrate a click using an offset", async ({ browser }) => {
-    const myButton = await browser.$("#myButton");
-
-    // Click 30 horizontal pixels
-    // from the button's position (from the center of the element)
-    await myButton.click({ x: 30 });
-});
+```javascript testplane=element-click-offset fixture=element-click-offset
+await browser.$("#myButton").click({ x: 30 });
 ```
 
 ### Example 3
 
-**example-3.html**
-
-```javascript
-<button id="myButton">Click me</button>
+```html testplane-html=element-click-right
+<button id="myButton" style="width: 120px; height: 100px">Click me</button>
 ```
 
-**example-3.js**
+Right-click using a name or a number. The last call skips `releaseActions`:
 
-```javascript
-it("should demonstrate a right click passed as string", async ({ browser }) => {
-    const myButton = await browser.$("#myButton");
-
-    // Open context menu at the button's location
-    await myButton.click({ button: "right" });
-});
-
-it("should demonstrate a right click passed as number while adding an offset", async ({
-    browser,
-}) => {
-    const myButton = await browser.$("#myButton");
-
-    // Open context menu 30 horizontal and 40 vertical pixels
-    // from the button's position (from the center of the element)
-    await myButton.click({ button: 2, x: 30, y: 40 });
-});
-
-it("should skip sending releaseAction command that causes unexpected alert closure", async ({
-    browser,
-}) => {
-    const myButton = await browser.$("#myButton");
-
-    // Skip sending releaseActions
-    await myButton.click({ button: 2, x: 30, y: 40, skipRelease: true });
-});
+```javascript testplane=element-click-right fixture=element-click-right
+const button = await browser.$("#myButton");
+await button.click({ button: "right" });
+await button.click({ button: 2, x: 30, y: 40 });
+await button.click({ button: 2, x: 30, y: 40, skipRelease: true });
 ```
 
 ## References

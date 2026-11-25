@@ -12,20 +12,24 @@ await browser.mockRestoreAll();
 
 ## Примеры использования {/* #examples */}
 
-```typescript
-it("should restore all mocks", async ({ browser }) => {
-    const googleMock = await browser.mock("https://google.com/");
-    googleMock.respond("https://webdriver.io");
-    const wdioMock = await browser.mock("https://webdriver.io");
-    wdioMock.respond("http://json.org");
+```typescript testplane=browser-mock-restore-all fixture=browser-mock
+const assert = require("node:assert/strict");
 
-    await browser.url("https://google.com/");
-    console.log(await browser.getTitle()); // JSON
+it("removes response overrides for both requests", async ({ browser }) => {
+    const items = await browser.mock("/api/items");
+    const other = await browser.mock("/api/other");
+    await items.respond({ source: "fixture" });
+    await other.respond({ source: "fixture" });
+
+    const sources = () =>
+        browser.execute(async () => {
+            const responses = await Promise.all([fetch("/api/items"), fetch("/api/other")]);
+            return Promise.all(responses.map(async response => (await response.json()).source));
+        });
+    assert.deepEqual(await sources(), ["fixture", "fixture"]);
 
     await browser.mockRestoreAll();
-
-    await browser.url("https://google.com/");
-    console.log(await browser.getTitle()); // Google
+    assert.deepEqual(await sources(), ["original", "redirected"]);
 });
 ```
 

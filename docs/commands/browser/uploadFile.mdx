@@ -32,13 +32,13 @@ await browser.uploadFile(localPath);
 
 ## Usage Examples {/* #examples */}
 
-The example uploads the test file itself to your Selenium Grid and checks its name in the file input.
+The example uses ChromeDriver to upload the test file itself and checks the file name in the browser.
 
-```javascript testplane=browser-upload-file suite=selenium
+```javascript testplane=browser-upload-file
 const assert = require("node:assert/strict");
 const path = require("node:path");
 
-it("uploadFile: select a local file on a Grid node", async ({ browser }) => {
+it("uploadFile: select a local file in Chrome", async ({ browser }) => {
     await browser.url("data:text/html,<input type=file>");
     const remotePath = await browser.uploadFile(__filename);
     await browser.$("input[type=file]").setValue(remotePath);

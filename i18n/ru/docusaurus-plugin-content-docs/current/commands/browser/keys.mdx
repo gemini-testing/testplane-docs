@@ -28,13 +28,17 @@ await browser.keys(value);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("copies text out of active element", async ({ browser }) => {
-    // копируем текст из элемента ввода
-    await browser.$("#username").setValue("anonymous");
+```javascript testplane=browser-keys fixture=browser-input
+const assert = require("node:assert/strict");
 
-    await browser.keys(["Meta", "a"]);
-    await browser.keys(["Meta", "c"]);
+it("replaces the selected text", async ({ browser }) => {
+    const modifier = browser.capabilities.platformName.toLowerCase().includes("mac")
+        ? "Meta"
+        : "Control";
+    await browser.$("#username").setValue("anonymous");
+    await browser.keys([modifier, "a"]);
+    await browser.keys("guest");
+    assert.equal(await browser.$("#username").getValue(), "guest");
 });
 ```
 

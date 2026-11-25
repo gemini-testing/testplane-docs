@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
     existsSync,
     mkdirSync,
@@ -86,18 +87,160 @@ test("updates source, removes obsolete files, and produces deterministic output"
     assert.equal(existsSync(path.join(f.root, `${output}/chrome/replacement.testplane.js`)), false);
 });
 
-test("selects Selenium explicitly and counts multiple top-level tests without counting strings or comments", t => {
+test("rejects an identical full test title in different generated files before launching Chrome", t => {
+    const f = fixture(t);
+    f.write("docs/other.mdx", fence(code, "testplane=different"));
+    const run = f.generate();
+    assert.equal(run.status, 1, run.stdout);
+    assert.match(run.stderr, /duplicate.*title.*works/i);
+});
+
+test("counts multiple Chrome tests without counting strings or comments", t => {
     const f = fixture(t);
     f.write(
         page,
         fence(
             `${code}// it('not a test')\nconst text = "it('not a test')";\nit("second", () => {});\n`,
-            "testplane=download suite=selenium",
+            "testplane=multiple",
         ),
     );
     assert.equal(f.generate().status, 0);
-    assert.equal(f.manifest()[0].test, "generated/selenium/download.testplane.js");
+    assert.equal(f.manifest()[0].test, "generated/chrome/multiple.testplane.js");
     assert.equal(f.manifest()[0].testCount, 2);
+});
+
+test("runs a short typed example with its own documented HTML and fixture", async t => {
+    const f = fixture(t);
+    const html = "<h1>from the docs</h1>";
+    const source =
+        'const assert = require("node:assert/strict");\nconst title: string = browser.title;\nassert.equal(title, "<h1>from the docs</h1>");\n';
+    f.write(
+        page,
+        fence(html + "\n", "testplane-html=unit-page", "html") +
+            fence(source, "testplane=hello fixture=unit-page", "ts"),
+    );
+    f.write(`${harness}/fixtures/unit.cjs`, 'exports.htmlVariants = ["page"];\n');
+    f.write(
+        `${harness}/fixtures/document.cjs`,
+        readFileSync(new URL("../fixtures/document.cjs", import.meta.url), "utf8"),
+    );
+    const result = f.generate();
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(
+        f
+            .manifest()
+            .map(e => e.language)
+            .sort(),
+        ["html", "ts"],
+    );
+    assert.equal(new Set(f.manifest().map(e => e.test)).size, 1);
+    // Drive the generated hooks and callback; a stale copy of the documented input cannot pass.
+    const exercise = () =>
+        spawnSync(
+            process.execPath,
+            [
+                "-e",
+                `
+        const context = {browser: {url: async () => {}, execute: async (_, html) => { context.browser.title = html; }}};
+        let before, after, body;
+        global.describe = (_, fn) => fn();
+        global.beforeEach = fn => {before = fn};
+        global.afterEach = fn => {after = fn};
+        global.it = (_, fn) => {body = fn};
+        require(${JSON.stringify(path.join(f.root, output, "chrome/hello.testplane.js"))});
+        (async () => { await before(context); await body(context); if (after) await after(context); })();
+    `,
+            ],
+            { encoding: "utf8" },
+        );
+    assert.equal(exercise().status, 0);
+    f.write(
+        page,
+        fence("<h1>broken</h1>\n", "testplane-html=unit-page", "html") +
+            fence(source, "testplane=hello fixture=unit-page", "ts"),
+    );
+    assert.equal(f.generate().status, 0);
+    assert.notEqual(exercise().status, 0);
+    f.write(
+        page,
+        fence(html + "\n", "testplane-html=unit-page", "html") +
+            fence(source, "testplane=hello fixture=unit-page", "ts"),
+    );
+    f.write(`${harness}/fixtures/unit.cjs`, "exports.setup = () => {};\n");
+    assert.equal(f.generate().status, 0);
+    assert.match(exercise().stderr, /does not accept documented HTML/);
+});
+
+test("an empty or erased fragment is not a Chrome test", t => {
+    const f = fixture(t);
+    f.write(`${harness}/fixtures/unit.cjs`, "exports.setup = async () => {};\n");
+    for (const fragment of [
+        "// just a comment",
+        "type Page = { title: string };",
+        'import type { ConfigInput } from "testplane";',
+    ]) {
+        f.write(page, fence(fragment + "\n", "testplane=empty fixture=unit-page", "ts"));
+        const result = f.generate();
+        assert.equal(result.status, 1, result.stdout);
+        assert.match(result.stderr, /executable statement/i);
+    }
+});
+
+test("rejects unconsumed HTML and conflicting localized fixture inputs", t => {
+    const f = fixture(t);
+    const markup = fence("<h1>EN</h1>\n", "testplane-html=unit-page", "html");
+    f.write(page, markup);
+    assert.match(f.generate().stderr, /unused|no example/i);
+    f.write(`${harness}/fixtures/unit.cjs`, "exports.setup = async () => {};\n");
+    const js = fence(code, "testplane=example fixture=unit-page");
+    f.write(page, markup + js);
+    f.write(translation, markup.replace("EN", "RU") + js);
+    assert.match(f.generate().stderr, /conflict/i);
+});
+
+test("counts static nested suites and scoped hooks, not hidden tests inside a callback", t => {
+    const f = fixture(t);
+    const group =
+        'describe("a", () => { beforeEach(async () => {}); describe("b", () => { it("works", () => {}); }); });\n';
+    f.write(`${harness}/fixtures/unit.cjs`, "exports.setup = async () => {};\n");
+    f.write(page, fence(group, "testplane=group fixture=unit-page"));
+    const run = f.generate();
+    assert.equal(run.status, 0, run.stderr);
+    assert.equal(f.manifest()[0].testCount, 1);
+    f.write(
+        page,
+        fence(
+            group.replace('it("works", () => {});', 'it.skip("works", () => {});'),
+            "testplane=group fixture=unit-page",
+        ),
+    );
+    assert.equal(f.generate().status, 1);
+});
+
+test("a reviewed Grid-only example never produces a test file or a runtime manifest entry", t => {
+    const f = fixture(t);
+    const gridPage = "docs/grid.mdx";
+    const meta = "testplane=grid-only suite=selenium";
+    f.write(gridPage, fence(code, meta));
+    const approval = {
+        exampleId: "grid-only",
+        sha256: createHash("sha256").update(code.trimEnd()).digest("hex"),
+        reason: "Requires managed downloads on a Grid node.",
+    };
+    f.write(`${harness}/non-executable.json`, JSON.stringify([approval]));
+    const approved = f.generate();
+    assert.equal(approved.status, 0, approved.stderr);
+    assert.deepEqual(
+        f.manifest().map(entry => entry.exampleId),
+        ["example"],
+    );
+    assert.equal(existsSync(path.join(f.root, output, "selenium")), false);
+
+    f.write(gridPage, fence(code.replace("2 + 2, 4", "2 + 2, 5"), meta));
+    const changed = f.generate();
+    assert.equal(changed.status, 1, changed.stdout);
+    assert.match(changed.stderr, /docs\/grid\.mdx:\d+.*sha256/i);
+    assert.equal(existsSync(path.join(f.root, output, "manifest.json")), false);
 });
 
 test("extracts nested MDX fences and supports quoted metadata without confusing the title", t => {
@@ -206,10 +349,17 @@ for (const [name, value, meta, language, message] of [
         "javascript",
         /top.level|it\(/i,
     ],
-    ["unsupported language", code, "testplane=example", "typescript", /language/i],
+    ["unsupported language", code, "testplane=example", "bash", /language/i],
     ["path traversal", code, "testplane=../../escape", "javascript", /identifier|id/i],
     ["missing id", code, "testplane", "javascript", /identifier|id/i],
     ["unknown suite", code, "testplane=example suite=firefox", "javascript", /suite/i],
+    [
+        "an unreviewed Grid exception",
+        code,
+        "testplane=example suite=selenium",
+        "javascript",
+        /non-executable\.json/i,
+    ],
     ["duplicate id metadata", code, "testplane=one testplane=two", "javascript", /duplicate/i],
     ["suite without an id", code, "suite=selenium", "javascript", /testplane/i],
 ]) {

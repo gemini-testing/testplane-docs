@@ -178,7 +178,7 @@ npx testplane --local
 
 -   Via `gridUrl: "local"` in configuration:
 
-```ts title="testplane.config.ts"
+```ts title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -312,7 +312,7 @@ Choose a version tag from the package page. To build your own image, use [`gemin
 
 Set `gridUrl: "docker"` and specify an image for each browser:
 
-```ts title="testplane.config.ts"
+```ts title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -335,7 +335,7 @@ The image tag determines the browser version. `desiredCapabilities.browserVersio
 
 Run your tests:
 
-```bash
+```bash testplane-project=cli
 npx testplane --browser chrome
 ```
 
@@ -345,7 +345,7 @@ Testplane prepares the images and starts the required containers automatically. 
 
 If your application runs on the host, start it, for example on port 3000, and set `baseUrl` accordingly:
 
-```ts
+```ts testplane-project=config
 export default {
     baseUrl: "http://host.docker.internal:3000",
     // ... other settings

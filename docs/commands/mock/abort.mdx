@@ -2,9 +2,9 @@
 
 ## Overview {/* #overview */}
 
-Use the `abort` command to abort a request with a specified error.
+Use the `abort` command to abort a request.
 
-A request can be aborted with one of the following errors:
+In a WebDriver BiDi session, call `mock.abort()` without an error code. In a CDP session, specify one of these errors:
 
 -   Failed
 -   Aborted
@@ -36,11 +36,29 @@ mock.abort(errorCode);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should block Google Analytics from page", async ({ browser }) => {
-    const mock = await browser.mock("https://www.google-analytics.com/**");
-    mock.abort("Failed");
-});
+In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
+
+```javascript testplane=mock-abort fixture=matchers-network
+const mock = await browser.mock("/api/items");
+mock.abort();
+
+for (let i = 0; i < 2; i++) {
+    await browser.$("#reload").click();
+    await expect(browser.$("#source")).toHaveText("Unavailable");
+}
+```
+
+In a CDP session, you can specify the network failure:
+
+```javascript testplane=mock-abort-cdp fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+const reasons = [];
+mock.on("fail", ({ errorReason }) => reasons.push(errorReason));
+mock.abort("ConnectionRefused");
+
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("Unavailable");
+expect(reasons).toEqual(["ConnectionRefused"]);
 ```
 
 ## Related Commands {/* #related */}

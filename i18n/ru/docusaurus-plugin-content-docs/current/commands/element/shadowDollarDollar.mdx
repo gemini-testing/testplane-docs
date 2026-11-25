@@ -24,11 +24,22 @@ await browser.$(selector).shadow$$(shadowSelector);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should return elements inside a ShadowRoot", async ({ browser }) => {
-    const innerEl = await browser.$(".input").shadow$$("#innerEl");
-    console.log(await innerEl.getValue()); // выведет: 'test123'
-});
+```html testplane-html=element-html
+<div class="input">
+    <template shadowrootmode="open">
+        <input id="innerEl" value="test123" />
+        <input value="second" />
+    </template>
+</div>
+```
+
+```javascript testplane=element-shadow-dollar-dollar fixture=element-html
+const assert = require("node:assert/strict");
+
+const inputs = await browser.$(".input").shadow$$("input");
+assert.equal(inputs.length, 2);
+assert.equal(await inputs[0].getValue(), "test123");
+assert.equal(await inputs[1].getValue(), "second");
 ```
 
 ## Связанные команды {/* #related */}

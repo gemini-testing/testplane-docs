@@ -42,7 +42,7 @@ await browser.$(selector);
 
 **index.html**
 
-```html
+```html testplane-html=browser-menu
 <ul id="menu">
     <li>
         <a href="/">Home</a>
@@ -61,41 +61,38 @@ await browser.$(selector);
 
 **$.js**
 
-```javascript
-it("should get text a menu link", async ({ browser }) => {
-    const text = await browser.$("#menu");
+```javascript testplane=browser-find-element fixture=browser-menu
+const assert = require("node:assert/strict");
 
-    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+it("finds a menu link by CSS", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    assert.equal(await menu.$$("li")[2].$("a").getText(), "API");
 });
 
-it("should get text a menu link - JS Function", async ({ browser }) => {
-    const text = await browser.$(function () {
-        // Использовать здесь стрелочную функцию нельзя.
-        // Это Window – https://developer.mozilla.org/en-US/docs/Web/API/Window
-        //
-        // TypeScript-пользователи могут сделать что-нибудь вроде:
-        // return (this as Window).document.querySelector('#menu')
-        return this.document.querySelector("#menu"); // Element
+it("finds a menu link with a function selector", async ({ browser }) => {
+    const menu = await browser.$(function () {
+        return this.document.querySelector("#menu");
     });
-
-    console.log(await text.$$("li")[2].$("a").getText()); // выведет: "API"
+    assert.equal(await menu.$$("li")[2].$("a").getText(), "API");
 });
 
-it("should allow to convert protocol result of an element into a WebdriverIO element", async ({
-    browser,
-}) => {
-    const activeElement = await browser.getActiveElement();
-
-    console.log(await browser.$(activeElement).getTagName()); // выведет активный элемент
+it("wraps an active element reference", async ({ browser }) => {
+    await browser.execute(() => document.querySelector("a").focus());
+    const active = await browser.getActiveElement();
+    assert.equal(await browser.$(active).getTagName(), "a");
 });
+```
 
+**Android (Appium)**
+
+```javascript
 it("should use Androids DataMatcher or ViewMatcher selector", async ({ browser }) => {
-    const menuItem = await browser.$({
+    const viewMatch = await browser.$({
         name: "hasEntry",
         args: ["title", "ViewTitle"],
         class: "androidx.test.espresso.matcher.ViewMatchers",
     });
-    await menuItem.click();
+    await viewMatch.click();
 
     const menuItem = await browser.$({
         name: "hasEntry",

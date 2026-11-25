@@ -26,43 +26,26 @@ When choosing a selector, consider 3 factors:
 
 Testplane supports element location compatible with WebdriverIO syntax: CSS selectors, XPath, element text, and other methods described below.
 
+The examples below start on a documentation page with a navigation menu, a **Get started** button, and a search dialog.
+
 ### By text selectors
 
 This type of selector allows you to find elements by the text they contain:
 
--   `="text"` — exact text match
--   `*="text"` — partial text match
+-   `=text` — exact text match
+-   `*=text` — partial text match
 -   `a*=text` — text match inside an `<a>` tag
 -   `div.=text` — case-insensitive text match inside a `<div>` tag
 
-```javascript
-describe("Link Text selector", () => {
-    it("Finding an element by exact text match", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+```javascript testplane=selectors-link-text fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Exact text match for a link
-        const docsLink = await browser.$("=Documentation");
-        const isDocsLinkFound = await docsLink.isExisting();
-        console.log(`Element with exact text "Documentation" found: ${isDocsLinkFound}`);
-
-        // Partial text match for a link
-        const partialLink = await browser.$("*=Docum");
-        const isPartialLinkFound = await partialLink.isExisting();
-        console.log(`Element with partial text "Docum" found: ${isPartialLinkFound}`);
-
-        // Partial match with specified <a> tag
-        const tagPartialLink = await browser.$("a*=Document");
-        const isTagPartialLinkFound = await tagPartialLink.isExisting();
-        console.log(`<a> element with partial text "Document" found: ${isTagPartialLinkFound}`);
-
-        // Case-insensitive search with div tag
-        const divCaseInsensitive = await browser.$("div.=testplane");
-        const isDivCaseInsensitiveFound = await divCaseInsensitive.isExisting();
-        console.log(
-            `<div> element with case-insensitive text "testplane" found: ${isDivCaseInsensitiveFound}`,
-        );
-    });
-});
+const nav = await browser.$("nav");
+const exact = await nav.$("=Documentation");
+assert.equal(await exact.getAttribute("href"), "#docs");
+assert.equal(await nav.$("*=Docum").getText(), "Documentation");
+assert.equal(await nav.$("a*=Document").getText(), "Documentation");
+assert.equal(await browser.$("div.=testplane").getText(), "Testplane");
 ```
 
 Use this approach if:
@@ -76,20 +59,11 @@ Use this approach if:
 
 This approach is suitable for finding elements that are marked with testing attributes.
 
-```javascript
-describe("CSS selector by the data-testid attribute", () => {
-    it("Finding an element by data-testid", async ({ browser }) => {
-        // Open the page and wait for it to load
-        await browser.openAndWait("https://testplane.io/");
+```javascript testplane=selectors-css-test-id fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Find element by the data-testid attribute
-        const element = await browser.$('[data-testid="main-content"]');
-
-        // Check if the element exists in the DOM
-        const isExisting = await element.isExisting();
-        console.log("Element with data-testid exists:", isExisting);
-    });
-});
+const main = await browser.$('[data-testid="main-content"]');
+assert.equal(await main.$("h1").getText(), "Documentation guide");
 ```
 
 Use this approach if:
@@ -101,19 +75,12 @@ Use this approach if:
 
 To find an element by class, use the `".class-name"` selector.
 
-```javascript
-describe("CSS selector by class", () => {
-    it("Finding an element on the main page", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+```javascript testplane=selectors-css-class fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Find element by class "navbar"
-        const navbar = await browser.$(".navbar");
-
-        // Check if the element is displayed on the page
-        const isDisplayed = await navbar.isDisplayed();
-        console.log("Navbar is displayed:", isDisplayed);
-    });
-});
+const navbar = await browser.$(".navbar");
+assert.equal(await navbar.isDisplayed(), true);
+assert.equal(await navbar.$("a").getText(), "Documentation");
 ```
 
 Use this approach if:
@@ -127,19 +94,12 @@ Use this approach if:
 
 To find an element by `id`, use a selector of the form `"#id"`.
 
-```javascript
-describe("CSS selector by ID", () => {
-    it("Finding an element by ID on the main page", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+```javascript testplane=selectors-css-id fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Find element by ID "__docusaurus"
-        const main = await browser.$("#__docusaurus");
-
-        // Check if the element is displayed on the page
-        const isDisplayed = await main.isDisplayed();
-        console.log("Element is displayed:", isDisplayed);
-    });
-});
+const main = await browser.$("#main");
+assert.equal(await main.getTagName(), "main");
+assert.equal(await main.isDisplayed(), true);
 ```
 
 Use this approach if:
@@ -152,20 +112,12 @@ Use this approach if:
 
 To find an element by attribute, use a selector of the form `input[type="name"]`.
 
-```javascript
-describe("CSS selector by attribute type", () => {
-    it("Finding an element by attribute type", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+```javascript testplane=selectors-css-type fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Find a button by the attribute type="button"
-        // Selector format: element[type="value"]
-        const button = await browser.$('button[type="button"]');
-
-        // Check if the element exists in the DOM
-        const isExisting = await button.isExisting();
-        console.log("Button exists:", isExisting);
-    });
-});
+const buttons = await browser.$$('button[type="button"]');
+assert.equal(buttons.length, 2);
+assert.equal(await buttons[0].getText(), "Get started");
 ```
 
 Use this approach if:
@@ -179,20 +131,11 @@ Use this approach if:
 
 To find an element by the text it contains, use the selector `//element[text()="text"]`.
 
-```javascript
-// Exact text match
-describe("XPath selector by element text", () => {
-    it("Finding an element by text", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+```javascript testplane=selectors-xpath-text fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Find element by the text inside it
-        const link = await browser.$('//a[text()="Docs"]');
-
-        // Check if the element exists in the DOM
-        const isExisting = await link.isExisting();
-        console.log("Element with text exists:", isExisting);
-    });
-});
+const link = await browser.$('//a[text()="Docs"]');
+assert.equal(await link.getAttribute("href"), "#guides");
 ```
 
 Use this approach if:
@@ -204,19 +147,11 @@ Use this approach if:
 
 To find an element by attribute, use a selector of the form `//element[@type="attribute"]`.
 
-```javascript
-describe("XPath selector by attribute", () => {
-    it("Finding an element by attribute", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+```javascript testplane=selectors-xpath-attribute fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Find element by the type attribute
-        const button = await browser.$('//button[@type="button"]');
-
-        // Check if the element exists in the DOM
-        const isExisting = await button.isExisting();
-        console.log("Element with attribute exists:", isExisting);
-    });
-});
+const button = await browser.$('//button[@type="button"]');
+assert.equal(await button.getText(), "Get started");
 ```
 
 Use this approach if:
@@ -231,29 +166,43 @@ Use this approach if:
 
 Using XPath, you can navigate through the DOM tree.
 
-```javascript
-// Direct parent
-const parentDiv = await browser.$("//input[@name='email']/..");
+Find the email field’s parent and its enclosing registration form:
 
-// Ancestor with condition
-const formContainer = await browser.$("//input[@name='email']/ancestor::form[@id='registration']");
+```javascript testplane=selectors-xpath-ancestors fixture=selectors-tree
+const assert = require("node:assert/strict");
 
-// Following sibling
-const errorLabel = await browser.$(
+const field = await browser.$("//input[@name='email']/..");
+assert.equal(await field.getAttribute("id"), "email-field");
+const form = await browser.$("//input[@name='email']/ancestor::form[@id='registration']");
+assert.equal(await form.getTagName(), "form");
+```
+
+Find an error message and a label among the neighboring elements:
+
+```javascript testplane=selectors-xpath-siblings fixture=selectors-tree
+const assert = require("node:assert/strict");
+
+const error = await browser.$(
     "//input[@class='invalid']/following-sibling::span[@class='error'][1]",
 );
-
-// Preceding sibling
+assert.equal(await error.getText(), "Enter an email address");
 const label = await browser.$("//input[@name='password']/preceding-sibling::label[1]");
+assert.equal(await label.getText(), "Password");
+```
 
-// All descendants
-const allInputs = await browser.$$("//form[@id='checkout']//input");
+Use `//` for descendants and `/` for direct children. You can also move up to a parent and select the next section:
 
-// Direct children
-const directChildren = await browser.$$("//ul[@class='menu']/li");
+```javascript testplane=selectors-xpath-descendants fixture=selectors-tree
+const assert = require("node:assert/strict");
 
-// Finding an "uncle" of the element (parent -> parent's sibling)
-const siblingSection = await browser.$("//h2[text()='Контакты']/../following-sibling::section[1]");
+const fields = await browser.$$("//form[@id='checkout']//input");
+assert.equal(fields.length, 2);
+assert.equal(await fields[1].getAttribute("name"), "street");
+const topLevel = await browser.$$("//ul[@class='menu']/li");
+assert.equal(topLevel.length, 2);
+
+const next = await browser.$("//h2[text()='Contacts']/../following-sibling::section[1]");
+assert.equal(await next.getAttribute("id"), "billing");
 ```
 
 This type of DOM tree navigation is not recommended due to its fragility, but it is possible.
@@ -262,27 +211,11 @@ This type of DOM tree navigation is not recommended due to its fragility, but it
 
 XPath allows you to select elements by their position in the result set.
 
-```javascript
-describe("XPath selector: indices and positions", () => {
-    it("Finding an element by index", async ({ browser }) => {
-        await browser.openAndWait("https://testplane.io/");
+```javascript testplane=selectors-xpath-position fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-        // Find the third link element in the navigation (index starts at 1)
-        // Selector format: (//element)[index]
-        const thirdLink = await browser.$("(//a)[3]");
-
-        // Wait for the element to appear and be displayed
-        await thirdLink.waitForDisplayed({ timeout: 5000 });
-
-        // Check if the element exists in the DOM
-        const isExisting = await thirdLink.isExisting();
-        console.log("Third element exists:", isExisting);
-
-        // Get the element's text
-        const text = await thirdLink.getText();
-        console.log("Text of the third element:", text);
-    });
-});
+const thirdLink = await browser.$("(//nav//a)[3]");
+assert.equal(await thirdLink.getText(), "API");
 ```
 
 Use this approach if:
@@ -297,14 +230,16 @@ Use this approach if:
 
 Shadow DOM selectors allow you to work with elements inside the Shadow DOM — an encapsulated part of the DOM tree. For example, if you have a custom element `my-custom-element`, you can find a button inside its Shadow DOM using `shadow$("button")`.
 
-```javascript
-// Simple access to Shadow DOM
-const customElement = await browser.$("my-custom-element");
-const button = await customElement.shadow$("button");
-await button.click();
+```javascript testplane=selectors-shadow fixture=selectors-guide
+const assert = require("node:assert/strict");
 
-// Multiple elements in Shadow DOM
-const slotElements = await customElement.shadow$$(".slot-item");
+const widget = await browser.$("my-custom-element");
+const button = await widget.shadow$("button");
+await button.click();
+assert.equal(await button.getText(), "Expanded");
+
+const items = await widget.shadow$$(".slot-item");
+assert.deepEqual(await items.map(item => item.getText()), ["One", "Two"]);
 ```
 
 Use this approach if:
@@ -325,165 +260,103 @@ To use this type of selector, you need to [install Testing Library](../../guides
 
 `getByRole` is the main method in Testing Library that lets you find elements by their ARIA roles. For example, if you use the method `browser.getByRole("button", { name: /submit/i })`, you will find a button with text containing `submit`.
 
-```javascript
-describe("getByRole", () => {
-    it("Finding a button using the getByRole method", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+```javascript testplane=selectors-by-role fixture=selectors-library
+const assert = require("node:assert/strict");
 
-        const button = await browser.getByRole("button", { name: "Get started" });
-        await button.click();
-    });
-});
+const start = await browser.getByRole("button", { name: "Get started" });
+await start.click();
+assert.equal(new URL(await browser.getUrl()).hash, "#docs");
 ```
 
 ### ByLabelText
 
 To find form elements by their label text (`label`), use the `getByLabelText` method.
 
-```javascript
-describe("Finding an input field using the getByLabelText method", () => {
-    it("Find and use the search field", async ({ browser }) => {
-        await browser.url("https://testplane.io/docs/html-reporter/overview/");
-        // Find the search button
-        const searchButton = await browser.getByLabelText(/search|поиск/i);
-        // Click the button to open the search modal
-        await searchButton.click();
-    });
-});
+```javascript testplane=selectors-by-label-text fixture=selectors-library
+const assert = require("node:assert/strict");
+
+const openSearch = await browser.getByLabelText(/open search/i);
+await openSearch.click();
+assert.equal(await browser.$("dialog[open]").isDisplayed(), true);
 ```
 
 ### ByPlaceholderText
 
 To find an input field by its `placeholder` text, use the `getByPlaceholderText` selector.
 
-```javascript
-describe("getByPlaceholderText", () => {
-    it("Finding an input field using the getByPlaceholderText method", async ({ browser }) => {
-        await browser.url("https://testplane.io/docs/html-reporter/overview/");
+```javascript testplane=selectors-by-placeholder-text fixture=selectors-library
+const assert = require("node:assert/strict");
 
-        // Open the search modal
-        const searchButton = await browser.$(".DocSearch-Button");
-        await searchButton.click();
+const openSearch = await browser.getByLabelText("Open search");
+await openSearch.click();
 
-        // Wait for the modal to appear
-        await browser.pause(500);
-
-        // Find the input field by placeholder
-        const searchInput = await browser.getByPlaceholderText("Поиск");
-        await searchInput.waitForDisplayed({ timeout: 3000 });
-
-        // Verify that the element is visible
-        await expect(searchInput).toBeDisplayed();
-    });
-});
+const input = await browser.getByPlaceholderText("Search docs");
+assert.equal(await input.isDisplayed(), true);
 ```
 
 ### ByText
 
 To find a text element by its content, use the `getByText` method.
 
-```javascript
-describe("getByText", () => {
-    it("Finding an element using the getByText method", async ({ browser }) => {
-        // Open the Testplane home page
-        await browser.url("https://testplane.io/");
-        // Find the "Get started" button
-        const button = await browser.getByText("Get started");
+```javascript testplane=selectors-by-text fixture=selectors-library
+const assert = require("node:assert/strict");
 
-        // Verify that the element is found and visible
-        await expect(button).toBeDisplayed();
-        await expect(button).toBeClickable();
-        // Click the button
-        await button.click();
-
-        // Wait for the new page to load
-        await browser.pause(1000);
-
-        // Verify navigation occurred
-        const url = await browser.getUrl();
-        expect(url).toContain("/docs");
-    });
-});
+const start = await browser.getByText("Get started");
+assert.equal(await start.isClickable(), true);
+await start.click();
+assert.equal(new URL(await browser.getUrl()).hash, "#docs");
 ```
 
 ### ByDisplayValue
 
 To find an element by its current value, use the `getByDisplayValue` method.
 
-```javascript
-describe("Finding using the getByDisplayValue method", () => {
-    it("Find and verify the value", async ({ browser }) => {
-        await browser.url("https://testplane.io/docs/html-reporter/overview/");
+```javascript testplane=selectors-by-display-value fixture=selectors-library
+const assert = require("node:assert/strict");
 
-        // Open search
-        const searchButton = await browser.$(".DocSearch-Button");
-        await searchButton.click();
-        await browser.pause(500);
+const openSearch = await browser.getByLabelText("Open search");
+await openSearch.click();
+const input = await browser.$('input[type="search"]');
+await input.setValue("html-reporter");
 
-        // Enter text
-        const searchInput = await browser.$('input[type="search"]');
-        await searchInput.setValue("html-reporter");
-
-        // Search by full value
-        const input = await browser.getByDisplayValue("html-reporter");
-        await expect(input).toBeDisplayed();
-
-        // Verify the value
-        const value = await input.getValue();
-        expect(value).toBe("html-reporter");
-    });
-});
+const match = await browser.getByDisplayValue("html-reporter");
+assert.equal(await match.isEqual(input), true);
 ```
 
 ### ByAltText
 
 To find an image by its `alt` text, use the `getByAltText` method.
 
-```javascript
-describe("Finding an element using the getByAltText method", () => {
-    it("Finding an <img> element by the alt attribute", async ({ browser }) => {
-        // Open the page
-        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+```javascript testplane=selectors-by-alt-text fixture=selectors-library
+const assert = require("node:assert/strict");
 
-        // Find the book image by the alt attribute
-        const bookImage = await browser.getByAltText("The Great Gatsby");
-
-        // Confirm that the element is found
-        await expect(bookImage).toBeExisting();
-    });
-});
+const cover = await browser.getByAltText("The Great Gatsby");
+assert.equal(await cover.getTagName(), "img");
+assert.ok((await cover.getProperty("naturalWidth")) > 0);
 ```
 
 ### ByTitle
 
 To find an element by the `title` attribute, use the `getByTitle` method.
 
-```javascript
-describe("Finding an element using the getByTitle method", () => {
-    it("Finding an <a> element", async ({ browser }) => {
-        // Open the page
-        await browser.url("https://testplane.io/docs/");
-        // Find the <a> element by the title attribute
-        const linkElement = await browser.getByTitle("Direct link to Rich Debugging Capabilities");
-        // Confirm that the element is found
-        await expect(linkElement).toBeExisting();
-    });
-});
+```javascript testplane=selectors-by-title fixture=selectors-library
+const assert = require("node:assert/strict");
+
+const link = await browser.getByTitle("Direct link to Rich Debugging Capabilities");
+assert.equal(await link.getAttribute("href"), "#debugging");
 ```
 
 ### ByTestId
 
 `getByTestId` is used as a last resort when other methods are not suitable. For example, if you use `browser.getByTestId("submit-button")`, you will find an element with the attribute `data-testid="submit-button"`.
 
-```javascript
-describe("Finding an element using the getByTestId method", () => {
-    it("Finding an element by the data-testid attribute", async ({ browser }) => {
-        // Open the page
-        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
-        // Find the element by the data-testid attribute
-        const searchInput = await browser.getByTestId("search-input");
-        // Confirm that the element is found
-        await expect(searchInput).toBeExisting();
-    });
-});
+```javascript testplane=selectors-by-test-id fixture=selectors-library
+const assert = require("node:assert/strict");
+
+const openSearch = await browser.getByLabelText("Open search");
+await openSearch.click();
+
+const input = await browser.getByTestId("search-input");
+await input.setValue("selectors");
+assert.equal(await browser.$("output").getText(), "selectors");
 ```

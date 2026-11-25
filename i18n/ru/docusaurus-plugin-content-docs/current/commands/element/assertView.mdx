@@ -61,18 +61,13 @@ await browser.$(selector).assertView(state, options);
 
 ## Примеры использования {/* #examples */}
 
-**example.js**
+Сравним кнопку с двумя эталонными изображениями: до и после клика.
 
-```javascript
-it("should assert view", async ({ browser }) => {
-    await browser.url("some/url");
-
-    const elem = await browser.$(".button");
-
-    await elem.assertView("plain");
-    await elem.click();
-    await elem.assertView("clicked");
-});
+```javascript testplane=element-assert-view fixture=element-visual
+const button = await browser.$(".button");
+await button.assertView("plain");
+await button.click();
+await button.assertView("clicked");
 ```
 
 ## История

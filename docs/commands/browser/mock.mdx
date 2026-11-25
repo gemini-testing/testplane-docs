@@ -11,7 +11,7 @@ You can enable mocking depending on the URL, headers, or status code. Calling th
 There are 3 ways to modify the response:
 
 -   return a custom JSON object (e.g., to mock an API response);
--   replace the response with a local file (inject a modified JavaScript file);
+-   replace a text response, for example the contents of a script;
 -   redirect to another URL and return the response from there.
 
 <Admonition type="warning">
@@ -26,7 +26,7 @@ Also, see the recipe "[How to intercept requests and responses][how-to-intercept
 ## Usage {/* #usage */}
 
 ```javascript
-await browser.mock(url, { method, headers, responseHeaders, postData, statusCode });
+await browser.mock(url, { method, requestHeaders, responseHeaders, statusCode });
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -38,91 +38,70 @@ await browser.mock(url, { method, headers, responseHeaders, postData, statusCode
 <tbody>
 <tr><td>url</td><td>String</td><td>The URL of the request to mock.</td></tr>
 <tr><td>method</td><td>String or Function</td><td>The HTTP method to filter the resource.</td></tr>
-<tr><td>headers</td><td>Object or Function</td><td>The request headers to filter the resource.</td></tr>
+<tr><td>requestHeaders</td><td>Object or Function</td><td>The request headers to filter the resource.</td></tr>
 <tr><td>responseHeaders</td><td>Object or Function</td><td>The response headers to filter the resource.</td></tr>
-<tr><td>postData</td><td>String or Function</td><td>The request postData to filter the resource.</td></tr>
 <tr><td>statusCode</td><td>Number or Function</td><td>The status code to filter the resource.</td></tr>
+
+<tr>
+    <td>headers, postData</td>
+    <td>Object, String or Function</td>
+    <td>
+        Request header and payload filters in the WebDriver Classic/CDP implementation. For BiDi,
+        use `requestHeaders`; filtering request bodies is not supported.
+    </td>
+</tr>
 
 </tbody>
 </table>
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should mock network resources", async ({ browser }) => {
-    // use a static string
-    const userListMock = await browser.mock("**" + "/users/list");
+```javascript testplane=browser-mock-resources fixture=browser-mock
+const assert = require("node:assert/strict");
 
-    // we can also mock responses based on
-    // request or response headers, status code, or postData
-    const strictMock = await browser.mock("**", {
-        // mock all json responses
-        statusCode: 200,
-        headers: { "Content-Type": "application/json" },
-        responseHeaders: { "Cache-Control": "no-cache" },
-        postData: "foobar",
+it("records only matching requests", async ({ browser }) => {
+    const items = await browser.mock("/api/items", {
+        method: "GET",
+        statusCode: code => code === 200,
     });
-
-    // comparator function
-    const apiV1Mock = await browser.mock("**" + "/api/v1", {
-        statusCode: statusCode => statusCode >= 200 && statusCode <= 203,
-        headers: headers =>
-            headers["Authorization"] && headers["Authorization"].startsWith("Bearer "),
-        responseHeaders: headers => headers["Impersonation"],
-        postData: data => typeof data === "string" && data.includes("foo"),
+    await browser.execute(async () => {
+        await fetch("/api/other");
+        await fetch("/api/items");
     });
+    await browser.waitUntil(() => items.calls.length === 1);
+    await items.restore();
 });
 
-it("should modify API responses", async ({ browser }) => {
-    // filter by method
-    const todoMock = await browser.mock("**" + "/todos", {
-        method: "get",
+it("replaces an API response and status", async ({ browser }) => {
+    const items = await browser.mock("/api/items", { method: "get" });
+    await items.respond([{ title: "Injected Todo" }], { statusCode: 201 });
+    const result = await browser.execute(async () => {
+        const response = await fetch("/api/items");
+        return { status: response.status, body: await response.json() };
     });
-
-    // mock the response of the endpoint with predefined fixture
-    mock.respond([
-        {
-            title: "Injected Todo",
-            order: null,
-            completed: false,
-            url: "http://todo-backend-express-knex.herokuapp.com/916",
-        },
-    ]);
-
-    // respond with a different status code or header
-    mock.respond(
-        [
-            {
-                title: "Injected Todo",
-                order: null,
-                completed: false,
-                url: "http://todo-backend-express-knex.herokuapp.com/916",
-            },
-        ],
-        {
-            statusCode: 404,
-            headers: {
-                "x-custom-header": "foobar",
-            },
-        },
-    );
+    assert.deepEqual(result, { status: 201, body: [{ title: "Injected Todo" }] });
+    await items.restore();
 });
 
-it("should modify text assets", async ({ browser }) => {
-    const scriptMock = await browser.mock("**" + "/script.min.js");
-    scriptMock.respond("./tests/fixtures/script.js");
+it("replaces a text asset", async ({ browser }) => {
+    const script = await browser.mock("/fixtures/browser/banner.js");
+    await script.respond("window.banner = 'Preview';");
+    await browser.executeAsync(done => {
+        const element = document.createElement("script");
+        element.onload = () => done();
+        element.src = "/fixtures/browser/banner.js";
+        document.head.append(element);
+    });
+    assert.equal(await browser.execute(() => window.banner), "Preview");
+    await script.restore();
 });
 
-it("should redirect web resources", async ({ browser }) => {
-    const headerMock = await browser.mock("**" + "/header.png");
-    headerMock.respond("https://media.giphy.com/media/F9hQLAVhWnL56/giphy.gif");
-
-    const pageMock = await browser.mock("https://google.com/");
-    pageMock.respond("https://webdriver.io");
-    await browser.url("https://google.com");
-
-    console.log(await browser.getTitle());
-    // outputs: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
+it("redirects a request to a different resource", async ({ browser }) => {
+    const items = await browser.mock("/api/items");
+    await items.redirect(new URL("/api/other", await browser.getUrl()).href);
+    const data = await browser.execute(async () => (await fetch("/api/items")).json());
+    assert.equal(data.source, "redirected");
+    await items.restore();
 });
 ```
 

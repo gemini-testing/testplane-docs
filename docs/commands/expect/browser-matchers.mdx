@@ -1,14 +1,17 @@
 # expect for the browser
 
+The examples use the app's configured `baseUrl` and start on a page titled `Task list`.
+
 ## toHaveUrl
 
 Checks if the browser is on the specified page.
 
 For example:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveUrl("https://testplane.io");
+```javascript testplane=expect-to-have-url fixture=matchers-page
+const expectedUrl = new URL("/navigation", browser.options.baseUrl).href;
+await browser.url("/navigation");
+await expect(browser).toHaveUrl(expectedUrl);
 ```
 
 ## toHaveUrlContaining
@@ -17,9 +20,9 @@ Checks if the specified substring is contained in the URL of the page the browse
 
 For example:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveUrlContaining("testplane");
+```javascript testplane=expect-to-have-url-containing fixture=matchers-page
+await browser.url("/navigation");
+await expect(browser).toHaveUrlContaining("/navigation");
 ```
 
 ## toHaveTitle
@@ -28,11 +31,8 @@ Checks if the website has the specified title.
 
 For example:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveTitle(
-    "Fast, scalable and robust end-to-end web testing solution | Testplane",
-);
+```javascript testplane=expect-to-have-title fixture=matchers-page
+await expect(browser).toHaveTitle("Task list");
 ```
 
 ## toHaveTitleContaining
@@ -41,9 +41,8 @@ Checks if the specified substring is contained in the website's title.
 
 For example:
 
-```javascript
-await browser.url("https://testplane.io/");
-await expect(browser).toHaveTitleContaining("Testplane");
+```javascript testplane=expect-to-have-title-containing fixture=matchers-page
+await expect(browser).toHaveTitleContaining("Task");
 ```
 
 ## References

@@ -8,16 +8,19 @@ Functions for waiting for network idle and failing on network errors are only av
 
 ## Usage {/* #usage */}
 
-```javascript
-await browser.openAndWait("some/url", {
-    selector: [".some", ".selector"],
-    predicate: () => document.isReady,
-    ignoreNetworkErrorsPatterns: ["https://mc.yandex.ru", "https://avatars.mds.yandex.net/*"],
+```javascript testplane=browser-open-wait-options fixture=browser-page
+const assert = require("node:assert/strict");
+
+await browser.openAndWait("/fixtures/browser/ready.html", {
+    selector: [".content"],
+    predicate: () => browser.execute(() => document.body.dataset.ready === "true"),
     waitNetworkIdle: true,
-    waitNetworkIdleTimeout: 500,
+    waitNetworkIdleTimeout: 100,
     failOnNetworkError: true,
-    timeout: 20000,
+    ignoreNetworkErrorsPatterns: ["/metrics"],
+    timeout: 5000,
 });
+assert.equal(await browser.$(".content").getText(), "Ready");
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -41,7 +44,7 @@ await browser.openAndWait("some/url", {
 </thead>
 <tbody>
 <tr><td>selector</td><td>String\|String[]</td><td>Selector(s) of element(s) that must exist on the loaded page.</td></tr>
-<tr><td>predicate</td><td>() => Promise&lt;bool> \| bool</td><td>Predicate that returns `true` if the page is loaded. Executed in the browser context: [waitUntil](https://webdriver.io/docs/api/element/waitUntil).</td></tr>
+<tr><td>predicate</td><td>() => Promise&lt;bool> \| bool</td><td>Predicate that returns `true` if the page is loaded. Runs in the test, as with `browser.waitUntil`. Use `browser.execute` to access the page.</td></tr>
 <tr><td>waitNetworkIdle</td><td>Boolean</td><td>If `true`, waits for the completion of all network requests. Default is `true`. Only works in CDP browsers; ignored for others.</td></tr>
 <tr><td>waitNetworkIdleTimeout</td><td>Number</td><td>Time (in milliseconds) after the completion of all network requests to consider the network idle. Default is 500.</td></tr>
 <tr><td>failOnNetworkError</td><td>Boolean</td><td>Whether to throw an error on network errors. Default is `true`. Only works in CDP browsers; ignored for others.</td></tr>
@@ -54,19 +57,14 @@ await browser.openAndWait("some/url", {
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("some test", async ({ browser }) => {
-    // With `waitNetworkIdle` also wait for loading images, fonts, styles, ignoring metric errors
-    await browser.openAndWait("some/url", {
-        selector: [".selector"],
-        predicate: () => document.isReady,
-        ignoreNetworkErrorsPatterns: ["https://mc.yandex.ru"],
-        waitNetworkIdle: true,
-        waitNetworkIdleTimeout: 500,
-        failOnNetworkError: true,
-        timeout: 20000,
-    });
+```javascript testplane=browser-open-and-wait fixture=browser-page
+const assert = require("node:assert/strict");
 
-    await browser.assertView("plain", ".selector");
+it("waits for the page to become ready", async ({ browser }) => {
+    await browser.openAndWait("/fixtures/browser/ready.html", {
+        selector: ".content",
+        predicate: () => browser.execute(() => document.body.dataset.ready === "true"),
+    });
+    assert.equal(await browser.$(".content").getText(), "Ready");
 });
 ```

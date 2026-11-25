@@ -4,6 +4,8 @@ import Admonition from "@theme/Admonition";
 
 ## Overview {/* #overview */}
 
+The `throttle` alias is deprecated. For new tests, use `throttleNetwork`.
+
 Use the `throttle` command to simulate different types of network connections for the user.
 
 This command allows you to model the behavior of a website or web application under various network bandwidth conditions.
@@ -50,18 +52,37 @@ await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput 
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should throttle the network", async ({ browser }) => {
-    // use a preset
-    await browser.throttle("Regular 3G");
+```javascript testplane=browser-throttle fixture=browser-page
+const assert = require("node:assert/strict");
 
-    // configure the network settings manually
+it("uses an offline preset", async ({ browser }) => {
+    const canFetch = () =>
+        browser.execute(async () => {
+            try {
+                return (await fetch("/api/items", { cache: "no-store" })).ok;
+            } catch {
+                return false;
+            }
+        });
+    assert.equal(await canFetch(), true);
+    await browser.throttle("offline");
+    assert.equal(await canFetch(), false);
+});
+
+it("introduces latency with custom network settings", async ({ browser }) => {
     await browser.throttle({
         offline: false,
         downloadThroughput: (200 * 1024) / 8,
         uploadThroughput: (200 * 1024) / 8,
-        latency: 20,
+        latency: 200,
     });
+    const elapsed = await browser.execute(async () => {
+        const start = performance.now();
+        const response = await fetch("/api/items", { cache: "no-store" });
+        await response.text();
+        return performance.now() - start;
+    });
+    assert.ok(elapsed >= 180);
 });
 ```
 

@@ -12,15 +12,17 @@ mock.restore();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate the addValue command", async ({ browser }) => {
-    const mock = await browser.mock("**/googlelogo_color_272x92dp.png");
-    mock.respond("https://webdriver.io/img/webdriverio.png");
+In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
 
-    await browser.url("https://google.com"); // will show WebdriverIO logo instead of Google logo
-    mock.restore();
-    await browser.url("https://google.com"); // will show the native Google logo
-});
+```javascript testplane=mock-restore fixture=matchers-network
+const mock = await browser.mock("/api/items");
+mock.respond({ source: "mocked" });
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("mocked");
+
+await mock.restore();
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("original");
 ```
 
 ## Related Commands {/* #related */}

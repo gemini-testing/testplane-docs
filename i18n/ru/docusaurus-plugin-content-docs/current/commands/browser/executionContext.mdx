@@ -14,27 +14,13 @@ import Admonition from "@theme/Admonition";
 
 ## Пример использования {/* #examples */}
 
-```javascript
-it("should log execution context", async ({ browser }) => {
-    await browser.url("/foo/bar");
+```javascript testplane=browser-execution-context fixture=browser-page
+const assert = require("node:assert/strict");
 
-    console.log("test", browser.executionContext);
-    // выведет:
-    // test: {
-    //   "title": "should log execution context",
-    //   "async": 0,
-    //   "sync": true,
-    //   "timedOut": false,
-    //   "pending": false,
-    //   "type": "test",
-    //   "body": "...",
-    //   "file": "/foo/bar/baz/qux.js",
-    //   "parent": "#<Suite>",
-    //   "ctx": "#<Context>",
-    //   "browserId": "chrome",
-    //   "meta": {},
-    //   "timer": {}
-    // }
+it("identifies the current test", async ({ browser }) => {
+    const context = browser.executionContext;
+    assert.equal(context.title, "identifies the current test");
+    assert.equal(context.browserId, "chrome");
 });
 ```
 

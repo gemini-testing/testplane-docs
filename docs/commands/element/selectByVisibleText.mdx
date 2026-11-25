@@ -24,9 +24,7 @@ await browser.$(selector).selectByVisibleText(text);
 
 ## Usage Examples {/* #examples */}
 
-**example.html**
-
-```html
+```html testplane-html=element-html
 <select id="selectbox">
     <option value="someValue0">uno</option>
     <option value="someValue1">dos</option>
@@ -37,16 +35,13 @@ await browser.$(selector).selectByVisibleText(text);
 </select>
 ```
 
-**selectByVisibleText.js**
+```javascript testplane=element-select-by-visible-text fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should demonstrate the selectByVisibleText command", async ({ browser }) => {
-    const selectBox = await browser.$("#selectbox");
-    console.log(await selectBox.getText("option:checked")); // outputs: "uno"
-
-    await selectBox.selectByVisibleText("cuatro");
-    console.log(await selectBox.getText("option:checked")); // outputs: "cuatro"
-});
+const select = await browser.$("#selectbox");
+assert.equal(await select.$("option:checked").getText(), "uno");
+await select.selectByVisibleText("cuatro");
+assert.equal(await select.$("option:checked").getText(), "cuatro");
 ```
 
 ## Related Commands {/* #related */}

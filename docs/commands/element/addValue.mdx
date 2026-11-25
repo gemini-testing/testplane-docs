@@ -24,15 +24,17 @@ await browser.$(selector).addValue(value);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate the addValue command", async ({ browser }) => {
-    let input = await browser.$(".input");
-    await input.addValue("test");
-    await input.addValue(123);
+```html testplane-html=element-html
+<input class="input" />
+```
 
-    value = await input.getValue();
-    assert.equal(value, "test123"); // true
-});
+```javascript testplane=element-add-value fixture=element-html
+const assert = require("node:assert/strict");
+
+const input = await browser.$(".input");
+await input.addValue("test");
+await input.addValue(123);
+assert.equal(await input.getValue(), "test123");
 ```
 
 ## Related Commands {/* #related */}

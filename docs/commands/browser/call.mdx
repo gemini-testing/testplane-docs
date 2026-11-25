@@ -26,31 +26,25 @@ await browser.call(callback);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("some testing here", async ({ browser }) => {
-    await browser.url("http://google.com");
+```javascript testplane=browser-call fixture=browser-page
+const assert = require("node:assert/strict");
 
-    // make an asynchronous call using a third-party library
-    // that supports promises, e.g., a call to a backend or DB
-    // to inject a fixture
-    await browser.call(() => {
-        return somePromiseLibrary.someMethod().then(() => {
-            // ...
-        });
-    });
+it("waits for a Node.js API call", async ({ browser }) => {
+    const url = new URL("/api/items", await browser.getUrl());
+    const data = await browser.call(async () => (await fetch(url)).json());
+    assert.equal(data.source, "original");
 
-    // example for an asynchronous call using a third-party library
-    // that does not support promises
-    const result = await browser.call(() => {
-        return new Promise((resolve, reject) => {
-            someOtherNodeLibrary.someMethod(param1, (err, res) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(res);
-            });
-        });
-    });
+    const http = require("node:http");
+    const status = await browser.call(
+        () =>
+            new Promise((resolve, reject) => {
+                http.get(url, response => {
+                    response.resume();
+                    resolve(response.statusCode);
+                }).on("error", reject);
+            }),
+    );
+    assert.equal(status, 200);
 });
 ```
 

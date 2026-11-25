@@ -4,12 +4,15 @@ sidebar_position: 2
 
 # Writing Tests
 
+The examples use two local demo pages: [docs search](https://github.com/gemini-testing/testplane-docs/blob/master/test/doc-examples/fixtures/site/quickstart/docs.html) and [bookstore](https://github.com/gemini-testing/testplane-docs/blob/master/test/doc-examples/fixtures/site/quickstart/bookstore.html). Serve them under `/fixtures/quickstart/` on your `baseUrl`, or replace their URLs and selectors with those of your app.
+
 ## Test structure
 
-```typescript
+```typescript testplane=quickstart-structure fixture=quickstart-page
 describe("Test group name", () => {
-    it("Description of what should happen", async ({ browser }) => {
-        // Test body
+    it("opens the docs home page", async ({ browser }) => {
+        await browser.url("/fixtures/quickstart/docs.html");
+        await expect(browser.$("h1")).toHaveText("Fast testplane docs");
     });
 });
 ```
@@ -24,33 +27,32 @@ After installing Testplane, you can review a test example in the `testplane-test
 
     <summary>Test example</summary>
 
-    ```typescript title="example.testplane.ts"
+    ```typescript title="example.testplane.ts" testplane=quickstart-search fixture=quickstart-testing-library
+    describe("test examples", () => {
+        it("docs search test", async ({ browser }) => {
+            await browser.openAndWait("/fixtures/quickstart/docs.html");
 
-        describe("test examples", () => {
-            it("docs search test", async ({browser}) => {
-                await browser.openAndWait("https://testplane.io/");
+            // Find by tag name
+            const navBar = await browser.$("nav");
 
-                // Find by tag name
-                const navBar = await browser.$("nav");
+            // Find by aria-label
+            await navBar.$("aria/Search").click();
 
-                // Find by aria-label
-                await navBar.$("aria/Search").click();
+            // Find by placeholder
+            const fileSearchInput = await browser.findByPlaceholderText("Search docs");
+            await fileSearchInput.waitForDisplayed();
+            await fileSearchInput.setValue("config");
 
-                // Find by placeholder
-                const fileSearchInput = await browser.findByPlaceholderText("Search docs");
-                await fileSearchInput.waitForDisplayed();
-                await fileSearchInput.setValue("config");
+            // Find by id
+            const fileSearchResults = await browser.$("#docsearch-list");
 
-                // Find by id
-                const fileSearchResults = await browser.$("#docsearch-list");
+            // Find by role
+            const fileSearchResultsItems = await fileSearchResults.findAllByRole("option");
 
-                // Find by role
-                const fileSearchResultsItems = await fileSearchResults.findAllByRole("option");
-
-                await expect(fileSearchResultsItems.length).toBeGreaterThan(1);
-            });
+            expect(fileSearchResultsItems.length).toBe(2);
+            await expect(fileSearchResultsItems[0]).toHaveText("Browser configuration");
         });
-
+    });
     ```
 
 </details>
@@ -61,8 +63,9 @@ After installing Testplane, you can review a test example in the `testplane-test
 
 To navigate between pages, use the [`browser.url()`](../commands/browser/url.mdx) method:
 
-```typescript
-await browser.url("https://testplane.io/");
+```typescript testplane=quickstart-navigation fixture=quickstart-page
+await browser.url("/fixtures/quickstart/docs.html");
+await expect(browser).toHaveTitle("Fast testplane docs");
 ```
 
 You can also use the [`browser.openAndWait()`](../commands/browser/openAndWait.mdx) command, which provides more settings related to page static loading.
@@ -73,18 +76,20 @@ Testplane supports various element-finding strategies: CSS selectors (most commo
 
 There is also support for Testing Library selectors, which allows writing more readable tests focused on user behavior. It is already included when initializing via `npm init testplane`. If you created the project differently, you can [install it manually](../guides/how-to-add-testing-library.mdx).
 
-```typescript
+```typescript testplane=quickstart-selectors fixture=quickstart-testing-library
 describe("Selector examples", () => {
     it("First found element", async ({ browser }) => {
-        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+        await browser.url("/fixtures/quickstart/bookstore.html");
 
         const heading = await browser.$("h1");
+        await expect(heading).toHaveText("Bookstore");
         const input = await browser.$('[data-testid="search-input"]');
         const inputTL = await browser.findByTestId("search-input");
+        expect(inputTL.elementId).toBe(input.elementId);
     });
 
     it("Finding multiple elements", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         const links = await browser.$$("a");
         expect(links.length).toBeGreaterThan(0);
@@ -94,35 +99,41 @@ describe("Selector examples", () => {
 
 #### Selector types
 
-```typescript
+```typescript testplane=quickstart-selector-types fixture=quickstart-testing-library
 describe("Selector types", () => {
     it("CSS selectors", async ({ browser }) => {
-        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+        await browser.url("/fixtures/quickstart/bookstore.html");
 
         // data attributes
         const input = await browser.$('[data-testid="search-input"]');
         const inputTL = await browser.findByTestId("search-input");
+        expect(inputTL.elementId).toBe(input.elementId);
 
         // CSS classes and tags
         const navbar = await browser.$(".navbar");
         const heading = await browser.$("h1");
+        await expect(navbar).toBeDisplayed();
+        await expect(heading).toHaveText("Bookstore");
     });
 
     it("Text selectors", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         // Exact text match
         const match = await browser.$("=Docs");
 
         // Partial text match
         const partial = await browser.$("*=Doc");
+        await expect(match).toHaveText("Docs");
+        expect(partial.elementId).toBe(match.elementId);
     });
 
     it("XPath", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         // Search by text inside element
         const link = await browser.$('//a[text()="Docs"]');
+        await expect(link).toBeDisplayed();
     });
 });
 ```
@@ -133,26 +144,23 @@ Learn more about selectors in [this article](../basic-guides/selectors.mdx).
 
 #### Click
 
-```typescript
-const assert = require("assert");
+```typescript testplane=quickstart-click fixture=quickstart-page
+const assert = require("node:assert/strict");
 
 describe("Click", () => {
     it("Click and double click", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         // Click on search button
         const searchButton = await browser.$("button.DocSearch");
         await searchButton.waitForClickable({ timeout: 5000 });
         await searchButton.click();
+        const modal = await browser.$(".DocSearch-Modal");
+        await modal.waitForDisplayed({ timeout: 5000 });
 
-        // Double click on search button
-        await searchButton.doubleClick();
-
-        // Verification
-        const searchModal = await browser.$(".DocSearch-Modal");
-        await searchModal.waitForDisplayed({ timeout: 5000 });
-        const isDisplayed = await searchModal.isDisplayed();
-        assert.strictEqual(isDisplayed, true);
+        const result = await modal.$('[role="option"]');
+        await result.doubleClick();
+        assert.strictEqual(await result.getAttribute("aria-selected"), "true");
     });
 });
 ```
@@ -161,12 +169,12 @@ Learn more in the articles about [`click()`](../commands/element/click.mdx) and 
 
 #### Text input
 
-```typescript
-const assert = require("assert");
+```typescript testplane=quickstart-input fixture=quickstart-page
+const assert = require("node:assert/strict");
 
 describe("Text input", () => {
     it("Enter text into search field", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         // Click on search button
         const searchButton = await browser.$("button.DocSearch");
@@ -189,12 +197,12 @@ Learn more in the article about [`setValue()`](../commands/element/setValue.mdx)
 
 #### Form interactions
 
-```typescript
-const assert = require("assert");
+```typescript testplane=quickstart-forms fixture=quickstart-page
+const assert = require("node:assert/strict");
 
 describe("Form interactions", () => {
     it("Checkbox", async ({ browser }) => {
-        await browser.url("https://testplane-bookstore.website.yandexcloud.net/login");
+        await browser.url("/fixtures/quickstart/bookstore.html#login");
 
         const checkbox = await browser.$('[data-testid="remember-checkbox"]');
         await checkbox.waitForDisplayed({ timeout: 5000 });
@@ -215,7 +223,7 @@ describe("Form interactions", () => {
     });
 
     it("Dropdown", async ({ browser }) => {
-        await browser.url("https://testplane-bookstore.website.yandexcloud.net/");
+        await browser.url("/fixtures/quickstart/bookstore.html");
 
         const dropdown = await browser.$('[data-testid="sort-select"]');
         await dropdown.waitForDisplayed({ timeout: 5000 });
@@ -240,10 +248,10 @@ Learn more in the articles about [`isSelected()`](../commands/element/isSelected
 
 Assertions are checks that compare the actual result with the expected one.
 
-```typescript
+```typescript testplane=quickstart-assertions fixture=quickstart-page
 describe("Assertions", () => {
     it("Element checks", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         const heading = await browser.$("h1");
 
@@ -255,7 +263,7 @@ describe("Assertions", () => {
         await expect(heading).toHaveTextContaining("testplane");
 
         // Attribute check
-        await expect(heading).toHaveAttribute("class");
+        await expect(heading).toHaveAttribute("class", "title");
     });
 });
 ```
@@ -266,16 +274,18 @@ Learn more in the [assertions documentation](../commands/expect/overview.mdx).
 
 Hooks allow you to prepare the environment before tests and clean it up after execution.
 
-```typescript
+```typescript testplane=quickstart-hooks fixture=quickstart-page
 describe("Working with hooks", () => {
     beforeEach(async ({ browser }) => {
         // Runs before each test
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
+        await browser.setCookies({ name: "visit", value: "1" });
     });
 
     afterEach(async ({ browser }) => {
         // Runs after each test
         await browser.deleteAllCookies();
+        expect(await browser.getCookies("visit")).toHaveLength(0);
     });
 
     it("First test", async ({ browser }) => {
@@ -298,10 +308,10 @@ Learn more about hooks in the [documentation](../basic-guides/setup-and-teardown
 
 Explicit waits (such as [`waitForDisplayed()`](../commands/element/waitForDisplayed.mdx) and [`waitUntil()`](../commands/element/waitUntil.mdx)) are necessary for working with dynamic content:
 
-```typescript
+```typescript testplane=quickstart-waits fixture=quickstart-page
 describe("Wait", () => {
     it("Waiting for elements", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         const button = await browser.$("button*=Get");
 
@@ -310,7 +320,7 @@ describe("Wait", () => {
     });
 
     it("Custom wait", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         const heading = await browser.$("h1");
 
@@ -333,12 +343,12 @@ describe("Wait", () => {
 
 Testplane allows taking screenshots of elements and comparing them with reference images using the [`assertView()`](../commands/browser/assertView.mdx) command.
 
-On the first test run, reference screenshots are created. On subsequent runs, Testplane compares new screenshots with the references and reports differences. If there are no differences, the test passes. If differences exist, the test fails, and a diff image is saved for analysis.
+Create and review reference screenshots with `testplane --update-refs`. A normal run with a missing reference fails. On subsequent runs, Testplane compares new screenshots with the references and reports differences. If there are no differences, the test passes. If differences exist, the test fails, and a diff image is saved for analysis.
 
-```typescript
+```typescript testplane=quickstart-visual fixture=quickstart-visual
 describe("Visual check", () => {
     it("Logo", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         // Wait for element to appear
         const brand = await browser.$(".navbar__brand");
@@ -354,20 +364,20 @@ describe("Visual check", () => {
 
 The [`execute()`](../commands/browser/execute.mdx) method runs JavaScript code in the page context:
 
-```typescript
+```typescript testplane=quickstart-execute fixture=quickstart-page
 describe("Executing JavaScript", () => {
     it("Example", async ({ browser }) => {
-        await browser.url("https://testplane.io/");
+        await browser.url("/fixtures/quickstart/docs.html");
 
         // Working with localStorage
         await browser.execute(() => {
-            localStorage.setItem("token", "abc123");
+            localStorage.setItem("theme", "dark");
         });
 
-        const token = await browser.execute(() => {
-            return localStorage.getItem("token");
+        const theme = await browser.execute(() => {
+            return localStorage.getItem("theme");
         });
-        expect(token).toBe("abc123");
+        expect(theme).toBe("dark");
 
         // Passing parameters
         const sum = await browser.execute((a, b) => a + b, 5, 10);

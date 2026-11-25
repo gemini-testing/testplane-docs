@@ -26,14 +26,14 @@ await browser.$(selector).isEqual(el);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should detect if an element is clickable", async ({ browser }) => {
-    const el = await browser.$("#el");
+```html testplane-html=element-html
+<button id="el">Save</button> <button id="anotherEl">Cancel</button>
+```
 
-    const sameEl = await browser.$("#el");
-    const anotherEl = await browser.$("#anotherEl");
+```javascript testplane=element-is-equal fixture=element-html
+const assert = require("node:assert/strict");
 
-    el.isEqual(sameEl); // выведет: true
-    el.isEqual(anotherEl); // выведет: false
-});
+const first = await browser.$("#el");
+assert.equal(await first.isEqual(await browser.$("#el")), true);
+assert.equal(await first.isEqual(await browser.$("#anotherEl")), false);
 ```

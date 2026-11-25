@@ -2,9 +2,9 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `abortOnce`, чтобы прервать запрос один раз с заданной ошибкой.
+Используйте команду `abortOnce`, чтобы прервать запрос один раз.
 
-Запрос можно прервать с одной из следующих ошибок:
+В сессии WebDriver BiDi вызывайте `mock.abortOnce()` без кода ошибки. В сессии CDP укажите одну из следующих ошибок:
 
 -   Failed
 -   Aborted
@@ -36,20 +36,28 @@ mock.abortOnce(errorCode);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should block mock only once", async ({ browser }) => {
-    const mock = await browser.mock("https://webdriver.io");
-    mock.abortOnce("Failed");
+В примере используется WebDriver BiDi: кнопка `#reload` отправляет GET на `/api/items`, а `#source` показывает результат.
 
-    await browser
-        .url("https://webdriver.io")
-        // ловим исключение, так как запрос к странице упадет
-        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
+```javascript testplane=mock-abort-once fixture=matchers-network
+const mock = await browser.mock("/api/items");
+mock.abortOnce();
 
-    await browser.url("https://webdriver.io");
-    console.log(await browser.getTitle());
-    // выведет: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
-});
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("Unavailable");
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("original");
+```
+
+Для CDP можно указать причину сетевой ошибки:
+
+```javascript testplane=mock-abort-once-cdp fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+mock.abortOnce("TimedOut");
+
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("Unavailable");
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("original");
 ```
 
 ## Связанные команды {/* #related */}

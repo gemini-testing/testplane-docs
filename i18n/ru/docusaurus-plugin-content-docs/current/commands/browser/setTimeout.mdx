@@ -26,18 +26,14 @@ await browser.setTimeout({ implicit, pageLoad, script });
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should change timeout duration for session with long code duration", async ({ browser }) => {
-    await browser.setTimeout({
-        pageLoad: 10000,
-        script: 60000,
-    });
+```javascript testplane=browser-set-timeout fixture=browser-page
+const assert = require("node:assert/strict");
 
-    // выполняем код, который занимает длительное время
-    await browser.executeAsync(done => {
-        console.log("Wake me up before you go!");
-        setTimeout(done, 59000);
-    });
+it("changes the timeouts for this session", async ({ browser }) => {
+    await browser.setTimeout({ pageLoad: 10000, script: 5000 });
+    const timeouts = await browser.getTimeouts();
+    assert.equal(timeouts.pageLoad, 10000);
+    assert.equal(timeouts.script, 5000);
 });
 ```
 

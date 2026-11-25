@@ -14,32 +14,21 @@ await browser.$(selector).isDisplayedInViewport();
 
 ## Примеры использования {/* #examples */}
 
-**index.html**
-
-```javascript
-<div id="notDisplayed" style="display: none"></div>
-<div id="notVisible" style="visibility: hidden"></div>
-<div id="notInViewport" style="position:absolute; left: 9999999"></div>
-<div id="zeroOpacity" style="opacity: 0"></div>
+```html testplane-html=element-html
+<div id="visible">Visible</div>
+<div id="notDisplayed" style="display: none">Hidden</div>
+<div id="notVisible" style="visibility: hidden">Hidden</div>
+<div id="notInViewport" style="position: absolute; left: 10000px">Off screen</div>
+<div id="zeroOpacity" style="opacity: 0">Transparent</div>
 ```
 
-**isDisplayed.js**
+```javascript testplane=element-is-displayed-in-viewport fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should detect if an element is visible", async ({ browser }) => {
-    let isDisplayedInViewport = await browser.$("#notDisplayed").isDisplayedInViewport();
-    console.log(isDisplayedInViewport); // выведет: false
-
-    isDisplayedInViewport = await browser.$("#notVisible").isDisplayedInViewport();
-    console.log(isDisplayedInViewport); // выведет: false
-
-    isDisplayedInViewport = await browser.$("#notExisting").isDisplayedInViewport();
-    console.log(isDisplayedInViewport); // выведет: false
-
-    isDisplayedInViewport = await browser.$("#notInViewport").isDisplayedInViewport();
-    console.log(isDisplayedInViewport); // выведет: false
-
-    isDisplayedInViewport = await browser.$("#zeroOpacity").isDisplayedInViewport();
-    console.log(isDisplayedInViewport); // выведет: false
-});
+assert.equal(await browser.$("#visible").isDisplayedInViewport(), true);
+assert.equal(await browser.$("#notDisplayed").isDisplayedInViewport(), false);
+assert.equal(await browser.$("#notVisible").isDisplayedInViewport(), false);
+assert.equal(await browser.$("#notExisting").isDisplayedInViewport(), false);
+assert.equal(await browser.$("#notInViewport").isDisplayedInViewport(), false);
+assert.equal(await browser.$("#zeroOpacity").isDisplayedInViewport(), false);
 ```

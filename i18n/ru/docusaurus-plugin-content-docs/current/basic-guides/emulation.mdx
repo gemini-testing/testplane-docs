@@ -14,19 +14,14 @@ import Admonition from "@theme/Admonition";
 
 ### Пример: замедляем скорость процессора в 8 раз
 
-```javascript
-it("should open yandex.ru with emulation 8x slower CPU", async function ({ browser }) {
-    // Получаем инстанс puppeteer'а
-    const puppeteer = await browser.getPuppeteer();
+```javascript testplane=guide-cpu-emulation fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
 
-    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
-    const [page] = await puppeteer.pages();
-
-    // Замедляем скорость процессора в 8 раз
-    await page.emulateCPUThrottling(8);
-
-    await browser.url("https://yandex.ru");
-});
+const [page] = await (await browser.getPuppeteer()).pages();
+await page.emulateCPUThrottling(8);
+await browser.url("/navigation");
+assert.equal(await browser.$("h1").getText(), "Navigation");
+await page.emulateCPUThrottling(1);
 ```
 
 ## Пропускная способность сети
@@ -37,9 +32,9 @@ it("should open yandex.ru with emulation 8x slower CPU", async function ({ brows
 
 </Admonition>
 
-Огромное количество пользователей пользуются сервисами с мобильных устройств, на которых скорость интернета бывает довольно медленной или совсем пропадает на время. В _webdriverio_ мы можем ограничить пропускную способность сети с помощью метода [throttle][throttle] и таким образом протестировать поведение сайта в сетях с разной пропускной способностью.
+Огромное количество пользователей пользуются сервисами с мобильных устройств, на которых скорость интернета бывает довольно медленной или совсем пропадает на время. В _webdriverio_ мы можем ограничить пропускную способность сети с помощью метода [throttleNetwork][throttle] и таким образом протестировать поведение сайта в сетях с разной пропускной способностью.
 
-Помимо индивидуальных настроек метод [throttle][throttle] поддерживает следующие готовые пресеты:
+Помимо индивидуальных настроек метод [throttleNetwork][throttle] поддерживает следующие готовые пресеты:
 
 -   offline | online
 -   GPRS
@@ -51,33 +46,31 @@ it("should open yandex.ru with emulation 8x slower CPU", async function ({ brows
 
 ### Пример 1: эмуляция 2G-соединения
 
-Сэмулируем 2G-соединение и откроем yandex.ru в Хроме с эмуляцией телефона:
+Ограничим скорость сети в обычной вкладке Chrome и убедимся, что страница по-прежнему доступна:
 
-```javascript
-it("should open yandex.ru with emulation of 2G-connection", async function ({ browser }) {
-    // Имитируем 2G-соединение
-    await browser.throttle("Good2G");
+```javascript testplane=guide-network-preset fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
 
-    await browser.url("https://yandex.ru");
-});
+await browser.throttleNetwork("Good2G");
+await browser.url("/navigation");
+assert.equal(await browser.$("h1").getText(), "Navigation");
 ```
 
 ### Пример 2: эмуляция сети с заданными характеристиками
 
 Также мы можем сэмулировать соединение с конкретными характеристиками:
 
-```javascript
-it("should open yandex.ru with emulation of custom connection", async function ({ browser }) {
-    // Имитируем соединение в сети с заданными характеристиками
-    await browser.throttle({
-        offline: false, // имитация отключения от интернета
-        downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (byte/sec)
-        uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (byte/sec)
-        latency: 10, // минимальная задержка от отправки запроса до получения заголовков ответа
-    });
+```javascript testplane=guide-network-custom fixture=guides-page transport=cdp
+const assert = require("node:assert/strict");
 
-    await browser.url("https://yandex.ru");
+await browser.throttleNetwork({
+    offline: false,
+    downloadThroughput: (10 * 1024) / 8,
+    uploadThroughput: (10 * 1024) / 8,
+    latency: 10,
 });
+await browser.url("/navigation");
+assert.equal(await browser.$("h1").getText(), "Navigation");
 ```
 
 [emulate-cpu-throttling]: https://pptr.dev/api/puppeteer.page.emulatecputhrottling

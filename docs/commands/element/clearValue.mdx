@@ -21,18 +21,18 @@ await browser.$(selector).clearValue();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate the clearValue command", async ({ browser }) => {
-    const elem = await browser.$(".input");
-    await elem.setValue("test123");
+```html testplane-html=element-html
+<input class="input" />
+```
 
-    const value = await elem.getValue();
-    console.log(value); // outputs: 'test123'
+```javascript testplane=element-clear-value fixture=element-html
+const assert = require("node:assert/strict");
 
-    await elem.clearValue();
-    value = await elem.getValue();
-    assert.equal(value, ""); // true
-});
+const input = await browser.$(".input");
+await input.setValue("test123");
+assert.equal(await input.getValue(), "test123");
+await input.clearValue();
+assert.equal(await input.getValue(), "");
 ```
 
 ## Related Commands {/* #related */}

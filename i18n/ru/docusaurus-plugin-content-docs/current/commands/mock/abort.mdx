@@ -2,9 +2,9 @@
 
 ## Обзор {/* #overview */}
 
-Используйте команду `abort`, чтобы прервать запрос с заданной ошибкой.
+Используйте команду `abort`, чтобы прервать запрос.
 
-Запрос можно прервать с одной из следующих ошибок:
+В сессии WebDriver BiDi вызывайте `mock.abort()` без кода ошибки. В сессии CDP укажите одну из следующих ошибок:
 
 -   Failed
 -   Aborted
@@ -36,11 +36,29 @@ mock.abort(errorCode);
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("should block Google Analytics from page", async ({ browser }) => {
-    const mock = await browser.mock("https://www.google-analytics.com/**");
-    mock.abort("Failed");
-});
+В примере используется WebDriver BiDi: кнопка `#reload` отправляет GET на `/api/items`, а `#source` показывает результат.
+
+```javascript testplane=mock-abort fixture=matchers-network
+const mock = await browser.mock("/api/items");
+mock.abort();
+
+for (let i = 0; i < 2; i++) {
+    await browser.$("#reload").click();
+    await expect(browser.$("#source")).toHaveText("Unavailable");
+}
+```
+
+Для CDP можно указать причину сетевой ошибки:
+
+```javascript testplane=mock-abort-cdp fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+const reasons = [];
+mock.on("fail", ({ errorReason }) => reasons.push(errorReason));
+mock.abort("ConnectionRefused");
+
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("Unavailable");
+expect(reasons).toEqual(["ConnectionRefused"]);
 ```
 
 ## Связанные команды {/* #related */}

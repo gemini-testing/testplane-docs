@@ -342,15 +342,10 @@ The `CLI` event is triggered immediately upon startup, before Testplane parses t
 
 ### Subscribing to the event {/* #cli_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.CLI, cli => {
-    console.info("Processing CLI event...");
-
-    cli.option(
-        "--some-option <some-value>",
-        "the full description of the option",
-        // see more at https://github.com/tj/commander.js#options
-    );
+    cli.option("--some-option <value>", "Use the specified value");
+    console.info("Registered --some-option");
 });
 ```
 
@@ -407,7 +402,7 @@ This event is emitted once in master process and once in each worker.
 
 ### Subscribing to the event {/* #init_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.INIT, async () => {
     console.info("Processing INIT event...");
 });
@@ -521,15 +516,11 @@ Click to view the usage example
 
 **Plugin code**
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testParser }) => {
     testParser.setController("logger", {
-        log: function (prefix) {
-            console.log(
-                `${prefix}: just parsed ${this.fullTitle()} from file ${file} for browser ${
-                    this.browserId
-                }`,
-            );
+        log(prefix) {
+            console.info(`${prefix}: ${this.fullTitle()} (${this.browserId}) in ${file}`);
         },
     });
 });
@@ -558,7 +549,7 @@ The `AFTER_FILE_READ` event is triggered after the test file is read. The event 
 
 ### Subscribing to the event {/* #after_file_read_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.AFTER_FILE_READ, ({ file, testplane }) => {
     console.info("Processing AFTER_FILE_READ event...");
 });
@@ -585,7 +576,7 @@ By subscribing to this event, you can perform various manipulations on the test 
 
 ### Subscribing to the event {/* #after_tests_read_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.AFTER_TESTS_READ, testCollection => {
     console.info("Processing AFTER_TESTS_READ event...");
 });
@@ -639,7 +630,7 @@ The `RUNNER_START` event is triggered after all Testplane workers are initialize
 
 ### Subscribing to the event {/* #runner_start_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.RUNNER_START, async runner => {
     console.info("Processing RUNNER_START event...");
 });
@@ -693,7 +684,7 @@ The `RUNNER_END` event is triggered after the test is run and before all workers
 
 ### Subscribing to the event {/* #runner_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.RUNNER_END, async result => {
     console.info("Processing RUNNER_END event...");
 });
@@ -727,7 +718,7 @@ The final result is frozen before delivery. The event handler itself is outside 
 
 ### Subscribing to the event {/* #profiler_result_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.PROFILER_RESULT, async result => {
     console.info(`Profile ${result.run.id}: ${result.run.durationMs} ms`);
 });
@@ -747,7 +738,7 @@ The `NEW_WORKER_PROCESS` event is triggered after a new Testplane subprocess (wo
 
 ### Subscribing to the event {/* #new_worker_process_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.NEW_WORKER_PROCESS, workerProcess => {
     console.info("Processing NEW_WORKER_PROCESS event...");
 });
@@ -822,7 +813,7 @@ The `SESSION_START` event is triggered after the browser session is initialized.
 
 ### Subscribing to the event {/* #session_start_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SESSION_START, async (browser, { browserId, sessionId }) => {
     console.info("Processing SESSION_START event...");
 });
@@ -896,7 +887,7 @@ The `SESSION_END` event is triggered after the browser session ends. The event h
 
 ### Subscribing to the event {/* #session_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SESSION_END, async (browser, { browserId, sessionId }) => {
     console.info("Processing SESSION_END event...");
 });
@@ -917,7 +908,7 @@ The `BEGIN` event is triggered before the test is run, but after all runners are
 
 ### Subscribing to the event {/* #begin_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.BEGIN, () => {
     console.info("Processing BEGIN event...");
 });
@@ -939,7 +930,7 @@ The `END` event is triggered right before the `RUNNER_END` event. The event hand
 
 ### Subscribing to the event {/* #end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.END, () => {
     console.info("Processing END event...");
 });
@@ -961,7 +952,7 @@ The `SUITE_BEGIN` event is triggered before a test suite is run. The event handl
 
 ### Subscribing to the event {/* #suite_begin_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SUITE_BEGIN, suite => {
     console.info(`Processing SUITE_BEGIN event for "${suite.fullTitle()}"...`);
 });
@@ -973,7 +964,7 @@ An instance of _suite_ is passed to the event handler.
 
 ### Event Interception {/* #suite_begin_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.SUITE_BEGIN, ({ event, data: suite }) => {
     console.info(`Intercepting SUITE_BEGIN event for "${suite.fullTitle()}"...`);
 });
@@ -987,7 +978,7 @@ The `SUITE_END` event is triggered after the test suite _(suite)_ has finished e
 
 ### Event Subscription {/* #suite_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.SUITE_END, suite => {
     console.info(`Handling SUITE_END event for "${suite.fullTitle()}"...`);
 });
@@ -999,7 +990,7 @@ An instance of _suite_ is passed to the event handler.
 
 ### Event Interception {/* #suite_end_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.SUITE_END, ({ event, data: suite }) => {
     console.info(`Intercepting SUITE_END event for "${suite.fullTitle()}"...`);
 });
@@ -1013,7 +1004,7 @@ The `TEST_BEGIN` event is triggered before the test is executed. The event handl
 
 ### Event Subscription {/* #test_begin_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_BEGIN, test => {
     if (test.pending) {
         // test is disabled, no action needed
@@ -1033,7 +1024,7 @@ An instance of the test is passed to the event handler.
 
 ### Event Interception {/* #test_begin_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.TEST_BEGIN, ({ event, data: test }) => {
     console.info(
         `Intercepting TEST_BEGIN event ` +
@@ -1054,7 +1045,7 @@ The `TEST_END` event is triggered after the test has finished executing. The eve
 
 ### Event Subscription {/* #test_end_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_END, test => {
     if (test.pending) {
         // test is disabled, no action needed
@@ -1074,7 +1065,7 @@ An instance of the test is passed to the event handler.
 
 ### Event Interception {/* #test_end_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.TEST_END, ({ event, data: test }) => {
     console.info(
         `Intercepting TEST_END event ` +
@@ -1095,7 +1086,7 @@ The `TEST_PASS` event is triggered if the test passes successfully. The event ha
 
 ### Event Subscription {/* #test_pass_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_PASS, test => {
     console.info(
         `Handling TEST_PASS event ` +
@@ -1110,7 +1101,7 @@ An instance of the test is passed to the event handler.
 
 ### Event Interception {/* #test_pass_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.TEST_PASS, ({ event, data: test }) => {
     console.info(
         `Intercepting TEST_PASS event ` +
@@ -1131,7 +1122,7 @@ The `TEST_FAIL` event is triggered if the test fails. The event handler is execu
 
 ### Event Subscription {/* #test_fail_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_FAIL, test => {
     console.info(
         `Handling TEST_FAIL event ` +
@@ -1146,8 +1137,8 @@ An instance of the test is passed to the event handler.
 
 ### Event Interception {/* #test_fail_interception */}
 
-```javascript
-testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
+```javascript testplane-project=event
+testplane.intercept(testplane.events.TEST_FAIL, ({ event, data: test }) => {
     console.info(
         `Intercepting TEST_FAIL event ` +
             `for test "${test.fullTitle()}" in browser "${test.browserId}"...`,
@@ -1167,7 +1158,7 @@ The `TEST_PENDING` event is triggered if the test is disabled. The event handler
 
 ### Event Subscription {/* #test_pending_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.TEST_PENDING, test => {
     console.info(
         `Handling TEST_PENDING event ` +
@@ -1194,7 +1185,7 @@ The event handler is executed synchronously. The event can also be intercepted a
 
 ### Event Subscription {/* #retry_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.RETRY, test => {
     console.info(
         `Handling RETRY event ` +
@@ -1209,7 +1200,7 @@ An instance of the test is passed to the event handler.
 
 ### Event Interception {/* #retry_interception */}
 
-```javascript
+```javascript testplane-project=event
 testplane.intercept(testplane.events.RETRY, ({ event, data: test }) => {
     console.info(
         `Intercepting RETRY event ` +
@@ -1282,7 +1273,7 @@ The `NEW_BROWSER` event is triggered after a new browser instance is created. Th
 
 ### Event Subscription {/* #new_browser_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.NEW_BROWSER, (browser, { browserId, browserVersion }) => {
     console.info("Handling NEW_BROWSER event...");
 });
@@ -1332,7 +1323,7 @@ The `UPDATE_REFERENCE` event is triggered after the reference screenshots are up
 
 ### Event Subscription {/* #update_reference_subscription */}
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.UPDATE_REFERENCE, ({ state, refImg }) => {
     console.info("Handling UPDATE_REFERENCE event...");
 });

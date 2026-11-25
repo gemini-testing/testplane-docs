@@ -190,7 +190,7 @@ it("показывает интерфейс на немецком", async ({ bro
 
 Например, так можно проверить форматирование числа для немецкой локали:
 
-```typescript
+```typescript testplane=orders-locale-ru fixture=environment-ru
 it("форматирует число для немецкой локали", async ({ browser }) => {
     const puppeteer = await browser.getPuppeteer();
     const [page] = await puppeteer.pages();
@@ -200,7 +200,7 @@ it("форматирует число для немецкой локали", asy
         locale: "de-DE",
     });
 
-    await browser.url("/");
+    await browser.url("/orders");
 
     const averageValue = await browser.getByTestId("average-value");
     await expect(averageValue).toHaveText("1.234,56");
@@ -213,13 +213,13 @@ it("форматирует число для немецкой локали", asy
 
 Если отображение дат и времени зависит от часового пояса пользователя, задайте нужный часовой пояс через Puppeteer [`page.emulateTimezone()`][page-emulate-timezone].
 
-```typescript
+```typescript testplane=orders-timezone-ru fixture=environment-ru
 it("показывает время события в часовом поясе пользователя", async ({ browser }) => {
     const puppeteer = await browser.getPuppeteer();
     const [page] = await puppeteer.pages();
 
     await page.emulateTimezone("America/New_York");
-    await browser.url("/");
+    await browser.url("/orders");
 
     const eventTime = await browser.getByTestId("event-time");
     await expect(eventTime).toHaveText("07:00");
@@ -242,7 +242,7 @@ it("показывает время события в часовом поясе 
 
 Например, так можно проверить состояние страницы в определенный момент:
 
-```typescript
+```typescript testplane=orders-clock-ru fixture=environment-ru
 it("показывает активную акцию в заданный период", async ({ browser }) => {
     const clock = await browser.emulate("clock", {
         now: new Date("2024-09-04T12:30:00Z"),
@@ -250,7 +250,7 @@ it("показывает активную акцию в заданный пер�
     });
 
     try {
-        await browser.url("/");
+        await browser.url("/orders");
 
         const promoStatus = await browser.getByTestId("promo-status");
         await expect(promoStatus).toHaveText("Акция началась");
@@ -264,14 +264,14 @@ it("показывает активную акцию в заданный пер�
 
 [`tick(ms)`][clock-tick] продвигает виртуальное время на указанное количество миллисекунд. При этом срабатывают таймеры, запланированные на этот промежуток.
 
-```typescript
+```typescript testplane=orders-timers-ru fixture=environment-ru
 it("скрывает уведомление через 5 секунд", async ({ browser }) => {
     const clock = await browser.emulate("clock", {
         now: new Date("2024-09-04T12:30:00Z"),
     });
 
     try {
-        await browser.url("/");
+        await browser.url("/orders");
 
         await clock.tick(5000);
 
@@ -289,10 +289,10 @@ it("скрывает уведомление через 5 секунд", async ({
 
 Например, так можно проверить выбор изображения для темной цветовой схемы:
 
-```typescript
+```typescript testplane=orders-scheme-ru fixture=environment-ru
 it("показывает изображение для темной цветовой схемы", async ({ browser }) => {
     await browser.emulate("colorScheme", "dark");
-    await browser.url("/");
+    await browser.url("/orders");
 
     const themeLogo = await browser.getByTestId("theme-logo");
     await expect(themeLogo).toHaveAttribute("src", "/images/night.svg");
@@ -303,7 +303,7 @@ it("показывает изображение для темной цветов
 
 `browser.emulate("colorScheme")` меняет результат `matchMedia()` для `prefers-color-scheme`, но не влияет на CSS. Чтобы проверить стили из `@media (prefers-color-scheme)`, используйте [`Emulation.setEmulatedMedia`][cdp-set-emulated-media].
 
-```typescript
+```typescript testplane=orders-css-media-ru fixture=environment-ru
 it("применяет стили для темной цветовой схемы", async ({ browser }) => {
     const puppeteer = await browser.getPuppeteer();
     const [page] = await puppeteer.pages();
@@ -318,7 +318,7 @@ it("применяет стили для темной цветовой схем�
         ],
     });
 
-    await browser.url("/");
+    await browser.url("/orders");
 
     const themeBox = await browser.getByTestId("theme-box");
     const background = await themeBox.getCSSProperty("background-color");
@@ -335,9 +335,9 @@ it("применяет стили для темной цветовой схем�
 
 Например, так можно проверить сообщение об ошибке при сетевом запросе:
 
-```typescript
+```typescript testplane=orders-offline-request-ru fixture=environment-ru
 it("показывает сообщение при отсутствии сети", async ({ browser }) => {
-    await browser.url("/");
+    await browser.url("/orders");
 
     await browser.throttleNetwork("offline");
 
@@ -357,7 +357,7 @@ it("показывает сообщение при отсутствии сети
 
 Для проверки интерфейса при медленном соединении передайте параметры сети в [`browser.throttleNetwork()`][throttle-network]:
 
-```typescript
+```typescript testplane=orders-slow-request-ru fixture=environment-ru
 it("показывает состояние загрузки при медленной сети", async ({ browser }) => {
     await browser.url("/orders");
 
@@ -386,10 +386,10 @@ it("показывает состояние загрузки при медлен
 
 Если приложение определяет состояние подключения по `navigator.onLine`, используйте [`browser.emulate("onLine")`][emulate-online]:
 
-```typescript
+```typescript testplane=orders-online-ru fixture=environment-ru
 it("показывает офлайн-режим", async ({ browser }) => {
     await browser.emulate("onLine", false);
-    await browser.url("/");
+    await browser.url("/orders");
 
     const connectionStatus = await browser.getByTestId("connection-status");
     await expect(connectionStatus).toHaveText("Офлайн");
@@ -426,14 +426,14 @@ it("работает при замедленном CPU", async ({ browser }) => 
 
 Например, так можно проверить поиск ближайшего пункта выдачи для пользователя в Берлине:
 
-```typescript
+```typescript testplane=orders-geolocation-ru fixture=environment-ru-geolocation
 it("показывает ближайший пункт выдачи", async ({ browser }) => {
     await browser.emulate("geolocation", {
         latitude: 52.52,
         longitude: 13.405,
     });
 
-    await browser.url("/");
+    await browser.url("/orders");
 
     const nearestPoint = await browser.findByTestId("nearest-point");
     await expect(nearestPoint).toHaveText("Пункт выдачи на Alexanderplatz");
@@ -450,9 +450,9 @@ it("показывает ближайший пункт выдачи", async ({ b
 
 Например, так можно проверить статус уведомлений:
 
-```typescript
+```typescript testplane=orders-permissions-ru fixture=environment-ru
 it("показывает статус уведомлений", async ({ browser }) => {
-    await browser.url("/");
+    await browser.url("/orders");
 
     await browser.setPermissions(
         {
@@ -515,9 +515,9 @@ browsers: {
 
 После этого тест сразу запускается в браузере с отключенным JavaScript:
 
-```typescript
+```typescript testplane=orders-nojs-ru fixture=environment-ru-nojs
 it("показывает содержимое без JavaScript", async ({ browser }) => {
-    await browser.url("/");
+    await browser.url("/orders");
 
     await expect(browser.$("[data-testid='no-js-message']")).toBeDisplayed();
 });
@@ -531,7 +531,7 @@ it("показывает содержимое без JavaScript", async ({ brows
 
 Если одна и та же эмуляция нужна в нескольких тестах, задавайте и снимайте ее в хуках:
 
-```typescript
+```typescript testplane=orders-restore-ru fixture=environment-ru
 describe("темная цветовая схема", () => {
     beforeEach(async ({ browser }) => {
         await browser.emulate("colorScheme", "dark");
@@ -542,9 +542,10 @@ describe("темная цветовая схема", () => {
     });
 
     it("показывает изображение для темной схемы", async ({ browser }) => {
-        await browser.url("/");
+        await browser.url("/orders");
 
-        // ...
+        const image = await browser.getByTestId("theme-logo");
+        await expect(image).toHaveAttribute("src", "/images/night.svg");
     });
 });
 ```

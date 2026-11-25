@@ -1,16 +1,18 @@
-function suiteFor(file) {
-    if (
-        typeof file !== "string" ||
-        !/^generated\/(chrome|selenium)\/[a-z0-9]+(?:-[a-z0-9]+)*\.testplane\.js$/.test(file)
-    ) {
-        throw new Error(`Unsupported test path: ${file}`);
+function suiteFiles(manifest = require("./generated/manifest.json"), transport) {
+    const files = new Set();
+    for (const entry of manifest) {
+        const { test } = entry;
+        if (
+            typeof test !== "string" ||
+            !/^generated\/chrome\/[a-z0-9]+(?:-[a-z0-9]+)*\.testplane\.js$/.test(test)
+        )
+            throw new Error(`Unsupported test path: ${test}`);
+        const protocol = entry.transport ?? "bidi";
+        if (!["bidi", "cdp"].includes(protocol))
+            throw new Error(`Unknown Chrome transport: ${protocol}`);
+        if (!transport || transport === protocol) files.add(test);
     }
-    return file.startsWith("generated/selenium/") ? "selenium" : "chrome";
+    return [...files];
 }
 
-function suiteFiles(suite, manifest = require("./generated/manifest.json")) {
-    if (!["chrome", "selenium"].includes(suite)) throw new Error(`Unknown suite: ${suite}`);
-    return [...new Set(manifest.map(entry => entry.test))].filter(file => suiteFor(file) === suite);
-}
-
-module.exports = { suiteFor, suiteFiles };
+module.exports = { suiteFiles };

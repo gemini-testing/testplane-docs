@@ -19,60 +19,38 @@ import Admonition from "@theme/Admonition";
 
 Вот пример, как его можно использовать:
 
-```javascript
-it("should get accessibility tree of yandex.ru", async function ({ browser }) {
-    // Получаем инстанс puppeteer'а
-    const puppeteer = await browser.getPuppeteer();
+```javascript testplane=guide-accessibility-tree fixture=guides-accessibility transport=cdp
+const assert = require("node:assert/strict");
 
-    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
-    const [page] = await puppeteer.pages();
-
-    await browser.url("https://yandex.ru");
-
-    // Получаем текущее состояние accessibility дерева
-    const snapshot = await page.accessibility.snapshot();
-    console.log("snapshot:", JSON.stringify(snapshot, null, 4));
-});
+const [page] = await (await browser.getPuppeteer()).pages();
+const tree = await page.accessibility.snapshot();
+assert.equal(tree.role, "RootWebArea");
+assert.equal(tree.name, "Team portal");
+const links = tree.children.filter(node => node.role === "link");
+assert.deepEqual(
+    links.map(node => node.name),
+    ["Inbox", "Help"],
+);
 ```
 
 ## Accessibility-дерево {/* #accessibility_tree */}
 
-А вот как выглядит получаемое accessibility-дерево:
+Ниже показаны корень и ссылки из полученного дерева. Промежуточные текстовые узлы опущены:
 
 ```json
 {
-    "role": "WebArea",
-    "name": "Яндекс",
+    "role": "RootWebArea",
+    "name": "Team portal",
     "children": [
         {
             "role": "link",
-            "name": "Войти"
+            "name": "Inbox"
         },
         {
             "role": "link",
-            "name": "Почта"
-        },
-        {
-            "role": "link",
-            "name": "Диск"
-        },
-        {
-            "role": "link",
-            "name": "Попробовать Плюс"
-        },
-
-        // пропустим для краткости...
-
-        {
-            "role": "link",
-            "name": "финансы"
-        },
-        {
-            "role": "link",
-            "name": "политика"
+            "name": "Help"
         }
     ]
-}
 }
 ```
 

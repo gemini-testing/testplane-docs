@@ -29,22 +29,12 @@ await element.assertView(state, options);
 
 Команда `assertView` доступна как в контексте браузера, так и в контексте найденного элемента. Набор аргументов при этом отличается:
 
-```typescript
-it("check search view", async ({ browser }) => {
-    // ...
-
-    // скриншот текущего вьюпорта браузера
-    await browser.assertView("viewport-screen");
-
-    // скриншот конкретного элемента на странице (вызов из контекста браузера)
-    await browser.assertView("any-state-name", ".DocSearch", opts);
-
-    const searchInput = await browser.$(".DocSearch");
-    await searchInput.click();
-
-    // скриншот элемента, который был найден в предыдущих шагах теста (вызов из контекста элемента)
-    await searchInput.assertView("any-state-name");
-});
+```typescript testplane=guide-visual-testing fixture=guides-visual
+await browser.assertView("viewport");
+await browser.assertView("button", ".button", { tolerance: 0 });
+const button = await browser.$(".button");
+await button.click();
+await button.assertView("clicked");
 ```
 
 Подробнее о возможностях команды `assertView` читайте в соответствующих разделах.

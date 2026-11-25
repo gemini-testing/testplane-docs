@@ -1,0 +1,12 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Loading example</title>
+<main></main>
+<script>
+    setTimeout(() => {
+        const content = document.querySelector("main");
+        content.className = "content";
+        content.textContent = "Ready";
+        document.body.dataset.ready = "true";
+    }, 100);
+</script>

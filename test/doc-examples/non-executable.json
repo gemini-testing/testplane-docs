@@ -1,1 +1,193 @@
-[]
+[
+    {
+        "exampleId": "selenium-download-file",
+        "sha256": "0d75c827c6856fceab5aa1cf2da618162f598a7617ac21e579464e18743408df",
+        "reason": "The downloadFile example uses Selenium Grid managed downloads, which local ChromeDriver does not provide."
+    },
+    {
+        "page": "docs/commands/browser/$.mdx",
+        "language": "javascript",
+        "blockIndex": 2,
+        "sha256": "658c326f57c4c372e20c862863d1d97b10d5bf6680374602e0cccc9fe56f623c",
+        "requires": "mobile",
+        "reason": "Android Espresso DataMatcher requires a native Android application, not a desktop Chrome page."
+    },
+    {
+        "page": "docs/commands/browser/mock.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "2cf9b7e47f4aafb3e088b9c46aad0b94c3567ac385d4d302d57e09f8f94d12d4",
+        "reason": "Reference signature with placeholders; the request-interception example below runs in Chrome."
+    },
+    {
+        "page": "docs/commands/browser/switchToRepl.mdx",
+        "language": "typescript",
+        "blockIndex": 0,
+        "sha256": "3cf7e5f82926188c58034c483af6b7256067ee522a4df4536f4d627eb929962c",
+        "reason": "This is the switchToRepl(ctx) signature with a placeholder context; the actual REPL interaction needs an interactive terminal."
+    },
+    {
+        "page": "docs/commands/element/$.mdx",
+        "language": "javascript",
+        "blockIndex": 4,
+        "sha256": "748c901de3329adef1be5a52f8bfed3567f9ad9ba21b662cd4e297759465c9bb",
+        "requires": "mobile",
+        "reason": "Пример Android Espresso с нативным DataMatcher/ViewMatcher; в настольном Chrome эти элементы отсутствуют."
+    },
+    {
+        "page": "docs/commands/element/reactDollarDollar.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "b3df1e9abc41b136a23152ef7489c5d2e28f1b9ba75cebe9b0199de8bc44be30",
+        "reason": "Сигнатура команды элемента с условными именами аргументов; исполняемый пример команды приведён ниже."
+    },
+    {
+        "page": "docs/commands/expect/overview.mdx",
+        "language": "typescript",
+        "blockIndex": 3,
+        "sha256": "338e5dcc877207d1bc85d32eedb40f80b12beed7a393b738677c1128e1b3669f",
+        "reason": "Фрагмент секции system.expectOpts в конфигурации Testplane, а не браузерный тест."
+    },
+    {
+        "page": "docs/commands/mock/abort.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "fb6b6f020528f005704f5931f16e718223c74f4d2b74c6b9fd5c445b0628cb46",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "docs/commands/mock/abortOnce.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "5f2a5b9d42df765452edc35dfdbb33bcb1c9bd9cde1c2dc669205fbf0e5f3e7d",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "docs/commands/mock/clear.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "3254733571ab4ec66c3bf75ca030ecaf3a80f2da4cc030c77f81fe5b4bc3db6e",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "docs/commands/mock/respond.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "d4cd3074fcfc6bd0600e604fea6adc99657d5275d0851d090a12d64df4d76efd",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "docs/commands/mock/respondOnce.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "1703879834683d33c8587af7dbd9933b0dd131845f53ba9d5bba38cc8f07cc3e",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "docs/commands/mock/restore.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "c644a0045cf015303c220eed3e63eca18f7955d12dbdf960d5e1457b67466c27",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "docs/guides/how-to-check-accessibility.mdx",
+        "language": "json",
+        "blockIndex": 0,
+        "sha256": "77442113967da7399aacac012c07fcea2da51f77bc0b033acec3c99c95a48199",
+        "reason": "Фрагмент вывода accessibility.snapshot(): роли и имена элементов проверяет пример выше; JSON не является сценарием."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/$.mdx",
+        "language": "javascript",
+        "blockIndex": 2,
+        "sha256": "658c326f57c4c372e20c862863d1d97b10d5bf6680374602e0cccc9fe56f623c",
+        "requires": "mobile",
+        "reason": "Android Espresso DataMatcher requires a native Android application, not a desktop Chrome page."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/browser/mock.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "2cf9b7e47f4aafb3e088b9c46aad0b94c3567ac385d4d302d57e09f8f94d12d4",
+        "reason": "Reference signature with placeholders; the request-interception example below runs in Chrome."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/$.mdx",
+        "language": "javascript",
+        "blockIndex": 4,
+        "sha256": "010c92441214ab1a61506d0b121d052a66618493fe0fa4162c9b37009eecb443",
+        "requires": "mobile",
+        "reason": "Пример Android Espresso с нативным DataMatcher/ViewMatcher; в настольном Chrome эти элементы отсутствуют."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/reactDollarDollar.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "b3df1e9abc41b136a23152ef7489c5d2e28f1b9ba75cebe9b0199de8bc44be30",
+        "reason": "Сигнатура команды элемента с условными именами аргументов; исполняемый пример команды приведён ниже."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/element/shadowDollar.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "5bc292df295f8f365015c3cef9dc0c07af79f8b17c77683fb6a2e13f25662d09",
+        "reason": "Сигнатура команды элемента с условными именами аргументов; исполняемый пример команды приведён ниже."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/expect/overview.mdx",
+        "language": "typescript",
+        "blockIndex": 3,
+        "sha256": "8b539f9329eb876b7acf72775e0eaac350d18b2fd7cca50a7020c0218f6f5704",
+        "reason": "Фрагмент секции system.expectOpts в конфигурации Testplane, а не браузерный тест."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/abort.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "fb6b6f020528f005704f5931f16e718223c74f4d2b74c6b9fd5c445b0628cb46",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/abortOnce.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "5f2a5b9d42df765452edc35dfdbb33bcb1c9bd9cde1c2dc669205fbf0e5f3e7d",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/clear.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "3254733571ab4ec66c3bf75ca030ecaf3a80f2da4cc030c77f81fe5b4bc3db6e",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/respond.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "d4cd3074fcfc6bd0600e604fea6adc99657d5275d0851d090a12d64df4d76efd",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/respondOnce.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "1703879834683d33c8587af7dbd9933b0dd131845f53ba9d5bba38cc8f07cc3e",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/mock/restore.mdx",
+        "language": "javascript",
+        "blockIndex": 0,
+        "sha256": "c644a0045cf015303c220eed3e63eca18f7955d12dbdf960d5e1457b67466c27",
+        "reason": "Сигнатура вызова в разделе Usage; аргументы и мок обозначают параметры, а не готовый сценарий."
+    },
+    {
+        "page": "i18n/ru/docusaurus-plugin-content-docs/current/guides/how-to-check-accessibility.mdx",
+        "language": "json",
+        "blockIndex": 0,
+        "sha256": "77442113967da7399aacac012c07fcea2da51f77bc0b033acec3c99c95a48199",
+        "reason": "Фрагмент вывода accessibility.snapshot(): роли и имена элементов проверяет пример выше; JSON не является сценарием."
+    }
+]

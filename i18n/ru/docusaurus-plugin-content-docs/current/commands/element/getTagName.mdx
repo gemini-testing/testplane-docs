@@ -12,18 +12,13 @@ await browser.$(selector).getTagName();
 
 ## Примеры использования {/* #examples */}
 
-**index.html**
-
-```javascript
+```html testplane-html=element-html
 <div id="elem">Lorem ipsum</div>
 ```
 
-**getTagName.js**
+```javascript testplane=element-get-tag-name fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should demonstrate the getTagName command", async ({ browser }) => {
-    const tagName = await browser.$("#elem").getTagName();
-
-    console.log(tagName); // выведет: "div"
-});
+const elem = await browser.$("#elem");
+assert.equal(await elem.getTagName(), "div");
 ```

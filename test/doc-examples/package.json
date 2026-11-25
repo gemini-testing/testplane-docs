@@ -2,8 +2,7 @@
     "name": "testplane-docs-examples",
     "version": "1.0.0",
     "scripts": {
-        "test": "node generate-snippets.mjs && node run-examples.cjs",
-        "test:selenium": "node generate-snippets.mjs && node run-examples.cjs --config testplane.selenium.config.js",
+        "test": "node run-ci.cjs",
         "check:snippets": "node verify-snippets.cjs --base HEAD"
     },
     "license": "ISC",
@@ -12,7 +11,9 @@
         "@testplane/globals": "^1.0.1",
         "@testplane/testing-library": "^1.0.5",
         "html-reporter": "^11.17.2",
-        "testplane": "^9.3.2"
+        "react-dom16": "npm:react-dom@16.14.0",
+        "react16": "npm:react@16.14.0",
+        "testplane": "9.7.2"
     },
     "private": true
 }

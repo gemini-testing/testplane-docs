@@ -20,19 +20,19 @@ However, the command descriptions on the [WebDriverIO][webdriverio-api] website 
 
 -   In WebDriverIO, the `browser` object exists in the global scope, whereas in Testplane you need to either write `this.browser`:
 
-```javascript
-it("should test something", async function () {
-    await this.browser.url("https://testplane.io");
-    // test code...
+```javascript testplane=commands-browser-context-en
+it("opens a page using the test context", async function () {
+    await this.browser.url("data:text/html,<title>Welcome</title>");
+    await expect(this.browser).toHaveTitle("Welcome");
 });
 ```
 
 or get the `browser` object from the function argument (note that the `browser` object is passed inside an object!):
 
-```javascript
-it("should test something", async ({ browser }) => {
-    await browser.url("https://testplane.io");
-    // test code...
+```javascript testplane=commands-browser-argument-en
+it("opens a page using the browser argument", async ({ browser }) => {
+    await browser.url("data:text/html,<title>Welcome</title>");
+    await expect(browser).toHaveTitle("Welcome");
 });
 ```
 

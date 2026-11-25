@@ -8,16 +8,19 @@
 
 ## Использование {/* #usage */}
 
-```javascript
-await browser.openAndWait("some/url", {
-    selector: [".some", ".selector"],
-    predicate: () => document.isReady,
-    ignoreNetworkErrorsPatterns: ["https://mc.yandex.ru", "https://avatars.mds.yandex.net/*"],
+```javascript testplane=browser-open-wait-options fixture=browser-page
+const assert = require("node:assert/strict");
+
+await browser.openAndWait("/fixtures/browser/ready.html", {
+    selector: [".content"],
+    predicate: () => browser.execute(() => document.body.dataset.ready === "true"),
     waitNetworkIdle: true,
-    waitNetworkIdleTimeout: 500,
+    waitNetworkIdleTimeout: 100,
     failOnNetworkError: true,
-    timeout: 20000,
+    ignoreNetworkErrorsPatterns: ["/metrics"],
+    timeout: 5000,
 });
+assert.equal(await browser.$(".content").getText(), "Ready");
 ```
 
 ## Параметры команды {/* #parameters */}
@@ -41,7 +44,7 @@ await browser.openAndWait("some/url", {
 </thead>
 <tbody>
 <tr><td>selector</td><td>String\|String[]</td><td>Селектор (/селекторы) элемента (/элементов), которые должны существовать на загруженной странице.</td></tr>
-<tr><td>predicate</td><td>() => Promise&lt;bool&gt; \| bool</td><td>Предикат, возвращающий `true`, если страница загружена. Выполняется в браузерном контексте: [waitUntil](https://webdriver.io/docs/api/element/waitUntil).</td></tr>
+<tr><td>predicate</td><td>() => Promise&lt;bool&gt; \| bool</td><td>Предикат, возвращающий `true`, если страница загружена. Вызывается в тесте, как в `browser.waitUntil`. Для доступа к странице используйте `browser.execute`.</td></tr>
 <tr><td>waitNetworkIdle</td><td>Boolean</td><td>Если `true`, ожидает окончания выполнения всех сетевых запросов. По умолчанию `true`. Работает только в CDP браузерах, игнорируется для остальных.</td></tr>
 <tr><td>waitNetworkIdleTimeout</td><td>Number</td><td>Время (в миллисекундах) после окончания всех сетевых запросов, чтобы считать сеть простаивающей. По умолчанию 500.</td></tr>
 <tr><td>failOnNetworkError</td><td>Boolean</td><td>Нужно ли бросать ошибку при сетевых ошибках. По умолчанию `true`. Работает только в CDP браузерах, игнорируется для остальных</td></tr>
@@ -54,19 +57,14 @@ await browser.openAndWait("some/url", {
 
 ## Примеры использования {/* #examples */}
 
-```javascript
-it("some test", async ({ browser }) => {
-    // С `waitNetworkIdle` также ожидаем загрузки картинок, шрифтов, стилей, игнорируя ошибки метрики
-    await browser.openAndWait("some/url", {
-        selector: [".selector"],
-        predicate: () => document.isReady,
-        ignoreNetworkErrorsPatterns: ["https://mc.yandex.ru"],
-        waitNetworkIdle: true,
-        waitNetworkIdleTimeout: 500,
-        failOnNetworkError: true,
-        timeout: 20000,
-    });
+```javascript testplane=browser-open-and-wait fixture=browser-page
+const assert = require("node:assert/strict");
 
-    await browser.assertView("plain", ".selector");
+it("waits for the page to become ready", async ({ browser }) => {
+    await browser.openAndWait("/fixtures/browser/ready.html", {
+        selector: ".content",
+        predicate: () => browser.execute(() => document.body.dataset.ready === "true"),
+    });
+    assert.equal(await browser.$(".content").getText(), "Ready");
 });
 ```

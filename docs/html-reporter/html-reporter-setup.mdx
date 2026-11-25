@@ -363,7 +363,7 @@ By default, anonymous data about report UI usage is collected for analysis and U
 If you don't want to share analytics with us, you can disable it in any of the following ways:
 
 -   In the config
-    ```javascript
+    ```javascript testplane-project=config
     module.exports = {
         plugins: {
             "html-reporter/testplane": {
@@ -462,12 +462,12 @@ All plugin parameters that can be defined in the config can also be passed as co
 
 For example, the settings parameter [path](#path) can be passed in the following ways:
 
-```bash
-testplane path/to/mytest.js --html-reporter-path custom/dir
+```bash testplane-project=reporter
+npx testplane sample.testplane.js --html-reporter-path custom-report
 ```
 
-```bash
-html_reporter_path=custom/dir testplane path/to/mytest.js
+```bash testplane-project=reporter
+html_reporter_path=custom-report npx testplane sample.testplane.js
 ```
 
 ## Data storage {/* #data_storage */}

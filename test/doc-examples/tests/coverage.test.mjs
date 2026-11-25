@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -317,6 +318,82 @@ test("adding a complete marked example is covered without generating or committi
     assert.equal(result.status, 0, result.stderr);
     assert.equal(result.report.counts.covered, 1);
     assert.equal(result.report.counts.legacy, 2);
+});
+
+for (const alreadyCovered of [false, true]) {
+    test(`a Grid-only block ${alreadyCovered ? "cannot downgrade Chrome coverage" : "is reported as not run"}`, t => {
+        const f = fixture(t, alreadyCovered);
+        const approval = {
+            exampleId: "example",
+            sha256: createHash("sha256").update(code.trimEnd()).digest("hex"),
+            reason: "Requires Selenium Grid managed downloads.",
+        };
+        f.write(`${harness}/non-executable.json`, [approval]);
+        for (const name of [page, translation]) {
+            f.write(name, fence(code, "javascript", "testplane=example suite=selenium"));
+        }
+        const result = f.check();
+        assert.equal(result.status, alreadyCovered ? 1 : 0, result.stderr);
+        assert.equal(result.report.counts.covered, 0);
+        assert.equal(result.report.counts[alreadyCovered ? "regression" : "requires-grid"], 2);
+        assert.ok(
+            result.report.blocks.every(block => !block.test && block.reason === approval.reason),
+        );
+    });
+}
+
+test("an old Grid marker can migrate to Chrome but cannot silently become legacy debt", t => {
+    const f = fixture(t);
+    for (const name of [page, translation]) {
+        f.write(name, fence(code, "javascript", "testplane=example suite=selenium"));
+    }
+    f.git("add", ".");
+    f.git(
+        "-c",
+        "user.name=Fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "commit",
+        "-qm",
+        "old Grid suite",
+    );
+    f.write(page, marked());
+    f.write(translation, fence());
+    const result = f.check("HEAD");
+    assert.equal(result.status, 1);
+    assert.equal(result.report.counts.covered, 1);
+    assert.equal(result.report.counts.uncovered, 1);
+    assert.equal(result.report.counts.legacy, 0);
+});
+
+test("a historical Grid manifest entry is not mistaken for Chrome coverage", t => {
+    const f = fixture(t);
+    f.write(`${harness}/manifest.json`, [
+        { page, translation, test: "examples/selenium/download.testplane.js" },
+    ]);
+    f.git("add", ".");
+    f.git(
+        "-c",
+        "user.name=Fixture",
+        "-c",
+        "user.email=fixture@example.invalid",
+        "commit",
+        "-qm",
+        "manual Grid mapping",
+    );
+    f.write(`${harness}/non-executable.json`, [
+        {
+            exampleId: "download",
+            sha256: createHash("sha256").update(code.trimEnd()).digest("hex"),
+            reason: "Requires managed downloads.",
+        },
+    ]);
+    for (const name of [page, translation])
+        f.write(name, fence(code, "javascript", "testplane=download suite=selenium"));
+    const result = f.check("HEAD");
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.report.counts["requires-grid"], 2);
+    assert.equal(result.report.counts.covered, 0);
 });
 
 test("removing a current-layout baseline exemption cannot turn it into legacy debt", async t => {

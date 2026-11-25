@@ -2,14 +2,18 @@
 
 Данное API позволяет вам использовать Testplane программно, без запуска через CLI.
 
-Для этого вы должны подключить модуль testplane и создать его инстанс:
+Запускайте примеры из корня проекта. Код с `await` поместите в `async`-функцию в CommonJS-скрипте. В примерах используются два файла:
 
-```javascript
-const Testplane = require("testplane");
+-   В `testplane.config.js` заданы браузеры с идентификаторами `chrome` (версия `150`) и `firefox` (версия `140`). Для обоих настроен один и тот же набор тестов.
+-   В `tasks.testplane.js` описана группа `Tasks` с двумя тестами: сначала `opens`, затем `saves`.
 
-const config = require("./testplane.conf.js");
+Создайте экземпляр Testplane и подключите модуль проверок Node.js. В следующих примерах используются `testplane` и `assert` из этого фрагмента:
 
-const testplane = new Testplane(config);
+```javascript testplane-project=collection
+const assert = require("node:assert/strict");
+const { default: Testplane } = require("testplane");
+const testplane = await Testplane.create("./testplane.config.js");
+assert.deepEqual(testplane.config.getBrowserIds().sort(), ["chrome", "firefox"]);
 ```
 
 Доступны следующие свойства и методы:
@@ -23,7 +27,7 @@ const testplane = new Testplane(config);
 <tr><td>[events](#testplane_events)</td><td>Object</td><td>[События testplane][testplane-events], на которые можно подписаться.</td></tr>
 <tr><td>[errors](#testplane_errors)</td><td>Object</td><td>Ошибки, которые может возвращать testplane.</td></tr>
 <tr><td>[intercept](#testplane_intercept)</td><td>Function</td><td>Функция, с помощью которой можно подписаться на [перехват событий][testplane-events-interception] testplane.</td></tr>
-<tr><td>[init](#testplane_init)</td><td>Method</td><td>Инициализирует инстанс testplane, загружает все плагины и т. д.</td></tr>
+<tr><td>[Testplane.create](#testplane_init)</td><td>Статический метод</td><td>Создаёт экземпляр из конфигурации и загружает плагины.</td></tr>
 <tr><td>[run](#testplane_run)</td><td>Method</td><td>Запускает прогон тестов, расположенных по указанным путям.</td></tr>
 <tr><td>[addTestToRun](#testplane_add_test_to_run)</td><td>Method</td><td>Добавляет тест к текущему запуску.</td></tr>
 <tr><td>[readTests](#testplane_read_tests)</td><td>Method</td><td>Возвращает объект типа [TestCollection](#test_collection).</td></tr>
@@ -44,7 +48,7 @@ const testplane = new Testplane(config);
 
 Пример использования объекта `testplane.events` в плагине testplane:
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.INIT, async () => {
     console.info("Выполняется обработка события INIT...");
 });
@@ -232,14 +236,19 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 
 Подробнее о перехвате событий читайте в разделе «[Про перехват событий][testplane-events-interception]».
 
-## init {/* #testplane_init */}
+## Инициализация {/* #testplane_init */}
 
-Инициализирует инстанс testplane, загружает все плагины и т. д.
+У экземпляра Testplane в главном процессе нет публичного метода `init()`. Статический метод `Testplane.create()` загружает конфигурацию и плагины. Подпишитесь на `INIT` до первого вызова `readTests()` без `silent: true` или до `run()`.
 
 ### Пример вызова
 
-```javascript
-await testplane.init();
+```javascript testplane-project=collection
+let initialized = false;
+testplane.once(testplane.events.INIT, () => {
+    initialized = true;
+});
+await testplane.readTests(["tasks.testplane.js"]);
+assert.equal(initialized, true);
 ```
 
 ## run {/* #testplane_run */}
@@ -304,8 +313,15 @@ const success = testplane.addTestToRun(test, browser);
 
 ### Пример вызова
 
-```javascript
-await testplane.readTests(testPaths, options);
+```javascript testplane-project=collection
+const tests = await testplane.readTests(["tasks.testplane.js"], {
+    browsers: ["chrome"],
+    grep: /opens/,
+});
+assert.deepEqual(
+    tests.mapTests(test => test.fullTitle()),
+    ["Tasks opens"],
+);
 ```
 
 ### Параметры вызова
@@ -332,8 +348,10 @@ await testplane.readTests(testPaths, options);
 
 ### Пример вызова
 
-```javascript
-const failed = testplane.isFailed();
+У новой инстанции, до запуска тестов:
+
+```javascript testplane-project=collection
+assert.equal(testplane.isFailed(), false);
 ```
 
 ## isWorker {/* #testplane_is_worker */}
@@ -383,14 +401,17 @@ testplane.halt(error, [timeout=60000ms]);
 
 Объект типа `TestCollection` возвращается методом [testplane.readTests](#testplane_read_tests), а также передается в качестве аргумента в обработчик события [AFTER_TESTS_READ][after-tests-read].
 
+Создайте коллекцию вызовом `const testCollection = await testplane.readTests(["tasks.testplane.js"]);`. Перед каждым примером читайте её заново, чтобы изменения порядка или состава тестов не влияли на следующий пример.
+
 ### getBrowsers {/* #test_collection_get_browsers */}
 
 Возвращает список браузеров, для которых в коллекции есть тесты.
 
 #### Пример вызова
 
-```javascript
+```javascript testplane-project=collection
 const browsers = testCollection.getBrowsers();
+assert.deepEqual(browsers.sort(), ["chrome", "firefox"]);
 ```
 
 ### mapTests {/* #test_collection_map_tests */}
@@ -399,10 +420,9 @@ const browsers = testCollection.getBrowsers();
 
 #### Пример вызова
 
-```javascript
-const tests = testCollection.mapTests(browserId, (test, browserId) => {
-    // ...
-});
+```javascript testplane-project=collection
+const titles = testCollection.mapTests("chrome", test => test.fullTitle());
+assert.deepEqual(titles, ["Tasks opens", "Tasks saves"]);
 ```
 
 Если браузер не задан (то есть первым аргументом передан обратный вызов), то будет строиться отображение тестов для всех браузеров.
@@ -413,10 +433,12 @@ const tests = testCollection.mapTests(browserId, (test, browserId) => {
 
 #### Пример вызова
 
-```javascript
-testCollection.sortTests(browserId, (currentTest, nextTest) => {
-    // ...
-});
+```javascript testplane-project=collection
+testCollection.sortTests("chrome", (a, b) => b.title.localeCompare(a.title));
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.title),
+    ["saves", "opens"],
+);
 ```
 
 Если браузер не задан (то есть первым аргументом передан обратный вызов), то сортировка будет применена ко всем браузерам.
@@ -427,10 +449,10 @@ testCollection.sortTests(browserId, (currentTest, nextTest) => {
 
 #### Пример вызова
 
-```javascript
-testCollection.eachTest(browserId, (test, browserId) => {
-    // ...
-});
+```javascript testplane-project=collection
+const titles = [];
+testCollection.eachTest("chrome", test => titles.push(test.title));
+assert.deepEqual(titles, ["opens", "saves"]);
 ```
 
 Если браузер не задан (то есть первым аргументом передан обратный вызов), то итерация будет происходить по тестам для всех браузеров.
@@ -443,10 +465,12 @@ testCollection.eachTest(browserId, (test, browserId) => {
 
 #### Пример вызова
 
-```javascript
-testCollection.eachTestByVersions(browserId, (test, browserId, browserVersion) => {
-    // ...
+```javascript testplane-project=collection
+const versions = [];
+testCollection.eachTestByVersions("chrome", (test, browserId, version) => {
+    versions.push(version);
 });
+assert.deepEqual(versions, ["150", "150"]);
 ```
 
 ### disableAll {/* #test_collection_disable_all */}
@@ -455,14 +479,26 @@ testCollection.eachTestByVersions(browserId, (test, browserId, browserVersion) =
 
 #### Примеры вызова
 
-```javascript
-disableAll();
+```javascript testplane-project=collection
+testCollection.disableAll();
+assert.deepEqual(
+    testCollection.mapTests(test => test.disabled),
+    [true, true, true, true],
+);
 ```
 
 или
 
-```javascript
-disableAll(browserId);
+```javascript testplane-project=collection
+testCollection.disableAll("chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [true, true],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [false, false],
+);
 ```
 
 Если браузер не задан, то будут отключены все тесты.
@@ -473,14 +509,28 @@ disableAll(browserId);
 
 #### Примеры вызова
 
-```javascript
-enableAll();
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableAll();
+assert.deepEqual(
+    testCollection.mapTests(test => test.disabled),
+    [false, false, false, false],
+);
 ```
 
 или
 
-```javascript
-enableAll(browserId);
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableAll("chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [false, false],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [true, true],
+);
 ```
 
 Если браузер не задан, то будут включены все тесты.
@@ -491,14 +541,30 @@ enableAll(browserId);
 
 #### Примеры вызова
 
-```javascript
-disableTest(fullTitle);
+```javascript testplane-project=collection
+testCollection.disableTest("Tasks opens");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [true, false],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [true, false],
+);
 ```
 
 или
 
-```javascript
-disableTest(fullTitle, browserId);
+```javascript testplane-project=collection
+testCollection.disableTest("Tasks opens", "chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [true, false],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [false, false],
+);
 ```
 
 Идентификатором теста является его полное название: `fullTitle`.
@@ -509,14 +575,32 @@ disableTest(fullTitle, browserId);
 
 #### Примеры вызова
 
-```javascript
-enableTest(fullTitle);
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableTest("Tasks opens");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [false, true],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [false, true],
+);
 ```
 
 или
 
-```javascript
-enableTest(fullTitle, browserId);
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableTest("Tasks opens", "chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [false, true],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [true, true],
+);
 ```
 
 ### getRootSuite {/* #test_collection_get_root_suite */}
@@ -525,8 +609,10 @@ enableTest(fullTitle, browserId);
 
 #### Пример вызова
 
-```javascript
-const rootSuite = getRootSuite(browserId);
+```javascript testplane-project=collection
+const rootSuite = testCollection.getRootSuite("chrome");
+assert.equal(rootSuite.root, true);
+assert.equal(rootSuite.getTests().length, 2);
 ```
 
 ### eachRootSuite {/* #test_collection_each_root_suite */}
@@ -535,10 +621,13 @@ const rootSuite = getRootSuite(browserId);
 
 #### Пример вызова
 
-```javascript
-eachRootSuite((root, browserId) => {
-    // ...
+```javascript testplane-project=collection
+const browsers = [];
+testCollection.eachRootSuite((root, browserId) => {
+    assert.equal(root.root, true);
+    browsers.push(browserId);
 });
+assert.deepEqual(browsers.sort(), ["chrome", "firefox"]);
 ```
 
 [after-tests-read]: ../testplane-events#after_tests_read

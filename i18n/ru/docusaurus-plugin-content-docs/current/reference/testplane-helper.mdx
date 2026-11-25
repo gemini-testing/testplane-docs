@@ -4,7 +4,7 @@
 
 Эта директива позволяет пропустить тест в определённом браузере. Например, чтобы пропустить тест в `IE8`, можно сделать так:
 
-```javascript
+```javascript testplane-project=collection
 describe("feature", function () {
     testplane.skip.in("ie8", "it cannot work in this browser");
     it("nowaday functionality", function () {
@@ -17,7 +17,7 @@ describe("feature", function () {
 
 Чтобы пропустить запуск тестов без уведомлений в отчете, вы можете передать хелперу специальный флаг `silent` в качестве третьего аргумента:
 
-```javascript
+```javascript testplane-project=collection
 testplane.skip.in("ie8", "skipReason", { silent: true });
 ```
 
@@ -25,7 +25,7 @@ testplane.skip.in("ie8", "skipReason", { silent: true });
 
 Эта директива позволяет запускать тест только в определённом браузере, например, в `Chrome`:
 
-```javascript
+```javascript testplane-project=collection
 describe("feature", function () {
     testplane.skip.notIn("chrome", "it should work only in Chrome");
     it("specific functionality", function () {
@@ -36,7 +36,7 @@ describe("feature", function () {
 
 Аналогично, чтобы избавиться от уведомлений в отчете, вы можете передать хелперу специальный флаг `silent` в качестве третьего аргумента:
 
-```javascript
+```javascript testplane-project=collection
 testplane.skip.notIn("chrome", "skipReason", { silent: true });
 ```
 
@@ -44,11 +44,11 @@ testplane.skip.notIn("chrome", "skipReason", { silent: true });
 
 Эти директивы позволяют запускать тест только в определённом браузере, логика которых противоположна директивам `testplane.skip.in` и `testplane.skip.notIn`. Кроме того, эти директивы по умолчанию не создают никаких уведомлений в отчёте:
 
-```javascript
+```javascript testplane-project=collection
 testplane.only.in("chrome"); // запустить тест только в Chrome
 ```
 
-```javascript
+```javascript testplane-project=collection
 testplane.only.notIn("ie8"); // запустить тест во всех браузерах кроме IE8
 ```
 
@@ -56,7 +56,7 @@ testplane.only.notIn("ie8"); // запустить тест во всех бра
 
 Если вы внедряете новый браузер и вам нужно запустить его только в нескольких тестах из тысяч, использование директивы `.skip.in` может быть неудобным. Вы можете использовать опцию браузера [passive][passive-option] и директиву `.also.in`:
 
-```javascript
+```javascript testplane-project=collection
 testplane.also.in("ie8"); // запустить тест в пассивном браузере IE8
 ```
 

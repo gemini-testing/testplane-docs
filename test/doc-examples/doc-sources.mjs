@@ -10,6 +10,10 @@ import remarkMdx from "remark-mdx";
 export const harness = "test/doc-examples/";
 export const defaultRoot = fileURLToPath(new URL("../../", import.meta.url));
 export const roots = ["docs/", "i18n/ru/docusaurus-plugin-content-docs/current/"];
+export function readExemptions({ names, read }) {
+    const file = `${harness}non-executable.json`;
+    return names.includes(file) ? JSON.parse(read(file)) : [];
+}
 const mobile = new Set([
     "guides/android-testing",
     ...[
@@ -33,7 +37,12 @@ export const isMobile = name =>
 export function blocks(page, source) {
     const result = [];
     const indexes = new Map();
+    let section;
     const visit = node => {
+        if (node.type === "heading") {
+            const text = source.slice(node.position.start.offset, node.position.end.offset);
+            section = /\/\*\s*#([\w-]+)\s*\*\//.exec(text)?.[1];
+        }
         const jsxCode =
             /^mdxJsx/.test(node.type) && ["CodeBlock", "pre", "code"].includes(node.name);
         if (node.type === "code" || jsxCode) {
@@ -51,6 +60,7 @@ export function blocks(page, source) {
                 sha256: hash(value),
                 value,
                 meta: node.meta || "",
+                section,
             });
             if (jsxCode) return;
         }

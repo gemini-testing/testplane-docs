@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 Use the `react$` command to find React components on the page by their actual name, while filtering them by props and state.
 
 <Admonition type="warning">
-The _react$_ command only works in applications that use _React v16.x._
+Start the search from a DOM element rendered by React, not from the outer mount container. The example below uses React 18.2.
 
 Read more about React selectors in the recipe "[How to use selectors][how-to-use-selectors]".
 
@@ -35,37 +35,16 @@ await browser.$(selector).react$(reactComponentSelector, { props, state });
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should calculate 7 * 6", async ({ browser }) => {
-    await browser.url("https://ahfarmer.github.io/calculator/");
-    const appWrapper = await browser.$("div#root");
+In a calculator with named `Button` components, find each key by its `name` prop.
 
-    await appWrapper
-        .react$("t", {
-            props: { name: "7" },
-        })
-        .click();
+```javascript testplane=element-react-dollar fixture=element-calculator
+const assert = require("node:assert/strict");
 
-    await appWrapper
-        .react$("t", {
-            props: { name: "x" },
-        })
-        .click();
-
-    await appWrapper
-        .react$("t", {
-            props: { name: "6" },
-        })
-        .click();
-
-    await appWrapper
-        .react$("t", {
-            props: { name: "=" },
-        })
-        .click();
-
-    console.log(await browser.$(".component-display").getText()); // outputs: "42"
-});
+const calculator = await browser.$(".calculator");
+for (const name of ["7", "x", "6", "="]) {
+    await calculator.react$("Button", { props: { name } }).click();
+}
+assert.equal(await calculator.$(".component-display").getText(), "42");
 ```
 
 ## Related Commands {/* #related */}

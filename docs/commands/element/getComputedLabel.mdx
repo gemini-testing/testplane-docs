@@ -12,12 +12,17 @@ await browser.$(selector).getComputedLabel();
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate the getComputedLabel command", async ({ browser }) => {
-    await browser.url("https://www.google.com/ncr");
-    const elem = await browser.$('*[name="q"]');
-    console.log(await elem.getComputedLabel()); // outputs: "Search"
-});
+```html testplane-html=element-html
+<select name="q" aria-label="Search">
+    <option>All</option>
+</select>
+```
+
+```javascript testplane=element-get-computed-label fixture=element-html
+const assert = require("node:assert/strict");
+
+const field = await browser.$('[name="q"]');
+assert.equal(await field.getComputedLabel(), "Search");
 ```
 
 ## References

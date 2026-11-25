@@ -135,7 +135,7 @@ const defaultExpectOpts = {
 
 Дополнительные опции для `mocha`, которые передаются в `mocha.setup`. См. список доступных опций в [документации для Mocha](https://mochajs.org/). По умолчанию: `{ timeout: 60000 }`.
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -154,7 +154,7 @@ export default {
 
 Пример использования:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -183,7 +183,7 @@ it("awesome test", function () {
 
 Пример:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -209,7 +209,7 @@ export default {
 
 Например, начать отмену прогона после трёх ошибок, содержащих `Service unavailable`, без учёта регистра:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {
@@ -227,7 +227,7 @@ export default {
 
 Чтобы учитывать все ошибки, задайте числовой лимит:
 
-```typescript title="testplane.config.ts"
+```typescript title="testplane.config.ts" testplane-project=config
 import type { ConfigInput } from "testplane";
 
 export default {

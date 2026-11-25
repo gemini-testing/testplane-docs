@@ -12,9 +12,7 @@ await browser.$(selector).parentElement();
 
 ## Usage Examples {/* #examples */}
 
-**index.html**
-
-```html
+```html testplane-html=element-html
 <div class="parent">
     <p>Sibling One</p>
     <p>Sibling Two</p>
@@ -22,15 +20,12 @@ await browser.$(selector).parentElement();
 </div>
 ```
 
-**parentElement.js**
+```javascript testplane=element-parent-element fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should get class from parent element", async ({ browser }) => {
-    const elem = await browser.$$("p");
-    const parent = await elem[2].parentElement();
-
-    console.log(await parent.getAttribute("class")); // outputs: "parent"
-});
+const paragraphs = await browser.$$("p");
+const parent = await paragraphs[1].parentElement();
+assert.equal(await parent.getAttribute("class"), "parent");
 ```
 
 ## Related Commands {/* #related */}

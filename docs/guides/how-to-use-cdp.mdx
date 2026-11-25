@@ -33,7 +33,7 @@ For a comparison of the _WebDriver_ and _CDP_ protocols, see the "WebDriver vs C
 
 To run your tests in a locally installed browser, use `gridUrl: "local"` (or the `--local` CLI flag) — Testplane will automatically download the required browsers and drivers and launch them via WebDriver:
 
-```javascript
+```javascript testplane-project=config
 // .testplane.conf.js
 
 module.exports = {
@@ -78,7 +78,7 @@ To connect to a remote browser via CDP, you need to:
 -   use `automationProtocol: webdriver` (default value);
 -   add the vendor-specific field `selenoid:options` in the browser’s `desiredCapabilities`: this option is necessary for _webdriverio_ to understand that it needs to connect to a remote machine instead of a local browser.
 
-```javascript
+```javascript testplane-project=config
 // .testplane.conf.js
 
 module.exports = {

@@ -6,9 +6,9 @@ Calls [isDisplayed](../../element/isDisplayed) on the given element.
 
 For example:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBeDisplayed();
+```javascript testplane=expect-to-be-displayed fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBeDisplayed();
 ```
 
 ## toExist
@@ -17,9 +17,9 @@ Calls [isExisting](../../element/isExisting) on the given element.
 
 For example:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toExist();
+```javascript testplane=expect-to-exist fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toExist();
 ```
 
 ## toBePresent
@@ -28,9 +28,9 @@ Same as [toExist](#toexist).
 
 For example:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBePresent();
+```javascript testplane=expect-to-be-present fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBePresent();
 ```
 
 ## toBeExisting
@@ -39,9 +39,9 @@ Same as [toExist](#toexist).
 
 For example:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBeExisting();
+```javascript testplane=expect-to-be-existing fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBeExisting();
 ```
 
 ## toBeFocused
@@ -50,9 +50,10 @@ Checks if the element has focus. This assertion works only in the web context.
 
 For example:
 
-```javascript
-const elem = await browser.$("#someElem");
-await expect(elem).toBeFocused();
+```javascript testplane=expect-to-be-focused fixture=matchers-page
+const input = await browser.$("#username");
+await input.click();
+await expect(input).toBeFocused();
 ```
 
 ## toHaveAttribute
@@ -61,9 +62,9 @@ Checks if the element has the given attribute with the specified value.
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttribute("class", "form-control");
+```javascript testplane=expect-to-have-attribute fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttribute("class", "form-control");
 ```
 
 ## toHaveAttr
@@ -72,9 +73,9 @@ Same as [toHaveAttribute](#tohaveattribute).
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttr("class", "form-control");
+```javascript testplane=expect-to-have-attr fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttr("class", "form-control");
 ```
 
 ## toHaveAttributeContaining
@@ -83,20 +84,20 @@ Checks if the given substring is contained in the specified attribute's value of
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttributeContaining("class", "form");
+```javascript testplane=expect-to-have-attribute-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttributeContaining("class", "form");
 ```
 
 ## toHaveAttrContaining
 
-Same as [toHaveAttributeContaining](#tohaveattrcontaining).
+Same as [toHaveAttributeContaining](#tohaveattributecontaining).
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttrContaining("class", "form");
+```javascript testplane=expect-to-have-attr-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttrContaining("class", "form");
 ```
 
 ## toHaveElementClass
@@ -105,9 +106,9 @@ Checks if the element has the specified class name.
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveElementClass("form-control", { message: "Not a form control!" });
+```javascript testplane=expect-to-have-element-class fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveElementClass("form-control", { message: "Not a form control!" });
 ```
 
 ## toHaveElementClassContaining
@@ -116,9 +117,9 @@ Checks if the element's class name contains the specified substring.
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveElementClassContaining("form");
+```javascript testplane=expect-to-have-element-class-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveElementClassContaining("form");
 ```
 
 ## toHaveElementProperty
@@ -127,8 +128,8 @@ Checks if the element has the specified property with the given value.
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-have-element-property fixture=matchers-page
+const elem = await browser.$("#preview");
 await expect(elem).toHaveElementProperty("height", 23);
 await expect(elem).not.toHaveElementProperty("height", 0);
 ```
@@ -139,9 +140,9 @@ Checks if an input element has the given value.
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveValue("user", { ignoreCase: true });
+```javascript testplane=expect-to-have-value fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveValue("USER", { ignoreCase: true });
 ```
 
 ## toHaveValueContaining
@@ -150,9 +151,9 @@ Checks if the given substring is contained in the specified input element's valu
 
 For example:
 
-```javascript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveValueContaining("us");
+```javascript testplane=expect-to-have-value-containing fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveValueContaining("us");
 ```
 
 ## toBeClickable
@@ -161,8 +162,8 @@ Checks if the element is clickable by calling [isClickable](../../element/isClic
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-clickable fixture=matchers-page
+const elem = await browser.$("#save");
 await expect(elem).toBeClickable();
 ```
 
@@ -172,10 +173,9 @@ Checks if the element is disabled by calling [isEnabled](../../element/isEnabled
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-disabled fixture=matchers-page
+const elem = await browser.$("#pending");
 await expect(elem).toBeDisabled();
-// or, equivalently:
 await expect(elem).not.toBeEnabled();
 ```
 
@@ -185,10 +185,9 @@ Checks if the element is enabled by calling [isEnabled](../../element/isEnabled)
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-enabled fixture=matchers-page
+const elem = await browser.$("#save");
 await expect(elem).toBeEnabled();
-// or, equivalently:
 await expect(elem).not.toBeDisabled();
 ```
 
@@ -198,8 +197,8 @@ Checks if the element is selected by calling [isSelected](../../element/isSelect
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-selected fixture=matchers-page
+const elem = await browser.$("#notifications");
 await expect(elem).toBeSelected();
 ```
 
@@ -209,8 +208,8 @@ Same as [toBeSelected](#tobeselected).
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
+```javascript testplane=expect-to-be-checked fixture=matchers-page
+const elem = await browser.$("#notifications");
 await expect(elem).toBeChecked();
 ```
 
@@ -220,7 +219,7 @@ Checks if the element link has the specified URL.
 
 For example:
 
-```javascript
+```javascript testplane=expect-to-have-href fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveHref("https://webdriver.io");
 ```
@@ -231,7 +230,7 @@ Same as [toHaveHref](#tohavehref).
 
 For example:
 
-```javascript
+```javascript testplane=expect-to-have-link fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveLink("https://webdriver.io");
 ```
@@ -242,7 +241,7 @@ Checks if the given substring is contained in the element link's URL.
 
 For example:
 
-```javascript
+```javascript testplane=expect-to-have-href-containing fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveHrefContaining("webdriver.io");
 ```
@@ -253,7 +252,7 @@ Same as [toHaveHrefContaining](#tohavehrefcontaining).
 
 For example:
 
-```javascript
+```javascript testplane=expect-to-have-link-containing fixture=matchers-page
 const link = await browser.$("a");
 await expect(link).toHaveLinkContaining("webdriver.io");
 ```
@@ -264,9 +263,9 @@ Checks if the element has the given ID.
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
-await expect(elem).toHaveId("elem");
+```javascript testplane=expect-to-have-id fixture=matchers-page
+const elem = await browser.$("#save");
+await expect(elem).toHaveId("save");
 ```
 
 ## toHaveText
@@ -277,16 +276,10 @@ It can also be called with an array as a parameter in case the element can have 
 
 For example:
 
-```javascript
-await browser.url("https://testplane.io/");
-const elem = await browser.$(".container");
-await expect(elem).toHaveText(
-    "Fast, scalable and robust end-to-end web testing solution | Testplane",
-);
-await expect(elem).toHaveText([
-    "Fast, scalable and robust end-to-end web testing solution | Testplane",
-    "Get Started",
-]);
+```javascript testplane=expect-to-have-text fixture=matchers-page
+const elem = await browser.$("h1");
+await expect(elem).toHaveText("Task list");
+await expect(elem).toHaveText(["Task list", "No tasks yet"]);
 ```
 
 ## toHaveTextContaining
@@ -297,14 +290,10 @@ It can also be called with an array as a parameter in case the element can have 
 
 For example:
 
-```javascript
-await browser.url("https://testplane.io/");
+```javascript testplane=expect-to-have-text-containing fixture=matchers-page
 const elem = await browser.$("h1");
-await expect(elem).toHaveTextContaining("ultimate solution for end-to-end testing");
-await expect(elem).toHaveTextContaining([
-    "ultimate solution for end-to-end testing",
-    "battle-hardened framework for creating tests at any scale, any browser, any platform",
-]);
+await expect(elem).toHaveTextContaining("Task");
+await expect(elem).toHaveTextContaining(["Task", "No tasks"]);
 ```
 
 ## toBeDisplayedInViewport
@@ -313,27 +302,28 @@ Checks if the element is within the viewport using the [isDisplayedInViewport](.
 
 For example:
 
-```javascript
-const elem = await browser.$("#elem");
-await expect(elem).toBeDisplayedInViewport();
+```javascript testplane=expect-to-be-displayed-in-viewport fixture=matchers-page
+const input = await browser.$("#username");
+await expect(input).toBeDisplayedInViewport();
 ```
 
 ## toHaveChildren
 
-Checks the number of child elements of the given element using the [element.$('./\*')](../../element/_dollar) command.
+Checks the number of child elements of the given element using the [element.$$('./\*')](../../element/_dollardollar) command.
+
+Pass an options object in this version of expect-webdriverio: calling the matcher without an argument throws. An empty object means at least one child.
 
 For example:
 
-```javascript
+```javascript testplane=expect-to-have-children fixture=matchers-page
 const list = await browser.$("ul");
-await expect(list).toHaveChildren(); // list has at least 1 element
-// or, equivalently:
+await expect(list).toHaveChildren({});
 await expect(list).toHaveChildren({ gte: 1 });
 ```
 
-```javascript
-await expect(list).toHaveChildren(3); // list has 3 elements
-// or, equivalently:
+```javascript testplane=expect-to-have-children-count fixture=matchers-page
+const list = await browser.$("ul");
+await expect(list).toHaveChildren(3);
 await expect(list).toHaveChildren({ eq: 3 });
 ```
 
@@ -343,15 +333,14 @@ Checks the number of elements obtained using the [$$](../../element/_dollardolla
 
 For example:
 
-```javascript
-const listItems = await browser.$$("ul>li");
-await expect(listItems).toBeElementsArrayOfSize(5); // 5 items in the list
+```javascript testplane=expect-to-be-elements-array-of-size fixture=matchers-page
+const listItems = await browser.$$("ul > li");
+await expect(listItems).toBeElementsArrayOfSize(3);
 ```
 
-```javascript
+```javascript testplane=expect-to-be-elements-array-of-size-limit fixture=matchers-page
+const listItems = await browser.$$("ul > li");
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 });
-// or, equivalently:
-assert.ok(listItems.length <= 10);
 ```
 
 ## References

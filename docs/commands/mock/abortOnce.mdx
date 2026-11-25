@@ -2,9 +2,9 @@
 
 ## Overview {/* #overview */}
 
-Use the `abortOnce` command to abort a request once with a specified error.
+Use the `abortOnce` command to abort a request once.
 
-A request can be aborted with one of the following errors:
+In a WebDriver BiDi session, call `mock.abortOnce()` without an error code. In a CDP session, specify one of these errors:
 
 -   Failed
 -   Aborted
@@ -36,20 +36,28 @@ mock.abortOnce(errorCode);
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should block mock only once", async ({ browser }) => {
-    const mock = await browser.mock("https://webdriver.io");
-    mock.abortOnce("Failed");
+In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
 
-    await browser
-        .url("https://webdriver.io")
-        // catch exception as the request to the page will fail
-        .catch(() => console.log('Failed to get the page "https://webdriver.io"'));
+```javascript testplane=mock-abort-once fixture=matchers-network
+const mock = await browser.mock("/api/items");
+mock.abortOnce();
 
-    await browser.url("https://webdriver.io");
-    console.log(await browser.getTitle());
-    // will output: "WebdriverIO · Next-gen browser and mobile automation test framework for Node.js"
-});
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("Unavailable");
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("original");
+```
+
+In a CDP session, you can specify the network failure:
+
+```javascript testplane=mock-abort-once-cdp fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+mock.abortOnce("TimedOut");
+
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("Unavailable");
+await browser.$("#reload").click();
+await expect(browser.$("#source")).toHaveText("original");
 ```
 
 ## Related Commands {/* #related */}

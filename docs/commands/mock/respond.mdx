@@ -14,7 +14,7 @@ Use the `respond` command to always reply with the same overwrite.
 ## Usage {/* #usage */}
 
 ```javascript
-mock.respond(overwrites, { header, statusCode, fetchResponse });
+mock.respond(overwrites, { headers, statusCode, fetchResponse });
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -25,68 +25,39 @@ mock.respond(overwrites, { header, statusCode, fetchResponse });
 </thead>
 <tbody>
 <tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ to overwrite the response.</td></tr>
-<tr><td>header</td><td>Object</td><td>Overwrite specific headers.</td></tr>
+<tr><td>headers</td><td>Object</td><td>Overwrite specific headers.</td></tr>
 <tr><td>statusCode</td><td>Number</td><td>Overwrite the response status code.</td></tr>
-<tr><td>fetchResponse</td><td>Boolean</td><td>Fetch the actual response before replying with fake data.</td></tr>
+<tr><td>fetchResponse</td><td>Boolean</td><td>CDP only: fetch the actual response before applying the overwrite.</td></tr>
 
 </tbody>
 </table>
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should demonstrate response overwrite with static data", async ({ browser }) => {
-    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/", {
-        method: "get",
-    });
+In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
 
-    mock.respond(
-        [
-            {
-                title: "Injected (non) completed Todo",
-                order: null,
-                completed: false,
-            },
-            {
-                title: "Injected completed Todo",
-                order: null,
-                completed: true,
-            },
-        ],
-        {
-            statusCode: 200,
-            fetchResponse: true, // default
-        },
-    );
+```javascript testplane=mock-respond fixture=matchers-network
+const mock = await browser.mock("/api/items", { method: "GET" });
+mock.respond({ source: "saved list" }, { statusCode: 200 });
 
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
+for (let i = 0; i < 2; i++) {
+    await browser.$("#reload").click();
+    await expect(browser.$("#source")).toHaveText("saved list");
+}
+```
 
-    await browser.$("#todo-list li").waitForExist();
+In a CDP session you can build the response body from the request. Here the Save button sends JSON containing a `title`. The WebDriver BiDi transport does not support a function as the response body.
 
-    const todoElements = await browser.$$("#todo-list li");
-    console.log(await Promise.all(todoElements.map(el => el.getText())));
-    // will output: "[ 'Injected (non) completed Todo', 'Injected completed Todo' ]"
+```javascript testplane=mock-respond-dynamic fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items", { method: "POST" });
+mock.respond(request => ({ source: JSON.parse(request.postData).title }), {
+    statusCode: 201,
+    headers: { "Content-Type": "application/json" },
+    fetchResponse: false,
 });
 
-it("should demonstrate response overwrite with dynamic data", async ({ browser }) => {
-    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/");
-
-    mock.respond(
-        request => {
-            if (request.body.username === "test") {
-                return { ...request.body, foo: "bar" };
-            }
-            return request.body;
-        },
-        {
-            statusCode: () => 200,
-            headers: () => ({ foo: "bar" }),
-            fetchResponse: false, // do not fetch the actual response
-        },
-    );
-});
+await browser.$("#save").click();
+await expect(browser.$("#source")).toHaveText("Ship feature");
 ```
 
 ## Related Commands {/* #related */}

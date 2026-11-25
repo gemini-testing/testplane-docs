@@ -10,25 +10,26 @@ When writing tests, it's often necessary to ensure that values meet certain crit
 
 For example, you can check if the browser is on a specific page
 
-```typescript
-await browser.url("https://testplane.io/");
-// ...
-await expect(browser).toHaveUrl("https://testplane.io");
+```typescript testplane=expect-to-have-url fixture=matchers-page
+const expectedUrl = new URL("/navigation", browser.options.baseUrl).href;
+await browser.url("/navigation");
+await expect(browser).toHaveUrl(expectedUrl);
 ```
 
 or check if the element has an attribute with the specified value
 
-```typescript
-const myInput = await browser.$("input");
-await expect(myInput).toHaveAttribute("class", "form-control");
+```typescript testplane=expect-to-have-attribute fixture=matchers-page
+const input = await browser.$("input");
+await expect(input).toHaveAttribute("class", "form-control");
 ```
 
-or check if the specified request has been made for your mock
+or verify that clicking Reload makes a request in a WebDriver BiDi session
 
-```typescript
-const mock = browser.mock("**/api/todo*");
-// ...
-await expect(mock).toBeRequested();
+```typescript testplane=expect-bidi-requested fixture=matchers-network
+const mock = await browser.mock("/api/items");
+await browser.$("#reload").click();
+await mock.waitForResponse();
+expect(mock.calls).toHaveLength(1);
 ```
 
 By default, the timeout for executing asserts is 2000ms with a check interval of 100ms. However, if necessary, these values can be redefined in the [system section][system_config] in the general config.

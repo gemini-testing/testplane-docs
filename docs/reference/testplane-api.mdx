@@ -2,14 +2,18 @@
 
 With this API, you can use Testplane programmatically.
 
-Try importing the testplane module and creating a new instance:
+Run the examples from the project root. Put the snippets containing `await` inside an `async` function in a CommonJS script. The examples assume two files:
 
-```javascript
-const Testplane = require("testplane");
+-   `testplane.config.js` configures the browser IDs `chrome` (version `150`) and `firefox` (version `140`). Both browsers run the same test set.
+-   `tasks.testplane.js` defines a suite named `Tasks` with two tests, `opens` and `saves`, in that order.
 
-const config = require("./testplane.conf.js");
+Create the Testplane instance and import Node's assertion library. The following examples reuse `testplane` and `assert` from this snippet:
 
-const testplane = new Testplane(config);
+```javascript testplane-project=collection
+const assert = require("node:assert/strict");
+const { default: Testplane } = require("testplane");
+const testplane = await Testplane.create("./testplane.config.js");
+assert.deepEqual(testplane.config.getBrowserIds().sort(), ["chrome", "firefox"]);
 ```
 
 A `Testplane` class instance has the following properties and methods:
@@ -23,7 +27,7 @@ A `Testplane` class instance has the following properties and methods:
 <tr><td>[events](#testplane_events)</td><td>Object</td><td>[testplane Events][testplane-events] that you can subscribe to.</td></tr>
 <tr><td>[errors](#testplane_errors)</td><td>Object</td><td>Errors that testplane can return.</td></tr>
 <tr><td>[intercept](#testplane_intercept)</td><td>Function</td><td>A function that allows you to subscribe to testplane [event interception][testplane-events-interception].</td></tr>
-<tr><td>[init](#testplane_init)</td><td>Method</td><td>Initializes the testplane instance, loads all plugins, etc.</td></tr>
+<tr><td>[Testplane.create](#testplane_init)</td><td>Static method</td><td>Creates an instance from a config and loads plugins.</td></tr>
 <tr><td>[run](#testplane_run)</td><td>Method</td><td>Runs tests located at the specified paths.</td></tr>
 <tr><td>[addTestToRun](#testplane_add_test_to_run)</td><td>Method</td><td>Adds a test to the current run.</td></tr>
 <tr><td>[readTests](#testplane_read_tests)</td><td>Method</td><td>Returns an object of type [TestCollection](#test_collection).</td></tr>
@@ -44,7 +48,7 @@ A testplane config object or a path to the configuration file, relative to the w
 
 Example of using the `testplane.events` object in a testplane plugin:
 
-```javascript
+```javascript testplane-project=event
 testplane.on(testplane.events.INIT, async () => {
     console.info("Processing INIT event...");
 });
@@ -232,14 +236,19 @@ testplane.intercept(testplane.events.TEST_FAIL, ({ event, data }) => {
 
 Read more about event interception in the section "[About Event Interception][testplane-events-interception]".
 
-## init {/* #testplane_init */}
+## Initialization {/* #testplane_init */}
 
-Initializes the testplane instance, loads all plugins, etc.
+A Testplane instance in the main process has no public `init()` method. The static `Testplane.create()` method loads the config and plugins. Subscribe to `INIT` before the first non-silent `readTests()` or before `run()`.
 
 ### Example Call
 
-```javascript
-await testplane.init();
+```javascript testplane-project=collection
+let initialized = false;
+testplane.once(testplane.events.INIT, () => {
+    initialized = true;
+});
+await testplane.readTests(["tasks.testplane.js"]);
+assert.equal(initialized, true);
 ```
 
 ## run {/* #testplane_run */}
@@ -304,8 +313,15 @@ An asynchronous method that returns an object of type [TestCollection](#test_col
 
 ### Example Call
 
-```javascript
-await testplane.readTests(testPaths, options);
+```javascript testplane-project=collection
+const tests = await testplane.readTests(["tasks.testplane.js"], {
+    browsers: ["chrome"],
+    grep: /opens/,
+});
+assert.deepEqual(
+    tests.mapTests(test => test.fullTitle()),
+    ["Tasks opens"],
+);
 ```
 
 ### Call Parameters
@@ -332,8 +348,10 @@ Returns `true` or `false` depending on whether there was an error or test failur
 
 ### Example Call
 
-```javascript
-const failed = testplane.isFailed();
+On a fresh instance, before a run:
+
+```javascript testplane-project=collection
+assert.equal(testplane.isFailed(), false);
 ```
 
 ## isWorker {/* #testplane_is_worker */}
@@ -383,14 +401,17 @@ testplane.halt(error, [timeout=60000ms]);
 
 An object of type `TestCollection` is returned by the [testplane.readTests](#testplane_read_tests) method and is also passed as an argument to the handler of the [AFTER_TESTS_READ][after-tests-read] event.
 
+Create the collection with `const testCollection = await testplane.readTests(["tasks.testplane.js"]);`. Read it again before each example so that changes to test order or selection do not carry over.
+
 ### getBrowsers {/* #test_collection_get_browsers */}
 
 Returns a list of browsers for which tests are available in the collection.
 
 #### Example Call
 
-```javascript
+```javascript testplane-project=collection
 const browsers = testCollection.getBrowsers();
+assert.deepEqual(browsers.sort(), ["chrome", "firefox"]);
 ```
 
 ### mapTests {/* #test_collection_map_tests */}
@@ -399,10 +420,9 @@ Builds a mapping of tests for the specified browser.
 
 #### Example Call
 
-```javascript
-const tests = testCollection.mapTests(browserId, (test, browserId) => {
-    // ...
-});
+```javascript testplane-project=collection
+const titles = testCollection.mapTests("chrome", test => test.fullTitle());
+assert.deepEqual(titles, ["Tasks opens", "Tasks saves"]);
 ```
 
 If the browser is not specified (i.e., a callback is passed as the first argument), the mapping will be built for all browsers.
@@ -413,10 +433,12 @@ Sorts tests for the specified browser.
 
 #### Example Call
 
-```javascript
-testCollection.sortTests(browserId, (currentTest, nextTest) => {
-    // ...
-});
+```javascript testplane-project=collection
+testCollection.sortTests("chrome", (a, b) => b.title.localeCompare(a.title));
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.title),
+    ["saves", "opens"],
+);
 ```
 
 If the browser is not specified (i.e., a callback is passed as the first argument), the sorting will be applied to all browsers.
@@ -427,10 +449,10 @@ Iterates through the tests for the specified browser.
 
 #### Example Call
 
-```javascript
-testCollection.eachTest(browserId, (test, browserId) => {
-    // ...
-});
+```javascript testplane-project=collection
+const titles = [];
+testCollection.eachTest("chrome", test => titles.push(test.title));
+assert.deepEqual(titles, ["opens", "saves"]);
 ```
 
 If the browser is not specified (i.e., a callback is passed as the first argument), the iteration will occur for tests in all browsers.
@@ -443,10 +465,12 @@ Utilizes the presence of the `browserVersion` property for each test.
 
 #### Example Call
 
-```javascript
-testCollection.eachTestByVersions(browserId, (test, browserId, browserVersion) => {
-    // ...
+```javascript testplane-project=collection
+const versions = [];
+testCollection.eachTestByVersions("chrome", (test, browserId, version) => {
+    versions.push(version);
 });
+assert.deepEqual(versions, ["150", "150"]);
 ```
 
 ### disableAll {/* #test_collection_disable_all */}
@@ -455,14 +479,26 @@ Disables all tests or tests for the specified browser. Returns a reference to th
 
 #### Example Calls
 
-```javascript
-disableAll();
+```javascript testplane-project=collection
+testCollection.disableAll();
+assert.deepEqual(
+    testCollection.mapTests(test => test.disabled),
+    [true, true, true, true],
+);
 ```
 
 or
 
-```javascript
-disableAll(browserId);
+```javascript testplane-project=collection
+testCollection.disableAll("chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [true, true],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [false, false],
+);
 ```
 
 If the browser is not specified, all tests will be disabled.
@@ -473,14 +509,28 @@ Enables all tests or tests for the specified browser. Returns a reference to the
 
 #### Example Calls
 
-```javascript
-enableAll();
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableAll();
+assert.deepEqual(
+    testCollection.mapTests(test => test.disabled),
+    [false, false, false, false],
+);
 ```
 
 or
 
-```javascript
-enableAll(browserId);
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableAll("chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [false, false],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [true, true],
+);
 ```
 
 If the browser is not specified, all tests will be enabled.
@@ -491,14 +541,30 @@ Disables the specified test in all browsers or only in the specified browser. Re
 
 #### Example Calls
 
-```javascript
-disableTest(fullTitle);
+```javascript testplane-project=collection
+testCollection.disableTest("Tasks opens");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [true, false],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [true, false],
+);
 ```
 
 or
 
-```javascript
-disableTest(fullTitle, browserId);
+```javascript testplane-project=collection
+testCollection.disableTest("Tasks opens", "chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [true, false],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [false, false],
+);
 ```
 
 The test is identified by its full title: `fullTitle`.
@@ -507,14 +573,32 @@ The test is identified by its full title: `fullTitle`.
 
 Enables the specified test in all browsers or only in the specified browser.
 
-```javascript
-enableTest(fullTitle);
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableTest("Tasks opens");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [false, true],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [false, true],
+);
 ```
 
 or
 
-```javascript
-enableTest(fullTitle, browserId);
+```javascript testplane-project=collection
+testCollection.disableAll();
+testCollection.enableTest("Tasks opens", "chrome");
+assert.deepEqual(
+    testCollection.mapTests("chrome", test => test.disabled),
+    [false, true],
+);
+assert.deepEqual(
+    testCollection.mapTests("firefox", test => test.disabled),
+    [true, true],
+);
 ```
 
 ### getRootSuite {/* #test_collection_get_root_suite */}
@@ -523,8 +607,10 @@ Returns the root suite for the specified browser. Returns undefined if there are
 
 #### Example Call
 
-```javascript
-const rootSuite = getRootSuite(browserId);
+```javascript testplane-project=collection
+const rootSuite = testCollection.getRootSuite("chrome");
+assert.equal(rootSuite.root, true);
+assert.equal(rootSuite.getTests().length, 2);
 ```
 
 ### eachRootSuite {/* #test_collection_each_root_suite */}
@@ -533,10 +619,13 @@ Iterates through all root suites in the collection that have tests.
 
 #### Example Call
 
-```javascript
-eachRootSuite((root, browserId) => {
-    // ...
+```javascript testplane-project=collection
+const browsers = [];
+testCollection.eachRootSuite((root, browserId) => {
+    assert.equal(root.root, true);
+    browsers.push(browserId);
 });
+assert.deepEqual(browsers.sort(), ["chrome", "firefox"]);
 ```
 
 [after-tests-read]: ../testplane-events#after_tests_read

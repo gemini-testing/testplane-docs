@@ -38,9 +38,7 @@ await browser.$(selector).getCSSProperty(cssProperty);
 
 ## Usage Examples {/* #examples */}
 
-**example.html**
-
-```javascript
+```html testplane-html=element-html
 <label
     id="myLabel"
     for="input"
@@ -50,52 +48,18 @@ await browser.$(selector).getCSSProperty(cssProperty);
 </label>
 ```
 
-**getCSSProperty.js**
+```javascript testplane=element-get-css-property fixture=element-html
+const assert = require("node:assert/strict");
 
-```javascript
-it("should demonstrate the getCSSProperty command", async ({ browser }) => {
-    const elem = await browser.$("#myLabel");
-    const color = await elem.getCSSProperty("color");
-    console.log(color);
-    // outputs:
-    // {
-    //     property: 'color',
-    //     value: 'rgba(0, 136, 204, 1)',
-    //     parsed: {
-    //         hex: '#0088cc',
-    //         alpha: 1,
-    //         type: 'color',
-    //         rgba: 'rgba(0, 136, 204, 1)'
-    //     }
-    // }
+const label = await browser.$("#myLabel");
+const color = await label.getCSSProperty("color");
+assert.equal(color.parsed.hex, "#0088cc");
 
-    const font = await elem.getCSSProperty("font-family");
-    console.log(font);
-    // outputs:
-    // {
-    //      property: 'font-family',
-    //      value: 'helvetica',
-    //      parsed: {
-    //          value: [ 'helvetica', 'arial', 'freesans', 'clean', 'sans-serif' ],
-    //          type: 'font',
-    //          string: 'helvetica, arial, freesans, clean, sans-serif'
-    //      }
-    // }
+const font = await label.getCSSProperty("font-family");
+assert.equal(font.parsed.value[0], "helvetica");
 
-    var width = await elem.getCSSProperty("width");
-    console.log(width);
-    // outputs:
-    // {
-    //     property: 'width',
-    //     value: '100px',
-    //     parsed: {
-    //         type: 'number',
-    //         string: '100px',
-    //         unit: 'px',
-    //         value: 100
-    //     }
-    // }
-});
+const width = await label.getCSSProperty("width");
+assert.equal(width.value, "100px");
 ```
 
 ## References

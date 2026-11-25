@@ -7,7 +7,7 @@ import Admonition from "@theme/Admonition";
 Use the `react$$` command to find multiple React components on the page by their actual name, while filtering them by props and state.
 
 <Admonition type="warning">
-The _react$_ command only works in applications that use _React v16.x._
+Start the search from a DOM element rendered by React, not from the outer mount container. The example below uses React 18.2.
 
 Read more about React selectors in the recipe "[How to use selectors][how-to-use-selectors]".
 
@@ -16,7 +16,7 @@ Read more about React selectors in the recipe "[How to use selectors][how-to-use
 ## Usage {/* #usage */}
 
 ```javascript
-await browser.react$$(reactComponentSelector, { props, state });
+await browser.$(selector).react$$(reactComponentSelector, { props, state });
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -35,18 +35,15 @@ await browser.react$$(reactComponentSelector, { props, state });
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-it("should calculate 7 * 6", async ({ browser }) => {
-    await browser.url("https://ahfarmer.github.io/calculator/");
-    const appWrapper = await browser.$("div#root");
+Find only the calculator keys whose `orange` prop is `true`.
 
-    const orangeButtons = await appWrapper.react$$("t", {
-        props: { orange: true },
-    });
+```javascript testplane=element-react-dollar-dollar fixture=element-calculator
+const assert = require("node:assert/strict");
 
-    console.log(await Promise.all(orangeButtons.map(btn => btn.getText())));
-    // outputs: "[ '÷', 'x', '-', '+', '=' ]"
-});
+const calculator = await browser.$(".calculator");
+const buttons = await calculator.react$$("Button", { props: { orange: true } });
+const labels = await buttons.map(button => button.getText());
+assert.deepEqual(labels, ["÷", "x", "-", "+", "="]);
 ```
 
 ## Related Commands {/* #related */}

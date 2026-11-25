@@ -18,7 +18,7 @@ If you use only `respondOnce` and access the resource more times than `respondOn
 ## Usage {/* #usage */}
 
 ```javascript
-mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
+mock.respondOnce(overwrites, { headers, statusCode, fetchResponse });
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -29,76 +29,26 @@ mock.respondOnce(overwrites, { header, statusCode, fetchResponse });
 </thead>
 <tbody>
 <tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ to overwrite the response.</td></tr>
-<tr><td>header</td><td>Object</td><td>Overwrite specific headers.</td></tr>
+<tr><td>headers</td><td>Object</td><td>Overwrite specific headers.</td></tr>
 <tr><td>statusCode</td><td>Number</td><td>Overwrite the response status code.</td></tr>
-<tr><td>fetchResponse</td><td>Boolean</td><td>Fetch the actual response before replying with fake data.</td></tr>
+<tr><td>fetchResponse</td><td>Boolean</td><td>CDP only: fetch the actual response before applying the overwrite.</td></tr>
 
 </tbody>
 </table>
 
 ## Usage Examples {/* #examples */}
 
-```javascript
-async function getToDos(browser) {
-    await browser.$("#todo-list li").waitForExist();
+In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
 
-    const todoElements = await browser.$$("#todo-list li");
+```javascript testplane=mock-respond-once fixture=matchers-network
+const mock = await browser.mock("/api/items");
+mock.respondOnce({ source: "first" });
+mock.respondOnce({ source: "second" });
 
-    return Promise.all(todoElements.map(el => el.getText()));
+for (const expected of ["first", "second", "original"]) {
+    await browser.$("#reload").click();
+    await expect(browser.$("#source")).toHaveText(expected);
 }
-
-it("should demonstrate the respondOnce command", async ({ browser }) => {
-    const mock = await browser.mock("https://todo-backend-express-knex.herokuapp.com/", {
-        method: "get",
-    });
-
-    mock.respondOnce([
-        {
-            title: "3",
-        },
-        {
-            title: "2",
-        },
-        {
-            title: "1",
-        },
-    ]);
-
-    mock.respondOnce([
-        {
-            title: "2",
-        },
-        {
-            title: "1",
-        },
-    ]);
-
-    mock.respondOnce([
-        {
-            title: "1",
-        },
-    ]);
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: [ '3', '2', '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: [ '2', '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: [ '1' ]
-
-    await browser.url(
-        "https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/",
-    );
-    console.log(await getToDos(browser)); // outputs: the actual resource response
-});
 ```
 
 ## Related Commands {/* #related */}

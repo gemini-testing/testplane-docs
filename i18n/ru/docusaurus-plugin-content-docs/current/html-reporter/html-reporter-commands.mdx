@@ -66,10 +66,10 @@ npx html-reporter gui
 </tbody>
 </table>
 
-Пример использования:
+Например, объедините два локальных отчёта Testplane:
 
-```bash
-npx html-reporter merge-reports report-dir/ path-to-database.db path-to-databaseUrls.json -d dest-report -h foo=bar
+```bash testplane-project=reporter
+npx testplane merge-reports html-report custom-report -d merged-report
 ```
 
 HTTP-заголовки также можно передавать через переменную окружения — `html_reporter_headers` (она имеет более высокий приоритет, чем опция CLI `--header`). Пример:
@@ -132,12 +132,12 @@ npx testplane remove-unused-screens -p 'screens/**/chrome/*.png' -p 'screens/**/
 
 Задаем папку для поиска скриншотов и просим не задавать вопросов:
 
-```bash
+```bash testplane-project=reporter
 npx testplane remove-unused-screens -p 'testplane-screens-folder' --skip-questions
 ```
 
 Выводим справочную информацию о команде:
 
-```bash
+```bash testplane-project=reporter
 npx testplane remove-unused-screens --help
 ```
