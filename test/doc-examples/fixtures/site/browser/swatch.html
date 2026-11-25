@@ -34,12 +34,16 @@
         height: 8px;
         background: yellow;
     }
+    /* Keep scrolling available without painting platform-specific scrollbar tracks. */
+    html.fullscreen {
+        scrollbar-width: none;
+    }
     .fullscreen .modal {
         padding-top: 1000px;
     }
     .fullscreen .form,
     .fullscreen .button {
-        width: 100vw;
+        width: 100%;
         height: 100vh;
     }
 </style>
@@ -56,6 +60,6 @@
 </main>
 <script>
     const options = new URLSearchParams(location.search);
-    if (options.has("fullscreen")) document.body.classList.add("fullscreen");
+    if (options.has("fullscreen")) document.documentElement.classList.add("fullscreen");
     if (options.has("showLink")) document.body.classList.add("show-link");
 </script>
