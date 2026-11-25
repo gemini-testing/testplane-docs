@@ -14,6 +14,8 @@ await browser.$(selector).isSelected();
 
 ## Примеры использования {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <select name="selectbox" id="selectbox">
     <option value="John Doe">John Doe</option>
@@ -22,9 +24,20 @@ await browser.$(selector).isSelected();
 </select>
 ```
 
-```javascript testplane=element-is-selected fixture=element-html
+**isSelected.js**
+
+```javascript testplane=element-is-selected-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-assert.equal(await browser.$('[value="Layla Terry"]').isSelected(), true);
-assert.equal(await browser.$('[value="Bill Gilbert"]').isSelected(), false);
+it("should detect if an element is selected", async ({ browser }) => {
+    let element = await browser.$('[value="Layla Terry"]');
+    let selected = await element.isSelected();
+    console.log(selected); // выведет: true
+    assert.equal(selected, true);
+
+    element = await browser.$('[value="Bill Gilbert"]');
+    selected = await element.isSelected();
+    console.log(selected); // выведет: false
+    assert.equal(selected, false);
+});
 ```

@@ -12,24 +12,28 @@ await browser.mockRestoreAll();
 
 ## Примеры использования {/* #examples */}
 
-```typescript testplane=browser-mock-restore-all fixture=browser-mock
+```typescript testplane=browser-mock-restore-all-ru fixture=browser-mock
 const assert = require("node:assert/strict");
 
-it("removes response overrides for both requests", async ({ browser }) => {
-    const items = await browser.mock("/api/items");
-    const other = await browser.mock("/api/other");
-    await items.respond({ source: "fixture" });
-    await other.respond({ source: "fixture" });
+it("should restore all mocks", async ({ browser }) => {
+    const origin = new URL(await browser.getUrl()).origin;
+    const pageMock = await browser.mock("/original");
+    const previewMock = await browser.mock("/fixtures/browser/preview.html");
+    await pageMock.redirect(new URL("/frame", origin).href);
+    await previewMock.redirect(new URL("/frame", origin).href);
 
-    const sources = () =>
-        browser.execute(async () => {
-            const responses = await Promise.all([fetch("/api/items"), fetch("/api/other")]);
-            return Promise.all(responses.map(async response => (await response.json()).source));
-        });
-    assert.deepEqual(await sources(), ["fixture", "fixture"]);
+    await browser.url("/original");
+    assert.equal(await browser.getTitle(), "Frame");
+    await browser.url("/fixtures/browser/preview.html");
+    assert.equal(await browser.getTitle(), "Frame");
 
     await browser.mockRestoreAll();
-    assert.deepEqual(await sources(), ["original", "redirected"]);
+
+    // Оба URL снова возвращают исходные страницы.
+    await browser.url("/original");
+    assert.equal(await browser.getTitle(), "Command examples");
+    await browser.url("/fixtures/browser/preview.html");
+    assert.equal(await browser.getTitle(), "Preview");
 });
 ```
 

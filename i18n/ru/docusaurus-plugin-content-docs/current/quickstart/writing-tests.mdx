@@ -10,7 +10,8 @@ sidebar_position: 2
 
 ```typescript testplane=quickstart-structure-ru fixture=quickstart-page
 describe("Название группы тестов", () => {
-    it("открывает главную страницу документации", async ({ browser }) => {
+    it("Описание того, что должно произойти", async ({ browser }) => {
+        // Тело теста
         await browser.url("/fixtures/quickstart/docs.html");
         await expect(browser.$("h1")).toHaveText("Fast testplane docs");
     });
@@ -155,12 +156,18 @@ describe("Клик", () => {
         const searchButton = await browser.$("button.DocSearch");
         await searchButton.waitForClickable({ timeout: 5000 });
         await searchButton.click();
-        const modal = await browser.$(".DocSearch-Modal");
-        await modal.waitForDisplayed({ timeout: 5000 });
 
-        const result = await modal.$('[role="option"]');
-        await result.doubleClick();
-        assert.strictEqual(await result.getAttribute("aria-selected"), "true");
+        // Двойной клик по кнопке поиска
+        await searchButton.doubleClick();
+
+        // Проверка
+        const searchModal = await browser.$(".DocSearch-Modal");
+        await searchModal.waitForDisplayed({ timeout: 5000 });
+        const isDisplayed = await searchModal.isDisplayed();
+        assert.strictEqual(isDisplayed, true);
+
+        const searchInput = await searchModal.$('input[placeholder="Search docs"]');
+        await expect(searchInput).toBeFocused();
     });
 });
 ```

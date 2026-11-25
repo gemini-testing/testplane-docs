@@ -1,6 +1,19 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 
+const actionCommands = new WeakMap();
+const rightClicks = new Map([
+    ["should demonstrate a right click passed as string", { press: [2, 0, 0], release: true }],
+    [
+        "should demonstrate a right click passed as number while adding an offset",
+        { press: [2, 30, 40], release: true },
+    ],
+    [
+        "should skip sending releaseActions to avoid closing an alert",
+        { press: [2, 30, 40], release: false },
+    ],
+]);
+
 const pages = {
     drag: `<style>
         #someElem, #someTarget { position:absolute; width:40px; height:40px }
@@ -37,11 +50,9 @@ const pages = {
 };
 
 async function setup(browser, variant) {
-    if (variant === "calculator") return browser.url("/fixtures/browser/calculator.html");
     if (variant === "document") return browser.url("/");
 
     if (variant === "visual") {
-        await browser.url("/fixtures/browser/swatch.html");
         const { solidReference } = require("./solid-image.cjs");
         await solidReference(browser, "plain", { width: 40, height: 40, color: "#008000" });
         await solidReference(browser, "clicked", { width: 40, height: 40, color: "#0000ff" });
@@ -55,7 +66,21 @@ async function setup(browser, variant) {
 }
 
 async function afterHtml(browser, variant) {
+    if (variant === "links") {
+        // Resolve the menu's relative links beside the two local example pages.
+        await browser.execute(() => {
+            const base = document.createElement("base");
+            base.href = "/fixtures/element/";
+            document.head.append(base);
+        });
+    }
     if (variant === "click-offset" || variant === "click-right") {
+        const commands = [];
+        actionCommands.set(browser, commands);
+        browser.on("command", ({ command }) => {
+            if (command === "performActions" || command === "releaseActions")
+                commands.push(command);
+        });
         await browser.execute(() => {
             const button = document.querySelector("#myButton");
             window.pressEvents = [];
@@ -74,16 +99,17 @@ async function afterHtml(browser, variant) {
 
 async function verify(browser, variant) {
     if (variant === "click-offset" || variant === "click-right") {
-        const events = await browser.execute(() => window.pressEvents);
-        assert.deepEqual(
-            events,
+        const title = browser.executionContext.ctx.currentTest.title;
+        const expected =
             variant === "click-offset"
-                ? [[0, 30, 0]]
-                : [
-                      [2, 0, 0],
-                      [2, 30, 40],
-                      [2, 30, 40],
-                  ],
+                ? { press: [0, 30, 0], release: true }
+                : rightClicks.get(title);
+        assert.ok(expected, `Missing click expectations for: ${title}`);
+        const events = await browser.execute(() => window.pressEvents);
+        assert.deepEqual(events, [expected.press]);
+        assert.deepEqual(
+            actionCommands.get(browser),
+            expected.release ? ["performActions", "releaseActions"] : ["performActions"],
         );
     }
     if (variant === "scroll") {

@@ -12,6 +12,8 @@ await browser.$(selector).doubleClick();
 
 ## Примеры использования {/* #examples */}
 
+**example.html**
+
 ```html testplane-html=element-html
 <button
     id="myButton"
@@ -22,9 +24,17 @@ await browser.$(selector).doubleClick();
 <div id="someText">I was not clicked</div>
 ```
 
+**doubleClick.js**
+
 ```javascript testplane=element-double-click fixture=element-html
 const assert = require("node:assert/strict");
 
-await browser.$("#myButton").doubleClick();
-assert.equal(await browser.$("#someText").getText(), "I was dblclicked");
+it("should demonstrate the doubleClick command", async ({ browser }) => {
+    const myButton = await browser.$("#myButton");
+    await myButton.doubleClick();
+
+    const myText = await browser.$("#someText");
+    const value = await myText.getText(); // "I was dblclicked"
+    assert.equal(value, "I was dblclicked");
+});
 ```

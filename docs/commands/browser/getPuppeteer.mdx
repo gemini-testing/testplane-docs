@@ -26,13 +26,24 @@ await browser.getPuppeteer();
 ```javascript testplane=browser-get-puppeteer fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("accesses the current page through Puppeteer", async ({ browser }) => {
+it("should use Puppeteer on the current page", async ({ browser }) => {
     await browser.url("/");
-    const puppeteer = await browser.getPuppeteer();
     const url = await browser.getUrl();
-    const page = (await puppeteer.pages()).find(page => page.url() === url);
-    assert.equal(await page.title(), "Command examples");
-    const metrics = await page.metrics();
+    const puppeteerBrowser = await browser.getPuppeteer();
+
+    // Switch to Puppeteer and find the page opened by Testplane.
+    const metrics = await browser.call(async () => {
+        const pages = await puppeteerBrowser.pages();
+        const page = pages.find(page => page.url() === url);
+        assert.equal(await page.title(), "Command examples");
+        await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
+
+        return page.metrics();
+    });
+
+    // LayoutCount is the number of layouts; the exact value depends on the page.
+    console.log(metrics.LayoutCount);
+    assert.ok(Number.isInteger(metrics.LayoutCount) && metrics.LayoutCount >= 0);
     assert.ok(metrics.Nodes > 0);
 });
 ```

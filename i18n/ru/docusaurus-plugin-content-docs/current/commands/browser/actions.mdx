@@ -12,15 +12,17 @@ await browser.actions([action1, action2, ...]);
 
 ## Примеры использования {/* #examples */}
 
-```typescript testplane=browser-actions-pinch fixture=browser-pinch
+```typescript testplane=browser-actions-pinch-ru fixture=browser-pinch
 const assert = require("node:assert/strict");
 
-it("spreads two fingers in one gesture", async ({ browser }) => {
+it("should run two touch actions together for a pinch zoom", async ({ browser }) => {
+    // Каждый палец — отдельный сенсорный указатель со своим ID.
     const finger = id => browser.action("pointer", { id, parameters: { pointerType: "touch" } });
-    await browser.actions([
-        finger("left").move(160, 180).down().move(80, 180).up(),
-        finger("right").move(200, 180).down().move(280, 180).up(),
-    ]);
+    const left = finger("left").move(160, 180).down().move(80, 180).up();
+    const right = finger("right").move(200, 180).down().move(280, 180).up();
+
+    // Отправляем обе последовательности вместе, чтобы развести пальцы одним жестом.
+    await browser.actions([left, right]);
     assert.equal(await browser.$("output").getText(), "Spread");
 });
 ```

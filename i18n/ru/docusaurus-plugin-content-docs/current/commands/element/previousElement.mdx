@@ -12,6 +12,8 @@ await browser.$(selector).previousElement();
 
 ## Примеры использования {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <div class="parent">
     <p>Sibling One</p>
@@ -20,12 +22,19 @@ await browser.$(selector).previousElement();
 </div>
 ```
 
-```javascript testplane=element-previous-element fixture=element-html
+**previousElement.js**
+
+```javascript testplane=element-previous-element-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const paragraphs = await browser.$$("p");
-const sibling = await paragraphs[1].previousElement();
-assert.equal(await sibling.getText(), "Sibling One");
+it("should get text from previous sibling element", async ({ browser }) => {
+    const paragraphs = await browser.$$("p");
+    const previousElement = await paragraphs[1].previousElement();
+
+    const text = await previousElement.getText();
+    console.log(text); // выведет: "Sibling One"
+    assert.equal(text, "Sibling One");
+});
 ```
 
 ## Связанные команды {/* #related */}

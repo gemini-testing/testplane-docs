@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Search</title>
+<style>
+    body {
+        margin: 0;
+        background: white;
+    }
+    .DocSearch {
+        display: block;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        padding: 0;
+        background: #24364b;
+    }
+    .DocSearch[aria-expanded="true"] {
+        background: #1858a6;
+    }
+</style>
+<button class="DocSearch" aria-label="Search" aria-expanded="false" aria-controls="search">
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+        <path
+            fill="white"
+            fill-rule="evenodd"
+            d="M9 8h16v16H9z M12 11v10h10V11z M25 24h4v4h-4z M29 28h3v3h-3z"
+        />
+    </svg>
+</button>
+<form id="search" hidden>
+    <label>Search <input type="search" /></label>
+</form>
+<script>
+    document.querySelector(".DocSearch").onclick = function () {
+        this.setAttribute("aria-expanded", "true");
+        document.querySelector("#search").hidden = false;
+    };
+</script>

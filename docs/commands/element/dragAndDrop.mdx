@@ -30,14 +30,20 @@ Drag the tile onto a target of the same size, then move it 100 pixels right and 
 ```javascript testplane=element-drag-and-drop fixture=element-drag
 const assert = require("node:assert/strict");
 
-const tile = await browser.$("#someElem");
-const target = await browser.$("#someTarget");
-await tile.dragAndDrop(target);
-assert.deepEqual(await tile.getLocation(), await target.getLocation());
+it("should demonstrate the dragAndDrop command", async ({ browser }) => {
+    const elem = await browser.$("#someElem");
+    const target = await browser.$("#someTarget");
 
-const { x, y } = await tile.getLocation();
-await tile.dragAndDrop({ x: 100, y: 200 });
-assert.deepEqual(await tile.getLocation(), { x: x + 100, y: y + 200 });
+    // Drag and drop onto another element.
+    await elem.dragAndDrop(target);
+    const location = await elem.getLocation();
+    assert.deepEqual(location, await target.getLocation());
+
+    // Drag and drop relative to the element’s current position.
+    await elem.dragAndDrop({ x: 100, y: 200 });
+    const newLocation = await elem.getLocation();
+    assert.deepEqual(newLocation, { x: location.x + 100, y: location.y + 200 });
+});
 ```
 
 ## References

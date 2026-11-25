@@ -31,12 +31,24 @@ await browser.execute(script, arguments);
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-execute
+```javascript testplane=browser-execute-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("execute: return a value from the page", async ({ browser }) => {
-    const sum = await browser.execute((a, b, c, d) => a + b + c + d, 1, 2, 3, 4);
-    assert.equal(sum, 10);
+it("should execute JavaScript on the page", async ({ browser }) => {
+    const result = await browser.execute(
+        (a, b, c, d) => {
+            // Эта функция выполняется на странице, и клиент browser из Node.js ей недоступен.
+            // Здесь console пишет в консоль страницы, а не в терминал теста.
+            return a + b + c + d;
+        },
+        1,
+        2,
+        3,
+        4,
+    );
+
+    // Тест в Node.js получает результат со страницы.
+    assert.equal(result, 10);
 });
 ```
 

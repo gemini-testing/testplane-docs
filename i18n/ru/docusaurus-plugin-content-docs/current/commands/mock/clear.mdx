@@ -12,16 +12,24 @@ mock.clear();
 
 ## Примеры использования {/* #examples */}
 
-В примере используется WebDriver BiDi: кнопка `#reload` отправляет GET на `/api/items`, а `#source` показывает результат.
+Запишем переход в сессии WebDriver BiDi, очистим историю и снова откроем ту же страницу:
 
-```javascript testplane=mock-clear fixture=matchers-network
-const mock = await browser.mock("/api/items");
-await browser.$("#reload").click();
-await mock.waitForResponse();
+```javascript testplane=mock-clear-ru fixture=matchers-intercept
+it("очищает историю и продолжает записывать запросы", async ({ browser }) => {
+    const page = await browser.mock("/fixtures/matchers/tasks.html");
+    await browser.url("/fixtures/matchers/tasks.html");
+    await page.waitForResponse();
 
-expect(mock.calls).toHaveLength(1);
-mock.clear();
-expect(mock.calls).toHaveLength(0);
+    // Мок записал один переход; очищаем историю, не удаляя сам мок.
+    expect(page.calls).toHaveLength(1);
+    page.clear();
+    expect(page.calls).toHaveLength(0);
+
+    // Со следующего перехода история начнется заново.
+    await browser.url("/fixtures/matchers/tasks.html");
+    await page.waitForResponse();
+    expect(page.calls).toHaveLength(1);
+});
 ```
 
 ## Связанные команды {/* #related */}

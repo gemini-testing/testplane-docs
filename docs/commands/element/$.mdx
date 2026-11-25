@@ -40,6 +40,8 @@ await browser.$(selector);
 
 ## Usage Examples {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <ul id="menu">
     <li>
@@ -57,24 +59,40 @@ await browser.$(selector);
 </ul>
 ```
 
-```javascript testplane=element-find-css fixture=element-html
-const assert = require("node:assert/strict");
-
-const menu = await browser.$("#menu");
-const link = await menu.$("li:nth-child(3) a");
-assert.equal(await link.getText(), "API");
-```
-
-The function selector receives the current `HTMLLIElement` as `this`. Use a regular function, not an arrow function. In TypeScript, you can type the receiver as `function (this: HTMLLIElement)`.
-
 ```javascript testplane=element-find-function fixture=element-html
 const assert = require("node:assert/strict");
 
-const item = await browser.$("#menu").$$("li")[2];
-const link = await item.$(function () {
-    return this.querySelector("a");
+it("should get text of a menu link - JS Function", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const items = await menu.$$("li");
+    const link = await items[2].$(function () {
+        // Use a regular function: an arrow function has no element receiver.
+        // Here this is an HTMLLIElement (a DOM Element):
+        // https://developer.mozilla.org/en-US/docs/Web/API/Element
+        //
+        // In TypeScript you can declare the receiver as:
+        // function (this: HTMLLIElement) { ... }
+        return this.querySelector("a"); // HTMLAnchorElement | null
+    });
+
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
 });
-assert.equal(await link.getText(), "API");
+```
+
+```javascript testplane=element-find-css fixture=element-html
+const assert = require("node:assert/strict");
+
+it("should get text of a menu link", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const items = await menu.$$("li");
+    const link = await items[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
+});
 ```
 
 You can also pass the active element reference returned by the protocol:
@@ -82,9 +100,17 @@ You can also pass the active element reference returned by the protocol:
 ```javascript testplane=element-find-active fixture=element-html
 const assert = require("node:assert/strict");
 
-await browser.$("#menu a").execute(link => link.focus());
-const active = await browser.getActiveElement();
-assert.equal(await browser.$(active).getTagName(), "a");
+it("should allow to convert protocol result of an element into a WebdriverIO element", async ({
+    browser,
+}) => {
+    const link = await browser.$("#menu a");
+    await link.execute(element => element.focus());
+
+    const activeElement = await browser.getActiveElement();
+    const tagName = await browser.$(activeElement).getTagName();
+    console.log(tagName); // outputs: "a" (the active element’s tag name)
+    assert.equal(tagName, "a");
+});
 ```
 
 The following example is for Android with Espresso, not a web browser:

@@ -44,7 +44,7 @@
     {
         "page": "docs/commands/expect/overview.mdx",
         "language": "typescript",
-        "blockIndex": 3,
+        "blockIndex": 4,
         "sha256": "338e5dcc877207d1bc85d32eedb40f80b12beed7a393b738677c1128e1b3669f",
         "reason": "Фрагмент секции system.expectOpts в конфигурации Testplane, а не браузерный тест."
     },
@@ -94,7 +94,7 @@
         "page": "docs/guides/how-to-check-accessibility.mdx",
         "language": "json",
         "blockIndex": 0,
-        "sha256": "77442113967da7399aacac012c07fcea2da51f77bc0b033acec3c99c95a48199",
+        "sha256": "4c61b79ac9b68b2083d1c7813bc0e6bfdc124ac4ff734c35eb69795263a8e184",
         "reason": "Фрагмент вывода accessibility.snapshot(): роли и имена элементов проверяет пример выше; JSON не является сценарием."
     },
     {
@@ -137,7 +137,7 @@
     {
         "page": "i18n/ru/docusaurus-plugin-content-docs/current/commands/expect/overview.mdx",
         "language": "typescript",
-        "blockIndex": 3,
+        "blockIndex": 4,
         "sha256": "8b539f9329eb876b7acf72775e0eaac350d18b2fd7cca50a7020c0218f6f5704",
         "reason": "Фрагмент секции system.expectOpts в конфигурации Testplane, а не браузерный тест."
     },
@@ -187,7 +187,7 @@
         "page": "i18n/ru/docusaurus-plugin-content-docs/current/guides/how-to-check-accessibility.mdx",
         "language": "json",
         "blockIndex": 0,
-        "sha256": "77442113967da7399aacac012c07fcea2da51f77bc0b033acec3c99c95a48199",
+        "sha256": "4c61b79ac9b68b2083d1c7813bc0e6bfdc124ac4ff734c35eb69795263a8e184",
         "reason": "Фрагмент вывода accessibility.snapshot(): роли и имена элементов проверяет пример выше; JSON не является сценарием."
     }
 ]

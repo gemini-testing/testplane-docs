@@ -33,9 +33,20 @@ await browser.$(selector).isEqual(el);
 ```javascript testplane=element-is-equal fixture=element-html
 const assert = require("node:assert/strict");
 
-const first = await browser.$("#el");
-assert.equal(await first.isEqual(await browser.$("#el")), true);
-assert.equal(await first.isEqual(await browser.$("#anotherEl")), false);
+it("should detect if an element is equal to another", async ({ browser }) => {
+    const el = await browser.$("#el");
+
+    const sameEl = await browser.$("#el");
+    const anotherEl = await browser.$("#anotherEl");
+
+    const same = await el.isEqual(sameEl);
+    console.log(same); // outputs: true
+    assert.equal(same, true);
+
+    const matchesAnother = await el.isEqual(anotherEl);
+    console.log(matchesAnother); // outputs: false
+    assert.equal(matchesAnother, false);
+});
 ```
 
 ## References

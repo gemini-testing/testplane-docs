@@ -21,8 +21,12 @@ await browser.$(selector).getComputedLabel();
 ```javascript testplane=element-get-computed-label fixture=element-html
 const assert = require("node:assert/strict");
 
-const field = await browser.$('[name="q"]');
-assert.equal(await field.getComputedLabel(), "Search");
+it("should demonstrate the getComputedLabel command", async ({ browser }) => {
+    const elem = await browser.$('[name="q"]');
+    const label = await elem.getComputedLabel();
+    console.log(label); // outputs: "Search"
+    assert.equal(label, "Search");
+});
 ```
 
 ## References

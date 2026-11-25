@@ -41,11 +41,19 @@ await browser.$(selector).isClickable();
 ```javascript testplane=element-is-clickable fixture=element-html
 const assert = require("node:assert/strict");
 
-const save = await browser.$("#save");
-assert.equal(await save.isClickable(), false);
-await browser.$("#enable").click();
-await browser.waitUntil(() => save.isClickable());
-assert.equal(await save.isClickable(), true);
+it("should detect if an element is clickable", async ({ browser }) => {
+    const save = await browser.$("#save");
+    let clickable = await save.isClickable();
+    console.log(clickable); // outputs: false
+    assert.equal(clickable, false);
+
+    await browser.$("#enable").click();
+    // Wait until the save button is clickable.
+    await browser.waitUntil(() => save.isClickable());
+    clickable = await save.isClickable();
+    console.log(clickable); // outputs: true
+    assert.equal(clickable, true);
+});
 ```
 
 ## References

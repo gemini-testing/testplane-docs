@@ -29,8 +29,8 @@ mock.respondOnce(overwrites, { headers, statusCode, fetchResponse });
 </thead>
 <tbody>
 <tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ to overwrite the response.</td></tr>
-<tr><td>headers</td><td>Object</td><td>Overwrite specific headers.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Overwrite the response status code.</td></tr>
+<tr><td>headers</td><td>Object | Function</td><td>Overwrite specific headers.</td></tr>
+<tr><td>statusCode</td><td>Number | Function</td><td>Overwrite the response status code.</td></tr>
 <tr><td>fetchResponse</td><td>Boolean</td><td>CDP only: fetch the actual response before applying the overwrite.</td></tr>
 
 </tbody>
@@ -38,17 +38,43 @@ mock.respondOnce(overwrites, { headers, statusCode, fetchResponse });
 
 ## Usage Examples {/* #examples */}
 
-In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
+The todo page fetches its list on every visit. In this WebDriver BiDi example, the list shrinks three times; the fourth visit displays the server’s original list.
 
-```javascript testplane=mock-respond-once fixture=matchers-network
-const mock = await browser.mock("/api/items");
-mock.respondOnce({ source: "first" });
-mock.respondOnce({ source: "second" });
-
-for (const expected of ["first", "second", "original"]) {
-    await browser.$("#reload").click();
-    await expect(browser.$("#source")).toHaveText(expected);
+```javascript testplane=mock-respond-once fixture=matchers-intercept
+async function getTodoTitles(browser) {
+    // Wait for the list from this page load, then read its items in order.
+    const firstTodo = await browser.$("#todo-list li");
+    await firstTodo.waitForExist();
+    const items = await browser.$$("#todo-list li");
+    return Promise.all(items.map(item => item.getText()));
 }
+
+it("uses the queued responses before falling back to the real list", async ({ browser }) => {
+    const todos = await browser.mock("/fixtures/matchers/todos.json", { method: "GET" });
+    // Queue three different lists on the same mock.
+    todos.respondOnce([{ title: "3" }, { title: "2" }, { title: "1" }]);
+    todos.respondOnce([{ title: "2" }, { title: "1" }]);
+    todos.respondOnce([{ title: "1" }]);
+
+    // Each visit makes one GET request and consumes the next list.
+    const page = "/fixtures/matchers/todos.html";
+    await browser.url(page);
+    const firstList = await getTodoTitles(browser);
+    expect(firstList).toEqual(["3", "2", "1"]);
+
+    await browser.url(page);
+    const secondList = await getTodoTitles(browser);
+    expect(secondList).toEqual(["2", "1"]);
+
+    await browser.url(page);
+    const thirdList = await getTodoTitles(browser);
+    expect(thirdList).toEqual(["1"]);
+
+    // No overwrites remain: this is the actual resource response.
+    await browser.url(page);
+    const originalList = await getTodoTitles(browser);
+    expect(originalList).toEqual(["Original todo"]);
+});
 ```
 
 ## Related Commands {/* #related */}

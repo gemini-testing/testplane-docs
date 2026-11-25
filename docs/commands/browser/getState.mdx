@@ -11,14 +11,14 @@ Reads session state from a file previously written by the [saveState][saveState]
 ## Usage {/* #usage */}
 
 ```typescript testplane=browser-get-state-file fixture=browser-saved-state
+import type { SaveStateData } from "testplane";
 const assert = require("node:assert/strict");
 
-import type { SaveStateData } from "testplane";
-
-const state: SaveStateData = await browser.getState({
-    path: `./artifacts/demo-${browser.sessionId}.json`,
+const stateDump: SaveStateData = await browser.getState({
+    path: "./artifacts/stateDump.json",
 });
-assert.equal(state.cookies?.find(cookie => cookie.name === "theme")?.value, "dark");
+const theme = stateDump.cookies?.find(cookie => cookie.name === "theme");
+assert.equal(theme?.value, "dark");
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -49,12 +49,15 @@ Read a saved session without restoring it.
 ```typescript testplane=browser-read-saved-state fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("reads a previously saved session", async ({ browser }) => {
+it("should read a saved session without restoring it", async ({ browser }) => {
     await browser.setCookies({ name: "theme", value: "dark" });
-    const path = `./artifacts/demo-${browser.sessionId}.json`;
+    const path = "./artifacts/stateDump.json";
     const saved = await browser.saveState({ path });
-    const state = await browser.getState({ path });
-    assert.deepEqual(state, saved);
+    await browser.clearSession();
+
+    const stateData = await browser.getState({ path });
+    assert.deepEqual(stateData, saved);
+    assert.deepEqual(await browser.getCookies(), []);
 });
 ```
 

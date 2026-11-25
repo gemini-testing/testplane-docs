@@ -35,6 +35,7 @@ const assert = require("node:assert/strict");
 const keyboard = browser.action("key");
 const input = await browser.$("input");
 await input.click();
+
 await keyboard.down("a").up("a").perform();
 assert.equal(await input.getValue(), "a");
 ```
@@ -50,25 +51,37 @@ Returns a `KeyAction` object that supports the following actions:
 To use special symbols (`Control`, `Page Up`, `Shift`, etc.), you can use the `Key` object from the [@testplane/webdriverio][webdriverio-npm] package. It contains Unicode representations of all necessary special symbols. Example:
 
 ```typescript testplane=browser-action-special-key fixture=browser-input
+import { Key } from "@testplane/webdriverio";
 const assert = require("node:assert/strict");
 
-const { Key } = require("@testplane/webdriverio");
 const input = await browser.$("input");
 await input.setValue("abc");
+
 await browser.action("key").down(Key.Backspace).up(Key.Backspace).perform();
 assert.equal(await input.getValue(), "ab");
 ```
 
 ### Usage Examples {/* #keyboard_examples */}
 
-```typescript testplane=browser-action-keys fixture=browser-input
+```typescript testplane=browser-action-keys fixture=browser-clipboard
+import { Key } from "@testplane/webdriverio";
 const assert = require("node:assert/strict");
 
-it("types a word with key actions", async ({ browser }) => {
-    const input = await browser.$("input");
-    await input.click();
+it("should emit key events using key action commands", async ({ browser }) => {
+    const elem = await browser.$("#username");
+    await elem.click(); // make the input active
+
     await browser.action("key").down("f").up("f").down("o").up("o").down("o").up("o").perform();
-    assert.equal(await input.getValue(), "foo");
+    assert.equal(await elem.getValue(), "foo");
+
+    // Select and copy the text: Command on macOS, Control on other platforms.
+    await browser.action("key").down(Key.Ctrl).down("a").up("a").up(Key.Ctrl).perform();
+    await browser.action("key").down(Key.Ctrl).down("c").up("c").up(Key.Ctrl).perform();
+
+    const copy = await browser.$("#copy");
+    await copy.click();
+    await browser.action("key").down(Key.Ctrl).down("v").up("v").up(Key.Ctrl).perform();
+    assert.equal(await copy.getValue(), "foo");
 });
 ```
 
@@ -81,8 +94,11 @@ Used when specifying `pointer` as the argument for the `action` command, and you
 ```typescript testplane=browser-create-pointer-action fixture=browser-input
 const assert = require("node:assert/strict");
 
-const mouse = browser.action("pointer", { parameters: { pointerType: "mouse" } });
+const mouse = browser.action("pointer", {
+    parameters: { pointerType: "mouse" }, // "mouse" is the default; "pen" and "touch" are also available.
+});
 const input = await browser.$("input");
+
 await mouse.move({ origin: input }).down("left").up("left").perform();
 assert.equal(await input.isFocused(), true);
 ```
@@ -105,16 +121,19 @@ Detailed information on the parameter types [PointerActionParams][pointer-action
 ```typescript testplane=browser-action-pointer fixture=browser-pointer
 const assert = require("node:assert/strict");
 
-it("drops the source on the target", async ({ browser }) => {
+it("should drag and drop using pointer actions", async ({ browser }) => {
     const origin = await browser.$("#source");
-    const target = await browser.$("#target");
+    const targetOrigin = await browser.$("#target");
+
     await browser
         .action("pointer")
-        .move({ origin })
-        .down({ button: 0 })
-        .move({ origin: target, duration: 100 })
+        .move({ duration: 0, origin, x: 0, y: 0 })
+        .down({ button: 0 }) // left mouse button
+        .pause(10)
+        .move({ duration: 100, origin: targetOrigin })
         .up({ button: 0 })
         .perform();
+
     assert.equal(await browser.$("output").getText(), "Dropped");
 });
 ```
@@ -141,10 +160,20 @@ Detailed information on the parameter type [ScrollParams][scroll-params] can be 
 ```typescript testplane=browser-action-wheel fixture=browser-scroll
 const assert = require("node:assert/strict");
 
-it("scrolls using the wheel", async ({ browser }) => {
-    assert.equal(await browser.execute(() => window.scrollY), 0);
-    await browser.action("wheel").scroll({ deltaX: 0, deltaY: 500, duration: 200 }).perform();
-    await browser.waitUntil(async () => (await browser.execute(() => window.scrollY)) === 500);
+it("should scroll using wheel action commands", async ({ browser }) => {
+    const scrollY = () => browser.execute(() => window.scrollY);
+    assert.equal(await scrollY(), 0); // before scrolling
+
+    await browser
+        .action("wheel")
+        .scroll({
+            deltaX: 0,
+            deltaY: 500,
+            duration: 200,
+        })
+        .perform();
+
+    await browser.waitUntil(async () => (await scrollY()) === 500); // after scrolling
 });
 ```
 

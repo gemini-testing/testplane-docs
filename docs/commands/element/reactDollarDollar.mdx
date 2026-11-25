@@ -37,13 +37,21 @@ await browser.$(selector).react$$(reactComponentSelector, { props, state });
 
 Find only the calculator keys whose `orange` prop is `true`.
 
-```javascript testplane=element-react-dollar-dollar fixture=element-calculator
+```javascript testplane=element-react-dollar-dollar fixture=element-document
 const assert = require("node:assert/strict");
 
-const calculator = await browser.$(".calculator");
-const buttons = await calculator.react$$("Button", { props: { orange: true } });
-const labels = await buttons.map(button => button.getText());
-assert.deepEqual(labels, ["÷", "x", "-", "+", "="]);
+it("should get the orange calculator buttons", async ({ browser }) => {
+    await browser.url("/fixtures/browser/calculator.html");
+    const appWrapper = await browser.$(".calculator");
+
+    const orangeButtons = await appWrapper.react$$("Button", {
+        props: { orange: true },
+    });
+
+    const labels = await orangeButtons.map(button => button.getText());
+    console.log(labels); // outputs: [ '÷', 'x', '-', '+', '=' ]
+    assert.deepEqual(labels, ["÷", "x", "-", "+", "="]);
+});
 ```
 
 ## Related Commands {/* #related */}

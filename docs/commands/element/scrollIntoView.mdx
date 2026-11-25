@@ -48,11 +48,17 @@ Scroll to an element below the fold, then center it in the viewport.
 ```javascript testplane=element-scroll-into-view fixture=element-scroll
 const assert = require("node:assert/strict");
 
-const elem = await browser.$("#myElement");
-assert.equal(await elem.isDisplayedInViewport(), false);
-await elem.scrollIntoView();
-assert.equal(await elem.isDisplayedInViewport(), true);
-await elem.scrollIntoView({ block: "center", inline: "center" });
+it("should demonstrate the scrollIntoView command", async ({ browser }) => {
+    const elem = await browser.$("#myElement");
+    assert.equal(await elem.isDisplayedInViewport(), false);
+
+    // Scroll the element into view.
+    await elem.scrollIntoView();
+    assert.equal(await elem.isDisplayedInViewport(), true);
+
+    // Scroll the element to the center of the viewport.
+    await elem.scrollIntoView({ block: "center", inline: "center" });
+});
 ```
 
 ## Related Commands {/* #related */}

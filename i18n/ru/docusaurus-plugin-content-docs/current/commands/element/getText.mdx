@@ -14,6 +14,8 @@ await browser.$(selector).getText();
 
 ## Примеры использования {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <div id="elem">
     Lorem ipsum <strong>dolor</strong> sit amet,<br />
@@ -22,12 +24,25 @@ await browser.$(selector).getText();
 <span style="display: none">I am invisible</span>
 ```
 
-```javascript testplane=element-get-text fixture=element-html
+**getText.js**
+
+```javascript testplane=element-get-text-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const text = await browser.$("#elem").getText();
-assert.equal(text, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr");
-assert.equal(await browser.$("span").getText(), "");
+it("should demonstrate the getText function", async ({ browser }) => {
+    const elem = await browser.$("#elem");
+    const text = await elem.getText();
+    console.log(text);
+    // выведет:
+    // Lorem ipsum dolor sit amet,
+    // consetetur sadipscing elitr
+    assert.equal(text, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr");
+
+    const hidden = await browser.$("span");
+    const hiddenText = await hidden.getText();
+    console.log(hiddenText); // выведет: "" (пустую строку), потому что элемент скрыт
+    assert.equal(hiddenText, "");
+});
 ```
 
 Чтобы прочитать третий столбец второй строки:
@@ -47,12 +62,17 @@ assert.equal(await browser.$("span").getText(), "");
 </table>
 ```
 
-```javascript testplane=element-get-text-table fixture=element-table
+```javascript testplane=element-get-text-table-ru fixture=element-table
 const assert = require("node:assert/strict");
 
-const rows = await browser.$$("#table1 tr");
-const columns = await rows[1].$$("td");
-assert.equal(await columns[2].getText(), "john@example.com");
+it("get content from table cell", async ({ browser }) => {
+    const rows = await browser.$$("#table1 tr");
+    const columns = await rows[1].$$("td"); // Получаем ячейки второй строки.
+
+    const text = await columns[2].getText(); // Получаем текст из третьего столбца.
+    console.log(text); // выведет: "john@example.com"
+    assert.equal(text, "john@example.com");
+});
 ```
 
 [interactable]: https://www.w3.org/TR/webdriver/#interactability

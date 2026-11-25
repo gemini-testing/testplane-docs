@@ -35,13 +35,14 @@ await browser.pause(milliseconds);
 ```javascript testplane=browser-pause fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("pauses execution for the requested duration", async ({ browser }) => {
-    let timerFired = false;
-    setTimeout(() => {
-        timerFired = true;
-    }, 50);
-    await browser.pause(100);
-    assert.equal(timerFired, true);
+it("should pause the execution", async ({ browser }) => {
+    const startTime = Date.now();
+    await browser.pause(1000);
+    const endTime = Date.now();
+
+    const elapsed = endTime - startTime;
+    console.log(elapsed); // approximately 1000 ms; scheduling can add a delay
+    assert.ok(elapsed >= 999);
 });
 ```
 

@@ -14,3 +14,14 @@
 <section id="login">
     <label><input type="checkbox" data-testid="remember-checkbox" />Remember me</label>
 </section>
+<ul id="books">
+    <li><img src="../selectors/cover.svg" alt="The Great Gatsby" />The Great Gatsby</li>
+    <li>A Study in Scarlet</li>
+</ul>
+<script>
+    document.querySelector('[data-testid="search-input"]').oninput = ({ target }) => {
+        for (const book of document.querySelectorAll("#books li")) {
+            book.hidden = !book.textContent.toLowerCase().includes(target.value.toLowerCase());
+        }
+    };
+</script>

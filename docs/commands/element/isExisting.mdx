@@ -21,6 +21,8 @@ await browser.$(selector).isExisting();
 
 ## Usage Examples {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <div id="visible">Visible</div>
 <div id="notDisplayed" style="display: none">Hidden</div>
@@ -29,15 +31,42 @@ await browser.$(selector).isExisting();
 <div id="zeroOpacity" style="opacity: 0">Transparent</div>
 ```
 
+**isExisting.js**
+
 ```javascript testplane=element-is-existing fixture=element-html
 const assert = require("node:assert/strict");
 
-assert.equal(await browser.$("#visible").isExisting(), true);
-assert.equal(await browser.$("#notDisplayed").isExisting(), true);
-assert.equal(await browser.$("#notVisible").isExisting(), true);
-assert.equal(await browser.$("#notExisting").isExisting(), false);
-assert.equal(await browser.$("#notInViewport").isExisting(), true);
-assert.equal(await browser.$("#zeroOpacity").isExisting(), true);
+it("should detect if elements are existing", async ({ browser }) => {
+    let elem = await browser.$("#someRandomNonExistingElement");
+    let isExisting = await elem.isExisting();
+    console.log(isExisting); // outputs: false
+    assert.equal(isExisting, false);
+
+    elem = await browser.$("#visible");
+    isExisting = await elem.isExisting();
+    console.log(isExisting); // outputs: true
+    assert.equal(isExisting, true);
+
+    elem = await browser.$("#notDisplayed");
+    isExisting = await elem.isExisting();
+    console.log(isExisting); // outputs: true
+    assert.equal(isExisting, true);
+
+    elem = await browser.$("#notVisible");
+    isExisting = await elem.isExisting();
+    console.log(isExisting); // outputs: true
+    assert.equal(isExisting, true);
+
+    elem = await browser.$("#notInViewport");
+    isExisting = await elem.isExisting();
+    console.log(isExisting); // outputs: true
+    assert.equal(isExisting, true);
+
+    elem = await browser.$("#zeroOpacity");
+    isExisting = await elem.isExisting();
+    console.log(isExisting); // outputs: true
+    assert.equal(isExisting, true);
+});
 ```
 
 ## References

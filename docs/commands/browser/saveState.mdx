@@ -17,18 +17,21 @@ If you provide the `path` parameter, the state dump will be saved to a file.
 The saved state can later be restored using the [restoreState](../restoreState) command.
 
 ```typescript testplane=browser-save-state-data fixture=browser-page
+import type { SaveStateData } from "testplane";
 const assert = require("node:assert/strict");
 
-import type { SaveStateData } from "testplane";
-
-await browser.execute(() => localStorage.setItem("theme", "dark"));
-const state: SaveStateData = await browser.saveState({
+await browser.url("/fixtures/browser/session.html");
+const stateDump: SaveStateData = await browser.saveState({
+    path: "./artifacts/stateDump.json",
     cookies: true,
     localStorage: true,
     sessionStorage: true,
 });
+
 const origin = new URL(await browser.getUrl()).origin;
-assert.equal(state.framesData?.[origin]?.localStorage?.theme, "dark");
+assert.equal(stateDump.cookies?.find(cookie => cookie.name === "theme")?.value, "dark");
+assert.equal(stateDump.framesData?.[origin]?.localStorage?.theme, "dark");
+assert.equal(stateDump.framesData?.[origin]?.sessionStorage?.draft, "hello");
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -94,16 +97,23 @@ Save state in file.
 ```typescript testplane=browser-save-state-file fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("writes only selected cookies to the state file", async ({ browser }) => {
-    const path = `./artifacts/demo-${browser.sessionId}.json`;
+it("should write only selected cookies to the state file", async ({ browser }) => {
+    await browser.url("/");
     await browser.setCookies([
         { name: "theme", value: "dark" },
         { name: "temporary", value: "1" },
     ]);
-    await browser.saveState({ path, cookieFilter: ({ name }) => name === "theme" });
-    const state = await browser.getState({ path });
+
+    const path = "./artifacts/stateDump.json";
+    const host = new URL(await browser.getUrl()).hostname;
+    await browser.saveState({
+        path,
+        cookieFilter: ({ domain, name }) => domain === host && name === "theme",
+    });
+
+    const stateDump = await browser.getState({ path });
     assert.deepEqual(
-        state.cookies.map(({ name, value }) => [name, value]),
+        stateDump.cookies.map(({ name, value }) => [name, value]),
         [["theme", "dark"]],
     );
 });

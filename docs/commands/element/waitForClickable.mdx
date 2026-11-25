@@ -47,13 +47,26 @@ await browser.$(selector).waitForClickable({ timeout, reverse, timeoutMsg, inter
 ```javascript testplane=element-wait-for-clickable fixture=element-html
 const assert = require("node:assert/strict");
 
-const save = await browser.$("#save");
-await browser.$("#enable").click();
-await save.waitForClickable({ timeout: 3000 });
-assert.equal(await save.isClickable(), true);
-await save.click();
-await save.waitForClickable({ reverse: true });
-assert.equal(await save.isClickable(), false);
+it("should detect when element is clickable", async ({ browser }) => {
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForClickable({ timeout: 3000 });
+    assert.equal(await save.isClickable(), true);
+});
+
+it("should detect when element is no longer clickable", async ({ browser }) => {
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForClickable({ timeout: 3000 });
+
+    await save.click();
+    await save.waitForClickable({ reverse: true });
+    assert.equal(await save.isClickable(), false);
+});
 ```
 
 ## References

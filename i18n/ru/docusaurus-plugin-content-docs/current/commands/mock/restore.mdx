@@ -12,18 +12,28 @@ mock.restore();
 
 ## Примеры использования {/* #examples */}
 
-В примере используется WebDriver BiDi: кнопка `#reload` отправляет GET на `/api/items`, а `#source` показывает результат.
+В сессии WebDriver BiDi подменим логотип страницы задач перенаправлением. После `restore` откроем ту же страницу и увидим ее собственный логотип.
 
-```javascript testplane=mock-restore fixture=matchers-network
-const mock = await browser.mock("/api/items");
-mock.respond({ source: "mocked" });
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("mocked");
+```javascript testplane=mock-restore-ru fixture=matchers-intercept
+it("возвращает исходный логотип после перенаправления", async ({ browser }) => {
+    const logo = await browser.mock("/fixtures/guides/logo.svg");
+    const previewUrl = new URL("/fixtures/matchers/preview-logo.svg", browser.options.baseUrl).href;
 
-await mock.restore();
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("original");
+    // Перенаправляем запрос изображения, а не самой страницы. Ширина подставного логотипа — 48 пикселей.
+    logo.redirect(previewUrl);
+    await browser.url("/fixtures/matchers/tasks.html");
+    const preview = await browser.$("#logo");
+    await expect(preview).toHaveElementProperty("naturalWidth", 48);
+
+    // После restore страница снова загружает исходный логотип шириной 28 пикселей.
+    await logo.restore();
+    await browser.url("/fixtures/matchers/tasks.html");
+    const original = await browser.$("#logo");
+    await expect(original).toHaveElementProperty("naturalWidth", 28);
+});
 ```
+
+В сессии CDP для [перенаправления ресурса](../../../guides/how-to-intercept-requests-and-responses#example_4) используется `logo.respond(previewUrl)`, а не `logo.redirect(previewUrl)`. В обоих случаях `restore` снимает подмену.
 
 ## Связанные команды {/* #related */}
 

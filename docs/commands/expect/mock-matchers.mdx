@@ -10,7 +10,8 @@ In a CDP session:
 
 ```javascript testplane=expect-cdp-requested fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items");
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
 await expect(mock).toBeRequested();
 ```
 
@@ -18,7 +19,9 @@ In a WebDriver BiDi session:
 
 ```javascript testplane=expect-bidi-requested fixture=matchers-network
 const mock = await browser.mock("/api/items");
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
+// Wait for the response before inspecting the recorded calls.
 await mock.waitForResponse();
 expect(mock.calls).toHaveLength(1);
 ```
@@ -31,17 +34,23 @@ In a CDP session:
 
 ```javascript testplane=expect-cdp-request-count fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items");
-await browser.$("#reload").click();
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
+await reload.click();
+
 await expect(mock).toBeRequestedTimes(2);
+// Or specify the same exact count using eq:
 await expect(mock).toBeRequestedTimes({ eq: 2 });
 ```
 
 ```javascript testplane=expect-cdp-request-range fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items");
+const reload = await browser.$("#reload");
 for (let i = 0; i < 5; i++) {
-    await browser.$("#reload").click();
+    await reload.click();
 }
+
+// At least five requests, but no more than ten.
 await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 });
 ```
 
@@ -49,8 +58,11 @@ In a WebDriver BiDi session:
 
 ```javascript testplane=expect-bidi-request-count fixture=matchers-network
 const mock = await browser.mock("/api/items");
-await browser.$("#reload").click();
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
+await reload.click();
+
+// waitForResponse waits for the first call; here we need both.
 await browser.waitUntil(() => mock.calls.length >= 2);
 expect(mock.calls).toHaveLength(2);
 ```
@@ -65,19 +77,28 @@ In a CDP session:
 
 ```javascript testplane=expect-cdp-request-details fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items", { method: "POST" });
-await browser.$("#save").click();
+const save = await browser.$("#save");
+await save.click();
 
+// All fields are optional. Use exact values when the request and its result are known.
+const expectedUrl = new URL("/api/items", browser.options.baseUrl).href;
 await expect(mock).toBeRequestedWith({
-    method: "POST",
-    statusCode: 200,
-    postData: { title: "Ship feature" },
+    url: expectedUrl, // String, predicate or matcher.
+    method: "POST", // One method or an array of alternatives.
+    statusCode: 200, // One status or an array of alternatives.
+    // For headers and bodies, use an object, a predicate or a matcher.
+    requestHeaders: expect.objectContaining({ "X-Example": "tasks" }),
+    responseHeaders: expect.objectContaining({ "Content-Type": "application/json" }),
+    postData: { title: "Ship feature", username: "user" },
+    response: { source: "original", method: "POST", header: "tasks" },
 });
 
+// For variable values, combine alternatives, predicates and partial matchers.
 await expect(mock).toBeRequestedWith({
     url: expect.stringMatching(/\/api\/items$/),
-    method: ["POST", "PUT"],
-    statusCode: [200, 201],
-    requestHeaders: expect.objectContaining({ "X-Example": "tasks" }),
+    method: ["POST", "PUT"], // Either method is acceptable.
+    statusCode: [200, 201], // Either success status is acceptable.
+    requestHeaders: headers => headers["X-Example"] === "tasks",
     responseHeaders: expect.objectContaining({ "Content-Type": "application/json" }),
     postData: expect.objectContaining({ title: expect.stringContaining("Ship") }),
     response: item => item.source === "original",
@@ -88,9 +109,13 @@ In a WebDriver BiDi session:
 
 ```javascript testplane=expect-bidi-request-details fixture=matchers-network
 const mock = await browser.mock("/api/items", { method: "POST" });
-await browser.$("#save").click();
+const save = await browser.$("#save");
+await save.click();
 await mock.waitForResponse();
-expect(mock.calls[0]).toMatchObject({
+
+// BiDi records request and response details in two separate objects.
+const [call] = mock.calls;
+expect(call).toMatchObject({
     request: { method: "POST", url: expect.stringMatching(/\/api\/items$/) },
     response: { status: 200 },
 });

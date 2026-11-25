@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Load resources</title>
+<button>Load resources</button>
+<output>0</output>
+<script>
+    const output = document.querySelector("output");
+    document.querySelector("button").onclick = async () => {
+        await fetch("/frame", { cache: "no-store" });
+        await import("/fixtures/browser/banner.js");
+        output.value = Number(output.value) + 1;
+    };
+</script>

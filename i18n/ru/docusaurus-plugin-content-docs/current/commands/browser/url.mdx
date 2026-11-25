@@ -30,28 +30,37 @@ await browser.url(url);
 
 **url.js**
 
-```javascript testplane=browser-navigate fixture=browser-page
+```javascript testplane=browser-navigate-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
+// Переходим по URL.
 await browser.url("/navigation");
-assert.equal(new URL(await browser.getUrl()).pathname, "/navigation");
+
+// Получаем текущий URL вместе с путём, указанным выше.
+const url = await browser.getUrl();
+assert.equal(new URL(url).pathname, "/navigation");
 ```
 
 **baseUrlResolutions.js**
 
-```javascript testplane=browser-resolve-url fixture=browser-page
+```javascript testplane=browser-resolve-url-ru fixture=browser-base-url
 const assert = require("node:assert/strict");
 
+// Пусть baseUrl заканчивается на /site/. Замыкающий слэш сохраняет каталог site в относительных URL.
 const { baseUrl } = await browser.getConfig();
+
+// Полный URL открывается без изменений.
 const absolute = new URL("/frame", baseUrl).href;
 await browser.url(absolute);
 assert.equal(await browser.getUrl(), absolute);
 
+// Путь без начального слэша отсчитывается от каталога в baseUrl.
 await browser.url("relative");
-assert.equal(await browser.getUrl(), new URL("relative", baseUrl).href);
+assert.equal(new URL(await browser.getUrl()).pathname, "/site/relative");
 
+// Начальный слэш задаёт путь от корня того же сайта, а не от /site/.
 await browser.url("/rootRelative");
-assert.equal(await browser.getUrl(), new URL("/rootRelative", baseUrl).href);
+assert.equal(new URL(await browser.getUrl()).pathname, "/rootRelative");
 ```
 
 [base-url]: ../../../reference/config/browsers#base_url

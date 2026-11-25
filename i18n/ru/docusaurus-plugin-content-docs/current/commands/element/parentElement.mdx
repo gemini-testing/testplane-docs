@@ -12,6 +12,8 @@ await browser.$(selector).parentElement();
 
 ## Примеры использования {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <div class="parent">
     <p>Sibling One</p>
@@ -20,12 +22,19 @@ await browser.$(selector).parentElement();
 </div>
 ```
 
-```javascript testplane=element-parent-element fixture=element-html
+**parentElement.js**
+
+```javascript testplane=element-parent-element-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const paragraphs = await browser.$$("p");
-const parent = await paragraphs[1].parentElement();
-assert.equal(await parent.getAttribute("class"), "parent");
+it("should get class from parent element", async ({ browser }) => {
+    const paragraphs = await browser.$$("p");
+    const parent = await paragraphs[2].parentElement();
+
+    const className = await parent.getAttribute("class");
+    console.log(className); // выведет: "parent"
+    assert.equal(className, "parent");
+});
 ```
 
 ## Связанные команды {/* #related */}

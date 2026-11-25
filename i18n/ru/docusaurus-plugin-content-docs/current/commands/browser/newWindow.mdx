@@ -12,7 +12,7 @@ import Admonition from "@theme/Admonition";
 
 <Admonition type="warning">Команда _newWindow_ не работает в мобильных окружениях (!)</Admonition>
 
-Используйте `{ type: "tab" }` для вкладки и `{ type: "window" }` для окна. Параметры `windowName` и `windowFeatures` поддерживаются только в WebDriver Classic.
+Используйте `{ type: "tab" }` для вкладки и `{ type: "window" }` для окна. Параметры `windowName` и `windowFeatures` устарели и поддерживаются только в WebDriver Classic.
 
 ## Использование {/* #usage */}
 
@@ -36,19 +36,39 @@ await browser.newWindow(url, { windowName, windowFeatures });
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-new-window fixture=browser-page
+```javascript testplane=browser-new-window-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("opens a new tab and returns to the original one", async ({ browser }) => {
+it("should open a new tab", async ({ browser }) => {
     await browser.url("/");
     const original = await browser.getWindowHandle();
+    assert.equal(await browser.getTitle(), "Command examples"); // исходная вкладка
+
     const frameUrl = new URL("/frame", await browser.getUrl()).href;
     await browser.newWindow(frameUrl, { type: "tab" });
-    assert.equal(await browser.getTitle(), "Frame");
+    assert.equal(await browser.getTitle(), "Frame"); // новая вкладка
 
     await browser.closeWindow();
     await browser.switchToWindow(original);
-    assert.equal(await browser.getTitle(), "Command examples");
+    assert.equal(await browser.getTitle(), "Command examples"); // снова исходная вкладка
+});
+```
+
+В WebDriver Classic можно передать имя и параметры окна в объекте опций:
+
+```javascript testplane=browser-new-named-window fixture=browser-page transport=cdp
+const assert = require("node:assert/strict");
+
+it("should open a named window in WebDriver Classic", async ({ browser }) => {
+    const url = new URL("/frame", await browser.getUrl()).href;
+    await browser.newWindow(url, {
+        windowName: "Preview",
+        windowFeatures: "width=420,height=230,resizable,scrollbars=yes",
+    });
+
+    const name = await browser.execute(() => window.name);
+    assert.equal(name, "Preview");
+    assert.equal(await browser.getTitle(), "Frame");
 });
 ```
 

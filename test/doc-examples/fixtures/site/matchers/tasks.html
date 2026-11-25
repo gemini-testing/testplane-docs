@@ -6,11 +6,19 @@
     </head>
     <body>
         <h1>Task list</h1>
+        <img id="logo" src="../guides/logo.svg" alt="Team logo" />
         <label>Username <input id="username" class="form-control" value="user" /></label>
         <label><input type="checkbox" id="notifications" checked /> Notify me</label>
-        <ul>
+        <ol id="stages">
             <li>Draft</li>
             <li>Review</li>
+            <li>Publish</li>
+        </ol>
+        <ul id="tasks">
+            <li>Outline</li>
+            <li>Write</li>
+            <li>Proofread</li>
+            <li>Test</li>
             <li>Publish</li>
         </ul>
         <button id="reload">Reload</button>
@@ -19,6 +27,11 @@
         <output id="source"></output>
         <canvas id="preview" width="50" height="23"></canvas>
         <a href="https://webdriver.io">WebdriverIO</a>
+        <output id="analytics">Loading analytics</output>
+        <script
+            src="analytics.js"
+            onerror="document.querySelector('#analytics').textContent = 'Analytics unavailable'"
+        ></script>
         <script>
             const source = document.querySelector("#source");
 
@@ -27,7 +40,9 @@
                 try {
                     const response = await fetch("/api/items", options);
                     const data = await response.json();
-                    source.textContent = data.source;
+                    source.textContent = data.source ?? data.title;
+                    source.dataset.status = response.status;
+                    source.dataset.owner = response.headers.get("X-Owner") ?? "";
                 } catch {
                     source.textContent = "Unavailable";
                 }
@@ -38,7 +53,10 @@
                 load({
                     method: "POST",
                     headers: { "Content-Type": "application/json", "X-Example": "tasks" },
-                    body: JSON.stringify({ title: "Ship feature" }),
+                    body: JSON.stringify({
+                        title: "Ship feature",
+                        username: document.querySelector("#username").value,
+                    }),
                 });
         </script>
     </body>

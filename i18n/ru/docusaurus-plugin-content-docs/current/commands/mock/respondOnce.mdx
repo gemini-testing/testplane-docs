@@ -29,8 +29,8 @@ mock.respondOnce(overwrites, { headers, statusCode, fetchResponse });
 </thead>
 <tbody>
 <tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ для перезаписи ответа.</td></tr>
-<tr><td>headers</td><td>Object</td><td>Перезаписать определенные заголовки.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Перезаписать код состояния ответа.</td></tr>
+<tr><td>headers</td><td>Object | Function</td><td>Перезаписать определенные заголовки.</td></tr>
+<tr><td>statusCode</td><td>Number | Function</td><td>Перезаписать код состояния ответа.</td></tr>
 <tr><td>fetchResponse</td><td>Boolean</td><td>Только CDP: получить реальный ответ перед подстановкой данных.</td></tr>
 
 </tbody>
@@ -38,17 +38,43 @@ mock.respondOnce(overwrites, { headers, statusCode, fetchResponse });
 
 ## Примеры использования {/* #examples */}
 
-В примере используется WebDriver BiDi: кнопка `#reload` отправляет GET на `/api/items`, а `#source` показывает результат.
+При каждом открытии страница запрашивает список задач. В этом примере WebDriver BiDi первые три запроса получают списки из очереди, а четвертый — исходный список сервера.
 
-```javascript testplane=mock-respond-once fixture=matchers-network
-const mock = await browser.mock("/api/items");
-mock.respondOnce({ source: "first" });
-mock.respondOnce({ source: "second" });
-
-for (const expected of ["first", "second", "original"]) {
-    await browser.$("#reload").click();
-    await expect(browser.$("#source")).toHaveText(expected);
+```javascript testplane=mock-respond-once-ru fixture=matchers-intercept
+async function getTodoTitles(browser) {
+    // Дожидаемся списка, полученного после этого перехода, и читаем задачи по порядку.
+    const firstTodo = await browser.$("#todo-list li");
+    await firstTodo.waitForExist();
+    const items = await browser.$$("#todo-list li");
+    return Promise.all(items.map(item => item.getText()));
 }
+
+it("возвращает ответы из очереди, а затем настоящий список", async ({ browser }) => {
+    const todos = await browser.mock("/fixtures/matchers/todos.json", { method: "GET" });
+    // Ставим в очередь одного мока три разных списка.
+    todos.respondOnce([{ title: "3" }, { title: "2" }, { title: "1" }]);
+    todos.respondOnce([{ title: "2" }, { title: "1" }]);
+    todos.respondOnce([{ title: "1" }]);
+
+    // Каждый переход отправляет один GET-запрос и забирает следующий список.
+    const page = "/fixtures/matchers/todos.html";
+    await browser.url(page);
+    const firstList = await getTodoTitles(browser);
+    expect(firstList).toEqual(["3", "2", "1"]);
+
+    await browser.url(page);
+    const secondList = await getTodoTitles(browser);
+    expect(secondList).toEqual(["2", "1"]);
+
+    await browser.url(page);
+    const thirdList = await getTodoTitles(browser);
+    expect(thirdList).toEqual(["1"]);
+
+    // Подмен больше не осталось: страница отображает настоящий ответ ресурса.
+    await browser.url(page);
+    const originalList = await getTodoTitles(browser);
+    expect(originalList).toEqual(["Original todo"]);
+});
 ```
 
 ## Связанные команды {/* #related */}

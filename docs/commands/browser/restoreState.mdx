@@ -27,17 +27,22 @@ The state data for restoration can be obtained from the [saveState](../saveState
 ```typescript testplane=browser-restore-state-data fixture=browser-page
 const assert = require("node:assert/strict");
 
-await browser.execute(() => localStorage.setItem("theme", "dark"));
-const state = await browser.saveState();
+await browser.url("/fixtures/browser/session.html");
+const stateDump = await browser.saveState();
 await browser.clearSession();
 
 await browser.restoreState({
-    data: state,
-    cookies: false,
+    data: stateDump,
+    cookies: true,
     localStorage: true,
-    sessionStorage: false,
+    sessionStorage: true,
+    refresh: false,
 });
+
+const [theme] = await browser.getCookies("theme");
+assert.equal(theme.value, "dark");
 assert.equal(await browser.execute(() => localStorage.getItem("theme")), "dark");
+assert.equal(await browser.execute(() => sessionStorage.getItem("draft")), "hello");
 ```
 
 ## Command Parameters {/* #parameters */}
@@ -106,12 +111,17 @@ Restore state from file.
 ```typescript testplane=browser-restore-state-file fixture=browser-saved-state
 const assert = require("node:assert/strict");
 
-it("restores only selected cookies from a file", async ({ browser }) => {
+it("should restore selected cookies from a file", async ({ browser }) => {
     await browser.url("/");
+    const host = new URL(await browser.getUrl()).hostname;
     await browser.restoreState({
-        path: `./artifacts/demo-${browser.sessionId}.json`,
-        cookieFilter: ({ name }) => name === "theme",
+        path: "./artifacts/stateDump.json",
+        cookieFilter: ({ domain, name }) => domain === host && name === "theme",
+        refresh: false,
     });
+
+    // Reload the page so it can read the restored cookie.
+    await browser.refresh();
     const cookies = await browser.getCookies();
     assert.deepEqual(
         cookies.map(({ name, value }) => [name, value]),

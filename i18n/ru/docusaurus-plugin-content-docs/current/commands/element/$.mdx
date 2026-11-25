@@ -40,6 +40,8 @@ await browser.$(selector);
 
 ## Примеры использования {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <ul id="menu">
     <li>
@@ -57,34 +59,58 @@ await browser.$(selector);
 </ul>
 ```
 
-```javascript testplane=element-find-css fixture=element-html
+```javascript testplane=element-find-function-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const menu = await browser.$("#menu");
-const link = await menu.$("li:nth-child(3) a");
-assert.equal(await link.getText(), "API");
+it("should get text of a menu link - JS Function", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const items = await menu.$$("li");
+    const link = await items[2].$(function () {
+        // Используйте обычную функцию: у стрелочной функции this не указывает на элемент.
+        // Здесь this — HTMLLIElement, DOM-элемент:
+        // https://developer.mozilla.org/en-US/docs/Web/API/Element
+        //
+        // В TypeScript тип this можно указать в объявлении функции:
+        // function (this: HTMLLIElement) { ... }
+        return this.querySelector("a"); // HTMLAnchorElement | null
+    });
+
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
+});
 ```
 
-В функции-селекторе `this` указывает на текущий `HTMLLIElement`. Используйте обычную функцию, а не стрелочную. В TypeScript можно указать тип контекста: `function (this: HTMLLIElement)`.
-
-```javascript testplane=element-find-function fixture=element-html
+```javascript testplane=element-find-css-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const item = await browser.$("#menu").$$("li")[2];
-const link = await item.$(function () {
-    return this.querySelector("a");
+it("should get text of a menu link", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const items = await menu.$$("li");
+    const link = await items[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
 });
-assert.equal(await link.getText(), "API");
 ```
 
 Можно передать и ссылку на активный элемент, полученную от протокола:
 
-```javascript testplane=element-find-active fixture=element-html
+```javascript testplane=element-find-active-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-await browser.$("#menu a").execute(link => link.focus());
-const active = await browser.getActiveElement();
-assert.equal(await browser.$(active).getTagName(), "a");
+it("should allow to convert protocol result of an element into a WebdriverIO element", async ({
+    browser,
+}) => {
+    const link = await browser.$("#menu a");
+    await link.execute(element => element.focus());
+
+    const activeElement = await browser.getActiveElement();
+    const tagName = await browser.$(activeElement).getTagName();
+    console.log(tagName); // выведет: "a" (имя тега активного элемента)
+    assert.equal(tagName, "a");
+});
 ```
 
 Следующий пример предназначен для Android с Espresso, а не для веб-браузера:

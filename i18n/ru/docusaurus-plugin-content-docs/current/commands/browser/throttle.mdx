@@ -52,8 +52,24 @@ await browser.throttle({ offline, latency, downloadThroughput, uploadThroughput 
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-throttle fixture=browser-page
+```javascript testplane=browser-throttle-ru fixture=browser-page
 const assert = require("node:assert/strict");
+
+function measureFetch(browser) {
+    return browser.execute(async () => {
+        const start = performance.now();
+        const response = await fetch("/api/items", { cache: "no-store" });
+        await response.text();
+        return performance.now() - start;
+    });
+}
+
+it("uses a 3G preset", async ({ browser }) => {
+    // Применяем готовый пресет для пропускной способности и задержки 3G.
+    await browser.throttle("Regular3G");
+    const elapsed = await measureFetch(browser);
+    assert.ok(elapsed >= 90);
+});
 
 it("uses an offline preset", async ({ browser }) => {
     const canFetch = () =>
@@ -65,23 +81,20 @@ it("uses an offline preset", async ({ browser }) => {
             }
         });
     assert.equal(await canFetch(), true);
+
     await browser.throttle("offline");
     assert.equal(await canFetch(), false);
 });
 
 it("introduces latency with custom network settings", async ({ browser }) => {
+    // Задаём параметры сети вручную.
     await browser.throttle({
         offline: false,
         downloadThroughput: (200 * 1024) / 8,
         uploadThroughput: (200 * 1024) / 8,
         latency: 200,
     });
-    const elapsed = await browser.execute(async () => {
-        const start = performance.now();
-        const response = await fetch("/api/items", { cache: "no-store" });
-        await response.text();
-        return performance.now() - start;
-    });
+    const elapsed = await measureFetch(browser);
     assert.ok(elapsed >= 180);
 });
 ```

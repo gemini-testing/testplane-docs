@@ -52,12 +52,21 @@ await browser.overwriteCommand(name, callback, elementScope);
 ```javascript testplane=browser-overwrite-command fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("returns the duration from an overwritten pause command", async ({ browser }) => {
-    await browser.overwriteCommand("pause", async function (originalPause, ms) {
-        await originalPause(ms);
-        return ms;
+describe("pause", () => {
+    beforeEach(async ({ browser }) => {
+        // Log the duration before pausing and return it after the original command finishes.
+        await browser.overwriteCommand("pause", async function (origPauseFunction, ms) {
+            console.log(`Sleeping for ${ms}`);
+            await origPauseFunction(ms);
+            return ms;
+        });
     });
-    assert.equal(await browser.pause(25), 25);
+
+    it("should use the overwritten pause command", async ({ browser }) => {
+        // Use the overwritten command.
+        const duration = await browser.pause(100); // outputs: "Sleeping for 100"
+        assert.equal(duration, 100);
+    });
 });
 ```
 

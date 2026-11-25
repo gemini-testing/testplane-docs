@@ -24,9 +24,13 @@ await browser.$(selector).getProperty(property);
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=element-get-property fixture=element-document
+```javascript testplane=element-get-property-ru fixture=element-document
 const assert = require("node:assert/strict");
 
-const body = await browser.$("body");
-assert.equal(await body.getProperty("tagName"), "BODY");
+it("should demonstrate the getProperty command", async ({ browser }) => {
+    const elem = await browser.$("body");
+    const tag = await elem.getProperty("tagName");
+    console.log(tag); // выведет: "BODY"
+    assert.equal(tag, "BODY");
+});
 ```

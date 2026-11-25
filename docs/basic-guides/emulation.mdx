@@ -14,16 +14,26 @@ The CPU speed on mobile devices is significantly slower than on computers. There
 
 ### Example: Slowing Down CPU Speed by 8x {/* #example */}
 
-Let's use this method to slow down CPU speed by 8 times:
+The examples below open `/navigation`, a page with the heading “Navigation”. To run them against your site, set `baseUrl` to its address and substitute your page path and heading.
 
 ```javascript testplane=guide-cpu-emulation fixture=guides-page transport=cdp
-const assert = require("node:assert/strict");
+it("opens the page with an eightfold CPU slowdown", async function ({ browser }) {
+    // Get the Puppeteer instance
+    const puppeteer = await browser.getPuppeteer();
 
-const [page] = await (await browser.getPuppeteer()).pages();
-await page.emulateCPUThrottling(8);
-await browser.url("/navigation");
-assert.equal(await browser.$("h1").getText(), "Navigation");
-await page.emulateCPUThrottling(1);
+    // Get the first open page (considering it to be currently active)
+    const [page] = await puppeteer.pages();
+
+    // Slow down the CPU speed by 8 times
+    await page.emulateCPUThrottling(8);
+
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await page.emulateCPUThrottling(1);
+    }
+});
 ```
 
 [emulate-cpu-throttling]: https://pptr.dev/api/puppeteer.page.emulatecputhrottling
@@ -55,11 +65,17 @@ Besides custom settings, the [throttleNetwork][throttle] command supports the fo
 Throttle the connection of a desktop Chrome tab, then check that the page remains usable:
 
 ```javascript testplane=guide-network-preset fixture=guides-page transport=cdp
-const assert = require("node:assert/strict");
+it("opens the page with a 2G connection", async function ({ browser }) {
+    // Emulate a 2G connection
+    await browser.throttleNetwork("Good2G");
 
-await browser.throttleNetwork("Good2G");
-await browser.url("/navigation");
-assert.equal(await browser.$("h1").getText(), "Navigation");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
+});
 ```
 
 ### Example 2: Emulating a Network with Given Characteristics {/* #example_2 */}
@@ -67,16 +83,22 @@ assert.equal(await browser.$("h1").getText(), "Navigation");
 We can also emulate a connection with specific characteristics:
 
 ```javascript testplane=guide-network-custom fixture=guides-page transport=cdp
-const assert = require("node:assert/strict");
+it("opens the page with custom network conditions", async function ({ browser }) {
+    // Emulate a network connection with specified characteristics
+    await browser.throttleNetwork({
+        offline: false, // false keeps the network online
+        downloadThroughput: (10 * 1024) / 8, // max download bandwidth (bytes/s)
+        uploadThroughput: (10 * 1024) / 8, // max upload bandwidth (bytes/s)
+        latency: 10, // min latency in ms from sending the request to receiving the response headers
+    });
 
-await browser.throttleNetwork({
-    offline: false,
-    downloadThroughput: (10 * 1024) / 8,
-    uploadThroughput: (10 * 1024) / 8,
-    latency: 10,
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
 });
-await browser.url("/navigation");
-assert.equal(await browser.$("h1").getText(), "Navigation");
 ```
 
-[throttle]: ../../commands/browser/throttle
+[throttle]: https://webdriver.io/docs/api/browser/throttleNetwork

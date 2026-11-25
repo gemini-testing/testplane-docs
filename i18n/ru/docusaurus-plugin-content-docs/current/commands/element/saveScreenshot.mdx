@@ -27,6 +27,8 @@ await browser.$(selector).saveScreenshot(filepath);
 Сохраним изображение бейджа, а не всей видимой области страницы. Каталог назначения должен существовать.
 
 ```javascript testplane=element-save-screenshot fixture=element-screenshot
-const badge = await browser.$("#badge");
-await badge.saveScreenshot(`./artifacts/badge-${browser.sessionId}.png`);
+it("should save a screenshot of an element", async ({ browser }) => {
+    const badge = await browser.$("#badge");
+    await badge.saveScreenshot(`./artifacts/badge-${browser.sessionId}.png`);
+});
 ```

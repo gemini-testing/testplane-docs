@@ -28,17 +28,30 @@ await browser.keys(value);
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-keys fixture=browser-input
+```javascript testplane=browser-keys-ru fixture=browser-clipboard
 const assert = require("node:assert/strict");
 
-it("replaces the selected text", async ({ browser }) => {
+it("copies text out of the active element", async ({ browser }) => {
     const modifier = browser.capabilities.platformName.toLowerCase().includes("mac")
         ? "Meta"
         : "Control";
-    await browser.$("#username").setValue("anonymous");
+
+    // Выделяем и копируем текст из поля ввода.
+    const username = await browser.$("#username");
+    await username.setValue("anonymous");
+    await browser.keys([modifier, "a"]);
+    await browser.keys([modifier, "c"]);
+
+    // Вставляем в другое поле и проверяем, что именно скопировалось.
+    const copy = await browser.$("#copy");
+    await copy.click();
+    await browser.keys([modifier, "v"]);
+    assert.equal(await copy.getValue(), "anonymous");
+
+    // Строка вместо сочетания клавиш заменяет выделенный текст.
     await browser.keys([modifier, "a"]);
     await browser.keys("guest");
-    assert.equal(await browser.$("#username").getValue(), "guest");
+    assert.equal(await copy.getValue(), "guest");
 });
 ```
 

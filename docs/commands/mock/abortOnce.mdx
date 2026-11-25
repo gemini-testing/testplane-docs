@@ -36,28 +36,53 @@ mock.abortOnce(errorCode);
 
 ## Usage Examples {/* #examples */}
 
-In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
+On the task page, Reload fetches `/api/items`. If the first request fails, the user can try again. In a WebDriver BiDi session:
 
-```javascript testplane=mock-abort-once fixture=matchers-network
-const mock = await browser.mock("/api/items");
-mock.abortOnce();
+```javascript testplane=mock-abort-once fixture=matchers-intercept
+it("lets the user retry after one failed request", async ({ browser }) => {
+    const items = await browser.mock("/api/items");
+    items.abortOnce();
 
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("Unavailable");
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("original");
+    await browser.url("/fixtures/matchers/tasks.html");
+    const reload = await browser.$("#reload");
+    const source = await browser.$("#source");
+
+    // The page catches the first failed fetch and displays a fallback.
+    await reload.click();
+    await expect(source).toHaveText("Unavailable");
+
+    // The next click reaches the actual resource.
+    await reload.click();
+    await expect(source).toHaveText("original");
+});
 ```
 
 In a CDP session, you can specify the network failure:
 
-```javascript testplane=mock-abort-once-cdp fixture=matchers-network transport=cdp
-const mock = await browser.mock("**/api/items");
-mock.abortOnce("TimedOut");
+```javascript testplane=mock-abort-once-cdp fixture=matchers-intercept transport=cdp
+const assert = require("node:assert/strict");
 
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("Unavailable");
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("original");
+it("allows a second navigation to the same page", async ({ browser }) => {
+    const path = "/fixtures/matchers/todos.html";
+    const page = await browser.mock("**/fixtures/matchers/todos.html");
+    const failures = [];
+    page.on("fail", ({ errorReason }) => failures.push(errorReason));
+    page.abortOnce("Failed");
+
+    // Chrome can reject the navigation or show an error page. Only handle the expected error.
+    try {
+        await browser.url(path);
+    } catch (error) {
+        if (!error.message.includes("ERR_FAILED")) throw error;
+    }
+    assert.deepEqual(failures, ["Failed"]);
+
+    // The one-off error has been consumed. Open the same URL and read the real page title.
+    await browser.url(path);
+    const title = await browser.getTitle();
+    assert.equal(title, "Todo list");
+    assert.deepEqual(failures, ["Failed"]);
+});
 ```
 
 ## Related Commands {/* #related */}

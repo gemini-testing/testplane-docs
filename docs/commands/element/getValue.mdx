@@ -16,15 +16,23 @@ await browser.$(selector).getValue();
 
 ## Usage Examples {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <input type="text" value="John Doe" id="username" />
 ```
 
+**getValue.js**
+
 ```javascript testplane=element-get-value fixture=element-html
 const assert = require("node:assert/strict");
 
-const input = await browser.$("#username");
-assert.equal(await input.getValue(), "John Doe");
+it("should demonstrate the getValue command", async ({ browser }) => {
+    const input = await browser.$("#username");
+    const value = await input.getValue();
+    console.log(value); // outputs: "John Doe"
+    assert.equal(value, "John Doe");
+});
 ```
 
 ## References

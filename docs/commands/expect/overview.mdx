@@ -13,6 +13,7 @@ For example, you can check if the browser is on a specific page
 ```typescript testplane=expect-to-have-url fixture=matchers-page
 const expectedUrl = new URL("/navigation", browser.options.baseUrl).href;
 await browser.url("/navigation");
+// toHaveUrl compares the full address, including the origin.
 await expect(browser).toHaveUrl(expectedUrl);
 ```
 
@@ -27,9 +28,20 @@ or verify that clicking Reload makes a request in a WebDriver BiDi session
 
 ```typescript testplane=expect-bidi-requested fixture=matchers-network
 const mock = await browser.mock("/api/items");
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
+// Wait for the response before inspecting the recorded calls.
 await mock.waitForResponse();
 expect(mock.calls).toHaveLength(1);
+```
+
+In a CDP session, use the network matcher directly on the mock:
+
+```typescript testplane=expect-cdp-requested fixture=matchers-network transport=cdp
+const mock = await browser.mock("**/api/items");
+const reload = await browser.$("#reload");
+await reload.click();
+await expect(mock).toBeRequested();
 ```
 
 By default, the timeout for executing asserts is 2000ms with a check interval of 100ms. However, if necessary, these values can be redefined in the [system section][system_config] in the general config.

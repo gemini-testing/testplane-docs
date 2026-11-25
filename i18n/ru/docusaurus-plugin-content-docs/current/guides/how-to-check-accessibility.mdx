@@ -17,20 +17,31 @@ import Admonition from "@theme/Admonition";
 
 ## Пример {/* #example */}
 
-Вот пример, как его можно использовать:
+Снимем дерево доступности локального портала. Проверим роль и доступное имя страницы, а затем найдем ссылки, которые может озвучить скрин-ридер.
 
-```javascript testplane=guide-accessibility-tree fixture=guides-accessibility transport=cdp
+```javascript testplane=guide-accessibility-tree-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const [page] = await (await browser.getPuppeteer()).pages();
-const tree = await page.accessibility.snapshot();
-assert.equal(tree.role, "RootWebArea");
-assert.equal(tree.name, "Team portal");
-const links = tree.children.filter(node => node.role === "link");
-assert.deepEqual(
-    links.map(node => node.name),
-    ["Inbox", "Help"],
-);
+it("читает дерево доступности портала", async ({ browser }) => {
+    // Получаем подключение Puppeteer для текущей сессии Testplane.
+    const puppeteer = await browser.getPuppeteer();
+
+    // В этом тесте открыта одна вкладка, поэтому первая страница — активная.
+    const [page] = await puppeteer.pages();
+    await browser.url("/fixtures/guides/accessibility.html");
+
+    // Выводим дерево доступности, а не DOM: у его узлов есть роли и доступные имена.
+    const snapshot = await page.accessibility.snapshot();
+    console.log(JSON.stringify(snapshot, null, 2));
+
+    assert.equal(snapshot.role, "RootWebArea");
+    assert.equal(snapshot.name, "Team portal");
+
+    // Выбираем ссылки по роли: в дереве могут быть и текстовые узлы.
+    const links = snapshot.children.filter(node => node.role === "link");
+    const names = links.map(link => link.name);
+    assert.deepEqual(names, ["Sign in", "Inbox", "Drive", "Finance", "Help"]);
+});
 ```
 
 ## Accessibility-дерево {/* #accessibility_tree */}
@@ -44,7 +55,19 @@ assert.deepEqual(
     "children": [
         {
             "role": "link",
+            "name": "Sign in"
+        },
+        {
+            "role": "link",
             "name": "Inbox"
+        },
+        {
+            "role": "link",
+            "name": "Drive"
+        },
+        {
+            "role": "link",
+            "name": "Finance"
         },
         {
             "role": "link",

@@ -6,7 +6,7 @@ import Admonition from "@theme/Admonition";
 
 Во время прогона тестов testplane добавляет в `browser` свойство `executionContext` для хранения контекста исполнения.
 
-В свойстве `browser.executionContext` хранится текущий объект теста или хука \_Mocha, дополненный идентификатором браузера.
+В свойстве `browser.executionContext` доступен текущий тест или хук Testplane вместе с идентификатором браузера.
 
 <Admonition type="info">
     Контекст исполнения добавляет testplane, в [API WebDriverIO][webdriverio-api] его нет.
@@ -14,13 +14,39 @@ import Admonition from "@theme/Admonition";
 
 ## Пример использования {/* #examples */}
 
-```javascript testplane=browser-execution-context fixture=browser-page
+```javascript testplane=browser-execution-context-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("identifies the current test", async ({ browser }) => {
-    const context = browser.executionContext;
-    assert.equal(context.title, "identifies the current test");
-    assert.equal(context.browserId, "chrome");
+describe("navigation", () => {
+    it("should log execution context", async ({ browser }) => {
+        await browser.url("/foo/bar");
+
+        const context = browser.executionContext;
+        const details = {
+            title: context.title,
+            file: context.file,
+            suite: context.parent.title,
+            pending: context.pending,
+            browserId: context.browserId,
+            attempt: context.ctx.attempt,
+        };
+        console.log("test:", details);
+        // Пример вывода при первом запуске; путь к файлу зависит от проекта:
+        // test: {
+        //     title: "should log execution context",
+        //     file: "/project/tests/navigation.testplane.js",
+        //     suite: "navigation",
+        //     pending: false,
+        //     browserId: "chrome",
+        //     attempt: 0
+        // }
+
+        assert.equal(details.title, "should log execution context");
+        assert.equal(details.suite, "navigation");
+        assert.equal(details.pending, false);
+        assert.equal(details.browserId, "chrome");
+        assert.ok(Number.isInteger(details.attempt) && details.attempt >= 0);
+    });
 });
 ```
 

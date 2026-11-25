@@ -12,13 +12,13 @@ Functions for waiting for network idle and failing on network errors are only av
 const assert = require("node:assert/strict");
 
 await browser.openAndWait("/fixtures/browser/ready.html", {
-    selector: [".content"],
+    selector: [".content", ".status"],
     predicate: () => browser.execute(() => document.body.dataset.ready === "true"),
-    waitNetworkIdle: true,
-    waitNetworkIdleTimeout: 100,
-    failOnNetworkError: true,
     ignoreNetworkErrorsPatterns: ["/metrics"],
-    timeout: 5000,
+    waitNetworkIdle: true,
+    waitNetworkIdleTimeout: 500,
+    failOnNetworkError: true,
+    timeout: 20000,
 });
 assert.equal(await browser.$(".content").getText(), "Ready");
 ```
@@ -57,14 +57,22 @@ assert.equal(await browser.$(".content").getText(), "Ready");
 
 ## Usage Examples {/* #examples */}
 
-```javascript testplane=browser-open-and-wait fixture=browser-page
+```javascript testplane=browser-open-and-wait fixture=browser-ready transport=cdp
 const assert = require("node:assert/strict");
 
-it("waits for the page to become ready", async ({ browser }) => {
-    await browser.openAndWait("/fixtures/browser/ready.html", {
-        selector: ".content",
+it("should wait for the page before comparing its appearance", async ({ browser }) => {
+    // Wait for the content, images, fonts and styles; ignore errors from the metrics endpoint.
+    await browser.openAndWait("/fixtures/browser/ready.html?metrics", {
+        selector: [".content"],
         predicate: () => browser.execute(() => document.body.dataset.ready === "true"),
+        ignoreNetworkErrorsPatterns: ["/fixtures/browser/metrics-missing.svg"],
+        waitNetworkIdle: true,
+        waitNetworkIdleTimeout: 500,
+        failOnNetworkError: true,
+        timeout: 20000,
     });
+
     assert.equal(await browser.$(".content").getText(), "Ready");
+    await browser.assertView("plain", ".status");
 });
 ```

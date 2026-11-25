@@ -54,15 +54,27 @@ browser.addCommand(name, callback, elementScope);
 ```javascript testplane=browser-add-command fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("gets the title and URL with a custom command", async ({ browser }) => {
-    browser.addCommand("getUrlAndTitle", async function (customParam) {
-        return { url: await this.getUrl(), title: await this.getTitle(), customParam };
+describe("getUrlAndTitle", () => {
+    beforeEach(({ browser }) => {
+        // Add the getUrlAndTitle command.
+        browser.addCommand("getUrlAndTitle", async function (customParam) {
+            return {
+                url: await this.getUrl(), // `this` refers to the browser.
+                title: await this.getTitle(),
+                customParam,
+            };
+        });
     });
-    await browser.url("/");
-    const result = await browser.getUrlAndTitle("foobar");
-    assert.equal(result.url, await browser.getUrl());
-    assert.equal(result.title, "Command examples");
-    assert.equal(result.customParam, "foobar");
+
+    it("should use a custom browser command", async ({ browser }) => {
+        // Use the new command on the current page.
+        await browser.url("/");
+        const result = await browser.getUrlAndTitle("foobar");
+
+        assert.equal(result.url, await browser.getUrl());
+        assert.equal(result.title, "Command examples");
+        assert.equal(result.customParam, "foobar");
+    });
 });
 ```
 

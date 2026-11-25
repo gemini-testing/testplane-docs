@@ -29,15 +29,35 @@ await browser.getCookies(names);
 ```javascript testplane=browser-get-cookies fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("reads one cookie or all cookies", async ({ browser }) => {
-    await browser.setCookies([
+// Show only names and values; cookies also have fields such as domain, path and expiry.
+const namesAndValues = cookies =>
+    cookies
+        .map(({ name, value }) => ({ name, value }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+it("should read one cookie or all cookies", async ({ browser }) => {
+    const initial = [
         { name: "test", value: "123" },
         { name: "test2", value: "456" },
-    ]);
-    const [cookie] = await browser.getCookies("test");
-    assert.equal(cookie.value, "123");
-    const cookies = await browser.getCookies();
-    assert.deepEqual(cookies.map(({ name }) => name).sort(), ["test", "test2"]);
+    ];
+    await browser.setCookies(initial);
+
+    const testCookie = await browser.getCookies(["test"]);
+    console.log(namesAndValues(testCookie));
+    // Output:
+    // [
+    //     { name: "test", value: "123" }
+    // ]
+    assert.deepEqual(namesAndValues(testCookie), [initial[0]]);
+
+    const allCookies = await browser.getCookies();
+    console.log(namesAndValues(allCookies));
+    // Output:
+    // [
+    //     { name: "test", value: "123" },
+    //     { name: "test2", value: "456" }
+    // ]
+    assert.deepEqual(namesAndValues(allCookies), initial);
 });
 ```
 

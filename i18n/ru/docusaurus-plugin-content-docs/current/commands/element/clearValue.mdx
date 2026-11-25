@@ -25,14 +25,21 @@ await browser.$(selector).clearValue();
 <input class="input" />
 ```
 
-```javascript testplane=element-clear-value fixture=element-html
+```javascript testplane=element-clear-value-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const input = await browser.$(".input");
-await input.setValue("test123");
-assert.equal(await input.getValue(), "test123");
-await input.clearValue();
-assert.equal(await input.getValue(), "");
+it("should demonstrate the clearValue command", async ({ browser }) => {
+    const elem = await browser.$(".input");
+    await elem.setValue("test123");
+
+    let value = await elem.getValue();
+    console.log(value); // выведет: "test123"
+    assert.equal(value, "test123");
+
+    await elem.clearValue();
+    value = await elem.getValue(); // ""
+    assert.equal(value, "");
+});
 ```
 
 ## Связанные команды {/* #related */}

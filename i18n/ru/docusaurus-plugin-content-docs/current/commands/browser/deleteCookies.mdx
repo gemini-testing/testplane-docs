@@ -26,23 +26,48 @@ await browser.deleteCookies(names);
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-delete-cookies fixture=browser-page
+```javascript testplane=browser-delete-cookies-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("deletes named cookies or all cookies", async ({ browser }) => {
-    await browser.setCookies([
+// Выводим только имена и значения: у cookie есть и другие поля, например domain, path и expiry.
+const namesAndValues = cookies =>
+    cookies
+        .map(({ name, value }) => ({ name, value }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+it("should delete cookies", async ({ browser }) => {
+    const initial = [
         { name: "test", value: "123" },
         { name: "test2", value: "456" },
         { name: "test3", value: "789" },
-    ]);
-    const names = async () => (await browser.getCookies()).map(cookie => cookie.name).sort();
-    assert.deepEqual(await names(), ["test", "test2", "test3"]);
+    ];
+    await browser.setCookies(initial);
 
+    let cookies = await browser.getCookies();
+    console.log(namesAndValues(cookies));
+    // Вывод:
+    // [
+    //     { name: "test", value: "123" },
+    //     { name: "test2", value: "456" },
+    //     { name: "test3", value: "789" }
+    // ]
+    assert.deepEqual(namesAndValues(cookies), initial);
+
+    // Удаляем только указанную cookie.
     await browser.deleteCookies(["test3"]);
-    assert.deepEqual(await names(), ["test", "test2"]);
+    cookies = await browser.getCookies();
+    console.log(namesAndValues(cookies));
+    // Вывод:
+    // [
+    //     { name: "test", value: "123" },
+    //     { name: "test2", value: "456" }
+    // ]
+    assert.deepEqual(namesAndValues(cookies), [initial[0], initial[1]]);
 
     await browser.deleteCookies();
-    assert.deepEqual(await names(), []);
+    cookies = await browser.getCookies();
+    console.log(cookies); // выведет: []
+    assert.deepEqual(cookies, []);
 });
 ```
 

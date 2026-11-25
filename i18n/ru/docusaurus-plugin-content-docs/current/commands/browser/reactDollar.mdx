@@ -35,15 +35,19 @@ await browser.react$(reactComponentSelector, { props, state });
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-react-component fixture=browser-page
+```javascript testplane=browser-react-component-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("calculates 7 times 6 with named React buttons", async ({ browser }) => {
+it("should calculate 7 * 6", async ({ browser }) => {
     await browser.url("/fixtures/browser/calculator16.html");
-    for (const name of ["7", "x", "6", "="]) {
-        await browser.react$("Button", { props: { name } }).click();
-    }
-    assert.equal(await browser.$(".component-display").getText(), "42");
+
+    await browser.react$("Button", { props: { name: "7" } }).click();
+    await browser.react$("Button", { props: { name: "x" } }).click();
+    await browser.react$("Button", { props: { name: "6" } }).click();
+    await browser.react$("Button", { props: { name: "=" } }).click();
+
+    const result = await browser.$(".component-display").getText();
+    assert.equal(result, "42"); // калькулятор показывает результат 7 × 6
 });
 ```
 

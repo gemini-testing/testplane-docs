@@ -15,19 +15,25 @@ await browser.mockClearAll();
 ```typescript testplane=browser-mock-clear-all fixture=browser-mock
 const assert = require("node:assert/strict");
 
-it("clears the call history for every mock", async ({ browser }) => {
-    const items = await browser.mock("/api/items");
-    const other = await browser.mock("/api/other");
-    await browser.execute(async () => {
-        await fetch("/api/items");
-        await fetch("/api/other");
-    });
-    await browser.waitUntil(() => items.calls.length === 1 && other.calls.length === 1);
+it("should clear all mocks", async ({ browser }) => {
+    const docMock = await browser.mock("/frame");
+    const jsMock = await browser.mock("/fixtures/browser/banner.js");
+    const calls = () => [docMock.calls.length, jsMock.calls.length];
+
+    await browser.url("/fixtures/browser/resources.html");
+    const load = await browser.$("button");
+
+    await load.click();
+    await browser.waitUntil(async () => (await browser.$("output").getText()) === "1");
+    assert.deepEqual(calls(), [1, 1]); // both resources were requested
+
+    await load.click();
+    await browser.waitUntil(async () => (await browser.$("output").getText()) === "2");
+    assert.deepEqual(calls(), [2, 1]); // the browser reuses the imported JavaScript module
 
     await browser.mockClearAll();
-    assert.deepEqual([items.calls.length, other.calls.length], [0, 0]);
-    await items.restore();
-    await other.restore();
+    assert.deepEqual(calls(), [0, 0]); // both histories were cleared
+    await browser.mockRestoreAll();
 });
 ```
 

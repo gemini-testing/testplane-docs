@@ -343,8 +343,13 @@ module.exports = {
 
 ```javascript testplane-project=event
 testplane.on(testplane.events.CLI, cli => {
-    cli.option("--some-option <value>", "Use the specified value");
-    console.info("Registered --some-option");
+    console.info("Выполняется обработка события CLI...");
+
+    cli.option(
+        "--some-option <some-value>",
+        "the full description of the option",
+        // см. подробнее в https://github.com/tj/commander.js#options
+    );
 });
 ```
 
@@ -518,8 +523,10 @@ testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testplane, testParser }
 ```javascript testplane-project=event
 testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testParser }) => {
     testParser.setController("logger", {
-        log(prefix) {
-            console.info(`${prefix}: ${this.fullTitle()} (${this.browserId}) in ${file}`);
+        log: function (prefix) {
+            console.log(
+                `${prefix}: только что распарсил ${this.fullTitle()} из файла ${file} для браузера ${this.browserId}`,
+            );
         },
     });
 });

@@ -1,5 +1,7 @@
 # expect for elements
 
+The examples start on a task page with a username field, action buttons, a three-stage workflow and a list of five tasks.
+
 ## toBeDisplayed
 
 Calls [isDisplayed](../../element/isDisplayed) on the given element.
@@ -174,9 +176,11 @@ Checks if the element is disabled by calling [isEnabled](../../element/isEnabled
 For example:
 
 ```javascript testplane=expect-to-be-disabled fixture=matchers-page
-const elem = await browser.$("#pending");
-await expect(elem).toBeDisabled();
-await expect(elem).not.toBeEnabled();
+const button = await browser.$("#pending");
+await expect(button).toBeDisabled();
+
+// Or express the same state by negating the opposite matcher:
+await expect(button).not.toBeEnabled();
 ```
 
 ## toBeEnabled
@@ -186,9 +190,11 @@ Checks if the element is enabled by calling [isEnabled](../../element/isEnabled)
 For example:
 
 ```javascript testplane=expect-to-be-enabled fixture=matchers-page
-const elem = await browser.$("#save");
-await expect(elem).toBeEnabled();
-await expect(elem).not.toBeDisabled();
+const button = await browser.$("#save");
+await expect(button).toBeEnabled();
+
+// Or express the same state by negating the opposite matcher:
+await expect(button).not.toBeDisabled();
 ```
 
 ## toBeSelected
@@ -277,9 +283,12 @@ It can also be called with an array as a parameter in case the element can have 
 For example:
 
 ```javascript testplane=expect-to-have-text fixture=matchers-page
-const elem = await browser.$("h1");
-await expect(elem).toHaveText("Task list");
-await expect(elem).toHaveText(["Task list", "No tasks yet"]);
+await browser.url("/fixtures/matchers/tasks.html");
+const heading = await browser.$("h1");
+await expect(heading).toHaveText("Task list");
+
+// Use an array if either heading is acceptable.
+await expect(heading).toHaveText(["Task list", "No tasks yet"]);
 ```
 
 ## toHaveTextContaining
@@ -291,9 +300,12 @@ It can also be called with an array as a parameter in case the element can have 
 For example:
 
 ```javascript testplane=expect-to-have-text-containing fixture=matchers-page
-const elem = await browser.$("h1");
-await expect(elem).toHaveTextContaining("Task");
-await expect(elem).toHaveTextContaining(["Task", "No tasks"]);
+await browser.url("/fixtures/matchers/tasks.html");
+const heading = await browser.$("h1");
+await expect(heading).toHaveTextContaining("Task");
+
+// Use an array if either heading is acceptable.
+await expect(heading).toHaveTextContaining(["Task", "No tasks"]);
 ```
 
 ## toBeDisplayedInViewport
@@ -316,15 +328,19 @@ Pass an options object in this version of expect-webdriverio: calling the matche
 For example:
 
 ```javascript testplane=expect-to-have-children fixture=matchers-page
-const list = await browser.$("ul");
-await expect(list).toHaveChildren({});
-await expect(list).toHaveChildren({ gte: 1 });
+const stages = await browser.$("#stages");
+await expect(stages).toHaveChildren({}); // At least one child.
+
+// Or state the same lower bound explicitly:
+await expect(stages).toHaveChildren({ gte: 1 });
 ```
 
 ```javascript testplane=expect-to-have-children-count fixture=matchers-page
-const list = await browser.$("ul");
-await expect(list).toHaveChildren(3);
-await expect(list).toHaveChildren({ eq: 3 });
+const stages = await browser.$("#stages");
+await expect(stages).toHaveChildren(3); // Exactly three stages.
+
+// Equivalent when using an options object:
+await expect(stages).toHaveChildren({ eq: 3 });
 ```
 
 ## toBeElementsArrayOfSize
@@ -334,13 +350,18 @@ Checks the number of elements obtained using the [$$](../../element/_dollardolla
 For example:
 
 ```javascript testplane=expect-to-be-elements-array-of-size fixture=matchers-page
-const listItems = await browser.$$("ul > li");
-await expect(listItems).toBeElementsArrayOfSize(3);
+const listItems = await browser.$$("#tasks > li");
+await expect(listItems).toBeElementsArrayOfSize(5); // Exactly five tasks in the list.
 ```
 
 ```javascript testplane=expect-to-be-elements-array-of-size-limit fixture=matchers-page
-const listItems = await browser.$$("ul > li");
+const assert = require("node:assert/strict");
+
+const listItems = await browser.$$("#tasks > li");
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 });
+
+// To check the current length directly, use a plain assertion:
+assert.ok(listItems.length <= 10);
 ```
 
 ## References

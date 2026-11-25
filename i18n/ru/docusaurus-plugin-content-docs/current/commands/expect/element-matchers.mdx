@@ -1,5 +1,7 @@
 # expect для элементов
 
+Примеры начинаются на странице с полем имени пользователя, кнопками, тремя этапами работы и списком из пяти задач.
+
 ## toBeDisplayed
 
 Вызывает [isDisplayed](../../element/isDisplayed) на заданном элементе.
@@ -173,10 +175,12 @@ await expect(elem).toBeClickable();
 
 Например:
 
-```javascript testplane=expect-to-be-disabled fixture=matchers-page
-const elem = await browser.$("#pending");
-await expect(elem).toBeDisabled();
-await expect(elem).not.toBeEnabled();
+```javascript testplane=expect-to-be-disabled-ru fixture=matchers-page
+const button = await browser.$("#pending");
+await expect(button).toBeDisabled();
+
+// То же состояние можно проверить отрицанием противоположного матчера:
+await expect(button).not.toBeEnabled();
 ```
 
 ## toBeEnabled
@@ -185,10 +189,12 @@ await expect(elem).not.toBeEnabled();
 
 Например:
 
-```javascript testplane=expect-to-be-enabled fixture=matchers-page
-const elem = await browser.$("#save");
-await expect(elem).toBeEnabled();
-await expect(elem).not.toBeDisabled();
+```javascript testplane=expect-to-be-enabled-ru fixture=matchers-page
+const button = await browser.$("#save");
+await expect(button).toBeEnabled();
+
+// То же состояние можно проверить отрицанием противоположного матчера:
+await expect(button).not.toBeDisabled();
 ```
 
 ## toBeSelected
@@ -276,10 +282,13 @@ await expect(elem).toHaveId("save");
 
 Например:
 
-```javascript testplane=expect-to-have-text fixture=matchers-page
-const elem = await browser.$("h1");
-await expect(elem).toHaveText("Task list");
-await expect(elem).toHaveText(["Task list", "No tasks yet"]);
+```javascript testplane=expect-to-have-text-ru fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
+const heading = await browser.$("h1");
+await expect(heading).toHaveText("Task list");
+
+// Передаем массив, если допустим любой из двух вариантов заголовка.
+await expect(heading).toHaveText(["Task list", "No tasks yet"]);
 ```
 
 ## toHaveTextContaining
@@ -290,10 +299,13 @@ await expect(elem).toHaveText(["Task list", "No tasks yet"]);
 
 Например:
 
-```javascript testplane=expect-to-have-text-containing fixture=matchers-page
-const elem = await browser.$("h1");
-await expect(elem).toHaveTextContaining("Task");
-await expect(elem).toHaveTextContaining(["Task", "No tasks"]);
+```javascript testplane=expect-to-have-text-containing-ru fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
+const heading = await browser.$("h1");
+await expect(heading).toHaveTextContaining("Task");
+
+// Передаем массив, если допустим любой из двух вариантов заголовка.
+await expect(heading).toHaveTextContaining(["Task", "No tasks"]);
 ```
 
 ## toBeDisplayedInViewport
@@ -309,22 +321,26 @@ await expect(input).toBeDisplayedInViewport();
 
 ## toHaveChildren
 
-Проверяет количество дочерних элементов заданного элемента, используя команду [element.$('./\*')](../../element/_dollardollar).
+Проверяет количество дочерних элементов заданного элемента, используя команду [element.$$('./\*')](../../element/_dollardollar).
 
 Передавайте объект опций: в используемой версии expect-webdriverio вызов без аргументов завершается ошибкой. Пустой объект означает «хотя бы один дочерний элемент».
 
 Например:
 
-```javascript testplane=expect-to-have-children fixture=matchers-page
-const list = await browser.$("ul");
-await expect(list).toHaveChildren({});
-await expect(list).toHaveChildren({ gte: 1 });
+```javascript testplane=expect-to-have-children-ru fixture=matchers-page
+const stages = await browser.$("#stages");
+await expect(stages).toHaveChildren({}); // Есть хотя бы один дочерний элемент.
+
+// То же нижнее ограничение можно задать явно:
+await expect(stages).toHaveChildren({ gte: 1 });
 ```
 
-```javascript testplane=expect-to-have-children-count fixture=matchers-page
-const list = await browser.$("ul");
-await expect(list).toHaveChildren(3);
-await expect(list).toHaveChildren({ eq: 3 });
+```javascript testplane=expect-to-have-children-count-ru fixture=matchers-page
+const stages = await browser.$("#stages");
+await expect(stages).toHaveChildren(3); // Ровно три этапа.
+
+// Эквивалентный вариант с объектом опций:
+await expect(stages).toHaveChildren({ eq: 3 });
 ```
 
 ## toBeElementsArrayOfSize
@@ -333,12 +349,17 @@ await expect(list).toHaveChildren({ eq: 3 });
 
 Например:
 
-```javascript testplane=expect-to-be-elements-array-of-size fixture=matchers-page
-const listItems = await browser.$$("ul > li");
-await expect(listItems).toBeElementsArrayOfSize(3);
+```javascript testplane=expect-to-be-elements-array-of-size-ru fixture=matchers-page
+const listItems = await browser.$$("#tasks > li");
+await expect(listItems).toBeElementsArrayOfSize(5); // В списке ровно пять задач.
 ```
 
-```javascript testplane=expect-to-be-elements-array-of-size-limit fixture=matchers-page
-const listItems = await browser.$$("ul > li");
+```javascript testplane=expect-to-be-elements-array-of-size-limit-ru fixture=matchers-page
+const assert = require("node:assert/strict");
+
+const listItems = await browser.$$("#tasks > li");
 await expect(listItems).toBeElementsArrayOfSize({ lte: 10 });
+
+// Чтобы проверить текущую длину напрямую, можно использовать обычный assert:
+assert.ok(listItems.length <= 10);
 ```

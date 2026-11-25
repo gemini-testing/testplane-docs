@@ -14,6 +14,8 @@ await browser.$(selector).getText();
 
 ## Usage Examples {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <div id="elem">
     Lorem ipsum <strong>dolor</strong> sit amet,<br />
@@ -22,12 +24,25 @@ await browser.$(selector).getText();
 <span style="display: none">I am invisible</span>
 ```
 
+**getText.js**
+
 ```javascript testplane=element-get-text fixture=element-html
 const assert = require("node:assert/strict");
 
-const text = await browser.$("#elem").getText();
-assert.equal(text, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr");
-assert.equal(await browser.$("span").getText(), "");
+it("should demonstrate the getText function", async ({ browser }) => {
+    const elem = await browser.$("#elem");
+    const text = await elem.getText();
+    console.log(text);
+    // outputs:
+    // Lorem ipsum dolor sit amet,
+    // consetetur sadipscing elitr
+    assert.equal(text, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr");
+
+    const hidden = await browser.$("span");
+    const hiddenText = await hidden.getText();
+    console.log(hiddenText); // outputs: "" (empty string) because the element is hidden
+    assert.equal(hiddenText, "");
+});
 ```
 
 To read the third column of the second row:
@@ -50,9 +65,14 @@ To read the third column of the second row:
 ```javascript testplane=element-get-text-table fixture=element-table
 const assert = require("node:assert/strict");
 
-const rows = await browser.$$("#table1 tr");
-const columns = await rows[1].$$("td");
-assert.equal(await columns[2].getText(), "john@example.com");
+it("get content from table cell", async ({ browser }) => {
+    const rows = await browser.$$("#table1 tr");
+    const columns = await rows[1].$$("td"); // Get the cells of the second row.
+
+    const text = await columns[2].getText(); // Get the text from the third column.
+    console.log(text); // outputs: "john@example.com"
+    assert.equal(text, "john@example.com");
+});
 ```
 
 ## References

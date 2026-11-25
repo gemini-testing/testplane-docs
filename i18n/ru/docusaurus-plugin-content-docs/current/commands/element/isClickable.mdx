@@ -38,12 +38,20 @@ await browser.$(selector).isClickable();
 <button id="save" disabled onclick="this.disabled = true">Save</button>
 ```
 
-```javascript testplane=element-is-clickable fixture=element-html
+```javascript testplane=element-is-clickable-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const save = await browser.$("#save");
-assert.equal(await save.isClickable(), false);
-await browser.$("#enable").click();
-await browser.waitUntil(() => save.isClickable());
-assert.equal(await save.isClickable(), true);
+it("should detect if an element is clickable", async ({ browser }) => {
+    const save = await browser.$("#save");
+    let clickable = await save.isClickable();
+    console.log(clickable); // выведет: false
+    assert.equal(clickable, false);
+
+    await browser.$("#enable").click();
+    // Ждем, когда на кнопку Save можно будет кликнуть.
+    await browser.waitUntil(() => save.isClickable());
+    clickable = await save.isClickable();
+    console.log(clickable); // выведет: true
+    assert.equal(clickable, true);
+});
 ```

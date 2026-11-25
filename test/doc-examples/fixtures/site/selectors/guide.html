@@ -7,12 +7,13 @@
         <a href="#guides">Docs</a>
         <a href="#api">API</a>
     </nav>
-    <main id="main" data-testid="main-content">
+    <main id="__docusaurus" data-testid="main-content">
         <h1>Documentation guide</h1>
         <div>Testplane</div>
         <button type="button" onclick="location.hash = 'docs'">Get started</button>
         <button
             type="button"
+            class="DocSearch-Button"
             aria-label="Open search"
             onclick="document.querySelector('dialog').showModal()"
         >
@@ -45,6 +46,12 @@
     </main>
     <script>
         const search = document.querySelector('input[type="search"]');
+        if (new URLSearchParams(location.search).get("lang") === "ru") {
+            document.documentElement.lang = "ru";
+            document.querySelector('nav a[href="#docs"]').textContent = "Документация";
+            document.querySelector(".DocSearch-Button").setAttribute("aria-label", "Открыть поиск");
+            search.placeholder = "Поиск";
+        }
         search.oninput = () => (document.querySelector("output").value = search.value);
     </script>
 </html>

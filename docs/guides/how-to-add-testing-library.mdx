@@ -43,23 +43,39 @@ If you have problems with types, add types explicitly to `tsconfig.json`
 
 You can search by selectors from `testing-library` as described in the [official docs](https://testing-library.com/docs/queries/about/). For example, here's how to search for an element by its text:
 
-```javascript testplane=selectors-library-browser fixture=selectors-dashboard
+```javascript testplane=selectors-library-browser fixture=selectors-library
 const assert = require("node:assert/strict");
 
-const create = await browser.getByText("New repository");
-await create.click();
-assert.equal(await browser.$("h1").getText(), "Create a repository");
+it("opens the repository form by its button text", async ({ browser }) => {
+    await browser.url("/fixtures/selectors/dashboard.html");
+
+    // Look up the button by the text a user sees, not by its CSS classes.
+    const newRepoButton = await browser.getByText("New repository");
+    await newRepoButton.click();
+
+    const heading = await browser.$("h1");
+    const title = await heading.getText();
+    assert.equal(title, "Create a repository");
+});
 ```
 
 If two buttons on the dashboard say `New`, scope the query to the repositories sidebar:
 
-```javascript testplane=selectors-library-element fixture=selectors-dashboard
+```javascript testplane=selectors-library-element fixture=selectors-library
 const assert = require("node:assert/strict");
 
-const sidebar = await browser.$(".dashboard-sidebar");
-const create = await sidebar.getByText("New");
-await create.click();
-assert.equal(await browser.$("h1").getText(), "Create a repository");
+it("finds the New button inside the repositories sidebar", async ({ browser }) => {
+    await browser.url("/fixtures/selectors/dashboard.html");
+
+    // Search inside the repositories sidebar: the issues section also has a New button.
+    const sidebar = await browser.$(".dashboard-sidebar");
+    const newRepoButton = await sidebar.getByText("New");
+    await newRepoButton.click();
+
+    const heading = await browser.$("h1");
+    const title = await heading.getText();
+    assert.equal(title, "Create a repository");
+});
 ```
 
 For a complete usage example, visit [this link](https://github.com/gemini-testing/testplane/tree/master/examples/).

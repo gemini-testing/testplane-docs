@@ -36,28 +36,53 @@ mock.abortOnce(errorCode);
 
 ## Примеры использования {/* #examples */}
 
-В примере используется WebDriver BiDi: кнопка `#reload` отправляет GET на `/api/items`, а `#source` показывает результат.
+На странице задач кнопка Reload запрашивает `/api/items`. Если первый запрос не удался, пользователь может попробовать снова. В сессии WebDriver BiDi:
 
-```javascript testplane=mock-abort-once fixture=matchers-network
-const mock = await browser.mock("/api/items");
-mock.abortOnce();
+```javascript testplane=mock-abort-once-ru fixture=matchers-intercept
+it("дает повторить запрос после одной ошибки", async ({ browser }) => {
+    const items = await browser.mock("/api/items");
+    items.abortOnce();
 
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("Unavailable");
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("original");
+    await browser.url("/fixtures/matchers/tasks.html");
+    const reload = await browser.$("#reload");
+    const source = await browser.$("#source");
+
+    // Страница обрабатывает ошибку первого запроса и показывает сообщение.
+    await reload.click();
+    await expect(source).toHaveText("Unavailable");
+
+    // При следующем нажатии запрос доходит до исходного ресурса.
+    await reload.click();
+    await expect(source).toHaveText("original");
+});
 ```
 
 Для CDP можно указать причину сетевой ошибки:
 
-```javascript testplane=mock-abort-once-cdp fixture=matchers-network transport=cdp
-const mock = await browser.mock("**/api/items");
-mock.abortOnce("TimedOut");
+```javascript testplane=mock-abort-once-cdp-ru fixture=matchers-intercept transport=cdp
+const assert = require("node:assert/strict");
 
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("Unavailable");
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("original");
+it("разрешает второй переход на ту же страницу", async ({ browser }) => {
+    const path = "/fixtures/matchers/todos.html";
+    const page = await browser.mock("**/fixtures/matchers/todos.html");
+    const failures = [];
+    page.on("fail", ({ errorReason }) => failures.push(errorReason));
+    page.abortOnce("Failed");
+
+    // Chrome может вернуть ошибку перехода или показать страницу ошибки. Обрабатываем только ожидаемую ошибку.
+    try {
+        await browser.url(path);
+    } catch (error) {
+        if (!error.message.includes("ERR_FAILED")) throw error;
+    }
+    assert.deepEqual(failures, ["Failed"]);
+
+    // Однократная ошибка исчерпана. Открываем тот же URL и читаем заголовок настоящей страницы.
+    await browser.url(path);
+    const title = await browser.getTitle();
+    assert.equal(title, "Todo list");
+    assert.deepEqual(failures, ["Failed"]);
+});
 ```
 
 ## Связанные команды {/* #related */}

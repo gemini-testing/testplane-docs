@@ -16,15 +16,26 @@ await browser.$(selector).isFocused();
 
 ## Примеры использования {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <input name="login" />
 ```
 
-```javascript testplane=element-is-focused fixture=element-html
+**isFocused.js**
+
+```javascript testplane=element-is-focused-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const login = await browser.$('[name="login"]');
-assert.equal(await login.isFocused(), false);
-await login.click();
-assert.equal(await login.isFocused(), true);
+it("should detect the focus of an element", async ({ browser }) => {
+    const loginInput = await browser.$('[name="login"]');
+    let focused = await loginInput.isFocused();
+    console.log(focused); // выведет: false
+    assert.equal(focused, false);
+
+    await loginInput.click();
+    focused = await loginInput.isFocused();
+    console.log(focused); // выведет: true
+    assert.equal(focused, true);
+});
 ```

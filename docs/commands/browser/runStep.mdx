@@ -77,8 +77,12 @@ You can also return values from step:
 ```typescript testplane=browser-step-result fixture=browser-page
 const assert = require("node:assert/strict");
 
-const heading = await browser.runStep("parse page", () => browser.$("h1").getText());
-assert.equal(heading, "Command examples");
+const parsedPage = await browser.runStep("parse page", async () => {
+    const heading = await browser.$("h1").getText();
+    return { heading };
+});
+
+assert.equal(parsedPage.heading, "Command examples");
 ```
 
 [reporter]: ../../../html-reporter/html-reporter-setup

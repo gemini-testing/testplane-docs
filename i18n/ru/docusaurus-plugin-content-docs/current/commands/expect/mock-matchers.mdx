@@ -10,15 +10,18 @@
 
 ```javascript testplane=expect-cdp-requested fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items");
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
 await expect(mock).toBeRequested();
 ```
 
 В сессии WebDriver BiDi:
 
-```javascript testplane=expect-bidi-requested fixture=matchers-network
+```javascript testplane=expect-bidi-requested-ru fixture=matchers-network
 const mock = await browser.mock("/api/items");
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
+// Дожидаемся ответа, прежде чем проверить историю вызовов.
 await mock.waitForResponse();
 expect(mock.calls).toHaveLength(1);
 ```
@@ -29,28 +32,37 @@ expect(mock.calls).toHaveLength(1);
 
 В сессии CDP:
 
-```javascript testplane=expect-cdp-request-count fixture=matchers-network transport=cdp
+```javascript testplane=expect-cdp-request-count-ru fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items");
-await browser.$("#reload").click();
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
+await reload.click();
+
 await expect(mock).toBeRequestedTimes(2);
+// То же точное число вызовов можно задать через eq:
 await expect(mock).toBeRequestedTimes({ eq: 2 });
 ```
 
-```javascript testplane=expect-cdp-request-range fixture=matchers-network transport=cdp
+```javascript testplane=expect-cdp-request-range-ru fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items");
+const reload = await browser.$("#reload");
 for (let i = 0; i < 5; i++) {
-    await browser.$("#reload").click();
+    await reload.click();
 }
+
+// Не меньше пяти запросов, но и не больше десяти.
 await expect(mock).toBeRequestedTimes({ gte: 5, lte: 10 });
 ```
 
 В сессии WebDriver BiDi:
 
-```javascript testplane=expect-bidi-request-count fixture=matchers-network
+```javascript testplane=expect-bidi-request-count-ru fixture=matchers-network
 const mock = await browser.mock("/api/items");
-await browser.$("#reload").click();
-await browser.$("#reload").click();
+const reload = await browser.$("#reload");
+await reload.click();
+await reload.click();
+
+// waitForResponse дожидается первого вызова, а нам нужны оба.
 await browser.waitUntil(() => mock.calls.length >= 2);
 expect(mock.calls).toHaveLength(2);
 ```
@@ -63,21 +75,30 @@ expect(mock.calls).toHaveLength(2);
 
 В сессии CDP:
 
-```javascript testplane=expect-cdp-request-details fixture=matchers-network transport=cdp
+```javascript testplane=expect-cdp-request-details-ru fixture=matchers-network transport=cdp
 const mock = await browser.mock("**/api/items", { method: "POST" });
-await browser.$("#save").click();
+const save = await browser.$("#save");
+await save.click();
 
+// Все поля необязательны. Если запрос и ответ известны, можно указать точные значения.
+const expectedUrl = new URL("/api/items", browser.options.baseUrl).href;
 await expect(mock).toBeRequestedWith({
-    method: "POST",
-    statusCode: 200,
-    postData: { title: "Ship feature" },
+    url: expectedUrl, // Строка, функция проверки или матчер.
+    method: "POST", // Один метод или массив допустимых методов.
+    statusCode: 200, // Один код ответа или массив допустимых кодов.
+    // Для заголовков и тела подойдут объект, функция проверки или матчер.
+    requestHeaders: expect.objectContaining({ "X-Example": "tasks" }),
+    responseHeaders: expect.objectContaining({ "Content-Type": "application/json" }),
+    postData: { title: "Ship feature", username: "user" },
+    response: { source: "original", method: "POST", header: "tasks" },
 });
 
+// Для переменных значений можно сочетать альтернативы, функции проверки и частичные матчеры.
 await expect(mock).toBeRequestedWith({
     url: expect.stringMatching(/\/api\/items$/),
-    method: ["POST", "PUT"],
-    statusCode: [200, 201],
-    requestHeaders: expect.objectContaining({ "X-Example": "tasks" }),
+    method: ["POST", "PUT"], // Подойдет любой из двух методов.
+    statusCode: [200, 201], // Подойдет любой из двух кодов успеха.
+    requestHeaders: headers => headers["X-Example"] === "tasks",
     responseHeaders: expect.objectContaining({ "Content-Type": "application/json" }),
     postData: expect.objectContaining({ title: expect.stringContaining("Ship") }),
     response: item => item.source === "original",
@@ -86,11 +107,15 @@ await expect(mock).toBeRequestedWith({
 
 В сессии WebDriver BiDi:
 
-```javascript testplane=expect-bidi-request-details fixture=matchers-network
+```javascript testplane=expect-bidi-request-details-ru fixture=matchers-network
 const mock = await browser.mock("/api/items", { method: "POST" });
-await browser.$("#save").click();
+const save = await browser.$("#save");
+await save.click();
 await mock.waitForResponse();
-expect(mock.calls[0]).toMatchObject({
+
+// В BiDi данные запроса и ответа записаны в двух отдельных объектах.
+const [call] = mock.calls;
+expect(call).toMatchObject({
     request: { method: "POST", url: expect.stringMatching(/\/api\/items$/) },
     response: { status: 200 },
 });

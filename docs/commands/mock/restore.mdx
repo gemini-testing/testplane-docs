@@ -12,18 +12,28 @@ mock.restore();
 
 ## Usage Examples {/* #examples */}
 
-In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
+In WebDriver BiDi, replace the task page’s logo with a redirect. After `restore`, loading the same page displays its own logo again.
 
-```javascript testplane=mock-restore fixture=matchers-network
-const mock = await browser.mock("/api/items");
-mock.respond({ source: "mocked" });
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("mocked");
+```javascript testplane=mock-restore fixture=matchers-intercept
+it("restores the original logo after a redirect", async ({ browser }) => {
+    const logo = await browser.mock("/fixtures/guides/logo.svg");
+    const previewUrl = new URL("/fixtures/matchers/preview-logo.svg", browser.options.baseUrl).href;
 
-await mock.restore();
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("original");
+    // Redirect the image request, not the page. The preview logo is 48 pixels wide.
+    logo.redirect(previewUrl);
+    await browser.url("/fixtures/matchers/tasks.html");
+    const preview = await browser.$("#logo");
+    await expect(preview).toHaveElementProperty("naturalWidth", 48);
+
+    // After restore, the page loads its original 28-pixel logo again.
+    await logo.restore();
+    await browser.url("/fixtures/matchers/tasks.html");
+    const original = await browser.$("#logo");
+    await expect(original).toHaveElementProperty("naturalWidth", 28);
+});
 ```
+
+In a CDP session, use `logo.respond(previewUrl)` rather than `logo.redirect(previewUrl)` to [redirect the resource](../../../guides/how-to-intercept-requests-and-responses#example_4). In both cases, `restore` removes the override.
 
 ## Related Commands {/* #related */}
 

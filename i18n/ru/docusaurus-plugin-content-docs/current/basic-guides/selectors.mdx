@@ -26,7 +26,7 @@ Testplane предоставляет множество способов для 
 
 В Testplane поддерживается поиск элементов, совместимый с синтаксисом WebdriverIO: по CSS селекторам, по XPath, по тексту элементов и по другим признакам, которые описаны ниже.
 
-В примерах ниже тест начинается на странице документации с меню, кнопкой `Get started` и диалогом поиска.
+В примерах используются две демонстрационные страницы: [документация](https://github.com/gemini-testing/testplane-docs/blob/master/test/doc-examples/fixtures/site/selectors/guide.html) и [книжный магазин](https://github.com/gemini-testing/testplane-docs/blob/master/test/doc-examples/fixtures/site/quickstart/bookstore.html). Относительные пути в тестах отсчитываются от `baseUrl`.
 
 ### Селекторы по тексту
 
@@ -37,15 +37,43 @@ Testplane предоставляет множество способов для 
 -   `a*=text` — поиск по тексту внутри тега `<a>`
 -   `div.=text` — case-insensitive поиск текста внутри тега `<div>`
 
-```javascript testplane=selectors-link-text fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-link-text-ru fixture=selectors-guide
+describe("Селектор Link Text", () => {
+    it("Поиск элемента по совпадающему тексту", async ({ browser }) => {
+        await browser.url("/fixtures/selectors/guide.html?lang=ru");
+        const nav = await browser.$("nav");
 
-const nav = await browser.$("nav");
-const exact = await nav.$("=Documentation");
-assert.equal(await exact.getAttribute("href"), "#docs");
-assert.equal(await nav.$("*=Docum").getText(), "Documentation");
-assert.equal(await nav.$("a*=Document").getText(), "Documentation");
-assert.equal(await browser.$("div.=testplane").getText(), "Testplane");
+        // Полное совпадение текста ссылки
+        const docsLink = await nav.$("=Документация");
+        const isDocsLinkFound = await docsLink.isExisting();
+        console.log(`Элемент с полным текстом "Документация" найден: ${isDocsLinkFound}`);
+        expect(isDocsLinkFound).toBe(true);
+        await expect(docsLink).toHaveAttribute("href", "#docs");
+
+        // Частичное совпадение текста ссылки
+        const partialLink = await nav.$("*=Докум");
+        const isPartialLinkFound = await partialLink.isExisting();
+        console.log(`Элемент с частичным текстом "Докум" найден: ${isPartialLinkFound}`);
+        expect(isPartialLinkFound).toBe(true);
+        await expect(partialLink).toHaveText("Документация");
+
+        // Частичное совпадение с указанием тега <a>
+        const tagPartialLink = await nav.$("a*=Документ");
+        const isTagPartialLinkFound = await tagPartialLink.isExisting();
+        console.log(`Элемент <a> с частичным текстом "Документ" найден: ${isTagPartialLinkFound}`);
+        expect(isTagPartialLinkFound).toBe(true);
+        await expect(tagPartialLink).toHaveText("Документация");
+
+        // Case-insensitive поиск с тегом div
+        const divCaseInsensitive = await browser.$("div.=testplane");
+        const isDivCaseInsensitiveFound = await divCaseInsensitive.isExisting();
+        console.log(
+            `Элемент <div> с case-insensitive текстом "testplane" найден: ${isDivCaseInsensitiveFound}`,
+        );
+        expect(isDivCaseInsensitiveFound).toBe(true);
+        await expect(divCaseInsensitive).toHaveText("Testplane");
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -59,11 +87,23 @@ assert.equal(await browser.$("div.=testplane").getText(), "Testplane");
 
 Данный способ подходит для поиска элементов, которые размечены атрибутами для тестирования.
 
-```javascript testplane=selectors-css-test-id fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-css-test-id-ru fixture=selectors-guide
+describe("CSS-селектор по атрибуту data-testid", () => {
+    it("Поиск элемента по data-testid", async ({ browser }) => {
+        // Открываем страницу и ждем ее загрузки
+        await browser.openAndWait("/fixtures/selectors/guide.html");
 
-const main = await browser.$('[data-testid="main-content"]');
-assert.equal(await main.$("h1").getText(), "Documentation guide");
+        // Ищем элемент по атрибуту data-testid
+        const element = await browser.$('[data-testid="main-content"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await element.isExisting();
+        console.log("Элемент с data-testid существует:", isExisting);
+        expect(isExisting).toBe(true);
+        const heading = await element.$("h1");
+        await expect(heading).toHaveText("Documentation guide");
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -75,12 +115,22 @@ assert.equal(await main.$("h1").getText(), "Documentation guide");
 
 Чтобы найти элемент на странице по классу, используйте селектор `".class-name"`.
 
-```javascript testplane=selectors-css-class fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-css-class-ru fixture=selectors-guide
+describe("CSS-селектор по классу", () => {
+    it("Поиск элемента на главной странице", async ({ browser }) => {
+        await browser.openAndWait("/fixtures/selectors/guide.html");
 
-const navbar = await browser.$(".navbar");
-assert.equal(await navbar.isDisplayed(), true);
-assert.equal(await navbar.$("a").getText(), "Documentation");
+        // Ищем элемент по классу "navbar"
+        const navbar = await browser.$(".navbar");
+
+        // Проверяем, отображается ли элемент на странице
+        const isDisplayed = await navbar.isDisplayed();
+        console.log("Навбар отображается:", isDisplayed);
+        expect(isDisplayed).toBe(true);
+        const firstLink = await navbar.$("a");
+        await expect(firstLink).toHaveText("Documentation");
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -94,12 +144,22 @@ assert.equal(await navbar.$("a").getText(), "Documentation");
 
 Чтобы найти элемент по `id` используйте селектор вида `"#id"`.
 
-```javascript testplane=selectors-css-id fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-css-id-ru fixture=selectors-guide
+describe("CSS-селектор по id", () => {
+    it("Поиск элемента по id на главной странице", async ({ browser }) => {
+        await browser.openAndWait("/fixtures/selectors/guide.html");
 
-const main = await browser.$("#main");
-assert.equal(await main.getTagName(), "main");
-assert.equal(await main.isDisplayed(), true);
+        // Ищем элемент по id "__docusaurus"
+        const main = await browser.$("#__docusaurus");
+
+        // Проверяем, отображается ли элемент на странице
+        const isDisplayed = await main.isDisplayed();
+        console.log("Элемент отображается:", isDisplayed);
+        expect(isDisplayed).toBe(true);
+        const tag = await main.getTagName();
+        expect(tag).toBe("main");
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -112,12 +172,26 @@ assert.equal(await main.isDisplayed(), true);
 
 Для поиска элемента по атрибуту используйте селектор вида `input[type="name"]`.
 
-```javascript testplane=selectors-css-type fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-css-type-ru fixture=selectors-guide
+describe("CSS-селектор по типу атрибута", () => {
+    it("Поиск элемента по типу атрибута", async ({ browser }) => {
+        await browser.openAndWait("/fixtures/selectors/guide.html");
 
-const buttons = await browser.$$('button[type="button"]');
-assert.equal(buttons.length, 2);
-assert.equal(await buttons[0].getText(), "Get started");
+        // Ищем кнопку по атрибуту type="button"
+        // Формат селектора: element[type="value"]
+        const button = await browser.$('button[type="button"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await button.isExisting();
+        console.log("Кнопка существует:", isExisting);
+        expect(isExisting).toBe(true);
+        await expect(button).toHaveText("Get started");
+
+        // Тем же селектором можно найти все такие кнопки.
+        const buttons = await browser.$$('button[type="button"]');
+        expect(buttons).toHaveLength(2);
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -131,11 +205,22 @@ assert.equal(await buttons[0].getText(), "Get started");
 
 Чтобы найти элемент по содержащемуся в нем тексту, используйте селектор `//element[text()="text"]`.
 
-```javascript testplane=selectors-xpath-text fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-xpath-text-ru fixture=selectors-guide
+// Точное совпадение текста
+describe("XPath-селектор по тексту элемента", () => {
+    it("Поиск элемента по тексту", async ({ browser }) => {
+        await browser.openAndWait("/fixtures/selectors/guide.html");
 
-const link = await browser.$('//a[text()="Docs"]');
-assert.equal(await link.getAttribute("href"), "#guides");
+        // Ищем элемент по тексту внутри него
+        const link = await browser.$('//a[text()="Docs"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await link.isExisting();
+        console.log("Элемент с текстом существует:", isExisting);
+        expect(isExisting).toBe(true);
+        await expect(link).toHaveAttribute("href", "#guides");
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -147,11 +232,21 @@ assert.equal(await link.getAttribute("href"), "#guides");
 
 Для поиска элемента по атрибуту используйте селектор вида `//element[@type="atribute"]`.
 
-```javascript testplane=selectors-xpath-attribute fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-xpath-attribute-ru fixture=selectors-guide
+describe("XPath-селектор по атрибуту", () => {
+    it("Поиск элемента по атрибуту", async ({ browser }) => {
+        await browser.openAndWait("/fixtures/selectors/guide.html");
 
-const button = await browser.$('//button[@type="button"]');
-assert.equal(await button.getText(), "Get started");
+        // Ищем элемент по атрибуту type
+        const button = await browser.$('//button[@type="button"]');
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await button.isExisting();
+        console.log("Элемент с атрибутом существует:", isExisting);
+        expect(isExisting).toBe(true);
+        await expect(button).toHaveText("Get started");
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -168,41 +263,48 @@ assert.equal(await button.getText(), "Get started");
 
 Начнём с поля электронной почты и найдём его родителя и форму-предка:
 
-```javascript testplane=selectors-xpath-ancestors fixture=selectors-tree
+```javascript testplane=selectors-xpath-ancestors-ru fixture=selectors-tree
 const assert = require("node:assert/strict");
 
-const field = await browser.$("//input[@name='email']/..");
-assert.equal(await field.getAttribute("id"), "email-field");
-const form = await browser.$("//input[@name='email']/ancestor::form[@id='registration']");
-assert.equal(await form.getTagName(), "form");
+// Прямой родитель
+const parentDiv = await browser.$("//input[@name='email']/..");
+assert.equal(await parentDiv.getAttribute("id"), "email-field");
+// Предок с условием
+const formContainer = await browser.$("//input[@name='email']/ancestor::form[@id='registration']");
+assert.equal(await formContainer.getTagName(), "form");
 ```
 
 Для поиска сообщения об ошибке и подписи поля используем соседние элементы:
 
-```javascript testplane=selectors-xpath-siblings fixture=selectors-tree
+```javascript testplane=selectors-xpath-siblings-ru fixture=selectors-tree
 const assert = require("node:assert/strict");
 
-const error = await browser.$(
+// Следующий сиблинг
+const errorLabel = await browser.$(
     "//input[@class='invalid']/following-sibling::span[@class='error'][1]",
 );
-assert.equal(await error.getText(), "Enter an email address");
+assert.equal(await errorLabel.getText(), "Enter an email address");
+// Предыдущий сиблинг
 const label = await browser.$("//input[@name='password']/preceding-sibling::label[1]");
 assert.equal(await label.getText(), "Password");
 ```
 
 Двойная косая черта выбирает всех потомков, одинарная — только прямых детей. Можно также подняться к родителю и выбрать следующий раздел:
 
-```javascript testplane=selectors-xpath-descendants fixture=selectors-tree
+```javascript testplane=selectors-xpath-descendants-ru fixture=selectors-tree
 const assert = require("node:assert/strict");
 
-const fields = await browser.$$("//form[@id='checkout']//input");
-assert.equal(fields.length, 2);
-assert.equal(await fields[1].getAttribute("name"), "street");
-const topLevel = await browser.$$("//ul[@class='menu']/li");
-assert.equal(topLevel.length, 2);
+// Все потомки
+const allInputs = await browser.$$("//form[@id='checkout']//input");
+assert.equal(allInputs.length, 2);
+assert.equal(await allInputs[1].getAttribute("name"), "street");
+// Прямые дети
+const directChildren = await browser.$$("//ul[@class='menu']/li");
+assert.equal(directChildren.length, 2);
 
-const next = await browser.$("//h2[text()='Contacts']/../following-sibling::section[1]");
-assert.equal(await next.getAttribute("id"), "billing");
+// Поиск «дяди» элемента (родитель -> сиблинг родителя)
+const siblingSection = await browser.$("//h2[text()='Contacts']/../following-sibling::section[1]");
+assert.equal(await siblingSection.getAttribute("id"), "billing");
 ```
 
 Подобный вид навигации по дереву не рекомендуется использовать из-за своей хрупкости, но он возможен.
@@ -211,11 +313,29 @@ assert.equal(await next.getAttribute("id"), "billing");
 
 XPath позволяет выбирать элементы по их позиции в наборе результатов.
 
-```javascript testplane=selectors-xpath-position fixture=selectors-guide
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-xpath-position-ru fixture=selectors-guide
+describe("XPath-селектор: индексы и позиции", () => {
+    it("Поиск элемента по индексу", async ({ browser }) => {
+        await browser.openAndWait("/fixtures/selectors/guide.html");
 
-const thirdLink = await browser.$("(//nav//a)[3]");
-assert.equal(await thirdLink.getText(), "API");
+        // Ищем третий элемент ссылки в навигации (индекс начинается с 1)
+        // Формат селектора: (//element)[index]
+        const thirdLink = await browser.$("(//a)[3]");
+
+        // Ждем появления элемента и его отображения
+        await thirdLink.waitForDisplayed({ timeout: 5000 });
+
+        // Проверяем существование элемента в DOM
+        const isExisting = await thirdLink.isExisting();
+        console.log("Третий элемент существует:", isExisting);
+
+        // Получаем текст элемента
+        const text = await thirdLink.getText();
+        console.log("Текст третьего элемента:", text);
+        expect(isExisting).toBe(true);
+        expect(text).toBe("API");
+    });
+});
 ```
 
 Стоит использовать, если:
@@ -230,16 +350,18 @@ assert.equal(await thirdLink.getText(), "API");
 
 Shadow-DOM-селекторы позволяют работать с элементами внутри Shadow DOM — инкапсулированной части DOM-дерева. Например, если у вас есть кастомный элемент `my-custom-element`, вы можете найти кнопку внутри его Shadow DOM с помощью `shadow$("button")`.
 
-```javascript testplane=selectors-shadow fixture=selectors-guide
-const assert = require("node:assert/strict");
-
-const widget = await browser.$("my-custom-element");
-const button = await widget.shadow$("button");
+```javascript testplane=selectors-shadow-ru fixture=selectors-shadow
+// Простой доступ в Shadow DOM
+const customElement = await browser.$("my-custom-element");
+const button = await customElement.shadow$("button");
 await button.click();
-assert.equal(await button.getText(), "Expanded");
+await expect(button).toHaveText("Expanded");
 
-const items = await widget.shadow$$(".slot-item");
-assert.deepEqual(await items.map(item => item.getText()), ["One", "Two"]);
+// Множественные элементы в Shadow DOM
+const slotElements = await customElement.shadow$$(".slot-item");
+expect(slotElements).toHaveLength(2);
+await expect(slotElements[0]).toHaveText("One");
+await expect(slotElements[1]).toHaveText("Two");
 ```
 
 Стоит использовать, если:
@@ -260,103 +382,190 @@ Testing Library позволяет искать элементы так, как 
 
 `getByRole` — основной метод в Testing Library, который позволяет находить элементы по их ARIA-ролям. Например, если вы используете метод `browser.getByRole("button", { name: /submit/i })`, то найдете кнопку с текстом, содержащим `submit`.
 
-```javascript testplane=selectors-by-role fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-role-ru fixture=selectors-library
+describe("getByRole", () => {
+    it("Поиск кнопки с помощью метода getByRole", async ({ browser }) => {
+        await browser.url("/fixtures/selectors/guide.html");
 
-const start = await browser.getByRole("button", { name: "Get started" });
-await start.click();
-assert.equal(new URL(await browser.getUrl()).hash, "#docs");
+        const button = await browser.getByRole("button", { name: "Get started" });
+
+        await button.click();
+        await browser.waitUntil(async () => new URL(await browser.getUrl()).hash === "#docs");
+    });
+});
 ```
 
 ### ByLabelText
 
 Для поиска элементов форм по тексту их меток (`label`) используйте метод `getByLabelText`.
 
-```javascript testplane=selectors-by-label-text fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-label-text-ru fixture=selectors-library
+describe("Поиск поля ввода с помощью метода getByLabelText", () => {
+    it("Найти и использовать поле поиска", async ({ browser }) => {
+        await browser.url("/fixtures/selectors/guide.html?lang=ru");
 
-const openSearch = await browser.getByLabelText(/open search/i);
-await openSearch.click();
-assert.equal(await browser.$("dialog[open]").isDisplayed(), true);
+        // Находим кнопку поиска
+        const searchButton = await browser.getByLabelText(/^(open search|открыть поиск)$/i);
+
+        // Кликаем на кнопку, чтобы открыть модальное окно поиска
+        await searchButton.click();
+        const dialog = await browser.$("dialog[open]");
+        await expect(dialog).toBeDisplayed();
+    });
+});
 ```
 
 ### ByPlaceholderText
 
 Чтобы найти поле ввода по тексту `placeholder`, используйте селектор `getByPlaceholderText`.
 
-```javascript testplane=selectors-by-placeholder-text fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-placeholder-text-ru fixture=selectors-library
+describe("getByPlaceholderText", () => {
+    it("Поиск поля ввода с помощью метода getByPlaceholderText", async ({ browser }) => {
+        await browser.url("/fixtures/selectors/guide.html?lang=ru");
 
-const openSearch = await browser.getByLabelText("Open search");
-await openSearch.click();
+        // Открываем модальное окно поиска
+        const searchButton = await browser.$(".DocSearch-Button");
+        await searchButton.click();
 
-const input = await browser.getByPlaceholderText("Search docs");
-assert.equal(await input.isDisplayed(), true);
+        // Ждем появления модального окна
+        const searchDialog = await browser.$("dialog");
+        await searchDialog.waitForDisplayed();
+
+        // Находим поле ввода по placeholder
+        const searchInput = await browser.getByPlaceholderText("Поиск");
+        await searchInput.waitForDisplayed({ timeout: 3000 });
+
+        // Проверяем, что элемент видим
+        await expect(searchInput).toBeDisplayed();
+    });
+});
 ```
 
 ### ByText
 
 Чтобы найти текстовый элемент по его содержимому, используйте метод `getByText`.
 
-```javascript testplane=selectors-by-text fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-text-ru fixture=selectors-library
+describe("getByText", () => {
+    it("Поиск элемента с помощью метода getByText", async ({ browser }) => {
+        // Открываем главную страницу документации
+        await browser.url("/fixtures/selectors/guide.html");
 
-const start = await browser.getByText("Get started");
-assert.equal(await start.isClickable(), true);
-await start.click();
-assert.equal(new URL(await browser.getUrl()).hash, "#docs");
+        // Находим кнопку "Get started"
+        const button = await browser.getByText("Get started");
+
+        // Проверяем, что элемент найден и виден
+        await expect(button).toBeDisplayed();
+        await expect(button).toBeClickable();
+
+        // Кликаем по кнопке
+        await button.click();
+
+        // Ждем перехода к разделу документации
+        await browser.waitUntil(async () => new URL(await browser.getUrl()).hash === "#docs");
+
+        // Проверяем, что произошла навигация
+        const url = await browser.getUrl();
+        expect(url).toContain("#docs");
+    });
+});
 ```
 
 ### ByDisplayValue
 
 Для поиска элемента по их текущему значению используйте метод `getByDisplayValue`.
 
-```javascript testplane=selectors-by-display-value fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-display-value-ru fixture=selectors-library
+describe("Поиск с помощью метода getByDisplayValue", () => {
+    it("Найти и проверить значение", async ({ browser }) => {
+        await browser.url("/fixtures/selectors/guide.html?lang=ru");
 
-const openSearch = await browser.getByLabelText("Open search");
-await openSearch.click();
-const input = await browser.$('input[type="search"]');
-await input.setValue("html-reporter");
+        // Открываем поиск
+        const searchButton = await browser.$(".DocSearch-Button");
+        await searchButton.click();
+        const searchDialog = await browser.$("dialog");
+        await searchDialog.waitForDisplayed();
 
-const match = await browser.getByDisplayValue("html-reporter");
-assert.equal(await match.isEqual(input), true);
+        // Вводим текст
+        const searchInput = await browser.$('input[type="search"]');
+        await searchInput.setValue("html-reporter");
+
+        // Ищем по полному значению
+        const input = await browser.getByDisplayValue("html-reporter");
+        await expect(input).toBeDisplayed();
+        const sameField = await input.isEqual(searchInput);
+        expect(sameField).toBe(true);
+
+        // Проверяем значение
+        const value = await input.getValue();
+        expect(value).toBe("html-reporter");
+    });
+});
 ```
 
 ### ByAltText
 
 Для поиска изображения по тексту `alt` используйте метод `getByAltText`.
 
-```javascript testplane=selectors-by-alt-text fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-alt-text-ru fixture=selectors-library
+describe("Поиск элемента с помощью метода getByAltText", () => {
+    it("Поиск <img> элемента по alt атрибуту", async ({ browser }) => {
+        // Открываем страницу
+        await browser.url("/fixtures/quickstart/bookstore.html");
 
-const cover = await browser.getByAltText("The Great Gatsby");
-assert.equal(await cover.getTagName(), "img");
-assert.ok((await cover.getProperty("naturalWidth")) > 0);
+        // Находим изображение книги по атрибуту alt
+        const bookImage = await browser.getByAltText("The Great Gatsby");
+
+        // Подтверждаем, что элемент найден
+        await expect(bookImage).toBeExisting();
+        const width = await bookImage.getProperty("naturalWidth");
+        expect(width).toBeGreaterThan(0);
+    });
+});
 ```
 
 ### ByTitle
 
 Чтобы найти элемент по атрибуту title, используйте метод `getByTitle`.
 
-```javascript testplane=selectors-by-title fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-title-ru fixture=selectors-library
+describe("Поиск элемента с помощью метода getByTitle", () => {
+    it("Поиск <a> элемента", async ({ browser }) => {
+        // Открываем страницу
+        await browser.url("/fixtures/selectors/guide.html");
 
-const link = await browser.getByTitle("Direct link to Rich Debugging Capabilities");
-assert.equal(await link.getAttribute("href"), "#debugging");
+        // Находим элемент <a> по атрибуту title
+        const linkElement = await browser.getByTitle("Direct link to Rich Debugging Capabilities");
+
+        // Подтверждаем, что элемент найден
+        await expect(linkElement).toBeExisting();
+        await expect(linkElement).toHaveAttribute("href", "#debugging");
+    });
+});
 ```
 
 ### ByTestId
 
 `getByTestId` используется как последний вариант, когда другие методы не подходят. Например, если вы используете `browser.getByTestId("submit-button")`, то найдите элемент с атрибутом `data-testid="submit-button"`
 
-```javascript testplane=selectors-by-test-id fixture=selectors-library
-const assert = require("node:assert/strict");
+```javascript testplane=selectors-by-test-id-ru fixture=selectors-library
+describe("Поиск элемента с помощью метода getByTestId", () => {
+    it("Поиск элемента по data-testid атрибуту", async ({ browser }) => {
+        // Открываем страницу
+        await browser.url("/fixtures/quickstart/bookstore.html");
 
-const openSearch = await browser.getByLabelText("Open search");
-await openSearch.click();
+        // Находим элемент по атрибуту data-testid
+        const searchInput = await browser.getByTestId("search-input");
 
-const input = await browser.getByTestId("search-input");
-await input.setValue("selectors");
-assert.equal(await browser.$("output").getText(), "selectors");
+        // Подтверждаем, что элемент найден
+        await expect(searchInput).toBeExisting();
+        await searchInput.setValue("Gatsby");
+
+        // В списке остается только подходящая книга.
+        const matches = await browser.$$("#books li:not([hidden])");
+        expect(matches).toHaveLength(1);
+        await expect(matches[0]).toHaveText("The Great Gatsby");
+    });
+});
 ```

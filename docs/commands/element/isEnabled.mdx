@@ -14,18 +14,35 @@ await browser.$(selector).isEnabled();
 
 ## Usage Examples {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <input type="text" name="inputField" class="input1" />
 <input type="text" name="inputField" class="input2" disabled />
 <input type="text" name="inputField" class="input3" disabled="disabled" />
 ```
 
+**isEnabled.js**
+
 ```javascript testplane=element-is-enabled fixture=element-html
 const assert = require("node:assert/strict");
 
-assert.equal(await browser.$(".input1").isEnabled(), true);
-assert.equal(await browser.$(".input2").isEnabled(), false);
-assert.equal(await browser.$(".input3").isEnabled(), false);
+it("should detect if an element is enabled", async ({ browser }) => {
+    let elem = await browser.$(".input1");
+    let isEnabled = await elem.isEnabled();
+    console.log(isEnabled); // outputs: true
+    assert.equal(isEnabled, true);
+
+    elem = await browser.$(".input2");
+    isEnabled = await elem.isEnabled();
+    console.log(isEnabled); // outputs: false
+    assert.equal(isEnabled, false);
+
+    elem = await browser.$(".input3");
+    isEnabled = await elem.isEnabled();
+    console.log(isEnabled); // outputs: false
+    assert.equal(isEnabled, false);
+});
 ```
 
 ## References

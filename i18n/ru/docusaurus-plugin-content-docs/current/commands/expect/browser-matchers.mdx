@@ -8,9 +8,10 @@
 
 Например:
 
-```javascript testplane=expect-to-have-url fixture=matchers-page
+```javascript testplane=expect-to-have-url-ru fixture=matchers-page
 const expectedUrl = new URL("/navigation", browser.options.baseUrl).href;
 await browser.url("/navigation");
+// toHaveUrl сравнивает адрес целиком, включая протокол, хост и порт.
 await expect(browser).toHaveUrl(expectedUrl);
 ```
 
@@ -32,6 +33,7 @@ await expect(browser).toHaveUrlContaining("/navigation");
 Например:
 
 ```javascript testplane=expect-to-have-title fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
 await expect(browser).toHaveTitle("Task list");
 ```
 
@@ -42,5 +44,6 @@ await expect(browser).toHaveTitle("Task list");
 Например:
 
 ```javascript testplane=expect-to-have-title-containing fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
 await expect(browser).toHaveTitleContaining("Task");
 ```

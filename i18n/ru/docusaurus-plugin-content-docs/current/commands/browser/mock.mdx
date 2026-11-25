@@ -15,7 +15,7 @@ import Admonition from "@theme/Admonition";
 -   перенаправить на другой URL и подсунуть полученный оттуда ответ.
 
 <Admonition type="warning">
-Примеры ниже используют WebDriver BiDi.
+Примеры ниже используют WebDriver BiDi, если не указано WebDriver Classic/CDP. Реализации различаются поддержкой фильтров заголовков ответа и тела запроса.
 
 Читайте подробности в разделе «[Как использовать Chrome DevTools Protocol в testplane][how-to-use-cdp]».
 
@@ -46,8 +46,8 @@ await browser.mock(url, { method, requestHeaders, responseHeaders, statusCode })
     <td>headers, postData</td>
     <td>Object, String или Function</td>
     <td>
-        Фильтры заголовков и тела запроса в режиме WebDriver Classic/CDP. Для BiDi используйте
-        `requestHeaders`; фильтрация по телу запроса не поддерживается.
+        В WebDriver Classic/CDP `headers` фильтрует заголовки ответа, а `postData` — тело запроса. В
+        BiDi для заголовков ответа используйте `responseHeaders`; фильтрации по телу запроса нет.
     </td>
 </tr>
 
@@ -56,52 +56,127 @@ await browser.mock(url, { method, requestHeaders, responseHeaders, statusCode })
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-mock-resources fixture=browser-mock
+```javascript testplane=browser-mock-resources-ru fixture=browser-mock
 const assert = require("node:assert/strict");
 
-it("records only matching requests", async ({ browser }) => {
-    const items = await browser.mock("/api/items", {
-        method: "GET",
-        statusCode: code => code === 200,
+it("should mock network resources", async ({ browser }) => {
+    // Выбираем URL по строке.
+    const userListMock = await browser.mock("/fixtures/browser/users.json");
+
+    // Выбираем запросы с определённым заголовком.
+    const strictMock = await browser.mock("/api/items", {
+        requestHeaders: { "x-example": "list" },
+        statusCode: 200,
     });
+
+    // Функция сравнения позволяет задать диапазон статус-кодов и выбрать JSON-ответы.
+    const apiMock = await browser.mock("/api/other", {
+        statusCode: code => code >= 200 && code <= 203,
+        responseHeaders: headers =>
+            Object.entries(headers).some(
+                ([name, value]) =>
+                    name.toLowerCase() === "content-type" && value.includes("application/json"),
+            ),
+    });
+
     await browser.execute(async () => {
+        await fetch("/fixtures/browser/users.json");
+        await fetch("/api/items"); // без нужного заголовка
+        await fetch("/api/items", { headers: { "x-example": "list" } });
         await fetch("/api/other");
-        await fetch("/api/items");
     });
-    await browser.waitUntil(() => items.calls.length === 1);
-    await items.restore();
+    await browser.waitUntil(() =>
+        [userListMock, strictMock, apiMock].every(mock => mock.calls.length === 1),
+    );
+    await browser.mockRestoreAll();
 });
 
-it("replaces an API response and status", async ({ browser }) => {
-    const items = await browser.mock("/api/items", { method: "get" });
-    await items.respond([{ title: "Injected Todo" }], { statusCode: 201 });
-    const result = await browser.execute(async () => {
-        const response = await fetch("/api/items");
-        return { status: response.status, body: await response.json() };
-    });
-    assert.deepEqual(result, { status: 201, body: [{ title: "Injected Todo" }] });
-    await items.restore();
+it("should modify API responses", async ({ browser }) => {
+    // Фильтруем по HTTP-методу.
+    const todoMock = await browser.mock("/api/items", { method: "get" });
+    const todos = [{ title: "Injected Todo", completed: false }];
+
+    const fetchTodos = () =>
+        browser.execute(async () => {
+            const response = await fetch("/api/items");
+            return {
+                status: response.status,
+                header: response.headers.get("x-custom-header"),
+                body: await response.json(),
+            };
+        });
+
+    // Подменяем тело ответа заготовленным списком.
+    await todoMock.respond(todos);
+    assert.deepEqual((await fetchTodos()).body, todos);
+
+    // Можно также изменить статус-код и заголовки ответа.
+    await todoMock.respond(todos, { statusCode: 404, headers: { "x-custom-header": "foobar" } });
+    assert.deepEqual(await fetchTodos(), { status: 404, header: "foobar", body: todos });
+    await todoMock.restore();
 });
 
-it("replaces a text asset", async ({ browser }) => {
-    const script = await browser.mock("/fixtures/browser/banner.js");
-    await script.respond("window.banner = 'Preview';");
-    await browser.executeAsync(done => {
-        const element = document.createElement("script");
-        element.onload = () => done();
-        element.src = "/fixtures/browser/banner.js";
-        document.head.append(element);
-    });
+it("should modify text assets", async ({ browser }) => {
+    const scriptMock = await browser.mock("/fixtures/browser/banner.js");
+    await scriptMock.respond("window.banner = 'Preview';");
+
+    await browser.url("/fixtures/browser/preview.html");
     assert.equal(await browser.execute(() => window.banner), "Preview");
-    await script.restore();
+    await scriptMock.restore();
 });
 
-it("redirects a request to a different resource", async ({ browser }) => {
-    const items = await browser.mock("/api/items");
-    await items.redirect(new URL("/api/other", await browser.getUrl()).href);
-    const data = await browser.execute(async () => (await fetch("/api/items")).json());
-    assert.equal(data.source, "redirected");
-    await items.restore();
+it("should replace a script with a local JavaScript file", async ({ browser }) => {
+    const { readFile } = require("node:fs/promises");
+    const scriptMock = await browser.mock("/fixtures/browser/banner.js");
+
+    // BiDi возвращает переданный текст: прочитайте файл, а не передавайте в ответе путь к нему.
+    const source = await readFile("fixtures/site/browser/preview-banner.js", "utf8");
+    await scriptMock.respond(source);
+
+    await browser.url("/fixtures/browser/preview.html");
+    assert.equal(await browser.execute(() => window.banner), "Release notes");
+    await scriptMock.restore();
+});
+
+it("should redirect web resources", async ({ browser }) => {
+    const origin = new URL(await browser.getUrl()).origin;
+    const headerMock = await browser.mock("/fixtures/browser/header.svg");
+    await headerMock.redirect(new URL("/fixtures/browser/banner.svg", origin).href);
+
+    const pageMock = await browser.mock("/original");
+    await pageMock.redirect(new URL("/fixtures/browser/preview.html", origin).href);
+    await browser.url("/original");
+
+    assert.equal(await browser.getTitle(), "Preview");
+    const header = await browser.$("img");
+    assert.equal(await header.getProperty("naturalWidth"), 32); // ширина banner.svg
+    await browser.mockRestoreAll();
+});
+```
+
+Как передать путь к файлу напрямую в WebDriver Classic/CDP, показано в примере [«Возвращаем HTML из фикстуры»](../../../guides/how-to-intercept-requests-and-responses#example_3).
+
+В сессии WebDriver Classic с CDP можно отфильтровать POST-запросы по содержимому тела:
+
+```javascript testplane=browser-mock-post-data fixture=browser-page transport=cdp
+const assert = require("node:assert/strict");
+
+it("should match the request payload in WebDriver Classic", async ({ browser }) => {
+    const endpoint = new URL("/api/items", await browser.getUrl()).href;
+    const postMock = await browser.mock(endpoint, {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        postData: data => typeof data === "string" && data.includes("foo"),
+    });
+
+    await browser.execute(async () => {
+        await fetch("/api/items", { method: "POST", body: "other" });
+        await fetch("/api/items", { method: "POST", body: "foobar" });
+    });
+
+    await browser.waitUntil(() => postMock.calls.length === 1);
+    assert.equal(postMock.calls[0].postData, "foobar");
+    await postMock.restore();
 });
 ```
 

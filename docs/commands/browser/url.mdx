@@ -33,25 +33,34 @@ await browser.url(url);
 ```javascript testplane=browser-navigate fixture=browser-page
 const assert = require("node:assert/strict");
 
+// Navigate to the URL.
 await browser.url("/navigation");
-assert.equal(new URL(await browser.getUrl()).pathname, "/navigation");
+
+// Read the current URL, including the path used above.
+const url = await browser.getUrl();
+assert.equal(new URL(url).pathname, "/navigation");
 ```
 
 **baseUrlResolutions.js**
 
-```javascript testplane=browser-resolve-url fixture=browser-page
+```javascript testplane=browser-resolve-url fixture=browser-base-url
 const assert = require("node:assert/strict");
 
+// Assume baseUrl ends in /site/. The trailing slash keeps site in relative URLs.
 const { baseUrl } = await browser.getConfig();
+
+// An absolute URL opens as it is.
 const absolute = new URL("/frame", baseUrl).href;
 await browser.url(absolute);
 assert.equal(await browser.getUrl(), absolute);
 
+// A path without a leading slash is relative to the directory in baseUrl.
 await browser.url("relative");
-assert.equal(await browser.getUrl(), new URL("relative", baseUrl).href);
+assert.equal(new URL(await browser.getUrl()).pathname, "/site/relative");
 
+// A leading slash starts at the root of the same origin, not at /site/.
 await browser.url("/rootRelative");
-assert.equal(await browser.getUrl(), new URL("/rootRelative", baseUrl).href);
+assert.equal(new URL(await browser.getUrl()).pathname, "/rootRelative");
 ```
 
 ## References

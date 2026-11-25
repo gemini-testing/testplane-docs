@@ -1,7 +1,10 @@
+const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const { solidReference } = require("./solid-image.cjs");
 
+const originalBaseUrls = new WeakMap();
 const pages = {
+    clipboard: '<input id="username" aria-label="Username"><input id="copy" aria-label="Copy">',
     input: '<input id="username" aria-label="Username">',
     scroll: '<main style="height:3000px">Scroll the page</main>',
     pointer: `<button id="source">Drag me</button>
@@ -48,13 +51,16 @@ async function setup(browser, variant, html) {
     if (html || pages[variant]) return loadHtml(browser, html || pages[variant]);
 
     if (variant.startsWith("visual-")) {
-        await browser.url("/fixtures/browser/swatch.html");
         let size = { width: 40, height: 40 };
         if (variant === "visual-viewport") {
-            await browser.execute(() => document.body.classList.add("fullscreen"));
             size = await browser.execute(() => ({ width: innerWidth, height: innerHeight }));
         }
-        await solidReference(browser, "plain", { ...size, color: "#008000" });
+        // Testplane masks ignored elements with black, even though the demo link is yellow.
+        const rects =
+            variant === "visual-options"
+                ? [{ x: 0, y: 0, width: 8, height: 8, color: "black" }]
+                : [];
+        await solidReference(browser, "plain", { ...size, color: "#008000", rects });
         if (variant !== "visual-options")
             await solidReference(browser, "clicked", { ...size, color: "#0000ff" });
         return;
@@ -73,16 +79,50 @@ async function setup(browser, variant, html) {
             { name: "theme", value: "dark" },
             { name: "temporary", value: "1" },
         ]);
-        await browser.saveState({ path: `./artifacts/demo-${browser.sessionId}.json` });
+        await browser.saveState({ path: "./artifacts/stateDump.json" });
         await browser.clearSession();
         return;
     }
 
-    if (variant === "file") {
+    if (variant === "ready") {
+        await solidReference(browser, "plain", { width: 20, height: 20, color: "#008000" });
+        return;
+    }
+
+    if (variant === "base-url") {
+        const config = await browser.getConfig();
+        originalBaseUrls.set(config, config.baseUrl);
+        config.baseUrl = new URL("/site/", config.baseUrl).href;
+        return;
+    }
+
+    if (variant === "png" || variant === "pdf") {
+        // Remove any old output so a missing write cannot pass the assertion in verify.
+        await fs.rm(`artifacts/screenshot.${variant}`, { force: true });
         await fs.mkdir("artifacts", { recursive: true });
         return;
     }
     if (variant !== "page") throw new Error(`Unknown browser fixture: ${variant}`);
 }
 
-module.exports = { setup, htmlVariants: ["menu", "wait-text"] };
+async function verify(browser, variant) {
+    if (variant === "ready") {
+        const resources = await browser.execute(() => ({
+            headerWidth: document.querySelector(".logo").naturalWidth,
+            metrics: document.body.dataset.metrics,
+        }));
+        assert.deepEqual(resources, { headerWidth: 16, metrics: "failed" });
+    }
+    if (variant === "base-url") {
+        const config = await browser.getConfig();
+        config.baseUrl = originalBaseUrls.get(config);
+        originalBaseUrls.delete(config);
+    }
+    if (variant === "png" || variant === "pdf") {
+        const file = await fs.readFile(`artifacts/screenshot.${variant}`);
+        if (variant === "pdf") assert.equal(file.subarray(0, 5).toString(), "%PDF-");
+        else assert.equal(file.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+    }
+}
+
+module.exports = { setup, verify, htmlVariants: ["menu", "wait-text"] };

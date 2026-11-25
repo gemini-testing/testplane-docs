@@ -45,19 +45,47 @@ await browser.setCookies(cookies);
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-set-cookies fixture=browser-page
+```javascript testplane=browser-set-cookies-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("sets one cookie and a list of cookies", async ({ browser }) => {
+it("should set cookies for the page", async ({ browser }) => {
     await browser.url("/");
-    await browser.setCookies({ name: "test1", value: "one", path: "/" });
+
+    // Устанавливаем одну cookie.
+    await browser.setCookies({
+        name: "test1",
+        value: "one",
+        // Необязательные параметры:
+        // path: "/",                 // путь cookie, по умолчанию "/"
+        // domain: "shop.example.com", // по умолчанию хост текущей страницы
+        // secure: true,              // отправлять только по HTTPS
+        // httpOnly: true,            // скрыть от JavaScript на странице
+        // expiry: 1893456000,        // секунды с начала эпохи Unix
+    });
+
+    // Устанавливаем несколько cookie за один вызов.
     await browser.setCookies([
         { name: "test2", value: "two" },
         { name: "test3", value: "three" },
     ]);
+
     const cookies = await browser.getCookies();
-    const values = Object.fromEntries(cookies.map(({ name, value }) => [name, value]));
-    assert.deepEqual(values, { test1: "one", test2: "two", test3: "three" });
+    const result = cookies.map(({ name, value, domain }) => ({ name, value, domain }));
+    result.sort((a, b) => a.name.localeCompare(b.name));
+    console.log(result);
+    // Для страницы на www.example.com:
+    // [
+    //     { name: "test1", value: "one", domain: "www.example.com" },
+    //     { name: "test2", value: "two", domain: "www.example.com" },
+    //     { name: "test3", value: "three", domain: "www.example.com" }
+    // ]
+
+    const domain = new URL(await browser.getUrl()).hostname;
+    assert.deepEqual(result, [
+        { name: "test1", value: "one", domain },
+        { name: "test2", value: "two", domain },
+        { name: "test3", value: "three", domain },
+    ]);
 });
 ```
 

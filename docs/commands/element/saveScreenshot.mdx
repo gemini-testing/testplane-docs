@@ -27,8 +27,10 @@ await browser.$(selector).saveScreenshot(filepath);
 Save just the badge, not the entire viewport. The destination directory must exist.
 
 ```javascript testplane=element-save-screenshot fixture=element-screenshot
-const badge = await browser.$("#badge");
-await badge.saveScreenshot(`./artifacts/badge-${browser.sessionId}.png`);
+it("should save a screenshot of an element", async ({ browser }) => {
+    const badge = await browser.$("#badge");
+    await badge.saveScreenshot(`./artifacts/badge-${browser.sessionId}.png`);
+});
 ```
 
 ## References

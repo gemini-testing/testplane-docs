@@ -12,179 +12,346 @@ import Admonition from "@theme/Admonition";
 
 </Admonition>
 
-Демонстрационная страница новостей загружает логотип и скрипт. Ссылка **Archive** открывает новую вкладку. Каждый пример начинается в новой сессии; обращения к публичным сайтам не нужны.
+Домены [Fetch][fetch] и [Network][network] в CDP дают доступ к запросам и ответам. С помощью [mock][mock] можно вернуть свой ответ, отменить или перенаправить запрос, изменить тело ответа или просто записать, что загрузила страница.
+
+Страница новостей загружает логотип и два скрипта: один показывает выпуск, а второй — подпись автора. Ссылка **Archive** открывает новую вкладку. Примеры 1–6 начинаются с новой сессии и не требуют доступа к публичным сайтам.
 
 ## Пример 1: возвращаем свой ответ {/* #example_1 */}
 
 С `fetchResponse: false` можно вернуть свой ответ без запроса к исходному ресурсу. Адрес страницы при этом не меняется.
 
-```javascript testplane=guide-mock-response fixture=guides-page transport=cdp
+```javascript testplane=guide-mock-response-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-story.respond("Hello, world!", { fetchResponse: false, headers: { "Content-Type": "text/plain" } });
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("body").getText(), "Hello, world!");
+it("возвращает приветствие по исходному адресу", async ({ browser }) => {
+    const storyPath = "/fixtures/guides/story.html";
+    // Перехватываем только документ. Остальные ресурсы, например favicon, загружаются как обычно.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+
+    // Возвращаем свой текст вместо HTML страницы.
+    // При значении по умолчанию fetchResponse: true CDP сначала запросил бы исходный ресурс.
+    story.respond("Hello, world!", {
+        fetchResponse: false,
+        headers: { "Content-Type": "text/plain" },
+    });
+
+    await browser.url(storyPath);
+    const body = await browser.$("body");
+    const text = await body.getText();
+    assert.equal(text, "Hello, world!");
+
+    // Изменилось только тело ответа: в адресной строке по-прежнему адрес новости.
+    const url = await browser.getUrl();
+    assert.equal(new URL(url).pathname, storyPath);
+});
 ```
 
 В [Puppeteer][get-puppeteer] нужно ответить на нужный запрос, а остальные пропустить. В этом тесте открыта одна страница.
 
-```javascript testplane=guide-puppeteer-response fixture=guides-page transport=cdp
+```javascript testplane=guide-puppeteer-response-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const puppeteer = await browser.getPuppeteer();
-const [page] = await puppeteer.pages();
-await page.setRequestInterception(true);
-page.on("request", request => {
-    if (new URL(request.url()).pathname === "/fixtures/guides/story.html") {
-        return request.respond({ contentType: "text/plain", body: "Hello, world!" });
-    }
-    return request.continue();
-});
+it("возвращает то же приветствие через Puppeteer", async ({ browser }) => {
+    // Используем подключение Puppeteer текущей сессии Testplane.
+    const puppeteer = await browser.getPuppeteer();
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("body").getText(), "Hello, world!");
-await page.setRequestInterception(false);
+    // Первая страница активна: в этом тесте открыта только одна вкладка.
+    const [page] = await puppeteer.pages();
+
+    // Puppeteer приостанавливает каждый запрос страницы, пока мы не ответим на него или не пропустим его.
+    await page.setRequestInterception(true);
+    page.on("request", request => {
+        if (new URL(request.url()).pathname !== "/fixtures/guides/story.html") {
+            // Если URL не совпал, возобновляем запрос без изменений.
+            return request.continue();
+        }
+
+        // Для URL новости возвращаем свое тело ответа и указываем, что это обычный текст.
+        return request.respond({ contentType: "text/plain", body: "Hello, world!" });
+    });
+
+    // Используем browser.url, а не page.goto: Testplane записывает URL в метаданные теста,
+    // а плагины, которые оборачивают команду перехода, продолжают работать.
+    await browser.url("/fixtures/guides/story.html");
+    const body = await browser.$("body");
+    const text = await body.getText();
+    assert.equal(text, "Hello, world!");
+    await page.setRequestInterception(false);
+});
 ```
 
 ### Отправляем команды CDP напрямую {/* #hardcore_example */}
 
-Для низкоуровневого управления используйте [домен Fetch][fetch] протокола CDP. Маска URL приостанавливает только запросы страницы новостей; `Fetch.fulfillRequest` принимает тело в base64.
+Если в Puppeteer нет высокоуровневого API для нужной возможности CDP, отправьте команды через [CDPSession.send][cdp-session-send]. Здесь мы включаем [домен Fetch][fetch], подменяем ответ для страницы новости и возобновляем остальные приостановленные запросы.
 
-```javascript testplane=guide-cdp-response fixture=guides-page transport=cdp
+```javascript testplane=guide-cdp-response-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const [page] = await (await browser.getPuppeteer()).pages();
-const client = await page.target().createCDPSession();
-client.on("Fetch.requestPaused", ({ requestId }) =>
-    client.send("Fetch.fulfillRequest", {
-        requestId,
-        responseCode: 200,
-        responseHeaders: [{ name: "Content-Type", value: "text/plain" }],
-        body: Buffer.from("Hello, world!").toString("base64"),
-    }),
-);
-await client.send("Fetch.enable", { patterns: [{ urlPattern: "*/fixtures/guides/story.html" }] });
+it("возвращает приветствие командами домена Fetch", async ({ browser }) => {
+    // Получаем Puppeteer текущей браузерной сессии.
+    const puppeteer = await browser.getPuppeteer();
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("body").getText(), "Hello, world!");
-await client.detach();
+    // Выбираем единственную открытую страницу и подключаем CDP-сессию к ее target.
+    const [page] = await puppeteer.pages();
+    const client = await page.target().createCDPSession();
+
+    // Событие Fetch.requestPaused содержит адрес ресурса и идентификатор приостановленного запроса.
+    client.on("Fetch.requestPaused", ({ request, requestId }) => {
+        if (new URL(request.url).pathname !== "/fixtures/guides/story.html") {
+            // По идентификатору из события возобновляем остальные запросы.
+            return client.send("Fetch.continueRequest", { requestId });
+        }
+
+        // Для этого requestId возвращаем успешный текстовый ответ. CDP принимает тело только в base64.
+        const body = Buffer.from("Hello, world!", "utf8").toString("base64");
+        return client.send("Fetch.fulfillRequest", {
+            requestId,
+            responseCode: 200,
+            responseHeaders: [{ name: "Content-Type", value: "text/plain" }],
+            body,
+        });
+    });
+
+    // Включаем перехват после регистрации обработчика приостановленных запросов.
+    await client.send("Fetch.enable");
+    await browser.url("/fixtures/guides/story.html");
+    const body = await browser.$("body");
+    const text = await body.getText();
+    assert.equal(text, "Hello, world!");
+    await client.detach();
+});
 ```
+
+Для обычной подмены достаточно `browser.mock`. Если нужны события страницы, используйте Puppeteer. К командам CDP обращайтесь напрямую, когда возможности нет в высокоуровневом API.
 
 ## Пример 2: отменяем запрос за логотипом {/* #example_2 */}
 
-Если запрос изображения завершился ошибкой, у изображения нет собственной ширины, даже когда загрузка уже завершена.
+Если запрос изображения завершился ошибкой, у логотипа нет собственной ширины. Таким же способом можно заблокировать скрипт аналитики, не мешая загрузке самой страницы.
 
-```javascript testplane=guide-mock-abort fixture=guides-page transport=cdp
+```javascript testplane=guide-mock-abort-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const logo = await browser.mock("**/fixtures/guides/logo.svg");
-logo.abort("Failed");
-await browser.url("/fixtures/guides/story.html");
-const image = await browser.$("#logo");
-assert.equal(await image.getProperty("complete"), true);
-assert.equal(await image.getProperty("naturalWidth"), 0);
+it("блокирует логотип, но не саму страницу", async ({ browser }) => {
+    // Используем маску URL: ** соответствует префиксу до пути к логотипу.
+    const logo = await browser.mock("**/fixtures/guides/logo.svg");
+    // Завершаем каждый подходящий запрос ошибкой net::ERR_FAILED.
+    logo.abort("Failed");
+
+    await browser.url("/fixtures/guides/story.html");
+
+    // У незагрузившегося изображения тоже есть признак complete, но нет собственной ширины.
+    const image = await browser.$("#logo");
+    const finished = await image.getProperty("complete");
+    const width = await image.getProperty("naturalWidth");
+    assert.equal(finished, true);
+    assert.equal(width, 0);
+});
 ```
 
 ## Пример 3: возвращаем HTML из фикстуры {/* #example_3 */}
 
 В режиме CDP `respond` может прочитать файл относительно рабочего каталога тестового процесса. Вместо страницы новостей вернётся HTML архива.
 
-```javascript testplane=guide-mock-file fixture=guides-page transport=cdp
+```javascript testplane=guide-mock-file-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-story.respond("./fixtures/site/guides/archive.html", {
-    fetchResponse: false,
-    headers: { "Content-Type": "text/html" },
+it("возвращает локальный HTML-файл вместо новости", async ({ browser }) => {
+    // Перехватываем переход на страницу новости, а не в архив.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+
+    // Путь к файлу отсчитывается от рабочего каталога тестового процесса.
+    // Указываем fetchResponse: false, чтобы мок не запрашивал новость перед подменой ответа файлом.
+    story.respond("./fixtures/site/guides/archive.html", {
+        fetchResponse: false,
+        headers: { "Content-Type": "text/html" },
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+    const heading = await browser.$("h1");
+    const headingText = await heading.getText();
+    assert.equal(headingText, "Archive");
 });
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("h1").getText(), "Archive");
 ```
 
 ## Пример 4: перенаправляем запрос на другую страницу {/* #example_4 */}
 
 Если передать CDP-моку абсолютный URL, браузер выполнит редирект. В отличие от подмены тела ответа, при этом меняется адрес страницы.
 
-```javascript testplane=guide-mock-redirect fixture=guides-page transport=cdp
+```javascript testplane=guide-mock-redirect-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-const archive = new URL("/fixtures/guides/archive.html", await browser.getUrl());
-story.respond(archive.href);
+it("перенаправляет со страницы новости в архив", async ({ browser }) => {
+    // Перехватываем только исходный URL. Архив по адресу назначения загрузится без подмены.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+    const archiveUrl = new URL("/fixtures/guides/archive.html", browser.options.baseUrl).href;
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.getUrl(), archive.href);
-assert.equal(await browser.$("h1").getText(), "Archive");
+    // Абсолютный URL задает перенаправление: CDP-мок не возвращает эту строку как текст.
+    story.respond(archiveUrl);
+    await browser.url("/fixtures/guides/story.html");
+
+    // Теперь и адрес, и заголовок страницы относятся к архиву.
+    const url = await browser.getUrl();
+    const heading = await browser.$("h1");
+    const headingText = await heading.getText();
+    assert.equal(url, archiveUrl);
+    assert.equal(headingText, "Archive");
+});
 ```
 
 ## Пример 5: изменяем исходный ответ {/* #example_5 */}
 
 Чтобы сохранить остальную страницу, изменим только нужный текст в исходном теле ответа.
 
-```javascript testplane=guide-mock-edit-response fixture=guides-page transport=cdp
+```javascript testplane=guide-mock-edit-response-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-story.respond(({ body }) => body.replaceAll("Daily report", "Preview report"));
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("h1").getText(), "Preview report");
+it("изменяет текст исходной новости", async ({ browser }) => {
+    // Если сайт сначала возвращает 301, в этом ответе еще нет HTML страницы.
+    // Перехватываем конечный URL документа, чтобы колбэк получил тело с нужным текстом.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+    story.respond(({ body }) => {
+        // Заменяем все вхождения, в том числе в заголовке вкладки и в заголовке страницы.
+        return body.replace(/Daily report/g, "Preview report");
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+    const title = await browser.getTitle();
+    const heading = await browser.$("h1");
+    const headingText = await heading.getText();
+    assert.equal(title, "Preview report");
+    assert.equal(headingText, "Preview report");
+});
 ```
 
 Можно выбрать ответы и по типу содержимого. Добавим инструкцию только в JavaScript-файлы и проверим, что исходный код скрипта тоже отработал.
 
-```javascript testplane=guide-mock-edit-scripts fixture=guides-page transport=cdp
+```javascript testplane=guide-mock-edit-scripts-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const scripts = await browser.mock("**/fixtures/guides/**", {
-    headers: headers =>
-        Object.entries(headers).some(
-            ([name, value]) =>
-                name.toLowerCase() === "content-type" && value.includes("javascript"),
-        ),
-});
-scripts.respond(({ body }) => body + "\ndocument.body.dataset.preview = 'enabled';");
+it("изменяет скрипты, не зная их URL заранее", async ({ browser }) => {
+    // Маска ** подходит и для скриптов, пути к которым заранее неизвестны.
+    const scripts = await browser.mock("**", {
+        headers: headers => {
+            // Регистр имени заголовка не важен. Заголовка Content-Type в ответе может и не быть.
+            const type = Object.entries(headers).find(
+                ([name]) => name.toLowerCase() === "content-type",
+            );
+            if (!type) return false;
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("#edition").getText(), "Morning");
-assert.equal(await browser.$("body").getAttribute("data-preview"), "enabled");
+            // Оставляем text/javascript и application/javascript, в том числе с параметром charset.
+            const [, value] = type;
+            return /^(text|application)\/javascript(?:;|$)/i.test(value);
+        },
+    });
+
+    scripts.respond(({ body }) => {
+        // Дописываем логирование в конец каждого подходящего скрипта, сохраняя исходный код.
+        return (
+            body +
+            `
+            console.log("Preview:", document.currentScript.src);
+            document.currentScript.dataset.preview = "enabled";
+        `
+        );
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+
+    // Оба исходных скрипта отработали и заполнили выпуск и подпись автора.
+    const edition = await browser.$("#edition");
+    const byline = await browser.$("#byline");
+    await expect(edition).toHaveText("Morning");
+    await expect(byline).toHaveText("News desk");
+
+    // Добавленная инструкция пометила каждый из скриптов, а не только первый.
+    const marked = await browser.$$("script[data-preview='enabled']");
+    const paths = await Promise.all(marked.map(script => script.getAttribute("src")));
+    assert.deepEqual(paths, ["edition.js", "byline.js"]);
+});
 ```
 
 ## Пример 6: записываем запросы на нескольких страницах {/* #example_6 */}
 
-Сам по себе мок записывает подходящие запросы, не изменяя ответы. Проверяйте ожидаемые ресурсы, не полагаясь на их порядок или общее количество запросов браузера.
+Чтобы найти зависимости от внешних ресурсов, запишем все URL, к которым обращается страница. Сам по себе мок записывает подходящие запросы, не изменяя ответы. Проверяйте ожидаемые ресурсы, не полагаясь на их порядок или общее количество запросов браузера.
 
-```javascript testplane=guide-mock-request-list fixture=guides-page transport=cdp
+```javascript testplane=guide-mock-request-list-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const traffic = await browser.mock("**/fixtures/guides/**");
-await browser.url("/fixtures/guides/story.html");
-const paths = traffic.calls.map(({ url }) => new URL(url).pathname);
-assert.ok(paths.includes("/fixtures/guides/story.html"));
-assert.ok(paths.includes("/fixtures/guides/edition.js"));
-assert.ok(paths.includes("/fixtures/guides/logo.svg"));
+it("выводит все ресурсы, запрошенные страницей новостей", async ({ browser }) => {
+    // Без respond и abort мок записывает запросы, но не изменяет их.
+    const traffic = await browser.mock("**");
+    await browser.url("/fixtures/guides/story.html");
+
+    // Для каждого вызова записаны URL, заголовки запроса и ответа, а также исходное тело ответа.
+    // Оставляем только адреса, чтобы увидеть, к каким еще сервисам обращается страница.
+    const urls = traffic.calls.map(call => call.url);
+    console.log("Visited URLs:", urls);
+    console.log("Request count:", urls.length);
+
+    // Браузер может запросить дополнительные ресурсы, например favicon. Порядок и число запросов могут меняться.
+    const paths = urls.map(url => new URL(url).pathname);
+    assert.ok(paths.includes("/fixtures/guides/story.html"));
+    assert.ok(paths.includes("/fixtures/guides/edition.js"));
+    assert.ok(paths.includes("/fixtures/guides/logo.svg"));
+    assert.ok(paths.includes("/fixtures/guides/byline.js"));
+});
 ```
 
 Puppeteer отправляет события запросов для каждой страницы отдельно. Подпишемся на запросы открытых страниц, а затем и новой вкладки архива, прежде чем вызвать в ней следующий запрос.
 
-```javascript testplane=guide-puppeteer-request-list fixture=guides-page transport=cdp
+```javascript testplane=guide-puppeteer-request-list-ru fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const puppeteer = await browser.getPuppeteer();
-const paths = new Set();
-const track = page => page.on("request", req => paths.add(new URL(req.url()).pathname));
-for (const page of await puppeteer.pages()) track(page);
+it("записывает запросы страницы новостей и новых вкладок", async ({ browser }) => {
+    // Собираем URL в один список, не теряя повторных запросов к одному ресурсу.
+    const urls = [];
+    function recordRequests(page) {
+        // Каждый объект Page в Puppeteer отправляет события request только для запросов своей страницы.
+        page.on("request", request => urls.push(request.url()));
+    }
 
-await browser.url("/fixtures/guides/story.html");
-const opened = puppeteer.waitForTarget(target => target.url().endsWith("/archive.html"));
-await browser.$("a[target='_blank']").click();
-const archive = await (await opened).page();
-track(archive);
-await archive.click("#details");
-await archive.waitForFunction(() => document.querySelector("output").textContent === "Evening");
+    // Подключаем Puppeteer к тому же браузеру, в котором выполняется тест.
+    const puppeteer = await browser.getPuppeteer();
+    // Подписываемся на запросы каждой уже открытой вкладки.
+    const pages = await puppeteer.pages();
+    pages.forEach(recordRequests);
 
-assert.ok(paths.has("/fixtures/guides/edition.js"));
-assert.ok(paths.has("/fixtures/guides/details.json"));
+    // Сохраняем подписку для каждой новой вкладки, чтобы дождаться ее перед действиями с этой вкладкой.
+    const subscriptions = new Map();
+    puppeteer.on("targetcreated", target => {
+        // Target создают и воркеры; нас интересуют только страницы.
+        if (target.type() !== "page") return;
+
+        const subscribed = target.page().then(page => {
+            // Первый переход мог произойти до подписки на запросы новой страницы.
+            urls.push(target.url());
+            recordRequests(page);
+            return page;
+        });
+        subscriptions.set(target, subscribed);
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+
+    // Начинаем ожидание до нажатия на ссылку, открывающую архив в новой вкладке.
+    const opened = puppeteer.waitForTarget(target => target.url().endsWith("/archive.html"));
+    const archiveLink = await browser.$("a[target='_blank']");
+    await archiveLink.click();
+    const target = await opened;
+    // Дожидаемся, пока обработчик targetcreated подпишется на запросы, и только потом нажимаем кнопку во вкладке.
+    const archive = await subscriptions.get(target);
+
+    // Отправляем еще один запрос из новой вкладки и ждем появления результата на странице.
+    await archive.click("#details");
+    await archive.waitForFunction(() => document.querySelector("output").textContent === "Evening");
+
+    console.log("Visited URLs:", urls);
+    console.log("Request count:", urls.length);
+    const paths = urls.map(url => new URL(url).pathname);
+    assert.ok(paths.includes("/fixtures/guides/edition.js"));
+    assert.ok(paths.includes("/fixtures/guides/archive.html"));
+    assert.ok(paths.includes("/fixtures/guides/details.json"));
+});
 ```
 
 ## Пример 7: мокаем ресурс google.com во всех тестах Хрома {/* #example_7 */}

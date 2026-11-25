@@ -61,25 +61,41 @@ await browser.$(selector);
 
 **$.js**
 
-```javascript testplane=browser-find-element fixture=browser-menu
+```javascript testplane=browser-find-element-ru fixture=browser-menu
 const assert = require("node:assert/strict");
 
-it("finds a menu link by CSS", async ({ browser }) => {
+it("should get the text of a menu link", async ({ browser }) => {
     const menu = await browser.$("#menu");
-    assert.equal(await menu.$$("li")[2].$("a").getText(), "API");
+    const link = await menu.$$("li")[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
 });
 
-it("finds a menu link with a function selector", async ({ browser }) => {
+it("should get the text of a menu link using a function selector", async ({ browser }) => {
     const menu = await browser.$(function () {
+        // Используйте обычную функцию: WebdriverIO привязывает `this` к Window страницы.
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window
+        // Пример для TypeScript:
+        // return (this as Window).document.querySelector("#menu");
         return this.document.querySelector("#menu");
     });
-    assert.equal(await menu.$$("li")[2].$("a").getText(), "API");
+    const link = await menu.$$("li")[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
 });
 
-it("wraps an active element reference", async ({ browser }) => {
+it("should convert a protocol reference into a WebdriverIO element", async ({ browser }) => {
     await browser.execute(() => document.querySelector("a").focus());
-    const active = await browser.getActiveElement();
-    assert.equal(await browser.$(active).getTagName(), "a");
+    const activeElement = await browser.getActiveElement();
+
+    const element = await browser.$(activeElement);
+    const tagName = await element.getTagName();
+    console.log(tagName); // выведет "a" — тег активного элемента
+    assert.equal(tagName, "a");
 });
 ```
 

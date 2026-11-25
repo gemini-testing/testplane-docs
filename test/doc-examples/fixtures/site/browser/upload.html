@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>File upload</title>
+<form action="/api/items" method="post" enctype="multipart/form-data">
+    <input type="file" id="file-upload" name="file" required />
+    <button id="file-submit">Upload</button>
+</form>
+<output></output>
+<script>
+    const form = document.querySelector("form");
+    form.onsubmit = async event => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const response = await fetch(form.action, { method: form.method, body: data });
+        if (response.ok && (await response.json()).method === "POST") {
+            document.querySelector("output").value = "Uploaded: " + data.get("file").name;
+        }
+    };
+</script>

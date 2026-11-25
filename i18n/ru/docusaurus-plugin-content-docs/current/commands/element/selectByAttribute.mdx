@@ -25,6 +25,8 @@ await browser.$(selector).selectByAttribute(attribute, value);
 
 ## Примеры использования {/* #examples */}
 
+**example.html**
+
 ```html testplane-html=element-html
 <select id="selectbox">
     <option value="someValue0">uno</option>
@@ -36,15 +38,27 @@ await browser.$(selector).selectByAttribute(attribute, value);
 </select>
 ```
 
-```javascript testplane=element-select-by-attribute fixture=element-html
+**selectByAttribute.js**
+
+```javascript testplane=element-select-by-attribute-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const select = await browser.$("#selectbox");
-assert.equal(await select.getValue(), "someValue0");
-await select.selectByAttribute("value", "someValue3");
-assert.equal(await select.getValue(), "someValue3");
-await select.selectByAttribute("name", "someName5");
-assert.equal(await select.getValue(), "someValue5");
+it("should demonstrate the selectByAttribute command", async ({ browser }) => {
+    const selectBox = await browser.$("#selectbox");
+    let value = await selectBox.getValue();
+    console.log(value); // выведет: "someValue0"
+    assert.equal(value, "someValue0");
+
+    await selectBox.selectByAttribute("value", "someValue3");
+    value = await selectBox.getValue();
+    console.log(value); // выведет: "someValue3"
+    assert.equal(value, "someValue3");
+
+    await selectBox.selectByAttribute("name", "someName5");
+    value = await selectBox.getValue();
+    console.log(value); // выведет: "someValue5"
+    assert.equal(value, "someValue5");
+});
 ```
 
 ## Связанные команды {/* #related */}

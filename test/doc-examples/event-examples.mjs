@@ -265,19 +265,33 @@ export async function runEvents(entries, artifacts, envOverrides = {}) {
                 Object.assign(results[i], { status: "failed", error: error.message });
             }
         });
-        const runnable = examples.filter(e => e.event);
-        if (runnable.length) {
-            writeScenario(dir, runnable);
-            const seen = checkScenario(dir, envOverrides);
-            examples.forEach((e, i) => {
-                if (!e.event) return;
+        // Translations may register the same named controller or CLI option. Each
+        // version must run on a fresh instance, not overwrite another example.
+        const batches = [];
+        for (const e of examples.filter(e => e.event)) {
+            let batch = batches.find(entries =>
+                entries.every(
+                    other =>
+                        !(e.logger && other.logger) &&
+                        !(e.event === "CLI" && other.event === "CLI"),
+                ),
+            );
+            if (!batch) batches.push((batch = []));
+            batch.push(e);
+        }
+        for (const [index, batch] of batches.entries()) {
+            const workdir = path.join(dir, String(index));
+            fs.mkdirSync(workdir);
+            writeScenario(workdir, batch);
+            const seen = checkScenario(workdir, envOverrides);
+            for (const e of batch) {
                 const role = workerEvents.has(e.event) ? "worker" : "master";
                 if (!seen.some(hit => hit.id === e.id && hit.role === role))
-                    Object.assign(results[i], {
+                    Object.assign(results[examples.indexOf(e)], {
                         status: "failed",
                         error: `No output from ${e.event} handler in the ${role}`,
                     });
-            });
+            }
         }
     } catch (error) {
         for (const result of results) {

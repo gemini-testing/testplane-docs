@@ -25,13 +25,16 @@ await browser.scroll(x, y);
 
 ## Примеры использования {/* #examples */}
 
-```typescript testplane=browser-scroll fixture=browser-scroll
+```typescript testplane=browser-scroll-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("scrolls the page by 200 pixels", async ({ browser }) => {
-    assert.equal(await browser.execute(() => window.scrollY), 0);
+it("should scroll the page by 200 pixels", async ({ browser }) => {
+    await browser.url("/fixtures/browser/scroll.html");
+    const scrollY = () => browser.execute(() => window.scrollY);
+
+    assert.equal(await scrollY(), 0); // до прокрутки
     await browser.scroll(0, 200);
-    await browser.waitUntil(async () => (await browser.execute(() => window.scrollY)) === 200);
+    await browser.waitUntil(async () => (await scrollY()) === 200); // после прокрутки
 });
 ```
 

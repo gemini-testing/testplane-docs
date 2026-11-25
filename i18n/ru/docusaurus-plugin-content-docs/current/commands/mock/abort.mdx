@@ -36,29 +36,40 @@ mock.abort(errorCode);
 
 ## Примеры использования {/* #examples */}
 
-В примере используется WebDriver BiDi: кнопка `#reload` отправляет GET на `/api/items`, а `#source` показывает результат.
+Страница задач загружает скрипт аналитики и показывает, загрузился он или произошла ошибка. В сессии WebDriver BiDi:
 
-```javascript testplane=mock-abort fixture=matchers-network
-const mock = await browser.mock("/api/items");
-mock.abort();
+```javascript testplane=mock-abort-ru fixture=matchers-intercept
+it("блокирует аналитику при каждой загрузке страницы", async ({ browser }) => {
+    // Блокируем скрипт аналитики, не мешая переходу на страницу задач.
+    const analytics = await browser.mock("/fixtures/matchers/analytics.js");
+    analytics.abort();
 
-for (let i = 0; i < 2; i++) {
-    await browser.$("#reload").click();
-    await expect(browser.$("#source")).toHaveText("Unavailable");
-}
+    // Запрос скрипта завершается ошибкой при каждой загрузке страницы, а не только при первой.
+    for (let visit = 0; visit < 2; visit++) {
+        await browser.url("/fixtures/matchers/tasks.html");
+        const status = await browser.$("#analytics");
+        await expect(status).toHaveText("Analytics unavailable");
+        await expect(browser).toHaveTitle("Task list");
+    }
+});
 ```
 
 Для CDP можно указать причину сетевой ошибки:
 
-```javascript testplane=mock-abort-cdp fixture=matchers-network transport=cdp
-const mock = await browser.mock("**/api/items");
-const reasons = [];
-mock.on("fail", ({ errorReason }) => reasons.push(errorReason));
-mock.abort("ConnectionRefused");
+```javascript testplane=mock-abort-cdp-ru fixture=matchers-intercept transport=cdp
+it("блокирует скрипт аналитики с заданной сетевой ошибкой", async ({ browser }) => {
+    const analytics = await browser.mock("**/fixtures/matchers/analytics.js");
 
-await browser.$("#reload").click();
-await expect(browser.$("#source")).toHaveText("Unavailable");
-expect(reasons).toEqual(["ConnectionRefused"]);
+    // Записываем причину ошибки из события CDP-мока.
+    const reasons = [];
+    analytics.on("fail", ({ errorReason }) => reasons.push(errorReason));
+    analytics.abort("ConnectionRefused");
+
+    await browser.url("/fixtures/matchers/tasks.html");
+    const status = await browser.$("#analytics");
+    await expect(status).toHaveText("Analytics unavailable");
+    expect(reasons).toEqual(["ConnectionRefused"]);
+});
 ```
 
 ## Связанные команды {/* #related */}

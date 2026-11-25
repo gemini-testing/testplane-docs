@@ -11,6 +11,7 @@ For example:
 ```javascript testplane=expect-to-have-url fixture=matchers-page
 const expectedUrl = new URL("/navigation", browser.options.baseUrl).href;
 await browser.url("/navigation");
+// toHaveUrl compares the full address, including the origin.
 await expect(browser).toHaveUrl(expectedUrl);
 ```
 
@@ -32,6 +33,7 @@ Checks if the website has the specified title.
 For example:
 
 ```javascript testplane=expect-to-have-title fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
 await expect(browser).toHaveTitle("Task list");
 ```
 
@@ -42,6 +44,7 @@ Checks if the specified substring is contained in the website's title.
 For example:
 
 ```javascript testplane=expect-to-have-title-containing fixture=matchers-page
+await browser.url("/fixtures/matchers/tasks.html");
 await expect(browser).toHaveTitleContaining("Task");
 ```
 

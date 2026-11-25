@@ -6,7 +6,7 @@ import Admonition from "@theme/Admonition";
 
 During the test run, Testplane adds an `executionContext` property to `browser` to store the execution context.
 
-The `browser.executionContext` property holds the current test or hook \_Mocha object, supplemented with a browser identifier.
+The `browser.executionContext` property exposes the current Testplane test or hook, including its browser identifier.
 
 <Admonition type="info">
     The execution context is added by Testplane and is not available in the [API
@@ -18,10 +18,36 @@ The `browser.executionContext` property holds the current test or hook \_Mocha o
 ```javascript testplane=browser-execution-context fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("identifies the current test", async ({ browser }) => {
-    const context = browser.executionContext;
-    assert.equal(context.title, "identifies the current test");
-    assert.equal(context.browserId, "chrome");
+describe("navigation", () => {
+    it("should log execution context", async ({ browser }) => {
+        await browser.url("/foo/bar");
+
+        const context = browser.executionContext;
+        const details = {
+            title: context.title,
+            file: context.file,
+            suite: context.parent.title,
+            pending: context.pending,
+            browserId: context.browserId,
+            attempt: context.ctx.attempt,
+        };
+        console.log("test:", details);
+        // Example output on the first attempt; the file path depends on your project:
+        // test: {
+        //     title: "should log execution context",
+        //     file: "/project/tests/navigation.testplane.js",
+        //     suite: "navigation",
+        //     pending: false,
+        //     browserId: "chrome",
+        //     attempt: 0
+        // }
+
+        assert.equal(details.title, "should log execution context");
+        assert.equal(details.suite, "navigation");
+        assert.equal(details.pending, false);
+        assert.equal(details.browserId, "chrome");
+        assert.ok(Number.isInteger(details.attempt) && details.attempt >= 0);
+    });
 });
 ```
 

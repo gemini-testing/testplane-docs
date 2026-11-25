@@ -61,19 +61,31 @@ await browser.$$(selector);
 
 **$.js**
 
-```javascript testplane=browser-find-elements fixture=browser-menu
+```javascript testplane=browser-find-elements-ru fixture=browser-menu
 const assert = require("node:assert/strict");
 
-it("finds a menu link by CSS", async ({ browser }) => {
+it("should get the text of a menu link", async ({ browser }) => {
     const menu = await browser.$$("#menu")[0];
-    assert.equal(await menu.$$("li")[2].$("a").getText(), "API");
+    const link = await menu.$$("li")[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
 });
 
-it("finds a menu link with a function selector", async ({ browser }) => {
+it("should get the text of a menu link using a function selector", async ({ browser }) => {
     const menu = await browser.$$(function () {
+        // Используйте обычную функцию: WebdriverIO привязывает `this` к Window страницы.
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window
+        // Пример для TypeScript:
+        // return Array.from((this as Window).document.querySelectorAll("#menu"));
         return Array.from(this.document.querySelectorAll("#menu"));
     })[0];
-    assert.equal(await menu.$$("li")[2].$("a").getText(), "API");
+    const link = await menu.$$("li")[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // выведет: "API"
+    assert.equal(text, "API");
 });
 ```
 

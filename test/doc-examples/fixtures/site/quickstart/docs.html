@@ -33,14 +33,15 @@
             item.setAttribute("role", "option");
             item.setAttribute("aria-selected", "false");
             item.textContent = page;
-            item.ondblclick = () => item.setAttribute("aria-selected", "true");
             results.append(item);
         }
     }
-    document.querySelector(".DocSearch").onclick = () => {
+    const searchButton = document.querySelector(".DocSearch");
+    searchButton.onclick = () => {
         document.querySelector(".DocSearch-Modal").hidden = false;
         filter();
     };
+    searchButton.ondblclick = () => search.focus();
     search.addEventListener("input", filter);
     setTimeout(() => {
         document.querySelector("#start").style.visibility = "visible";

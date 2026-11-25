@@ -34,6 +34,8 @@ await browser.$(selector).waitForEnabled({ timeout, reverse, timeoutMsg, interva
 
 ## Usage Examples {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <button
     id="enable"
@@ -44,16 +46,31 @@ await browser.$(selector).waitForEnabled({ timeout, reverse, timeoutMsg, interva
 <button id="save" disabled onclick="setTimeout(() => this.disabled = true, 100)">Save</button>
 ```
 
+**waitForEnabled.js**
+
 ```javascript testplane=element-wait-for-enabled fixture=element-html
 const assert = require("node:assert/strict");
 
-const save = await browser.$("#save");
-await browser.$("#enable").click();
-await save.waitForEnabled({ timeout: 3000 });
-assert.equal(await save.isEnabled(), true);
-await save.click();
-await save.waitForEnabled({ reverse: true });
-assert.equal(await save.isEnabled(), false);
+it("should detect when element is enabled", async ({ browser }) => {
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForEnabled({ timeout: 3000 });
+    assert.equal(await save.isEnabled(), true);
+});
+
+it("should detect when element is no longer enabled", async ({ browser }) => {
+    const save = await browser.$("#save");
+    const enable = await browser.$("#enable");
+
+    await enable.click();
+    await save.waitForEnabled({ timeout: 3000 });
+
+    await save.click();
+    await save.waitForEnabled({ reverse: true });
+    assert.equal(await save.isEnabled(), false);
+});
 ```
 
 ## References

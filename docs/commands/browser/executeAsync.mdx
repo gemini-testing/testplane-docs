@@ -34,15 +34,24 @@ await browser.executeAsync(script, arguments);
 ```javascript testplane=browser-execute-async fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("returns the sum through the page callback", async ({ browser }) => {
+it("should execute asynchronous JavaScript on the page", async ({ browser }) => {
     await browser.setTimeout({ script: 5000 });
+
     const result = await browser.executeAsync(
-        (a, b, c, d, done) => setTimeout(() => done(a + b + c + d), 25),
+        function (a, b, c, d, done) {
+            // This callback runs in the browser, not in Node.js.
+            // Here console refers to the page console, not the test terminal.
+            setTimeout(() => {
+                done(a + b + c + d);
+            }, 250);
+        },
         1,
         2,
         3,
         4,
     );
+
+    // Back in Node.js, the test receives the result from the page.
     assert.equal(result, 10);
 });
 ```

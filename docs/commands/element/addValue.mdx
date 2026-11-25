@@ -31,10 +31,14 @@ await browser.$(selector).addValue(value);
 ```javascript testplane=element-add-value fixture=element-html
 const assert = require("node:assert/strict");
 
-const input = await browser.$(".input");
-await input.addValue("test");
-await input.addValue(123);
-assert.equal(await input.getValue(), "test123");
+it("should demonstrate the addValue command", async ({ browser }) => {
+    const input = await browser.$(".input");
+    await input.addValue("test");
+    await input.addValue(123);
+
+    const value = await input.getValue(); // "test123"
+    assert.equal(value, "test123");
+});
 ```
 
 ## Related Commands {/* #related */}

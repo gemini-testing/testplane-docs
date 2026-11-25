@@ -37,14 +37,42 @@ await browser.$(selector).react$(reactComponentSelector, { props, state });
 
 Найдём клавиши калькулятора по имени компонента `Button` и значению его пропа `name`.
 
-```javascript testplane=element-react-dollar fixture=element-calculator
+```javascript testplane=element-react-dollar-ru fixture=element-document
 const assert = require("node:assert/strict");
 
-const calculator = await browser.$(".calculator");
-for (const name of ["7", "x", "6", "="]) {
-    await calculator.react$("Button", { props: { name } }).click();
-}
-assert.equal(await calculator.$(".component-display").getText(), "42");
+it("should calculate 7 * 6", async ({ browser }) => {
+    await browser.url("/fixtures/browser/calculator.html");
+    const appWrapper = await browser.$(".calculator");
+
+    await appWrapper
+        .react$("Button", {
+            props: { name: "7" },
+        })
+        .click();
+
+    await appWrapper
+        .react$("Button", {
+            props: { name: "x" },
+        })
+        .click();
+
+    await appWrapper
+        .react$("Button", {
+            props: { name: "6" },
+        })
+        .click();
+
+    await appWrapper
+        .react$("Button", {
+            props: { name: "=" },
+        })
+        .click();
+
+    const display = await appWrapper.$(".component-display");
+    const value = await display.getText();
+    console.log(value); // выведет: "42"
+    assert.equal(value, "42");
+});
 ```
 
 ## Связанные команды {/* #related */}

@@ -5,7 +5,7 @@ import Admonition from "@theme/Admonition";
 ## Overview {/* #overview */}
 
 <Admonition type="warning">
-This recipe only works when using _Chrome DevTools Protocol (CDP) or Chrome_.
+This recipe uses Puppeteer over the _Chrome DevTools Protocol (CDP)_.
 
 Read more details in the section “[How to Use CDP in Testplane][how-to-use-cdp]”
 
@@ -17,20 +17,31 @@ To obtain such a tree, _puppeteer_ has a special [Accessibility class][puppeteer
 
 ## Example {/* #example */}
 
-On a portal page with two links, take a snapshot and check the roles and accessible names of its children:
+Take a snapshot of the local portal. Check the role and accessible name of the page, then find the links a screen reader can announce.
 
-```javascript testplane=guide-accessibility-tree fixture=guides-accessibility transport=cdp
+```javascript testplane=guide-accessibility-tree fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const [page] = await (await browser.getPuppeteer()).pages();
-const tree = await page.accessibility.snapshot();
-assert.equal(tree.role, "RootWebArea");
-assert.equal(tree.name, "Team portal");
-const links = tree.children.filter(node => node.role === "link");
-assert.deepEqual(
-    links.map(node => node.name),
-    ["Inbox", "Help"],
-);
+it("reads the accessibility tree of the portal", async ({ browser }) => {
+    // Get the Puppeteer connection for the current Testplane session.
+    const puppeteer = await browser.getPuppeteer();
+
+    // Only one tab is open in this test, so the first page is the active one.
+    const [page] = await puppeteer.pages();
+    await browser.url("/fixtures/guides/accessibility.html");
+
+    // Print the accessibility tree, not the DOM: its nodes have roles and accessible names.
+    const snapshot = await page.accessibility.snapshot();
+    console.log(JSON.stringify(snapshot, null, 2));
+
+    assert.equal(snapshot.role, "RootWebArea");
+    assert.equal(snapshot.name, "Team portal");
+
+    // Select links by role; the snapshot can also contain text nodes.
+    const links = snapshot.children.filter(node => node.role === "link");
+    const names = links.map(link => link.name);
+    assert.deepEqual(names, ["Sign in", "Inbox", "Drive", "Finance", "Help"]);
+});
 ```
 
 ## Accessibility Tree {/* #accessibility_tree */}
@@ -44,7 +55,19 @@ The root and its links are shown below; incidental text nodes are omitted:
     "children": [
         {
             "role": "link",
+            "name": "Sign in"
+        },
+        {
+            "role": "link",
             "name": "Inbox"
+        },
+        {
+            "role": "link",
+            "name": "Drive"
+        },
+        {
+            "role": "link",
+            "name": "Finance"
         },
         {
             "role": "link",

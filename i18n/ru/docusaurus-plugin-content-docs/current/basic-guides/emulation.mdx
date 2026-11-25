@@ -14,14 +14,26 @@ import Admonition from "@theme/Admonition";
 
 ### Пример: замедляем скорость процессора в 8 раз
 
-```javascript testplane=guide-cpu-emulation fixture=guides-page transport=cdp
-const assert = require("node:assert/strict");
+В примерах ниже по пути `/navigation` открывается страница с заголовком «Navigation». Чтобы запустить тесты на своем сайте, укажите его адрес в `baseUrl`, а в тестах подставьте путь страницы и ее заголовок.
 
-const [page] = await (await browser.getPuppeteer()).pages();
-await page.emulateCPUThrottling(8);
-await browser.url("/navigation");
-assert.equal(await browser.$("h1").getText(), "Navigation");
-await page.emulateCPUThrottling(1);
+```javascript testplane=guide-cpu-emulation-ru fixture=guides-page transport=cdp
+it("открывает страницу при восьмикратном замедлении процессора", async function ({ browser }) {
+    // Получаем экземпляр Puppeteer
+    const puppeteer = await browser.getPuppeteer();
+
+    // Получаем первую открытую страницу (считаем, что она активная в данный момент)
+    const [page] = await puppeteer.pages();
+
+    // Замедляем скорость процессора в 8 раз
+    await page.emulateCPUThrottling(8);
+
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await page.emulateCPUThrottling(1);
+    }
+});
 ```
 
 ## Пропускная способность сети
@@ -48,30 +60,42 @@ await page.emulateCPUThrottling(1);
 
 Ограничим скорость сети в обычной вкладке Chrome и убедимся, что страница по-прежнему доступна:
 
-```javascript testplane=guide-network-preset fixture=guides-page transport=cdp
-const assert = require("node:assert/strict");
+```javascript testplane=guide-network-preset-ru fixture=guides-page transport=cdp
+it("открывает страницу при 2G-соединении", async function ({ browser }) {
+    // Имитируем 2G-соединение
+    await browser.throttleNetwork("Good2G");
 
-await browser.throttleNetwork("Good2G");
-await browser.url("/navigation");
-assert.equal(await browser.$("h1").getText(), "Navigation");
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
+});
 ```
 
 ### Пример 2: эмуляция сети с заданными характеристиками
 
 Также мы можем сэмулировать соединение с конкретными характеристиками:
 
-```javascript testplane=guide-network-custom fixture=guides-page transport=cdp
-const assert = require("node:assert/strict");
+```javascript testplane=guide-network-custom-ru fixture=guides-page transport=cdp
+it("открывает страницу с заданными параметрами сети", async function ({ browser }) {
+    // Имитируем соединение в сети с заданными характеристиками
+    await browser.throttleNetwork({
+        offline: false, // false — сеть остается доступной
+        downloadThroughput: (10 * 1024) / 8, // максимальная пропускная способность загрузки (байт/с)
+        uploadThroughput: (10 * 1024) / 8, // максимальная пропускная способность отправки (байт/с)
+        latency: 10, // минимальная задержка в миллисекундах от отправки запроса до получения заголовков ответа
+    });
 
-await browser.throttleNetwork({
-    offline: false,
-    downloadThroughput: (10 * 1024) / 8,
-    uploadThroughput: (10 * 1024) / 8,
-    latency: 10,
+    try {
+        await browser.url("/navigation");
+        await expect(browser.$("h1")).toHaveText("Navigation");
+    } finally {
+        await browser.throttleNetwork("online");
+    }
 });
-await browser.url("/navigation");
-assert.equal(await browser.$("h1").getText(), "Navigation");
 ```
 
 [emulate-cpu-throttling]: https://pptr.dev/api/puppeteer.page.emulatecputhrottling
-[throttle]: ../../commands/browser/throttle
+[throttle]: https://webdriver.io/docs/api/browser/throttleNetwork

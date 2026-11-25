@@ -26,7 +26,15 @@ const assert = require("node:assert/strict");
 
 await browser.url("/");
 const result = await browser.waitForStaticToLoad({ timeout: 5000, interval: 300 });
-assert.equal(result.ready, true);
+assert.deepEqual(result, { ready: true });
+
+// Possible results when the timeout expires:
+// { ready: false, reason: "Document is loading" }
+// { ready: false, reason: "JavaScript is running" }
+// { ready: false, reason: "Fonts are loading" }
+// { ready: false, reason: "Image from https://example.com/image.jpg is loading" }
+// { ready: false, reason: "Styles from https://example.com/style.css are loading" }
+// { ready: false, reason: "Resources are not loaded", pendingResources: ["https://example.com/image.jpg"] }
 ```
 
 If the timeout expires, inspect `result.reason` (for example, `"Fonts are loading"`). When network resources are still pending, `result.pendingResources` lists their URLs.

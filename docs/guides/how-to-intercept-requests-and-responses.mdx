@@ -12,7 +12,9 @@ These examples use a local Chrome session with [CDP][how-to-use-cdp]. The [mock]
 
 </Admonition>
 
-The demo news page loads a logo and a script. It also has an **Archive** link that opens a new tab. Each example starts in a fresh session; none of them needs a public website.
+CDP exposes requests and responses through its [Fetch][fetch] and [Network][network] domains. With [mock][mock], you can supply your own response, fail a request, redirect it, edit the original response, or just record what the page loads.
+
+The demo news page loads a logo and two scripts, one for the edition and one for the byline. It also has an **Archive** link that opens a new tab. Examples 1–6 each start in a fresh session and do not need a public website.
 
 ## Example 1: Returning your own response {/* #example_1 */}
 
@@ -21,10 +23,27 @@ Use `fetchResponse: false` to supply a response without contacting the original 
 ```javascript testplane=guide-mock-response fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-story.respond("Hello, world!", { fetchResponse: false, headers: { "Content-Type": "text/plain" } });
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("body").getText(), "Hello, world!");
+it("serves a greeting at the original URL", async ({ browser }) => {
+    const storyPath = "/fixtures/guides/story.html";
+    // Intercept only the document. Other resources, such as the favicon, still load normally.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+
+    // Return our text instead of the site’s HTML.
+    // With the default fetchResponse: true, CDP would first fetch the original resource.
+    story.respond("Hello, world!", {
+        fetchResponse: false,
+        headers: { "Content-Type": "text/plain" },
+    });
+
+    await browser.url(storyPath);
+    const body = await browser.$("body");
+    const text = await body.getText();
+    assert.equal(text, "Hello, world!");
+
+    // Only the body has changed: the address bar still shows the story URL.
+    const url = await browser.getUrl();
+    assert.equal(new URL(url).pathname, storyPath);
+});
 ```
 
 With [Puppeteer][get-puppeteer], handle the matching request and let every other request continue. Here the test has one open page.
@@ -32,58 +51,101 @@ With [Puppeteer][get-puppeteer], handle the matching request and let every other
 ```javascript testplane=guide-puppeteer-response fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const puppeteer = await browser.getPuppeteer();
-const [page] = await puppeteer.pages();
-await page.setRequestInterception(true);
-page.on("request", request => {
-    if (new URL(request.url()).pathname === "/fixtures/guides/story.html") {
-        return request.respond({ contentType: "text/plain", body: "Hello, world!" });
-    }
-    return request.continue();
-});
+it("serves the same greeting through Puppeteer", async ({ browser }) => {
+    // Reuse the Puppeteer connection for this Testplane session.
+    const puppeteer = await browser.getPuppeteer();
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("body").getText(), "Hello, world!");
-await page.setRequestInterception(false);
+    // The first page is the active one because this test opens only one tab.
+    const [page] = await puppeteer.pages();
+
+    // Puppeteer pauses every request on this page until we respond or continue it.
+    await page.setRequestInterception(true);
+    page.on("request", request => {
+        if (new URL(request.url()).pathname !== "/fixtures/guides/story.html") {
+            // A different URL is not ours to mock: resume that request unchanged.
+            return request.continue();
+        }
+
+        // For the story URL, supply the body and tell the browser to display it as text.
+        return request.respond({ contentType: "text/plain", body: "Hello, world!" });
+    });
+
+    // Prefer browser.url to page.goto: Testplane records the URL in the test metadata,
+    // and plugins that wrap the navigation command still run.
+    await browser.url("/fixtures/guides/story.html");
+    const body = await browser.$("body");
+    const text = await body.getText();
+    assert.equal(text, "Hello, world!");
+    await page.setRequestInterception(false);
+});
 ```
 
 ### Sending CDP commands directly {/* #hardcore_example */}
 
-For lower-level control, use the CDP [Fetch domain][fetch]. The URL pattern pauses only requests for the story; `Fetch.fulfillRequest` expects a base64-encoded body.
+If Puppeteer has no high-level API for a CDP feature, send commands directly with [CDPSession.send][cdp-session-send]. Here we enable the [Fetch domain][fetch], respond to the story request, and resume every other paused request.
 
 ```javascript testplane=guide-cdp-response fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const [page] = await (await browser.getPuppeteer()).pages();
-const client = await page.target().createCDPSession();
-client.on("Fetch.requestPaused", ({ requestId }) =>
-    client.send("Fetch.fulfillRequest", {
-        requestId,
-        responseCode: 200,
-        responseHeaders: [{ name: "Content-Type", value: "text/plain" }],
-        body: Buffer.from("Hello, world!").toString("base64"),
-    }),
-);
-await client.send("Fetch.enable", { patterns: [{ urlPattern: "*/fixtures/guides/story.html" }] });
+it("serves the greeting with CDP Fetch commands", async ({ browser }) => {
+    // Get Puppeteer for this browser session.
+    const puppeteer = await browser.getPuppeteer();
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("body").getText(), "Hello, world!");
-await client.detach();
+    // Select the only open page and attach a CDP session to its target.
+    const [page] = await puppeteer.pages();
+    const client = await page.target().createCDPSession();
+
+    // Fetch.requestPaused identifies both the resource and the particular request to resume.
+    client.on("Fetch.requestPaused", ({ request, requestId }) => {
+        if (new URL(request.url).pathname !== "/fixtures/guides/story.html") {
+            // Resume other requests using the ID from the event.
+            return client.send("Fetch.continueRequest", { requestId });
+        }
+
+        // Reply to this request ID with a successful text response. CDP requires a base64 body.
+        const body = Buffer.from("Hello, world!", "utf8").toString("base64");
+        return client.send("Fetch.fulfillRequest", {
+            requestId,
+            responseCode: 200,
+            responseHeaders: [{ name: "Content-Type", value: "text/plain" }],
+            body,
+        });
+    });
+
+    // Enable interception only after installing the handler for paused requests.
+    await client.send("Fetch.enable");
+    await browser.url("/fixtures/guides/story.html");
+    const body = await browser.$("body");
+    const text = await body.getText();
+    assert.equal(text, "Hello, world!");
+    await client.detach();
+});
 ```
+
+Use `browser.mock` for the common case. Choose Puppeteer when you need page-level events, or send CDP commands directly when the higher-level APIs do not expose a feature.
 
 ## Example 2: Canceling the logo request {/* #example_2 */}
 
-A failed image request leaves the image without an intrinsic width, even after loading has finished.
+A failed image request leaves the logo without an intrinsic width. The same technique can block an analytics script while allowing the page itself to load.
 
 ```javascript testplane=guide-mock-abort fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const logo = await browser.mock("**/fixtures/guides/logo.svg");
-logo.abort("Failed");
-await browser.url("/fixtures/guides/story.html");
-const image = await browser.$("#logo");
-assert.equal(await image.getProperty("complete"), true);
-assert.equal(await image.getProperty("naturalWidth"), 0);
+it("blocks the news logo without blocking the page", async ({ browser }) => {
+    // Use a URL pattern: ** matches the prefix up to the logo’s path.
+    const logo = await browser.mock("**/fixtures/guides/logo.svg");
+    // Fail every matching request with net::ERR_FAILED.
+    logo.abort("Failed");
+
+    await browser.url("/fixtures/guides/story.html");
+
+    // A broken image is also complete, but it has no intrinsic width.
+    const image = await browser.$("#logo");
+    const finished = await image.getProperty("complete");
+    const width = await image.getProperty("naturalWidth");
+    assert.equal(finished, true);
+    assert.equal(width, 0);
+});
 ```
 
 ## Example 3: Returning an HTML fixture {/* #example_3 */}
@@ -93,13 +155,22 @@ With the CDP backend, `respond` can read a file relative to the test runner’s 
 ```javascript testplane=guide-mock-file fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-story.respond("./fixtures/site/guides/archive.html", {
-    fetchResponse: false,
-    headers: { "Content-Type": "text/html" },
+it("serves a local HTML file instead of the story", async ({ browser }) => {
+    // Intercept navigation to the story, not to the archive.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+
+    // This path is relative to the test runner’s working directory.
+    // Set fetchResponse: false so the story is not fetched before we substitute the file.
+    story.respond("./fixtures/site/guides/archive.html", {
+        fetchResponse: false,
+        headers: { "Content-Type": "text/html" },
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+    const heading = await browser.$("h1");
+    const headingText = await heading.getText();
+    assert.equal(headingText, "Archive");
 });
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("h1").getText(), "Archive");
 ```
 
 ## Example 4: Redirecting to another page {/* #example_4 */}
@@ -109,13 +180,22 @@ Passing an absolute URL to the CDP mock redirects the browser. Unlike a body sub
 ```javascript testplane=guide-mock-redirect fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-const archive = new URL("/fixtures/guides/archive.html", await browser.getUrl());
-story.respond(archive.href);
+it("redirects the story to the archive", async ({ browser }) => {
+    // Mock the source URL only. The archive at the destination will still be fetched.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+    const archiveUrl = new URL("/fixtures/guides/archive.html", browser.options.baseUrl).href;
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.getUrl(), archive.href);
-assert.equal(await browser.$("h1").getText(), "Archive");
+    // An absolute URL tells the CDP mock to redirect, not to return that URL as text.
+    story.respond(archiveUrl);
+    await browser.url("/fixtures/guides/story.html");
+
+    // Both the address bar and the heading now belong to the archive.
+    const url = await browser.getUrl();
+    const heading = await browser.$("h1");
+    const headingText = await heading.getText();
+    assert.equal(url, archiveUrl);
+    assert.equal(headingText, "Archive");
+});
 ```
 
 ## Example 5: Editing the original response {/* #example_5 */}
@@ -125,10 +205,22 @@ To preserve the rest of the page, transform the response body rather than replac
 ```javascript testplane=guide-mock-edit-response fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const story = await browser.mock("**/fixtures/guides/story.html");
-story.respond(({ body }) => body.replaceAll("Daily report", "Preview report"));
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("h1").getText(), "Preview report");
+it("edits the text of the original news story", async ({ browser }) => {
+    // If the site first returns a 301, that response does not contain the page HTML.
+    // Match the final document URL so the callback receives the body that contains the text.
+    const story = await browser.mock("**/fixtures/guides/story.html");
+    story.respond(({ body }) => {
+        // Change every occurrence, including both the page title and the heading.
+        return body.replace(/Daily report/g, "Preview report");
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+    const title = await browser.getTitle();
+    const heading = await browser.$("h1");
+    const headingText = await heading.getText();
+    assert.equal(title, "Preview report");
+    assert.equal(headingText, "Preview report");
+});
 ```
 
 You can also select responses by content type. This example appends an instruction to JavaScript responses while leaving the original script’s behavior intact.
@@ -136,33 +228,73 @@ You can also select responses by content type. This example appends an instructi
 ```javascript testplane=guide-mock-edit-scripts fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const scripts = await browser.mock("**/fixtures/guides/**", {
-    headers: headers =>
-        Object.entries(headers).some(
-            ([name, value]) =>
-                name.toLowerCase() === "content-type" && value.includes("javascript"),
-        ),
-});
-scripts.respond(({ body }) => body + "\ndocument.body.dataset.preview = 'enabled';");
+it("edits scripts without knowing their URLs in advance", async ({ browser }) => {
+    // The ** URL pattern also catches scripts whose paths we do not know yet.
+    const scripts = await browser.mock("**", {
+        headers: headers => {
+            // Response header names are case-insensitive. A response may omit Content-Type.
+            const type = Object.entries(headers).find(
+                ([name]) => name.toLowerCase() === "content-type",
+            );
+            if (!type) return false;
 
-await browser.url("/fixtures/guides/story.html");
-assert.equal(await browser.$("#edition").getText(), "Morning");
-assert.equal(await browser.$("body").getAttribute("data-preview"), "enabled");
+            // Keep text/javascript and application/javascript, including types with a charset.
+            const [, value] = type;
+            return /^(text|application)\/javascript(?:;|$)/i.test(value);
+        },
+    });
+
+    scripts.respond(({ body }) => {
+        // Append logging to every matching script without replacing its original code.
+        return (
+            body +
+            `
+            console.log("Preview:", document.currentScript.src);
+            document.currentScript.dataset.preview = "enabled";
+        `
+        );
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+
+    // Both original scripts ran and filled in the edition and the byline.
+    const edition = await browser.$("#edition");
+    const byline = await browser.$("#byline");
+    await expect(edition).toHaveText("Morning");
+    await expect(byline).toHaveText("News desk");
+
+    // The appended instruction marked each of the scripts, not just the first one.
+    const marked = await browser.$$("script[data-preview='enabled']");
+    const paths = await Promise.all(marked.map(script => script.getAttribute("src")));
+    assert.deepEqual(paths, ["edition.js", "byline.js"]);
+});
 ```
 
 ## Example 6: Recording requests across pages {/* #example_6 */}
 
-A mock with no override records matching requests. Check for the resources you expect rather than relying on order or on a fixed number of browser requests.
+To find dependencies on third-party resources, record every URL requested by the page. A mock with no override records matching requests. Check for the resources you expect rather than relying on order or on a fixed number of browser requests.
 
 ```javascript testplane=guide-mock-request-list fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const traffic = await browser.mock("**/fixtures/guides/**");
-await browser.url("/fixtures/guides/story.html");
-const paths = traffic.calls.map(({ url }) => new URL(url).pathname);
-assert.ok(paths.includes("/fixtures/guides/story.html"));
-assert.ok(paths.includes("/fixtures/guides/edition.js"));
-assert.ok(paths.includes("/fixtures/guides/logo.svg"));
+it("lists all resources requested by the news page", async ({ browser }) => {
+    // Without respond or abort, the mock records requests but does not change them.
+    const traffic = await browser.mock("**");
+    await browser.url("/fixtures/guides/story.html");
+
+    // Each call includes the URL, request and response headers, and the original response body.
+    // Keep just the URLs to see which other services the page depends on.
+    const urls = traffic.calls.map(call => call.url);
+    console.log("Visited URLs:", urls);
+    console.log("Request count:", urls.length);
+
+    // Browsers can request extra resources, such as a favicon. Order and total count can vary.
+    const paths = urls.map(url => new URL(url).pathname);
+    assert.ok(paths.includes("/fixtures/guides/story.html"));
+    assert.ok(paths.includes("/fixtures/guides/edition.js"));
+    assert.ok(paths.includes("/fixtures/guides/logo.svg"));
+    assert.ok(paths.includes("/fixtures/guides/byline.js"));
+});
 ```
 
 Puppeteer emits request events per page. Attach a listener to each existing page, then to the newly opened archive tab before triggering its next request.
@@ -170,21 +302,56 @@ Puppeteer emits request events per page. Attach a listener to each existing page
 ```javascript testplane=guide-puppeteer-request-list fixture=guides-page transport=cdp
 const assert = require("node:assert/strict");
 
-const puppeteer = await browser.getPuppeteer();
-const paths = new Set();
-const track = page => page.on("request", req => paths.add(new URL(req.url()).pathname));
-for (const page of await puppeteer.pages()) track(page);
+it("records requests on the news page and in new tabs", async ({ browser }) => {
+    // Keep the URLs together, including repeated requests to the same resource.
+    const urls = [];
+    function recordRequests(page) {
+        // Each Puppeteer Page emits request events for its own network activity.
+        page.on("request", request => urls.push(request.url()));
+    }
 
-await browser.url("/fixtures/guides/story.html");
-const opened = puppeteer.waitForTarget(target => target.url().endsWith("/archive.html"));
-await browser.$("a[target='_blank']").click();
-const archive = await (await opened).page();
-track(archive);
-await archive.click("#details");
-await archive.waitForFunction(() => document.querySelector("output").textContent === "Evening");
+    // Connect Puppeteer to the same browser that runs the test.
+    const puppeteer = await browser.getPuppeteer();
+    // Listen on every tab that is already open.
+    const pages = await puppeteer.pages();
+    pages.forEach(recordRequests);
 
-assert.ok(paths.has("/fixtures/guides/edition.js"));
-assert.ok(paths.has("/fixtures/guides/details.json"));
+    // Keep the subscription for each new tab so we can wait for it before interacting.
+    const subscriptions = new Map();
+    puppeteer.on("targetcreated", target => {
+        // Workers also create targets; attach only to pages.
+        if (target.type() !== "page") return;
+
+        const subscribed = target.page().then(page => {
+            // Its first navigation may have happened before the request listener was attached.
+            urls.push(target.url());
+            recordRequests(page);
+            return page;
+        });
+        subscriptions.set(target, subscribed);
+    });
+
+    await browser.url("/fixtures/guides/story.html");
+
+    // Start waiting before clicking the link that opens the archive in another tab.
+    const opened = puppeteer.waitForTarget(target => target.url().endsWith("/archive.html"));
+    const archiveLink = await browser.$("a[target='_blank']");
+    await archiveLink.click();
+    const target = await opened;
+    // Wait for targetcreated to attach its request listener before clicking inside the new tab.
+    const archive = await subscriptions.get(target);
+
+    // Trigger a second request from the new tab and wait for its result to appear.
+    await archive.click("#details");
+    await archive.waitForFunction(() => document.querySelector("output").textContent === "Evening");
+
+    console.log("Visited URLs:", urls);
+    console.log("Request count:", urls.length);
+    const paths = urls.map(url => new URL(url).pathname);
+    assert.ok(paths.includes("/fixtures/guides/edition.js"));
+    assert.ok(paths.includes("/fixtures/guides/archive.html"));
+    assert.ok(paths.includes("/fixtures/guides/details.json"));
+});
 ```
 
 ## Example 7: Mocking the google.com Resource in All Chrome Tests {/* #example_7 */}

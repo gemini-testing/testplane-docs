@@ -27,13 +27,19 @@ await browser.switchWindow(urlOrTitleToMatch);
 ```javascript testplane=browser-switch-window fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("switches tabs by URL or title", async ({ browser }) => {
+it("should switch to another window", async ({ browser }) => {
+    // Open the original page.
     await browser.url("/original");
+
+    // Open a second page in a new tab.
     const newUrl = new URL("/frame", await browser.getUrl()).href;
     await browser.newWindow(newUrl, { type: "tab" });
 
+    // Switch back by matching the URL.
     await browser.switchWindow("/original");
     assert.equal(await browser.getTitle(), "Command examples");
+
+    // Switch again by matching the page title.
     await browser.switchWindow("Frame");
     assert.equal(await browser.getUrl(), newUrl);
 });

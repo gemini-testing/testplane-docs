@@ -233,18 +233,28 @@ const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase("html-repor
 
 ```javascript testplane-project=reporter
 async function getSuccessTestRunIds({ testplane, mergedDbPath }) {
-    const tree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
-    const runIds = [];
+    const dbTree = await testplane.htmlReporter.getTestsTreeFromDatabase(mergedDbPath);
 
-    for (const browserId of tree.browsers.allIds) {
-        const lastId = tree.browsers.byId[browserId].resultIds.at(-1);
-        const result = tree.results.byId[lastId];
-        if (result?.status !== "success" || !result.suiteUrl) continue;
+    const successTestRunIds = [];
 
-        const runId = new URL(result.suiteUrl).searchParams.get("testRunId");
-        if (runId) runIds.push(runId);
+    for (const browserId of dbTree.browsers.allIds) {
+        const browser = dbTree.browsers.byId[browserId];
+        const lastResultId = browser.resultIds.at(-1);
+        const lastResult = lastResultId && dbTree.results.byId[lastResultId];
+
+        if (!lastResult || lastResult.status !== "success" || !lastResult.suiteUrl) {
+            continue;
+        }
+
+        const testRunId = new URL(lastResult.suiteUrl).searchParams.get("testRunId");
+
+        if (!testRunId) {
+            continue;
+        }
+
+        successTestRunIds.push(testRunId);
     }
 
-    return runIds;
+    return successTestRunIds;
 }
 ```

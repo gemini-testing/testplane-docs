@@ -351,7 +351,8 @@ assert.deepEqual(
 У новой инстанции, до запуска тестов:
 
 ```javascript testplane-project=collection
-assert.equal(testplane.isFailed(), false);
+const failed = testplane.isFailed();
+assert.equal(failed, false);
 ```
 
 ## isWorker {/* #testplane_is_worker */}
@@ -421,7 +422,10 @@ assert.deepEqual(browsers.sort(), ["chrome", "firefox"]);
 #### Пример вызова
 
 ```javascript testplane-project=collection
-const titles = testCollection.mapTests("chrome", test => test.fullTitle());
+const titles = testCollection.mapTests("chrome", (test, browserId) => {
+    // Вернем полное название теста для текущего браузера.
+    return test.fullTitle();
+});
 assert.deepEqual(titles, ["Tasks opens", "Tasks saves"]);
 ```
 
@@ -434,7 +438,10 @@ assert.deepEqual(titles, ["Tasks opens", "Tasks saves"]);
 #### Пример вызова
 
 ```javascript testplane-project=collection
-testCollection.sortTests("chrome", (a, b) => b.title.localeCompare(a.title));
+testCollection.sortTests("chrome", (currentTest, nextTest) => {
+    // Отсортируем тесты по названию в обратном порядке.
+    return nextTest.title.localeCompare(currentTest.title);
+});
 assert.deepEqual(
     testCollection.mapTests("chrome", test => test.title),
     ["saves", "opens"],
@@ -451,7 +458,10 @@ assert.deepEqual(
 
 ```javascript testplane-project=collection
 const titles = [];
-testCollection.eachTest("chrome", test => titles.push(test.title));
+testCollection.eachTest("chrome", (test, browserId) => {
+    // Сохраним название каждого теста для этого браузера.
+    titles.push(test.title);
+});
 assert.deepEqual(titles, ["opens", "saves"]);
 ```
 
@@ -467,8 +477,9 @@ assert.deepEqual(titles, ["opens", "saves"]);
 
 ```javascript testplane-project=collection
 const versions = [];
-testCollection.eachTestByVersions("chrome", (test, browserId, version) => {
-    versions.push(version);
+testCollection.eachTestByVersions("chrome", (test, browserId, browserVersion) => {
+    // Сохраним версию браузера для каждого теста.
+    versions.push(browserVersion);
 });
 assert.deepEqual(versions, ["150", "150"]);
 ```
@@ -624,6 +635,7 @@ assert.equal(rootSuite.getTests().length, 2);
 ```javascript testplane-project=collection
 const browsers = [];
 testCollection.eachRootSuite((root, browserId) => {
+    // Для каждого корневого набора укажем браузер.
     assert.equal(root.root, true);
     browsers.push(browserId);
 });

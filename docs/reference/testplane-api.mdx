@@ -351,7 +351,8 @@ Returns `true` or `false` depending on whether there was an error or test failur
 On a fresh instance, before a run:
 
 ```javascript testplane-project=collection
-assert.equal(testplane.isFailed(), false);
+const failed = testplane.isFailed();
+assert.equal(failed, false);
 ```
 
 ## isWorker {/* #testplane_is_worker */}
@@ -421,7 +422,10 @@ Builds a mapping of tests for the specified browser.
 #### Example Call
 
 ```javascript testplane-project=collection
-const titles = testCollection.mapTests("chrome", test => test.fullTitle());
+const titles = testCollection.mapTests("chrome", (test, browserId) => {
+    // Return the full title of each test for this browser.
+    return test.fullTitle();
+});
 assert.deepEqual(titles, ["Tasks opens", "Tasks saves"]);
 ```
 
@@ -434,7 +438,10 @@ Sorts tests for the specified browser.
 #### Example Call
 
 ```javascript testplane-project=collection
-testCollection.sortTests("chrome", (a, b) => b.title.localeCompare(a.title));
+testCollection.sortTests("chrome", (currentTest, nextTest) => {
+    // Sort the tests by title in reverse order.
+    return nextTest.title.localeCompare(currentTest.title);
+});
 assert.deepEqual(
     testCollection.mapTests("chrome", test => test.title),
     ["saves", "opens"],
@@ -451,7 +458,10 @@ Iterates through the tests for the specified browser.
 
 ```javascript testplane-project=collection
 const titles = [];
-testCollection.eachTest("chrome", test => titles.push(test.title));
+testCollection.eachTest("chrome", (test, browserId) => {
+    // Collect the title of each test for this browser.
+    titles.push(test.title);
+});
 assert.deepEqual(titles, ["opens", "saves"]);
 ```
 
@@ -467,8 +477,9 @@ Utilizes the presence of the `browserVersion` property for each test.
 
 ```javascript testplane-project=collection
 const versions = [];
-testCollection.eachTestByVersions("chrome", (test, browserId, version) => {
-    versions.push(version);
+testCollection.eachTestByVersions("chrome", (test, browserId, browserVersion) => {
+    // Collect the browser version for each test.
+    versions.push(browserVersion);
 });
 assert.deepEqual(versions, ["150", "150"]);
 ```
@@ -622,6 +633,7 @@ Iterates through all root suites in the collection that have tests.
 ```javascript testplane-project=collection
 const browsers = [];
 testCollection.eachRootSuite((root, browserId) => {
+    // Record the browser for each root suite.
     assert.equal(root.root, true);
     browsers.push(browserId);
 });

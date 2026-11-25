@@ -23,16 +23,27 @@ await browser.getPuppeteer();
 
 ## Примеры использования {/* #examples */}
 
-```javascript testplane=browser-get-puppeteer fixture=browser-page
+```javascript testplane=browser-get-puppeteer-ru fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("accesses the current page through Puppeteer", async ({ browser }) => {
+it("should use Puppeteer on the current page", async ({ browser }) => {
     await browser.url("/");
-    const puppeteer = await browser.getPuppeteer();
     const url = await browser.getUrl();
-    const page = (await puppeteer.pages()).find(page => page.url() === url);
-    assert.equal(await page.title(), "Command examples");
-    const metrics = await page.metrics();
+    const puppeteerBrowser = await browser.getPuppeteer();
+
+    // Переходим к Puppeteer и находим страницу, открытую Testplane.
+    const metrics = await browser.call(async () => {
+        const pages = await puppeteerBrowser.pages();
+        const page = pages.find(page => page.url() === url);
+        assert.equal(await page.title(), "Command examples");
+        await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
+
+        return page.metrics();
+    });
+
+    // LayoutCount — число пересчётов макета; точное значение зависит от страницы.
+    console.log(metrics.LayoutCount);
+    assert.ok(Number.isInteger(metrics.LayoutCount) && metrics.LayoutCount >= 0);
     assert.ok(metrics.Nodes > 0);
 });
 ```

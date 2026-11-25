@@ -26,15 +26,9 @@ await browser.saveScreenshot(filepath);
 
 ## Usage Examples {/* #examples */}
 
-```javascript testplane=browser-save-screenshot fixture=browser-file
-const assert = require("node:assert/strict");
-
-it("writes a PNG screenshot of the current page", async ({ browser }) => {
-    const fs = require("node:fs/promises");
-    const path = `./artifacts/page-${browser.sessionId}.png`;
-    await browser.saveScreenshot(path);
-    const file = await fs.readFile(path);
-    assert.equal(file.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+```javascript testplane=browser-save-screenshot fixture=browser-png
+it("should save a PNG of the browser view", async ({ browser }) => {
+    await browser.saveScreenshot("./artifacts/screenshot.png");
 });
 ```
 

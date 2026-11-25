@@ -184,18 +184,25 @@ function runScenario(dir, items, overrides) {
     run([]);
     assertContents(dir, "html-report");
     assert.equal(log("report-saved"), "html-report");
-    if (items.database) assert.match(log("database.log"), /^\d+\.\d+\.\d+$/);
-    if (items.screenshots)
-        assert.equal(log("screenshots.log"), "renders swatch.chrome 0 plain success");
-    if (items.saved) assert.equal(log("saved.log"), "html-report");
+    if (items.database) assert.match(log("database.log"), /^\d+\.\d+\.\d+$/m);
+    if (items.screenshots) {
+        const message = log("screenshots.log");
+        assert.match(message, /"renders swatch\.chrome" \(attempt #0\)/);
+        assert.match(message, /stateName: 'plain'/);
+        assert.match(message, /status: 'success'/);
+    }
+    if (items.saved) assert.match(log("saved.log"), /REPORT_SAVED.*report path = html-report\b/);
     if (items.schema)
         readDatabase(file("html-report/sqlite.db"), db =>
             assert.deepEqual(
                 db
-                    .prepare("PRAGMA table_info(run_notes)")
+                    .prepare("PRAGMA table_info(testTable)")
                     .all()
                     .map(row => [row.name, row.type]),
-                [["note", "TEXT"]],
+                [
+                    ["foo", "TEXT"],
+                    ["bar", "TEXT"],
+                ],
             ),
         );
     if (items.merge)

@@ -21,6 +21,8 @@ await browser.$(selector).isDisplayed();
 
 ## Примеры использования {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <div id="visible">Visible</div>
 <div id="notDisplayed" style="display: none">Hidden</div>
@@ -29,13 +31,40 @@ await browser.$(selector).isDisplayed();
 <div id="zeroOpacity" style="opacity: 0">Transparent</div>
 ```
 
-```javascript testplane=element-is-displayed fixture=element-html
+**isDisplayed.js**
+
+```javascript testplane=element-is-displayed-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-assert.equal(await browser.$("#visible").isDisplayed(), true);
-assert.equal(await browser.$("#notDisplayed").isDisplayed(), false);
-assert.equal(await browser.$("#notVisible").isDisplayed(), false);
-assert.equal(await browser.$("#notExisting").isDisplayed(), false);
-assert.equal(await browser.$("#notInViewport").isDisplayed(), true);
-assert.equal(await browser.$("#zeroOpacity").isDisplayed(), false);
+it("should detect if an element is displayed", async ({ browser }) => {
+    let elem = await browser.$("#visible");
+    let isDisplayed = await elem.isDisplayed();
+    console.log(isDisplayed); // выведет: true
+    assert.equal(isDisplayed, true);
+
+    elem = await browser.$("#notDisplayed");
+    isDisplayed = await elem.isDisplayed();
+    console.log(isDisplayed); // выведет: false
+    assert.equal(isDisplayed, false);
+
+    elem = await browser.$("#notVisible");
+    isDisplayed = await elem.isDisplayed();
+    console.log(isDisplayed); // выведет: false
+    assert.equal(isDisplayed, false);
+
+    elem = await browser.$("#notExisting");
+    isDisplayed = await elem.isDisplayed();
+    console.log(isDisplayed); // выведет: false
+    assert.equal(isDisplayed, false);
+
+    elem = await browser.$("#notInViewport");
+    isDisplayed = await elem.isDisplayed();
+    console.log(isDisplayed); // выведет: true
+    assert.equal(isDisplayed, true);
+
+    elem = await browser.$("#zeroOpacity");
+    isDisplayed = await elem.isDisplayed();
+    console.log(isDisplayed); // выведет: false
+    assert.equal(isDisplayed, false);
+});
 ```

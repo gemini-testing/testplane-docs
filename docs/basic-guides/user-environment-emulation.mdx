@@ -351,7 +351,7 @@ it("shows a message when there is no network connection", async ({ browser }) =>
 });
 ```
 
-Load the page first, then disable the network before the action that sends a request. Unlike `emulate()`, `throttleNetwork()` must be called after navigation. To restore the normal network mode, use the `"online"` profile.
+In this scenario, load the page before going offline: the test checks the error from the button’s request, not a failed page load. To test navigation itself on a slow connection, apply the network profile before opening the page. To restore the normal network mode, use the `"online"` profile.
 
 ### Slow connection
 
@@ -544,6 +544,7 @@ describe("dark color scheme", () => {
     it("shows the image for the dark color scheme", async ({ browser }) => {
         await browser.url("/orders");
 
+        // Other steps of the test go here.
         const image = await browser.getByTestId("theme-logo");
         await expect(image).toHaveAttribute("src", "/images/night.svg");
     });

@@ -15,19 +15,17 @@ await browser.clearSession();
 ```typescript testplane=browser-clear-session fixture=browser-page
 const assert = require("node:assert/strict");
 
-it("clears cookies and both web storages", async ({ browser }) => {
-    await browser.url("/");
-    await browser.setCookies({ name: "theme", value: "dark" });
-    await browser.execute(() => {
-        localStorage.setItem("theme", "dark");
-        sessionStorage.setItem("draft", "hello");
-    });
+it("should clear cookies, localStorage and sessionStorage", async ({ browser }) => {
+    await browser.url("/fixtures/browser/session.html");
+
+    assert.equal((await browser.getCookies()).length, 1);
+    assert.equal(await browser.execute(() => localStorage.length), 2);
+    assert.equal(await browser.execute(() => sessionStorage.length), 1);
 
     await browser.clearSession();
-    assert.deepEqual(await browser.getCookies(), []);
-    assert.deepEqual(
-        await browser.execute(() => [localStorage.length, sessionStorage.length]),
-        [0, 0],
-    );
+
+    assert.equal((await browser.getCookies()).length, 0);
+    assert.equal(await browser.execute(() => localStorage.length), 0);
+    assert.equal(await browser.execute(() => sessionStorage.length), 0);
 });
 ```

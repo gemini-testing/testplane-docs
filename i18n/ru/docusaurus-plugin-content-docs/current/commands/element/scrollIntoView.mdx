@@ -47,14 +47,20 @@ await browser.$(selector).scrollIntoView({ behavior, block, inline });
 
 Прокрутим страницу к элементу ниже видимой области, а затем выровняем его по центру экрана.
 
-```javascript testplane=element-scroll-into-view fixture=element-scroll
+```javascript testplane=element-scroll-into-view-ru fixture=element-scroll
 const assert = require("node:assert/strict");
 
-const elem = await browser.$("#myElement");
-assert.equal(await elem.isDisplayedInViewport(), false);
-await elem.scrollIntoView();
-assert.equal(await elem.isDisplayedInViewport(), true);
-await elem.scrollIntoView({ block: "center", inline: "center" });
+it("should demonstrate the scrollIntoView command", async ({ browser }) => {
+    const elem = await browser.$("#myElement");
+    assert.equal(await elem.isDisplayedInViewport(), false);
+
+    // Прокручиваем страницу до элемента.
+    await elem.scrollIntoView();
+    assert.equal(await elem.isDisplayedInViewport(), true);
+
+    // Прокручиваем страницу так, чтобы элемент оказался в центре видимой области.
+    await elem.scrollIntoView({ block: "center", inline: "center" });
+});
 ```
 
 ## Связанные команды {/* #related */}

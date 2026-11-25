@@ -25,8 +25,8 @@ mock.respond(overwrites, { headers, statusCode, fetchResponse });
 </thead>
 <tbody>
 <tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ to overwrite the response.</td></tr>
-<tr><td>headers</td><td>Object</td><td>Overwrite specific headers.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Overwrite the response status code.</td></tr>
+<tr><td>headers</td><td>Object | Function</td><td>Overwrite specific headers.</td></tr>
+<tr><td>statusCode</td><td>Number | Function</td><td>Overwrite the response status code.</td></tr>
 <tr><td>fetchResponse</td><td>Boolean</td><td>CDP only: fetch the actual response before applying the overwrite.</td></tr>
 
 </tbody>
@@ -34,30 +34,80 @@ mock.respond(overwrites, { headers, statusCode, fetchResponse });
 
 ## Usage Examples {/* #examples */}
 
-In this WebDriver BiDi example, `#reload` fetches `/api/items` and `#source` displays the result.
+The todo page requests a JSON list on every visit. In this WebDriver BiDi example, the server is still contacted, but the page renders the injected list instead of the original one.
 
-```javascript testplane=mock-respond fixture=matchers-network
-const mock = await browser.mock("/api/items", { method: "GET" });
-mock.respond({ source: "saved list" }, { statusCode: 200 });
+```javascript testplane=mock-respond fixture=matchers-intercept
+it("shows the same two injected todos on each visit", async ({ browser }) => {
+    const todos = await browser.mock("/fixtures/matchers/todos.json", { method: "GET" });
 
-for (let i = 0; i < 2; i++) {
-    await browser.$("#reload").click();
-    await expect(browser.$("#source")).toHaveText("saved list");
-}
+    // Return both an open and a completed todo in place of the server list.
+    todos.respond(
+        [
+            { title: "Write the guide", order: 1, completed: false },
+            { title: "Publish the example", order: 2, completed: true },
+        ],
+        { statusCode: 200 },
+    );
+
+    // Every visit requests the list again; respond keeps returning the same data.
+    for (let visit = 0; visit < 2; visit++) {
+        await browser.url("/fixtures/matchers/todos.html");
+        const firstTodo = await browser.$("#todo-list li");
+        await firstTodo.waitForExist();
+
+        const elements = await browser.$$("#todo-list li");
+        const titles = await Promise.all(elements.map(element => element.getText()));
+        expect(titles).toEqual(["Write the guide", "Publish the example"]);
+
+        const completed = await browser.$("#todo-list li.completed");
+        await expect(completed).toHaveText("Publish the example");
+    }
+});
 ```
 
-In a CDP session you can build the response body from the request. Here the Save button sends JSON containing a `title`. The WebDriver BiDi transport does not support a function as the response body.
+In a CDP session, Save posts a title and username. Use a callback to change the submitted task for the preview user only. CDP normally fetches the original response (`fetchResponse: true`); set it to `false` to build the response without the server. The WebDriver BiDi backend does not accept a callback for the response body.
 
-```javascript testplane=mock-respond-dynamic fixture=matchers-network transport=cdp
-const mock = await browser.mock("**/api/items", { method: "POST" });
-mock.respond(request => ({ source: JSON.parse(request.postData).title }), {
-    statusCode: 201,
-    headers: { "Content-Type": "application/json" },
-    fetchResponse: false,
+```javascript testplane=mock-respond-dynamic fixture=matchers-intercept transport=cdp
+it("builds the response from the submitted task", async ({ browser }) => {
+    const items = await browser.mock("**/api/items", { method: "POST" });
+
+    items.respond(
+        request => {
+            // With fetchResponse disabled, read the POST payload, not a server response body.
+            const task = JSON.parse(request.postData);
+            if (task.username === "test") {
+                return { ...task, title: task.title + " (preview)" };
+            }
+            return task;
+        },
+        {
+            fetchResponse: false,
+            statusCode: () => 201,
+            headers: request => ({
+                "Content-Type": "application/json",
+                "X-Owner": JSON.parse(request.postData).username,
+            }),
+        },
+    );
+
+    await browser.url("/fixtures/matchers/tasks.html");
+    const username = await browser.$("#username");
+    const save = await browser.$("#save");
+    const receipt = await browser.$("#source");
+
+    // The preview user sees the modified title and the response headers from the mock.
+    await username.setValue("test");
+    await save.click();
+    await expect(receipt).toHaveText("Ship feature (preview)");
+    await expect(receipt).toHaveAttribute("data-owner", "test");
+    await expect(receipt).toHaveAttribute("data-status", "201");
+
+    // For another user the callback returns the submitted task unchanged.
+    await username.setValue("alice");
+    await save.click();
+    await expect(receipt).toHaveText("Ship feature");
+    await expect(receipt).toHaveAttribute("data-owner", "alice");
 });
-
-await browser.$("#save").click();
-await expect(browser.$("#source")).toHaveText("Ship feature");
 ```
 
 ## Related Commands {/* #related */}

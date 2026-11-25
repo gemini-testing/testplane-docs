@@ -344,8 +344,13 @@ The `CLI` event is triggered immediately upon startup, before Testplane parses t
 
 ```javascript testplane-project=event
 testplane.on(testplane.events.CLI, cli => {
-    cli.option("--some-option <value>", "Use the specified value");
-    console.info("Registered --some-option");
+    console.info("Processing CLI event...");
+
+    cli.option(
+        "--some-option <some-value>",
+        "the full description of the option",
+        // see more at https://github.com/tj/commander.js#options
+    );
 });
 ```
 
@@ -519,8 +524,12 @@ Click to view the usage example
 ```javascript testplane-project=event
 testplane.on(testplane.events.BEFORE_FILE_READ, ({ file, testParser }) => {
     testParser.setController("logger", {
-        log(prefix) {
-            console.info(`${prefix}: ${this.fullTitle()} (${this.browserId}) in ${file}`);
+        log: function (prefix) {
+            console.log(
+                `${prefix}: just parsed ${this.fullTitle()} from file ${file} for browser ${
+                    this.browserId
+                }`,
+            );
         },
     });
 });

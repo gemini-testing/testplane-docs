@@ -30,11 +30,22 @@ await browser.$(selector).getLocation(prop);
 <div id="logo" style="position: absolute; left: 150px; top: 20px">Logo</div>
 ```
 
-```javascript testplane=element-get-location fixture=element-html
+```javascript testplane=element-get-location-ru fixture=element-html
 const assert = require("node:assert/strict");
 
-const logo = await browser.$("#logo");
-assert.deepEqual(await logo.getLocation(), { x: 150, y: 20 });
-assert.equal(await logo.getLocation("x"), 150);
-assert.equal(await logo.getLocation("y"), 20);
+it("should demonstrate the getLocation function", async ({ browser }) => {
+    const logo = await browser.$("#logo");
+
+    const location = await logo.getLocation();
+    console.log(location); // выведет: { x: 150, y: 20 }
+    assert.deepEqual(location, { x: 150, y: 20 });
+
+    const xLocation = await logo.getLocation("x");
+    console.log(xLocation); // выведет: 150
+    assert.equal(xLocation, 150);
+
+    const yLocation = await logo.getLocation("y");
+    console.log(yLocation); // выведет: 20
+    assert.equal(yLocation, 20);
+});
 ```

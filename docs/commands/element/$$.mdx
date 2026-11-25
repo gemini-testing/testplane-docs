@@ -36,6 +36,8 @@ await browser.$(selector).$$(subSelector);
 
 ## Usage Examples {/* #examples */}
 
+**index.html**
+
 ```html testplane-html=element-html
 <ul id="menu">
     <li>
@@ -53,24 +55,42 @@ await browser.$(selector).$$(subSelector);
 </ul>
 ```
 
+**$$.js**
+
 ```javascript testplane=element-find-all-css fixture=element-html
 const assert = require("node:assert/strict");
 
-const menu = await browser.$("#menu");
-const items = await menu.$$("li");
-assert.equal(await items[2].$("a").getText(), "API");
-```
+it("should get text of a menu link", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const items = await menu.$$("li");
+    const link = await items[2].$("a");
 
-The function selector receives the current `HTMLUListElement` as `this`. Use a regular function, not an arrow function. In TypeScript, you can type the receiver as `function (this: HTMLUListElement)`.
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
+});
+```
 
 ```javascript testplane=element-find-all-function fixture=element-html
 const assert = require("node:assert/strict");
 
-const menu = await browser.$("#menu");
-const items = await menu.$$(function () {
-    return this.querySelectorAll("li");
+it("should get text of a menu link - JS Function", async ({ browser }) => {
+    const menu = await browser.$("#menu");
+    const items = await menu.$$(function () {
+        // Use a regular function: an arrow function has no element receiver.
+        // Here this is an HTMLUListElement (a DOM Element):
+        // https://developer.mozilla.org/en-US/docs/Web/API/Element
+        //
+        // In TypeScript you can declare the receiver as:
+        // function (this: HTMLUListElement) { ... }
+        return this.querySelectorAll("li"); // NodeListOf<HTMLLIElement>
+    });
+    const link = await items[2].$("a");
+
+    const text = await link.getText();
+    console.log(text); // outputs: "API"
+    assert.equal(text, "API");
 });
-assert.equal(await items[2].$("a").getText(), "API");
 ```
 
 ## Related Commands

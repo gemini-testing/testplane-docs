@@ -27,15 +27,21 @@ await browser.$(selector).dragAndDrop(target, { duration });
 
 Перетащим плитку на цель того же размера, а затем сдвинем на 100 пикселей вправо и на 200 вниз.
 
-```javascript testplane=element-drag-and-drop fixture=element-drag
+```javascript testplane=element-drag-and-drop-ru fixture=element-drag
 const assert = require("node:assert/strict");
 
-const tile = await browser.$("#someElem");
-const target = await browser.$("#someTarget");
-await tile.dragAndDrop(target);
-assert.deepEqual(await tile.getLocation(), await target.getLocation());
+it("should demonstrate the dragAndDrop command", async ({ browser }) => {
+    const elem = await browser.$("#someElem");
+    const target = await browser.$("#someTarget");
 
-const { x, y } = await tile.getLocation();
-await tile.dragAndDrop({ x: 100, y: 200 });
-assert.deepEqual(await tile.getLocation(), { x: x + 100, y: y + 200 });
+    // Перетаскиваем элемент на другой элемент.
+    await elem.dragAndDrop(target);
+    const location = await elem.getLocation();
+    assert.deepEqual(location, await target.getLocation());
+
+    // Перетаскиваем элемент относительно его текущего положения.
+    await elem.dragAndDrop({ x: 100, y: 200 });
+    const newLocation = await elem.getLocation();
+    assert.deepEqual(newLocation, { x: location.x + 100, y: location.y + 200 });
+});
 ```

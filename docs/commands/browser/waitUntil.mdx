@@ -41,10 +41,13 @@ await browser.waitUntil(condition, { timeout, timeoutMsg, interval });
 **waitUntil.js**
 
 ```javascript testplane=browser-wait-until fixture=browser-wait-text
-it("waits for the text to change", async ({ browser }) => {
+it("should wait until the text has changed", async ({ browser }) => {
     await browser.waitUntil(
         async () => (await browser.$("#someText").getText()) === "I am now different",
-        { timeout: 5000, timeoutMsg: "Expected the new text within 5 seconds" },
+        {
+            timeout: 5000,
+            timeoutMsg: "Expected the text to change within 5 seconds",
+        },
     );
 });
 ```
