@@ -1,0 +1,56 @@
+# setViewport
+
+## Обзор {/* #overview */}
+
+Задайте размер области отображения страницы и плотность пикселей. В отличие от `setWindowSize`, команда изменяет viewport страницы, а не внешние размеры окна браузера.
+
+## Использование {/* #usage */}
+
+`browser.setViewport({ width, height, devicePixelRatio })`
+
+## Параметры {/* #parameters */}
+
+| **Параметр**       | **Тип**  | **По умолчанию** | **Описание**                                                               |
+| ------------------ | -------- | ---------------- | -------------------------------------------------------------------------- |
+| `width`            | `number` | Обязателен       | Ширина viewport в CSS-пикселях.                                            |
+| `height`           | `number` | Обязателен       | Высота viewport в CSS-пикселях.                                            |
+| `devicePixelRatio` | `number` | 1                | Плотность пикселей (DPR). Если параметр не передан, устанавливается DPR 1. |
+
+## Результат {/* #result */}
+
+`Promise<void>`.
+
+## Ограничения {/* #limitations */}
+
+Нужны WebDriver BiDi (`webSocketUrl: true`) и драйвер, который поддерживает изменение области отображения. Вызывайте команду из основного документа. Если тест переключился в iframe, сначала вернитесь через [switchFrame(null)](./switchFrame.mdx).
+
+Задавайте целые размеры в CSS-пикселях и положительный DPR. В `@testplane/webdriverio` 9.6.2 клиент сравнивает ширину и высоту с 0 и `Number.MAX_SAFE_INTEGER`, но драйвер может отклонить и значение внутри этого диапазона. Для восстановления сохраните не только ширину и высоту, но и DPR. Изменение области отображения не включает сенсорный ввод и не меняет движок браузера.
+
+## Пример {/* #examples */}
+
+Настройте `baseUrl` на свой локальный тестовый HTTP-сайт, где `/` возвращает HTML-страницу. Пример выполняется внутри обычного файла тестов Testplane.
+
+```javascript testplane=browser-set-viewport
+const assert = require("node:assert/strict");
+
+it("setViewport: change page dimensions", async ({ browser }) => {
+    await browser.url("/");
+    const original = await browser.execute(() => ({
+        width: innerWidth,
+        height: innerHeight,
+        devicePixelRatio,
+    }));
+    try {
+        await browser.setViewport({ width: 800, height: 600, devicePixelRatio: 2 });
+        const viewport = await browser.execute(() => [innerWidth, innerHeight, devicePixelRatio]);
+        assert.deepEqual(viewport, [800, 600, 2]);
+    } finally {
+        await browser.setViewport(original);
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [setWindowSize](./setWindowSize.mdx)
+-   [emulate](./emulate.mdx)

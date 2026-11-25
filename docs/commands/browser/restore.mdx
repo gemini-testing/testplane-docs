@@ -1,0 +1,53 @@
+# restore
+
+## Overview {/* #overview */}
+
+Remove emulation installed by `emulate` on the same browser instance. This command does not restore cookies, storage, network throttling, CPU throttling or mocks.
+
+## Usage {/* #usage */}
+
+`await browser.restore()` or `await browser.restore(scopes)`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type**             | **Default**           | **Description**                                                           |
+| ------------- | -------------------- | --------------------- | ------------------------------------------------------------------------- |
+| `scopes`      | `string \| string[]` | All registered scopes | One scope or several: clock, geolocation, userAgent, colorScheme, onLine. |
+
+## Result {/* #result */}
+
+`Promise<void>`. With no recorded emulation for the browser instance, the command does nothing.
+
+## Limitations {/* #limitations */}
+
+Choose one cleanup method for each emulation: call the function returned by `emulate`, **or** use `browser.restore(scope)` in `finally` in the same test. Do not also call `browser.restore()` for a scope you have already cleaned up: in `@testplane/webdriverio` 9.6.2 it can try to remove the same preload script twice. Reload the page to see the original value if a preload script changed it.
+
+`device` is not a restore scope. Use the function returned by `emulate("device", name)`. It removes the user-agent override and applies the Desktop Chrome viewport (1280 × 720, DPR 1), not the previous dimensions.
+
+## Example {/* #examples */}
+
+Set `baseUrl` to your local HTTP test site, where `/` returns an HTML page. Run the example in a regular Testplane test file.
+
+```javascript testplane=browser-restore
+const assert = require("node:assert/strict");
+
+it("restore: remove a user-agent override", async ({ browser }) => {
+    await browser.url("/");
+    const original = await browser.execute(() => navigator.userAgent);
+    await browser.emulate("userAgent", "ExampleBrowser/1.0");
+    try {
+        await browser.url("/");
+        assert.equal(await browser.execute(() => navigator.userAgent), "ExampleBrowser/1.0");
+    } finally {
+        await browser.restore("userAgent");
+    }
+    await browser.url("/");
+    assert.equal(await browser.execute(() => navigator.userAgent), original);
+});
+```
+
+## See also {/* #see-also */}
+
+-   [emulate](./emulate.mdx)
+-   [restoreState](./restoreState.mdx)
+-   [mock.restore](../mock/restore.mdx)

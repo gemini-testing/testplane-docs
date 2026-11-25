@@ -1,85 +1,96 @@
-import Admonition from "@theme/Admonition";
-
 # respond
 
 ## Обзор {/* #overview */}
 
-Используйте команду `respond`, чтобы всегда отвечать одной и той же перезаписью.
-
-<Admonition type="info">
-    Читайте также рецепт «[Как отслеживать и перехватывать сетевые запросы и
-    ответы][how-to-intercept-requests-and-responses]».
-</Admonition>
+Подменяет ответы на подходящие запросы, пока правило активно. Исходный запрос в BiDi все равно отправляется на сервер; это не способ запретить побочные эффекты запроса.
 
 ## Использование {/* #usage */}
 
-```javascript
-mock.respond(overwrites, { header, statusCode, fetchResponse });
-```
+`mock.respond(overwrites, params)`
 
 ## Параметры команды {/* #parameters */}
 
-<table>
-<thead>
-<tr><td>**Имя**</td><td>**Тип**</td><td>**Описание**</td></tr>
-</thead>
-<tbody>
-<tr><td>overwrites</td><td>MockOverwrite</td><td>_Payload_ для перезаписи ответа.</td></tr>
-<tr><td>header</td><td>Object</td><td>Перезаписать определенные заголовки.</td></tr>
-<tr><td>statusCode</td><td>Number</td><td>Перезаписать код состояния ответа.</td></tr>
-<tr><td>fetchResponse</td><td>Boolean</td><td>Получить реальный ответ, прежде чем отвечать с помощью поддельных данных.</td></tr>
+| Параметр               | BiDi                                                                                          | Classic/CDP                                                                                  |
+| ---------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `overwrites`           | Строка тела или JSON-объект/массив. Callback для тела не поддерживается.                      | Строка, JSON или функция, получающая запись запроса и клиент. Функция может вернуть Promise. |
+| `params.headers`       | Заголовки ответа: объект или синхронная функция от события ответа. Заменяют набор заголовков. | Объект или функция. Дополняют исходные заголовки.                                            |
+| `params.statusCode`    | Число или синхронная функция от события ответа.                                               | Число или функция.                                                                           |
+| `params.cookies`       | Массив `Cookie[]` в формате WebDriver или синхронная функция от события ответа.               | Не поддерживается этой реализацией.                                                          |
+| `params.fetchResponse` | Не применяется: подмена выполняется на стадии ответа, запрос доходит до сервера.              | Boolean, по умолчанию `true`. При `false` ответ подменяется до загрузки оригинального тела.  |
 
-</tbody>
-</table>
+В `params.cookies` передавайте `value` строкой. Если нужен срок действия, укажите `expiry` (время Unix в секундах), а не `expires`. В проверенной BiDi-сессии Chrome 150 команда приняла этот параметр, но браузер не сохранил cookie. В такой конфигурации передайте заголовок ответа `Set-Cookie`, как в примере. Снятие мока не удаляет cookies из браузера.
 
-## Примеры использования {/* #examples */}
+Имя параметра — **`headers`**, не `header`. Без переопределения метаданных используются исходные значения.
 
-```javascript
-it('should demonstrate response overwrite with static data', async ({ browser }) => {
-    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/', {
-        method: 'get'
+## Ограничения {/* #limitations */}
+
+В BiDi (`@testplane/webdriverio` 9.6.2) вызов `mock.respond("")` оставляет исходное тело, а не возвращает пустой ответ. Непустая строка с путем к файлу или URL передается как текст ответа. Команда не читает файл и не перенаправляет запрос; для изменения URL используйте [redirect](./redirect.mdx). В Classic/CDP существующий путь читается как локальный файл, а строка с HTTP(S)-URL задает ответ-перенаправление.
+
+Не смешивайте постоянные и однократные правила без учета реализации. В BiDi `respond()` заменяет очередь ответов постоянным правилом. `respondOnce()` убирает постоянное правило и добавляет однократное к другим однократным. В CDP правила добавляются в очередь, и ранее добавленное постоянное правило может перекрыть последующие.
+
+## Результат {/* #result */}
+
+BiDi синхронно возвращает тот же объект мока. Classic/CDP не возвращает полезного значения. Для удаления подмены и перехватчика вызовите `await mock.restore()`.
+
+## Пример {/* #examples */}
+
+Пример использует Chrome с WebDriver BiDi. Укажите в `baseUrl` адрес тестового HTTP-сервера: `/` отдает HTML-страницу, а `/api/items` — JSON с полем `source: "original"` и статусом `200`. Явная подписка на события нужна для новых сессий в одном воркере в WDIO 9.6.2.
+
+```javascript testplane=related-respond
+const assert = require("node:assert/strict");
+
+it("mock.respond: replace response data and metadata in BiDi", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
     });
-
-    mock.respond([{
-        title: 'Injected (non) completed Todo',
-        order: null,
-        completed: false
-    }, {
-        title: 'Injected completed Todo',
-        order: null,
-        completed: true
-    }], {
-        statusCode: 200,
-        fetchResponse: true // по умолчанию
-    });
-
-    await browser.url('https://todobackend.com/client/index.html?https://todo-backend-express-knex.herokuapp.com/');
-
-    await browser.$('#todo-list li').waitForExist();
-
-    const todoElements = await browser.$$('#todo-list li');
-    console.log(await Promise.all(todoElements.map(el => el.getText())));
-    // выведет: "[ 'Injected (non) completed Todo', 'Injected completed Todo' ]"
-});
-
-it('should demonstrate response overwrite with dynamic data', async ({ browser }) => {
-    const mock = await browser.mock('https://todo-backend-express-knex.herokuapp.com/');
-
-    mock.respond((request) => {
-        if (request.body.username === 'test') {
-            return { ...request.body, foo: 'bar' };
+    const mock = await browser.mock("/api/items");
+    try {
+        mock.respond(
+            { source: "mocked" },
+            {
+                statusCode: 201,
+                headers: {
+                    "content-type": "application/json",
+                    "x-example": "response",
+                    "set-cookie": "mock-example=ready; Path=/",
+                },
+            },
+        );
+        for (let i = 0; i < 2; i++) {
+            const result = await browser.execute(async () => {
+                const response = await fetch("/api/items", { cache: "no-store" });
+                return {
+                    status: response.status,
+                    header: response.headers.get("x-example"),
+                    body: await response.json(),
+                };
+            });
+            assert.deepEqual(result, {
+                status: 201,
+                header: "response",
+                body: { source: "mocked" },
+            });
         }
-        return request.body;
-    }, {
-        statusCode: () => 200,
-        headers: () => ({ foo: 'bar }),
-        fetchResponse: false // не получать настоящий ответ
-    });
+        const [cookie] = await browser.getCookies("mock-example");
+        assert.equal(cookie?.value, "ready");
+    } finally {
+        try {
+            await mock.restore();
+        } finally {
+            await browser.deleteCookies("mock-example");
+        }
+    }
 });
 ```
 
 ## Связанные команды {/* #related */}
 
--   [respondOnce](../respondOnce)
+-   [respondOnce](./respondOnce.mdx)
+-   [redirect](./redirect.mdx)
+-   [browser.mock](../browser/mock.mdx)
+-   [Перехват сетевых запросов](../../guides/how-to-intercept-requests-and-responses.mdx)
 
-[how-to-intercept-requests-and-responses]: ../../../guides/how-to-intercept-requests-and-responses
+## Источники {/* #references */}
+
+Материал учитывает [исходную статью WebdriverIO](https://webdriver.io/docs/api/mock/respond).

@@ -1,0 +1,71 @@
+# waitForResponse
+
+## Обзор {/* #overview */}
+
+Ждет, пока в `mock.calls` появится хотя бы одна запись. Если тесту важно содержимое ответа или изменение интерфейса, проверьте это отдельно.
+
+## Использование {/* #usage */}
+
+`mock.waitForResponse({ timeout, interval, timeoutMsg })`
+
+## Параметры {/* #parameters */}
+
+| **Параметр** | **Тип**  | **По умолчанию**        | **Описание**                               |
+| ------------ | -------- | ----------------------- | ------------------------------------------ |
+| `timeout`    | `number` | `waitTimeout` (3000 ms) | Предельное время ожидания в миллисекундах. |
+| `interval`   | `number` | `waitInterval` (500 ms) | Интервал проверок в миллисекундах.         |
+| `timeoutMsg` | `string` | —                       | Сообщение ошибки по тайм-ауту.             |
+
+## Результат {/* #result */}
+
+`Promise<boolean>` со значением `true`, когда `calls` непуст. При тайм-ауте или ошибке проверки промис отклоняется. Сам ответ не возвращается: читайте `mock.calls` отдельно.
+
+## Ограничения {/* #limitations */}
+
+Предыдущая запись сразу завершит ожидание. Вызовите [clear](./clear.mdx) **до** действия, которое отправит интересующий запрос.
+
+-   **BiDi:** запись появляется при `network.responseStarted`. Тело ответа в этот момент может быть еще не прочитано.
+-   **Classic/CDP:** запрос с `abort` или `respond(..., { fetchResponse: false })` может попасть в историю, даже если он не дошел до сервера. Успешное ожидание не означает, что сервер ответил.
+
+В `@testplane/webdriverio` 9.6.2 автоматическая подписка на события может не сработать для следующей BiDi-сессии в том же воркере. Подпишитесь на два сетевых события в каждой сессии, как в примере.
+
+## Пример {/* #examples */}
+
+На [тестовом сайте](../overview.mdx#run-examples) `/` возвращает HTML, а `/api/items` — успешный ответ. Во второй раз страница запускает `fetch` без ожидания в тесте. Сначала тест ждет записи в моке, затем — завершения чтения тела на странице.
+
+```javascript testplane=mock-wait-for-response
+const assert = require("node:assert/strict");
+
+it("mock.waitForResponse: wait for a new recorded response", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        await browser.execute(async () => (await fetch("/api/items")).text());
+        await mock.waitForResponse({ timeout: 3000 });
+        mock.clear();
+        assert.equal(mock.calls.length, 0);
+        await browser.execute(() => {
+            window.requestFinished = false;
+            fetch("/api/items", { cache: "no-store" })
+                .then(response => response.text())
+                .then(() => {
+                    window.requestFinished = true;
+                });
+        });
+        assert.equal(await mock.waitForResponse({ timeout: 3000, interval: 50 }), true);
+        assert.equal(mock.calls.length, 1);
+        await browser.waitUntil(() => browser.execute(() => window.requestFinished));
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## См. также {/* #see-also */}
+
+-   [browser.mock](../browser/mock.mdx)
+-   [clear](./clear.mdx)
+-   [restore](./restore.mdx)

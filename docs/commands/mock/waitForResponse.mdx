@@ -1,0 +1,71 @@
+# waitForResponse
+
+## Overview {/* #overview */}
+
+Wait until `mock.calls` contains at least one matching entry. If you need to check a response body or a change on the page, assert it separately.
+
+## Usage {/* #usage */}
+
+`mock.waitForResponse({ timeout, interval, timeoutMsg })`
+
+## Parameters {/* #parameters */}
+
+| **Parameter** | **Type** | **Default**             | **Description**                     |
+| ------------- | -------- | ----------------------- | ----------------------------------- |
+| `timeout`     | `number` | `waitTimeout` (3000 ms) | Maximum wait in milliseconds.       |
+| `interval`    | `number` | `waitInterval` (500 ms) | Polling interval in milliseconds.   |
+| `timeoutMsg`  | `string` | —                       | Custom error message for a timeout. |
+
+## Result {/* #result */}
+
+`Promise<boolean>` resolving to `true` once `calls` is nonempty. Rejects on timeout or a polling error. It does not return the response: inspect `mock.calls` separately.
+
+## Limitations {/* #limitations */}
+
+An old entry satisfies the wait immediately. Call [clear](./clear.mdx) **before** triggering the request you want to observe.
+
+-   **BiDi:** the entry is recorded on `network.responseStarted`, before the body has necessarily been read.
+-   **Classic/CDP:** a request intercepted with `abort` or `respond(..., { fetchResponse: false })` can be recorded before it ever reaches the server. A successful wait is not evidence that the server replied.
+
+In `@testplane/webdriverio` 9.6.2, automatic event subscription can be skipped when a worker starts its next BiDi session. Subscribe to the two network events in each session as shown below.
+
+## Example {/* #examples */}
+
+The [local example site](../overview.mdx#run-examples) serves HTML at `/` and a successful response at `/api/items`. The second fetch starts in the page without blocking the test: the example waits for the mock entry and then for the page to finish reading the body.
+
+```javascript testplane=mock-wait-for-response
+const assert = require("node:assert/strict");
+
+it("mock.waitForResponse: wait for a new recorded response", async ({ browser }) => {
+    await browser.url("/");
+    await browser.sessionSubscribe({
+        events: ["network.beforeRequestSent", "network.responseStarted"],
+    });
+    const mock = await browser.mock("/api/items");
+    try {
+        await browser.execute(async () => (await fetch("/api/items")).text());
+        await mock.waitForResponse({ timeout: 3000 });
+        mock.clear();
+        assert.equal(mock.calls.length, 0);
+        await browser.execute(() => {
+            window.requestFinished = false;
+            fetch("/api/items", { cache: "no-store" })
+                .then(response => response.text())
+                .then(() => {
+                    window.requestFinished = true;
+                });
+        });
+        assert.equal(await mock.waitForResponse({ timeout: 3000, interval: 50 }), true);
+        assert.equal(mock.calls.length, 1);
+        await browser.waitUntil(() => browser.execute(() => window.requestFinished));
+    } finally {
+        await mock.restore();
+    }
+});
+```
+
+## See also {/* #see-also */}
+
+-   [browser.mock](../browser/mock.mdx)
+-   [clear](./clear.mdx)
+-   [restore](./restore.mdx)
